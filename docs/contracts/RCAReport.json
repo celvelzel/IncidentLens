@@ -1,0 +1,164 @@
+{
+  "$defs": {
+    "Hypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "hypothesis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "culprit_service": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Culprit Service",
+          "type": "string"
+        },
+        "failure_mode": {
+          "minLength": 1,
+          "title": "Failure Mode",
+          "type": "string"
+        },
+        "support_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Support Ids",
+          "type": "array"
+        },
+        "against_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Against Ids",
+          "type": "array"
+        },
+        "predicted_observations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Predicted Observations",
+          "type": "array"
+        },
+        "status": {
+          "default": "OPEN",
+          "enum": [
+            "OPEN",
+            "SUPPORTED",
+            "REJECTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "open_questions": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Open Questions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "culprit_service",
+        "failure_mode"
+      ],
+      "title": "Hypothesis",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "RESOLVED",
+        "INCONCLUSIVE",
+        "ERROR"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "root_cause": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Hypothesis"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "causal_chain": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Causal Chain",
+      "type": "array"
+    },
+    "supporting_evidence_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "type": "string"
+      },
+      "title": "Supporting Evidence Ids",
+      "type": "array"
+    },
+    "rejected_hypotheses": {
+      "items": {
+        "$ref": "#/$defs/Hypothesis"
+      },
+      "title": "Rejected Hypotheses",
+      "type": "array"
+    },
+    "unresolved": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Unresolved",
+      "type": "array"
+    },
+    "stop_reason": {
+      "minLength": 1,
+      "title": "Stop Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "incident_id",
+    "status",
+    "stop_reason"
+  ],
+  "title": "RCAReport",
+  "type": "object"
+}

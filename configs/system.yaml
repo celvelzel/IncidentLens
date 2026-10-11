@@ -1,0 +1,6 @@
+max_rounds: 4
+tool_calls_limit: 12
+llm_calls_limit: 16
+time_limit_seconds: 90
+structured_repair_retries: 1
+cache_mode: off

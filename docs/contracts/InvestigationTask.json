@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "logs",
+        "metrics",
+        "changes"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "question": {
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "allowed_tools": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Allowed Tools",
+      "type": "array"
+    },
+    "filters": {
+      "additionalProperties": true,
+      "title": "Filters",
+      "type": "object"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    },
+    "expected_discriminator": {
+      "minLength": 1,
+      "title": "Expected Discriminator",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "role",
+    "question",
+    "allowed_tools",
+    "reason",
+    "expected_discriminator"
+  ],
+  "title": "InvestigationTask",
+  "type": "object"
+}

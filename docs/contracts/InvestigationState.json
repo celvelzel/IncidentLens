@@ -1,0 +1,910 @@
+{
+  "$defs": {
+    "Budget": {
+      "additionalProperties": false,
+      "properties": {
+        "max_rounds": {
+          "default": 4,
+          "minimum": 1,
+          "title": "Max Rounds",
+          "type": "integer"
+        },
+        "max_tool_calls": {
+          "default": 12,
+          "minimum": 0,
+          "title": "Max Tool Calls",
+          "type": "integer"
+        },
+        "max_llm_calls": {
+          "default": 16,
+          "minimum": 0,
+          "title": "Max Llm Calls",
+          "type": "integer"
+        },
+        "max_wall_seconds": {
+          "default": 90.0,
+          "exclusiveMinimum": 0,
+          "title": "Max Wall Seconds",
+          "type": "number"
+        },
+        "max_tokens": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tokens"
+        }
+      },
+      "title": "Budget",
+      "type": "object"
+    },
+    "CasePublicInput": {
+      "additionalProperties": false,
+      "properties": {
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "observed_symptoms": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Observed Symptoms",
+          "type": "array"
+        },
+        "services": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Services",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incident_id",
+        "title",
+        "started_at",
+        "observed_symptoms",
+        "services"
+      ],
+      "title": "CasePublicInput",
+      "type": "object"
+    },
+    "CoordinatorDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "INVESTIGATE",
+            "FINALIZE",
+            "ABSTAIN"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "assignments": {
+          "items": {
+            "$ref": "#/$defs/InvestigationTask"
+          },
+          "title": "Assignments",
+          "type": "array"
+        },
+        "selected_hypothesis_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selected Hypothesis Id"
+        },
+        "stop_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stop Reason"
+        }
+      },
+      "required": [
+        "action",
+        "reason"
+      ],
+      "title": "CoordinatorDecision",
+      "type": "object"
+    },
+    "EvidenceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "logs",
+            "metrics",
+            "changes",
+            "configs",
+            "topology"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "service": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Service",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "source_path": {
+          "minLength": 1,
+          "title": "Source Path",
+          "type": "string"
+        },
+        "excerpt": {
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "incident_id",
+        "source_type",
+        "service",
+        "observed_at",
+        "source_path",
+        "excerpt"
+      ],
+      "title": "EvidenceRecord",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "logs",
+            "metrics",
+            "changes"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "claim": {
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "relation": {
+          "enum": [
+            "supports",
+            "refutes",
+            "neutral"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "confidence_qualifier": {
+          "enum": [
+            "supported",
+            "weak",
+            "unknown"
+          ],
+          "title": "Confidence Qualifier",
+          "type": "string"
+        },
+        "followup_question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Followup Question"
+        }
+      },
+      "required": [
+        "finding_id",
+        "task_id",
+        "run_id",
+        "incident_id",
+        "role",
+        "claim",
+        "evidence_ids",
+        "relation",
+        "confidence_qualifier"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "Hypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "hypothesis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "culprit_service": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Culprit Service",
+          "type": "string"
+        },
+        "failure_mode": {
+          "minLength": 1,
+          "title": "Failure Mode",
+          "type": "string"
+        },
+        "support_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Support Ids",
+          "type": "array"
+        },
+        "against_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Against Ids",
+          "type": "array"
+        },
+        "predicted_observations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Predicted Observations",
+          "type": "array"
+        },
+        "status": {
+          "default": "OPEN",
+          "enum": [
+            "OPEN",
+            "SUPPORTED",
+            "REJECTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "open_questions": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Open Questions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "culprit_service",
+        "failure_mode"
+      ],
+      "title": "Hypothesis",
+      "type": "object"
+    },
+    "InvestigationTask": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "logs",
+            "metrics",
+            "changes"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "question": {
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "allowed_tools": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "filters": {
+          "additionalProperties": true,
+          "title": "Filters",
+          "type": "object"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "expected_discriminator": {
+          "minLength": 1,
+          "title": "Expected Discriminator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "role",
+        "question",
+        "allowed_tools",
+        "reason",
+        "expected_discriminator"
+      ],
+      "title": "InvestigationTask",
+      "type": "object"
+    },
+    "RCAReport": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "RESOLVED",
+            "INCONCLUSIVE",
+            "ERROR"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "root_cause": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Hypothesis"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "causal_chain": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Causal Chain",
+          "type": "array"
+        },
+        "supporting_evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Supporting Evidence Ids",
+          "type": "array"
+        },
+        "rejected_hypotheses": {
+          "items": {
+            "$ref": "#/$defs/Hypothesis"
+          },
+          "title": "Rejected Hypotheses",
+          "type": "array"
+        },
+        "unresolved": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unresolved",
+          "type": "array"
+        },
+        "stop_reason": {
+          "minLength": 1,
+          "title": "Stop Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "incident_id",
+        "status",
+        "stop_reason"
+      ],
+      "title": "RCAReport",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "target_hypothesis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Target Hypothesis Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "sufficient",
+            "insufficient",
+            "conflicted"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "contradictions": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Contradictions",
+          "type": "array"
+        },
+        "requested_checks": {
+          "items": {
+            "$ref": "#/$defs/InvestigationTask"
+          },
+          "title": "Requested Checks",
+          "type": "array"
+        },
+        "cited_evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Cited Evidence Ids",
+          "type": "array"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_hypothesis_id",
+        "verdict",
+        "rationale"
+      ],
+      "title": "Review",
+      "type": "object"
+    },
+    "TraceEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "event_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "coordinator",
+                "logs",
+                "metrics",
+                "changes",
+                "verifier",
+                "reporter",
+                "single"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Task Id"
+        },
+        "call_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Call Id"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "message": {
+          "default": "",
+          "title": "Message",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": true,
+          "title": "Details",
+          "type": "object"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "enum": [
+                "model",
+                "cache",
+                "mock",
+                "runtime"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "elapsed_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elapsed Ms"
+        }
+      },
+      "required": [
+        "event_id",
+        "run_id",
+        "incident_id",
+        "timestamp",
+        "event_type"
+      ],
+      "title": "TraceEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "workspace_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Workspace Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "public_summary": {
+      "$ref": "#/$defs/CasePublicInput"
+    },
+    "budgets": {
+      "$ref": "#/$defs/Budget"
+    },
+    "round_index": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Round Index",
+      "type": "integer"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "evidence_index": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EvidenceRecord"
+      },
+      "title": "Evidence Index",
+      "type": "object"
+    },
+    "hypotheses": {
+      "items": {
+        "$ref": "#/$defs/Hypothesis"
+      },
+      "title": "Hypotheses",
+      "type": "array"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/InvestigationTask"
+      },
+      "title": "Tasks",
+      "type": "array"
+    },
+    "reviews": {
+      "items": {
+        "$ref": "#/$defs/Review"
+      },
+      "title": "Reviews",
+      "type": "array"
+    },
+    "decisions": {
+      "items": {
+        "$ref": "#/$defs/CoordinatorDecision"
+      },
+      "title": "Decisions",
+      "type": "array"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/TraceEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "report": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RCAReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "stop_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stop Reason"
+    },
+    "open_questions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Open Questions",
+      "type": "array"
+    },
+    "requested_checks": {
+      "items": {
+        "$ref": "#/$defs/InvestigationTask"
+      },
+      "title": "Requested Checks",
+      "type": "array"
+    },
+    "completed_task_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "type": "string"
+      },
+      "title": "Completed Task Ids",
+      "type": "array"
+    },
+    "tool_calls_used": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Tool Calls Used",
+      "type": "integer"
+    },
+    "llm_calls_used": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Llm Calls Used",
+      "type": "integer"
+    },
+    "tokens_used": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Tokens Used",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "incident_id",
+    "run_id",
+    "public_summary"
+  ],
+  "title": "InvestigationState",
+  "type": "object"
+}

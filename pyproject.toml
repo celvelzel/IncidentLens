@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "incident-lens"
+version = "0.1.0"
+description = "IncidentLens: An Evidence-Driven Multi-Agent System for Software Incident Investigation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "langgraph==1.2.14", "pydantic==2.14.0", "PyYAML==6.0.3",
+  "httpx==0.28.1", "python-dotenv==1.2.4", "numpy==2.2.6",
+  "streamlit==1.65.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.17.0"]
+
+[project.scripts]
+incident-lens = "incident_lens.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

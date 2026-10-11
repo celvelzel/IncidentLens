@@ -1,0 +1,6 @@
+coordinator: []
+logs: [query_logs]
+metrics: [query_metrics, get_dependencies]
+changes: [query_changes, get_config_diff]
+verifier: [fetch_evidence_by_ids]
+reporter: [fetch_evidence_by_ids]

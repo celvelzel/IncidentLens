@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "InvestigationTask": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "logs",
+            "metrics",
+            "changes"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "question": {
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "allowed_tools": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "filters": {
+          "additionalProperties": true,
+          "title": "Filters",
+          "type": "object"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "expected_discriminator": {
+          "minLength": 1,
+          "title": "Expected Discriminator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "role",
+        "question",
+        "allowed_tools",
+        "reason",
+        "expected_discriminator"
+      ],
+      "title": "InvestigationTask",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "target_hypothesis_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Target Hypothesis Id",
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "sufficient",
+        "insufficient",
+        "conflicted"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "contradictions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Contradictions",
+      "type": "array"
+    },
+    "requested_checks": {
+      "items": {
+        "$ref": "#/$defs/InvestigationTask"
+      },
+      "title": "Requested Checks",
+      "type": "array"
+    },
+    "cited_evidence_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "type": "string"
+      },
+      "title": "Cited Evidence Ids",
+      "type": "array"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_hypothesis_id",
+    "verdict",
+    "rationale"
+  ],
+  "title": "Review",
+  "type": "object"
+}

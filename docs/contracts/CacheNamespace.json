@@ -1,0 +1,101 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "workspace_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Workspace Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "agent_role": {
+      "enum": [
+        "coordinator",
+        "logs",
+        "metrics",
+        "changes",
+        "verifier",
+        "reporter",
+        "single"
+      ],
+      "title": "Agent Role",
+      "type": "string"
+    },
+    "task_type": {
+      "enum": [
+        "summarize_log_slice",
+        "interpret_metric_window",
+        "summarize_change_diff"
+      ],
+      "title": "Task Type",
+      "type": "string"
+    },
+    "evidence_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Snapshot Sha256",
+      "type": "string"
+    },
+    "dataset_revision": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Dataset Revision",
+      "type": "string"
+    },
+    "prompt_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "model_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_parameters_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Parameters Hash",
+      "type": "string"
+    },
+    "output_schema_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Output Schema Version",
+      "type": "string"
+    },
+    "tool_acl_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Tool Acl Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "incident_id",
+    "agent_role",
+    "task_type",
+    "evidence_snapshot_sha256",
+    "dataset_revision",
+    "prompt_version",
+    "model_id",
+    "model_parameters_hash",
+    "output_schema_version",
+    "tool_acl_version"
+  ],
+  "title": "CacheNamespace",
+  "type": "object"
+}

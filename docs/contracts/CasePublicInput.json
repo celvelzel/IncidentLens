@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "observed_symptoms": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Observed Symptoms",
+      "type": "array"
+    },
+    "services": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "type": "string"
+      },
+      "title": "Services",
+      "type": "array"
+    }
+  },
+  "required": [
+    "incident_id",
+    "title",
+    "started_at",
+    "observed_symptoms",
+    "services"
+  ],
+  "title": "CasePublicInput",
+  "type": "object"
+}

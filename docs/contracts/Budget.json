@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "max_rounds": {
+      "default": 4,
+      "minimum": 1,
+      "title": "Max Rounds",
+      "type": "integer"
+    },
+    "max_tool_calls": {
+      "default": 12,
+      "minimum": 0,
+      "title": "Max Tool Calls",
+      "type": "integer"
+    },
+    "max_llm_calls": {
+      "default": 16,
+      "minimum": 0,
+      "title": "Max Llm Calls",
+      "type": "integer"
+    },
+    "max_wall_seconds": {
+      "default": 90.0,
+      "exclusiveMinimum": 0,
+      "title": "Max Wall Seconds",
+      "type": "number"
+    },
+    "max_tokens": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Tokens"
+    }
+  },
+  "title": "Budget",
+  "type": "object"
+}

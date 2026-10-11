@@ -1,0 +1,72 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "workspace_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Workspace Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "coordinator",
+        "logs",
+        "metrics",
+        "changes",
+        "verifier",
+        "reporter",
+        "single"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "allowed_tools": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Tools",
+      "type": "array"
+    },
+    "allowed_evidence_scope": {
+      "default": [],
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "type": "string"
+      },
+      "title": "Allowed Evidence Scope",
+      "type": "array"
+    },
+    "remaining_tool_calls": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Remaining Tool Calls",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "incident_id",
+    "run_id",
+    "role"
+  ],
+  "title": "AgentContext",
+  "type": "object"
+}

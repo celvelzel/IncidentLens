@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "mode": {
+      "default": "off",
+      "enum": [
+        "off",
+        "exact",
+        "semantic"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "similarity_threshold": {
+      "default": 0.95,
+      "maximum": 1.0,
+      "minimum": 0.95,
+      "title": "Similarity Threshold",
+      "type": "number"
+    },
+    "ttl_hours": {
+      "default": 24.0,
+      "exclusiveMinimum": 0,
+      "title": "Ttl Hours",
+      "type": "number"
+    },
+    "allowed_task_types": {
+      "default": [
+        "summarize_log_slice",
+        "interpret_metric_window",
+        "summarize_change_diff"
+      ],
+      "items": {
+        "enum": [
+          "summarize_log_slice",
+          "interpret_metric_window",
+          "summarize_change_diff"
+        ],
+        "type": "string"
+      },
+      "title": "Allowed Task Types",
+      "type": "array"
+    }
+  },
+  "title": "CachePolicy",
+  "type": "object"
+}
