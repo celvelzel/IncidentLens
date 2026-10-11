@@ -3,32 +3,29 @@
 import argparse
 import asyncio
 import csv
-import hashlib
 import json
 import os
 from pathlib import Path
 from time import perf_counter
 from uuid import uuid4
 
+from dotenv import load_dotenv
+
+from incident_lens.artifacts import save_run
 from incident_lens.cache import CachePolicy, SemanticCacheAdapter, SentenceTransformerBackend
 from incident_lens.llm.mock import MockProvider
-from incident_lens.llm.provider import RealChatProvider
+from incident_lens.llm.provider import ProviderError, RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
+from incident_lens.tools import EvidenceProvider
 
 
 def dataset_revision(root):
     """Hash public fixture contents only; never open private evaluator labels."""
-    digest = hashlib.sha256()
-    files = sorted((root / "incidents").glob("*/public/*")) + sorted((root / "topology").glob("*"))
-    for path in files:
-        if path.is_file():
-            digest.update(path.relative_to(root).as_posix().encode())
-            digest.update(path.read_bytes())
-    return "data-" + digest.hexdigest()
+    return EvidenceProvider(root).dataset_revision
 
 
 def measured_summary(state, elapsed, phase, provider):
-    calls = [event for event in state.events if event.event_type == "LLM_CALL"]
+    calls = [event for event in state.events if event.event_type in {"LLM_CALL", "MODEL_FAILURE"}]
     hits = [event for event in state.events if event.event_type == "CACHE_HIT"]
     misses = [event for event in state.events if event.event_type == "CACHE_MISS"]
     tokens = [event.details.get("total_tokens") for event in calls]
@@ -54,11 +51,14 @@ def measured_summary(state, elapsed, phase, provider):
 
 
 async def experiment(args):
+    load_dotenv()
     if args.provider == "mock":
         provider = MockProvider()
     else:
         provider = RealChatProvider(
-            os.getenv("LLM_ENDPOINT"), os.getenv("LLM_API_KEY"), os.getenv("LLM_MODEL")
+            os.getenv("INCIDENT_LENS_BASE_URL"),
+            os.getenv("INCIDENT_LENS_API_KEY"),
+            os.getenv("INCIDENT_LENS_MODEL"),
         )
     args.out.mkdir(parents=True, exist_ok=True)
     embedder = SentenceTransformerBackend(args.embedding_model) if args.embedding_model else None
@@ -77,9 +77,12 @@ async def experiment(args):
         states.append(state)
         folder = args.out / phase
         folder.mkdir(exist_ok=True)
-        (folder / "trace.json").write_text(state.model_dump_json(indent=2), encoding="utf-8")
-        (folder / "result.json").write_text(
-            state.report.model_dump_json(indent=2), encoding="utf-8"
+        save_run(
+            state,
+            folder,
+            args.provider,
+            cache_mode="off" if active is None else args.cache_mode,
+            elapsed_ms=rows[-1]["elapsed_ms"],
         )
     comparable = [
         {
@@ -117,7 +120,10 @@ def main(argv=None):
         "--embedding-model",
         help="Optional locally installed SentenceTransformer model; no implicit download",
     )
-    asyncio.run(experiment(parser.parse_args(argv)))
+    try:
+        asyncio.run(experiment(parser.parse_args(argv)))
+    except ProviderError as exc:
+        parser.exit(2, exc.code + "\n")
     return 0
 
 

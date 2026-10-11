@@ -54,7 +54,7 @@ each experiment and exports per-phase trace/result JSON, summary JSON and CSV.
 It reports measured calls, hit rate, avoided calls, wall time and tokens when the
 provider supplies them. Missing tokens/cost and unreviewed semantic error reuse
 rate remain null. Mock results establish offline behavior only. Real mode requires
-`LLM_ENDPOINT`, `LLM_API_KEY` and `LLM_MODEL`; credentials are never exported.
+`INCIDENT_LENS_BASE_URL`, `INCIDENT_LENS_API_KEY` and `INCIDENT_LENS_MODEL`; credentials are never exported.
 Latency includes graph, tools and embedding, so local mock timing cannot predict
 real provider savings. Report equality checks deterministic output consistency,
 not semantic correctness of every claim.

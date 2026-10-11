@@ -9,9 +9,10 @@ ASSIGNMENT -> FINDING / EVIDENCE REF -> REVIEW -> DECISION.
 InvestigationTask carries role, permitted tool declarations, filters, reason
 and expected discriminator. Finding carries runtime-stamped run/incident/task
 identity and evidence IDs. Worker results cannot directly publish shared state.
-The future MergeNode checks tasks, actual role/run queries and evidence origin
-before publishing. P0 state validation checks IDs, provenance and references;
-it does not prove semantic support or an actual query occurred.
+The implemented MergeNode validates the complete batch, tasks, actual role/run
+queries and evidence origin before publication. Schema validation checks IDs,
+provenance and references; the runtime ledger supplies actual-query proof.
+Neither layer alone proves semantic support.
 
 | Role | Executable tool allowlist |
 | --- | --- |
