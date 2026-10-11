@@ -23,13 +23,15 @@ def score_completed(state, oracle):
     if not isinstance(identifiable, bool):
         raise ValueError("oracle identifiability must be boolean")
     root = report.get("root_cause")
+    runtime_failure = any(event.get("event_type") == "STOP" for event in state.get("events", []))
     correct = bool(
-        report["status"] == "RESOLVED"
+        not runtime_failure
+        and report["status"] == "RESOLVED"
         and root
         and root["culprit_service"] == oracle["culprit_service"]
         and root["failure_mode"] == oracle["failure_mode"]
     )
-    abstained = report["status"] == "INCONCLUSIVE" and root is None
+    abstained = not runtime_failure and report["status"] == "INCONCLUSIVE" and root is None
     citations = report_citations(report)
     index = state.get("evidence_index", {})
     observed = {
@@ -49,6 +51,7 @@ def score_completed(state, oracle):
     misleading = bool(oracle.get("misleading_evidence_ids"))
     return dict(
         identifiable=identifiable,
+        runtime_failure=runtime_failure,
         root_cause_correct=correct if identifiable else None,
         correct_abstention=abstained if not identifiable else None,
         misleading_case=misleading,
@@ -90,6 +93,7 @@ def aggregate(rows):
                 split=group[0]["split"],
                 runs=len(group),
                 error_runs=sum(r["status"] == "ERROR" for r in group),
+                runtime_failure_runs=sum(bool(r.get("runtime_failure", False)) for r in group),
                 resolved_runs=sum(r["status"] == "RESOLVED" for r in group),
                 inconclusive_runs=sum(r["status"] == "INCONCLUSIVE" for r in group),
                 root_cause_correct=accuracy_n,
