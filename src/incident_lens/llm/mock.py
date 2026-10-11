@@ -390,6 +390,13 @@ class MockProvider(LLMProvider):
                     )
                 ]
             )
+            if change_id:
+                calls.append(
+                    dict(
+                        tool_name="query_changes",
+                        args=dict(service="backend", start_ts=start, end_ts=end),
+                    )
+                )
         else:
             raise ProviderError("MOCK_ROLE_UNSUPPORTED")
         return dict(calls=calls)
@@ -402,6 +409,20 @@ class MockProvider(LLMProvider):
             if category:
                 service, mode, decisive = category
                 groups.setdefault((service, mode), []).append(r["evidence_id"])
+        pool_changes = {
+            r.get("metadata", {}).get("change_id")
+            for r in records
+            if r["source_type"] == "configs"
+            and classify(r)
+            and classify(r)[1] == "backend_pool_config_regression"
+        }
+        if pool_changes:
+            groups.setdefault(("backend", "backend_pool_config_regression"), []).extend(
+                r["evidence_id"]
+                for r in records
+                if r["source_type"] == "changes"
+                and r.get("metadata", {}).get("change_id") in pool_changes
+            )
         mechanisms = {
             "backend_pool_config_regression": [
                 "Reduced backend pool capacity causes local acquisition contention",
