@@ -74,7 +74,37 @@ Claim Rate require human annotation. The exported review bundle remains
 Canvas submission and a learned-embedding experiment are not established by code
 generation or synthetic Mock tests.
 
-Final frozen code checks: 214 passed, one Windows symlink-privilege skip;
+Final implementation and analysis checks: 216 passed, one Windows symlink-privilege skip;
 Ruff lint/format and pip check pass. Independent QA accepted current implementation
 after 55 focused tests and in-memory failure reproductions. The skipped symlink
 test is supplemented by an actual passing Windows junction denial test.
+
+## Completed formal dev evidence
+
+All 40 runs completed; independent QA revalidated every state, score, CSV,
+aggregate and measured usage field. Four variants have identical initial public
+input and stored scoring oracle per case, one frozen configuration, no cache
+events, and source digest `37d91b6bb3bd4a2c4f7c3304a05ce096a26b4888c07a1ed3acef007a0f50ce83`.
+There were no outer execution/evaluation errors; runtime failures are separate.
+
+| Variant | Correct roots | Correct abstention | Runtime failures |
+| --- | --- | --- | --- |
+| single | 0/9 | 0/1 | 10/10 |
+| fixed | 0/9 | 1/1 | 2/10 |
+| dynamic_no_verifier | 0/9 | 0/1 | 10/10 |
+| full | 0/9 | 0/1 | 10/10 |
+
+These measured results do not demonstrate usable root-cause accuracy or system
+superiority. Causes recorded include 18 Provider timeouts, five ID collisions,
+four invalid structured outputs, four request/wall-budget terminations, one
+unobserved citation and eight normal fixed-schedule abstentions.
+
+`results/acceptance/p5-real-dev-analysis` contains 40 coordination rows, 24 slices,
+32 error records, nine Review examples with seven exact follow-up request matches,
+and 40 human-review bundles. Matching requests describes recorded behavior; it
+does not prove a causal improvement from the Verifier. Ordinary coverage is zero.
+Token/billing totals remain unknown where requests have incomplete usage.
+
+The held-out 80-run experiment was started with the same frozen implementation
+and arguments. It is not accepted as complete until all 80 records and independent
+recomputation are confirmed.
