@@ -58,12 +58,12 @@ with oracle-labelled misleading evidence. Execution failures remain incorrect in
 their applicable denominator when the oracle is available; unreadable oracles are
 explicit evaluation errors and cannot be scored.
 
-`runtime_failure` is recomputed from a `STOP` event in the completed state. The
+`runtime_failure` is recomputed from a `STOP` or `MODEL_FAILURE` event in the completed state. The
 graph emits STOP for runtime exceptions, failures and execution limits. Such runs
 keep their report status (normally INCONCLUSIVE) and applicable denominators, but
 receive no root-cause, misleading-accuracy or correct-abstention credit. A budget
 stop is therefore not credited as evidence-based abstention. Normal explicit
-ABSTAIN without STOP can earn correct-abstention credit. Aggregate
+ABSTAIN without a failure event can earn correct-abstention credit. Aggregate
 `runtime_failure_runs` counts these traces separately from outer `error_runs`;
 it does not count normal semantic abstention.
 

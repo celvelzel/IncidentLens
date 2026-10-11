@@ -13,8 +13,11 @@ Four packs omit crucial discriminating evidence. Variants share five causal
 templates; this dataset does not establish production generalization.
 
 Split IDs are fixed in `splits/`. Test membership is a holdout convention, not proof
-of blind evaluation. Generated test truth must not be used to tune prompts. No real
-model evaluation or independent test freeze is claimed.
+of blind evaluation. Generated test truth must not be used to tune prompts.
+Recorded real-model evaluation and source-freeze evidence live in
+`docs/acceptance/live-continuation.md`; this is not an independently collected
+production test set. Every generated pack currently includes decoy evidence:
+ordinary coverage is zero, and analysis reports that gap explicitly.
 
 Runtime reads only the five fixed filenames under each `public/` directory and
 `topology/services.yaml`. Private oracles are administrative/evaluation artifacts.

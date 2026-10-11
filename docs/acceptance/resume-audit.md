@@ -22,3 +22,26 @@ sessions were recovered instead of abandoning their work. Evaluation 8179bf9
 and cache 931827a were integrated as 5d03a98 and 7fdf08d. Review found further
 negative cases, all recorded and corrected in P7.md. Final suite: 165 passed,
 one skipped; live LLM work is explicitly pending project-local configuration.
+
+## Configured-provider continuation checkpoint
+
+The user's local Provider configuration was found and retained. Source patches
+and completed runs survived interruption. Evaluation worker 4f2d9d8 was integrated
+as 00d8c93 rather than recreated. Lost tool session IDs were not treated as proof
+of completion: retained dev CSV/JSONL confirmed 40 runs in each diagnostic batch.
+
+Independent QA reproduced and corrected hypothesis-only publication,
+worker-order-dependent status, and failure-as-correct-abstention defects.
+Core freeze is 198f12c; analysis-only 5aaf783 does not change investigation code.
+Frozen core suite: 214 passed, one skipped; fresh clone/wheel: seven commands passed.
+
+Formal dev uses results/acceptance/p5-real-dev, with a source digest in each raw
+record. Partial files are durable; partial completion is not a passed 40-run
+experiment. Held-out comparison must follow complete dev inspection using the
+same digest and parameters. On another interruption, inspect live processes and
+retained rows first; preserve completed and failed evidence. Final experiment
+completion evidence belongs in live-continuation.md.
+
+Automatic acceptance does not establish human semantic annotation, student
+contribution ownership, video or Canvas submission. Analysis explicitly reports
+ordinary coverage zero and pending annotation.
