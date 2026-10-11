@@ -10,6 +10,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from incident_lens.artifacts import load_replay, save_run
+from incident_lens.llm.config import provider_options
 from incident_lens.llm.mock import MockProvider
 from incident_lens.llm.provider import ProviderError, RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
@@ -151,6 +152,7 @@ def main():
                             os.getenv("INCIDENT_LENS_BASE_URL"),
                             os.getenv("INCIDENT_LENS_API_KEY"),
                             os.getenv("INCIDENT_LENS_MODEL"),
+                            **provider_options(),
                         )
                     )
                     cache = None

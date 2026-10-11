@@ -144,7 +144,9 @@ class InvestigationRun:
 
         details = {key: value for key, value in usage.items() if key != "source"}
         details["prompt_version"] = PROMPT_VERSION
-        details["model_parameters"] = {"temperature": self.provider.temperature}
+        details["model_parameters"] = getattr(
+            self.provider, "model_parameters", {"temperature": self.provider.temperature}
+        )
         self.event(state, "LLM_CALL", role=role, source=usage.get("source", "model"), **details)
 
     def exhausted(self, state):
@@ -198,6 +200,8 @@ class InvestigationRun:
                 self.update_usage(
                     state, usage, "single" if self.variant == "single" else "coordinator"
                 )
+                if decision.action == "INVESTIGATE" and len(decision.assignments) > 2:
+                    raise RuntimeError("Coordinator may assign at most two tasks per round")
             state.decisions.append(decision)
             self.event(
                 state,

@@ -84,6 +84,9 @@ class MeasuredProvider(LLMProvider):
         self.delegate = delegate
         self.model_id = delegate.model_id
         self.temperature = delegate.temperature
+        self.model_parameters = getattr(
+            delegate, "model_parameters", {"temperature": delegate.temperature}
+        )
         self.calls = []
         # The graph shallow-copies providers to isolate each run's budget guard.
         # Keep counters shared with that copy, just like the call records.
@@ -180,6 +183,7 @@ async def evaluate_split(
                 source=provider.source,
                 model_id=provider.model_id,
                 temperature=provider.temperature,
+                model_parameters=provider.model_parameters,
                 budget=budget.model_dump(mode="json"),
                 dataset_revision=revision,
                 cache_mode="off",
@@ -245,6 +249,7 @@ async def evaluate_split(
                 provider=provider_name,
                 model_id=provider.model_id,
                 temperature=provider.temperature,
+                model_parameters_json=json.dumps(provider.model_parameters, sort_keys=True),
                 cache_mode="off",
                 config_sha256=digest(config),
                 initial_public_sha256=digest(initial),

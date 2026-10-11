@@ -253,7 +253,7 @@ class MockProvider(LLMProvider):
         started = time.monotonic()
         p = json_payload(user_payload)
         name = output_model.__name__
-        if name == "CoordinatorDecision":
+        if name in ("CoordinatorDecision", "DynamicDecision"):
             result = self._decide(p)
         elif name == "InvestigatorPlan":
             result = self._plan(p)

@@ -25,6 +25,9 @@ def main(argv=None):
     parser.add_argument("--max-llm-calls", type=int, default=16)
     parser.add_argument("--max-wall-seconds", type=float, default=90)
     parser.add_argument("--max-tokens", type=int)
+    parser.add_argument("--response-format", choices=("json_schema", "json_object"))
+    parser.add_argument("--thinking", choices=("enabled", "disabled"))
+    parser.add_argument("--request-timeout", type=float)
     args = parser.parse_args(argv)
     load_dotenv()
     try:
@@ -36,14 +39,17 @@ def main(argv=None):
             max_tokens=args.max_tokens,
         )
         if args.provider == "real":
+            from incident_lens.llm.config import provider_options
+
+            options = provider_options(args.response_format, args.thinking, args.request_timeout)
             base_url = os.getenv("INCIDENT_LENS_BASE_URL", "")
             api_key = os.getenv("INCIDENT_LENS_API_KEY", "")
             model = os.getenv("INCIDENT_LENS_MODEL", "")
             # Configuration validation happens before dataset execution or any request.
-            RealChatProvider(base_url, api_key, model)
+            RealChatProvider(base_url, api_key, model, **options)
 
             def factory():
-                return RealChatProvider(base_url, api_key, model, temperature=0)
+                return RealChatProvider(base_url, api_key, model, temperature=0, **options)
         else:
             factory = MockProvider
         rows, totals = asyncio.run(

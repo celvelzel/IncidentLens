@@ -71,6 +71,9 @@ def main(argv=None):
     run.add_argument("--max-llm-calls", type=int)
     run.add_argument("--max-seconds", type=float)
     run.add_argument("--max-tokens", type=int)
+    run.add_argument("--response-format", choices=["json_schema", "json_object"])
+    run.add_argument("--thinking", choices=["enabled", "disabled"])
+    run.add_argument("--request-timeout", type=float)
     replay = sub.add_parser("replay")
     replay.add_argument("--trace", type=Path, required=True)
     export = sub.add_parser("export-schemas")
@@ -117,6 +120,7 @@ def main(argv=None):
         from dotenv import load_dotenv
 
         from incident_lens.artifacts import save_run
+        from incident_lens.llm.config import provider_options
         from incident_lens.llm.mock import MockProvider
         from incident_lens.llm.provider import ProviderError, RealChatProvider
         from incident_lens.orchestration.graph import run_investigation
@@ -158,6 +162,8 @@ def main(argv=None):
                     os.getenv("INCIDENT_LENS_BASE_URL"),
                     os.getenv("INCIDENT_LENS_API_KEY"),
                     os.getenv("INCIDENT_LENS_MODEL"),
+                    structured_repair_retries=config.get("structured_repair_retries", 1),
+                    **provider_options(args.response_format, args.thinking, args.request_timeout),
                 )
             )
             cache = None

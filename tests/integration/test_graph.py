@@ -63,6 +63,24 @@ async def test_no_verifier_replans_from_safe_shared_catalog():
     assert state.decisions[1].assignments[0].role == "changes"
 
 
+async def test_dynamic_dispatch_rejects_more_than_two_assignments():
+    from incident_lens.schemas import CoordinatorDecision
+
+    class Oversized(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if issubclass(args[-1], CoordinatorDecision) and output.action == "INVESTIGATE":
+                output.assignments.append(
+                    output.assignments[0].model_copy(update={"task_id": "third"})
+                )
+            return output, usage
+
+    state = await run_investigation("incident_001", Oversized())
+    assert state.report.status == "INCONCLUSIVE"
+    assert "at most two" in state.report.stop_reason
+    assert state.tool_calls_used == 0 and state.llm_calls_used == 1
+
+
 @pytest.mark.parametrize(
     "budget",
     [

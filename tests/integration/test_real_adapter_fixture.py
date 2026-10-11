@@ -4,7 +4,7 @@ import json
 
 import httpx
 
-from incident_lens.agents.service import AnalysisOutput, InvestigatorPlan
+from incident_lens.agents.service import AnalysisOutput, DynamicDecision, InvestigatorPlan
 from incident_lens.llm.mock import MockProvider
 from incident_lens.llm.provider import RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
@@ -13,7 +13,8 @@ from incident_lens.schemas import CoordinatorDecision, Review
 
 async def test_real_adapter_full_graph_with_structured_http_fixture():
     outputs = {
-        m.__name__: m for m in (AnalysisOutput, InvestigatorPlan, CoordinatorDecision, Review)
+        m.__name__: m
+        for m in (AnalysisOutput, InvestigatorPlan, CoordinatorDecision, DynamicDecision, Review)
     }
     captured = []
 

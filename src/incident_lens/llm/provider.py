@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import math
 import time
 from abc import ABC, abstractmethod
 
@@ -40,15 +41,47 @@ def json_payload(value):
 
 
 class RealChatProvider(LLMProvider):
-    def __init__(self, endpoint, api_key, model, temperature=0.0, timeout=30.0, client=None):
+    def __init__(
+        self,
+        endpoint,
+        api_key,
+        model,
+        temperature=0.0,
+        timeout=30.0,
+        client=None,
+        structured_repair_retries=1,
+        response_format_mode="json_schema",
+        thinking=None,
+    ):
         if not endpoint or not api_key or not model:
             raise ProviderError("PROVIDER_CONFIGURATION_REQUIRED")
+        if type(structured_repair_retries) is not int or structured_repair_retries not in (0, 1):
+            raise ValueError("structured_repair_retries must be zero or one")
+        if response_format_mode not in ("json_schema", "json_object"):
+            raise ValueError("Unsupported response format")
+        if thinking not in (None, "enabled", "disabled"):
+            raise ValueError("Unsupported thinking setting")
+        if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0:
+            raise ValueError("Request timeout must be positive and finite")
         self.endpoint = endpoint.rstrip("/")
         self._api_key = api_key
         self.model_id = model
         self.temperature = temperature
         self.timeout = timeout
         self._client = client
+        self.structured_repair_retries = structured_repair_retries
+        self.response_format_mode = response_format_mode
+        self.thinking = thinking
+
+    @property
+    def model_parameters(self):
+        return {
+            "temperature": self.temperature,
+            "response_format": self.response_format_mode,
+            "thinking": self.thinking,
+            "structured_repair_retries": self.structured_repair_retries,
+            "request_timeout_seconds": self.timeout,
+        }
 
     async def structured_call(self, role, system_prompt, user_payload, output_model):
         started = time.monotonic()
@@ -63,7 +96,12 @@ class RealChatProvider(LLMProvider):
             tokens_complete=True,
         )
         messages = [
-            {"role": "system", "content": system_prompt},
+            {
+                "role": "system",
+                "content": system_prompt + "\nReturn a NEW output object, not the input state. "
+                "The required output JSON Schema is:\n"
+                + json.dumps(output_model.model_json_schema()),
+            },
             {"role": "user", "content": json.dumps(json_payload(user_payload))},
         ]
         body = dict(
@@ -79,11 +117,15 @@ class RealChatProvider(LLMProvider):
                 },
             },
         )
+        if self.response_format_mode == "json_object":
+            body["response_format"] = {"type": "json_object"}
+        if self.thinking is not None:
+            body["thinking"] = {"type": self.thinking}
         client = self._client or httpx.AsyncClient(timeout=self.timeout)
         unknown_tokens = set()
         request_pending = False
         try:
-            for attempt in range(2):
+            for attempt in range(self.structured_repair_retries + 1):
                 if self.request_guard is not None:
                     try:
                         self.request_guard()
@@ -145,7 +187,7 @@ class RealChatProvider(LLMProvider):
                             usage[key] = None
                             unknown_tokens.add(key)
                         request_pending = False
-                    if attempt:
+                    if attempt >= self.structured_repair_retries:
                         raise ProviderError("STRUCTURED_OUTPUT_INVALID", usage) from None
                     messages.append(
                         {

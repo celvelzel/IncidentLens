@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 from incident_lens.artifacts import save_run
 from incident_lens.cache import CachePolicy, SemanticCacheAdapter, SentenceTransformerBackend
+from incident_lens.llm.config import provider_options
 from incident_lens.llm.mock import MockProvider
 from incident_lens.llm.provider import ProviderError, RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
@@ -59,6 +60,7 @@ async def experiment(args):
             os.getenv("INCIDENT_LENS_BASE_URL"),
             os.getenv("INCIDENT_LENS_API_KEY"),
             os.getenv("INCIDENT_LENS_MODEL"),
+            **provider_options(),
         )
     args.out.mkdir(parents=True, exist_ok=True)
     embedder = SentenceTransformerBackend(args.embedding_model) if args.embedding_model else None
