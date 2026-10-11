@@ -8,6 +8,7 @@ import json
 import re
 import stat
 import time
+from contextvars import ContextVar
 from pathlib import Path
 
 from incident_lens.agents.service import PROMPT_VERSION
@@ -94,6 +95,7 @@ class MeasuredProvider(LLMProvider):
         # The graph shallow-copies providers to isolate each run's budget guard.
         # Keep counters shared with that copy, just like the call records.
         self._measurement = {"actual_requests": 0}
+        self._call_requests = ContextVar("measured_call_requests", default=0)
         self.source = "mock" if isinstance(delegate, MockProvider) else "model"
 
     @property
@@ -105,10 +107,11 @@ class MeasuredProvider(LLMProvider):
             if self.request_guard is not None:
                 self.request_guard()
             self._measurement["actual_requests"] += 1
+            self._call_requests.set(self._call_requests.get() + 1)
 
         self.delegate.request_guard = guard
         self.delegate.token_observer = self.token_observer
-        before = self.actual_requests
+        token = self._call_requests.set(0)
         try:
             result, usage = await self.delegate.structured_call(
                 role, system_prompt, user_payload, output_model
@@ -117,9 +120,11 @@ class MeasuredProvider(LLMProvider):
             return result, usage
         except BaseException as exc:
             usage = dict(getattr(exc, "usage", {}))
-            usage.setdefault("llm_calls", self.actual_requests - before)
+            usage.setdefault("llm_calls", self._call_requests.get())
             self.calls.append(dict(usage=usage, failed=True))
             raise
+        finally:
+            self._call_requests.reset(token)
 
 
 def usage_metrics(provider, state):

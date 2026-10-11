@@ -112,3 +112,32 @@ def test_cli_invalid_jobs_before_dotenv(tmp_path):
     with pytest.raises(SystemExit) as exc:
         cli.main(["--out", str(tmp_path), "--jobs", "5"])
     assert exc.value.code == 2
+
+
+@pytest.mark.asyncio
+async def test_cancelled_parallel_calls_count_only_their_own_requests():
+    class ConcurrentDelegate:
+        model_id = "fixture"
+        temperature = 0
+
+        async def structured_call(self, role, *args):
+            self.request_guard()
+            await asyncio.sleep(0)
+            if role == "repair":
+                self.request_guard()
+            await asyncio.Event().wait()
+
+    measured = runner.MeasuredProvider(ConcurrentDelegate())
+    tasks = [
+        asyncio.create_task(measured.structured_call(role, "", {}, None))
+        for role in ("one", "two", "repair")
+    ]
+    while measured.actual_requests < 4:
+        await asyncio.sleep(0)
+    for task in tasks:
+        task.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
+    assert sorted(call["usage"]["llm_calls"] for call in measured.calls) == [1, 1, 2]
+    assert sum(call["usage"]["llm_calls"] for call in measured.calls) == 4
+    assert all(call["failed"] for call in measured.calls)
+    assert measured._call_requests.get() == 0
