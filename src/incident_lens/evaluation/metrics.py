@@ -23,7 +23,9 @@ def score_completed(state, oracle):
     if not isinstance(identifiable, bool):
         raise ValueError("oracle identifiability must be boolean")
     root = report.get("root_cause")
-    runtime_failure = any(event.get("event_type") == "STOP" for event in state.get("events", []))
+    runtime_failure = any(
+        event.get("event_type") in {"STOP", "MODEL_FAILURE"} for event in state.get("events", [])
+    )
     correct = bool(
         not runtime_failure
         and report["status"] == "RESOLVED"

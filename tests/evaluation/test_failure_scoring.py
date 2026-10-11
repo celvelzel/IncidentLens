@@ -73,3 +73,26 @@ def test_resolved_matching_root_with_stop_receives_no_credit():
     assert score["runtime_failure"] is True
     assert score["root_cause_correct"] is False
     assert score["misleading_correct"] is False
+
+
+def test_historical_model_failure_without_stop_receives_no_abstention_credit():
+    score = score_completed(completed([{"event_type": "MODEL_FAILURE"}]), oracle(False))
+    assert score["runtime_failure"] is True and score["correct_abstention"] is False
+
+
+async def test_verifier_timeout_emits_stop_and_is_not_correct_abstention():
+    from incident_lens.llm import MockProvider, ProviderError
+    from incident_lens.orchestration.graph import run_investigation
+
+    class FailedReview(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "Review":
+                raise ProviderError("PROVIDER_TIMEOUT", usage)
+            return output, usage
+
+    state = await run_investigation("incident_006", FailedReview())
+    assert any(e.event_type == "STOP" and e.details.get("stage") == "verify" for e in state.events)
+    assert (
+        score_completed(state.model_dump(mode="json"), oracle(False))["correct_abstention"] is False
+    )

@@ -432,6 +432,13 @@ class InvestigationRun:
             return {"investigation": state, "route": "coordinate"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
+            self.event(
+                state,
+                "STOP",
+                message=state.stop_reason,
+                stage="verify",
+                error_type=type(exc).__name__,
+            )
             return {"investigation": state, "route": "report"}
 
     def finalize(self, value):
