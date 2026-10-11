@@ -1,0 +1,15 @@
+{
+  "services": {
+    "gateway": [
+      "backend"
+    ],
+    "backend": [
+      "postgres",
+      "redis",
+      "payment"
+    ],
+    "postgres": [],
+    "redis": [],
+    "payment": []
+  }
+}

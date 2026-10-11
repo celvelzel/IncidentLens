@@ -1,0 +1,13 @@
+{
+  "source": "deterministic synthetic coursework fixtures",
+  "generator_version": "1",
+  "counts": {
+    "seed": 6,
+    "dev": 10,
+    "test": 20
+  },
+  "limitations": [
+    "Generated variants share five causal templates; not independent production incidents.",
+    "Test IDs are held out by convention only; no blind real-model evaluation has been performed."
+  ]
+}

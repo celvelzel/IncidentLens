@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "cache_service_unavailable",
+  "culprit_service": "redis",
+  "failure_mode": "redis_unavailable",
+  "decisive_evidence_ids": [
+    "incident_033-L001",
+    "incident_033-M009",
+    "incident_033-D001"
+  ],
+  "misleading_evidence_ids": [
+    "incident_033-C002",
+    "incident_033-L004"
+  ],
+  "causal_chain": [
+    "Redis becomes unavailable after cache host maintenance",
+    "Backend synchronous fallbacks increase request work",
+    "Latency and gateway errors increase"
+  ],
+  "valid_alternatives": [],
+  "is_identifiable": true,
+  "split": "test",
+  "generator_seed": 17033
+}

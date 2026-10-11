@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "external_payment_request_timeout",
+  "culprit_service": "payment",
+  "failure_mode": "payment_external_timeout",
+  "decisive_evidence_ids": [
+    "incident_029-L001",
+    "incident_029-M009",
+    "incident_029-D001"
+  ],
+  "misleading_evidence_ids": [
+    "incident_029-C002",
+    "incident_029-L004"
+  ],
+  "causal_chain": [
+    "External payment requests exceed client deadline",
+    "Checkout requests fail and payment circuit opens",
+    "Gateway surfaces backend checkout errors"
+  ],
+  "valid_alternatives": [],
+  "is_identifiable": true,
+  "split": "test",
+  "generator_seed": 17029
+}

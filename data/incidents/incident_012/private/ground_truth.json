@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "database_connection_capacity_exhaustion",
+  "culprit_service": "postgres",
+  "failure_mode": "postgres_connection_exhaustion",
+  "decisive_evidence_ids": [
+    "incident_012-L001",
+    "incident_012-M009",
+    "incident_012-D001"
+  ],
+  "misleading_evidence_ids": [
+    "incident_012-C002",
+    "incident_012-L004"
+  ],
+  "causal_chain": [
+    "Postgres connection count reaches server capacity",
+    "New database sessions are rejected",
+    "Backend database requests fail and gateway returns errors"
+  ],
+  "valid_alternatives": [],
+  "is_identifiable": true,
+  "split": "dev",
+  "generator_seed": 17012
+}

@@ -1,0 +1,17 @@
+{
+  "incident_id": "incident_019",
+  "title": "Service incident 019",
+  "started_at": "2026-10-19T09:03:58+00:00",
+  "observed_symptoms": [
+    "API 500 responses increased",
+    "Backend request latency elevated",
+    "Gateway retries increased"
+  ],
+  "services": [
+    "gateway",
+    "backend",
+    "postgres",
+    "redis",
+    "payment"
+  ]
+}
