@@ -123,8 +123,43 @@ def test_export_preserves_input_and_rejects_existing_output(tmp_path):
         "coordination.csv",
         "mechanism-slices.csv",
         "citation-review.json",
+        "coverage.json",
+        "followup_examples.json",
     }
     with pytest.raises(FileExistsError):
         analysis.export(source, out)
     with pytest.raises(ValueError, match="separate"):
         analysis.export(source, source.parent)
+
+
+def test_followup_matches_stable_task_and_reports_zero_ordinary():
+    item = record()
+    events = item["state"]["events"]
+    events[1]["event_id"] = "review_1"
+    events[2]["event_id"] = "decision_2"
+    request = dict(
+        task_id="old",
+        role="metrics",
+        question="check CPU",
+        filters={"service": "api"},
+        expected_discriminator="CPU spike",
+    )
+    events[1]["details"]["review"]["requested_checks"] = [request]
+    assignment = dict(request, task_id="fresh")
+    events[2]["details"]["decision"]["assignments"] = [assignment]
+    _, _, bundle = analysis.analyze([item])
+    assert bundle["coverage"] == dict(
+        mechanisms={"external_timeout": 1}, ordinary=0, misleading=1, complete=1, missing=0
+    )
+    example = bundle["followup_examples"]["examples"][0]
+    assert example["review_event_id"] == "review_1"
+    assert example["next_investigate_event_id"] == "decision_2"
+    assert example["matched_checks"] == [request]
+    assert bundle["followup_examples"]["reviews_with_matched_checks"] == 1
+    final_review = bundle["followup_examples"]["examples"][1]
+    assert final_review["next_investigate_event_id"] is None
+    assert final_review["next_assignments"] == final_review["matched_checks"] == []
+    assignment["question"] = "unrelated queue size"
+    _, _, bundle = analysis.analyze([item])
+    assert bundle["followup_examples"]["examples"][0]["matched_checks"] == []
+    assert bundle["followup_examples"]["reviews_with_matched_checks"] == 0

@@ -34,6 +34,24 @@ separates complete/missing causal evidence. Empty groups are omitted. Compare ma
 incident IDs across variants using coordination rows and retain original traces;
 small synthetic samples cannot establish statistical significance.
 
+`coverage.json` records observed failure-mode counts and explicit ordinary,
+misleading, complete and missing counts, including zero. Counts are runs across
+variants, not unique incidents. An all-misleading fixture therefore reports
+ordinary = 0; it provides no ordinary-case performance evidence. Unobserved
+mechanisms have no invented cases or rates; the mechanism map contains observed
+values only. Undefined groups are represented by coverage counts, not fabricated
+slice rows.
+
+`followup_examples.json` links each REVIEW to the next INVESTIGATE DECISION,
+including event IDs (null if absent in a legacy trace), event indexes, verdict,
+requested checks and assignments. A check matches only when full stable task
+contents match after removing `task_id`, which may change on assignment. Role,
+question, filters and expected discriminator therefore remain part of the match;
+no fuzzy semantic interpretation is invented. Unrelated assignments have empty
+matched checks; reviews without later investigation remain explicit examples.
+Counts mean “matches requested checks” and describe trace correspondence, not
+proof that a review caused the next action or improved accuracy.
+
 `citation-review.json` labels synthetic incident traces and no human annotation.
 It includes report root claims, causal chains, rejected hypotheses, unresolved claims
 and support IDs. Cited excerpts and source paths are copied only from matching
