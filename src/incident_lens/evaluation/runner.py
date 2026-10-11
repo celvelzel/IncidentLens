@@ -1,5 +1,7 @@
 """Execute comparable runs; private oracles enter only after execution ends."""
 
+import asyncio
+import copy
 import csv
 import hashlib
 import json
@@ -130,29 +132,37 @@ def usage_metrics(provider, state):
         e["event_type"] == "TOOL_CALL" and e.get("details", {}).get("result", {}).get("ok") is False
         for e in state.get("events", [])
     )
+    provider_failures = sum(c["failed"] for c in provider.calls)
+    model_failures = sum(e["event_type"] == "MODEL_FAILURE" for e in state.get("events", []))
+    failed_model_calls = max(provider_failures, model_failures)
     return dict(
         llm_requests=provider.actual_requests,
         prompt_tokens=token_sum("prompt_tokens"),
         completion_tokens=token_sum("completion_tokens"),
         total_tokens=token_sum("total_tokens"),
         cost_usd=None,
-        failed_calls=sum(c["failed"] for c in provider.calls) + failed_tools,
-        failed_model_calls=sum(c["failed"] for c in provider.calls),
+        failed_calls=failed_model_calls + failed_tools,
+        provider_failures=provider_failures,
+        failed_model_calls=failed_model_calls,
         failed_tool_calls=failed_tools,
     )
 
 
 def write_csv(path, rows):
     fields = list(dict.fromkeys(key for row in rows for key in row))
-    with path.open("w", encoding="utf-8", newline="") as stream:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
+    temporary.replace(path)
 
 
 async def evaluate_split(
-    data_root, split, variants, provider_factory, out, budget=None, provider_name="mock"
+    data_root, split, variants, provider_factory, out, budget=None, provider_name="mock", jobs=1
 ):
+    if type(jobs) is not int or not 1 <= jobs <= 4:
+        raise ValueError("jobs must be an integer from 1 to 4")
     if provider_name not in ("mock", "real"):
         raise ValueError("provider must be mock or real")
     variants = tuple(variants)
@@ -170,128 +180,166 @@ async def evaluate_split(
     out.mkdir(parents=True, exist_ok=True)
     rows, raw = [], []
     reference_config = None
-    for incident_id in ids:
+    semaphore = asyncio.Semaphore(jobs)
+    delegates = []
+    initial_hashes = {}
+
+    def run_key(item):
+        return item["incident_id"], item["variant"]
+
+    async def execute(incident_id, variant):
+        async with semaphore:
+            await execute_locked(incident_id, variant)
+
+    async def execute_locked(incident_id, variant):
+        nonlocal reference_config
+        public_provider = EvidenceProvider(data_root)
         initial = public_provider.load_case(incident_id).model_dump(mode="json")
-        for variant in variants:
-            if public_provider.dataset_revision != revision:
-                raise ValueError("public dataset changed during evaluation")
-            provider = MeasuredProvider(provider_factory())
-            if (provider_name == "mock") != (provider.source == "mock"):
-                raise ValueError("requested provider does not match actual provider")
-            config = dict(
-                provider=provider_name,
-                source=provider.source,
-                model_id=provider.model_id,
-                temperature=provider.temperature,
-                model_parameters=provider.model_parameters,
-                budget=budget.model_dump(mode="json"),
-                dataset_revision=revision,
-                cache_mode="off",
-                semantic_cache_attached=False,
-            )
-            if reference_config is None:
-                reference_config = config
-            elif config != reference_config:
-                raise ValueError("provider or budget configuration changed between variants")
-            started = time.monotonic()
-            execution_error = None
-            try:
-                # None is explicit even if CACHE_MODE or historical SQLite files exist.
-                completed = await run_investigation(
-                    incident_id,
-                    provider,
-                    data_root=data_root,
-                    budget=budget.model_copy(deep=True),
-                    variant=variant,
-                    cache=None,
-                )
-                state = completed.model_dump(mode="json")
-                if state.get("report") is None:
-                    raise ValueError("run returned no report")
-            except Exception as exc:
-                execution_error = type(exc).__name__
-                state = dict(
-                    incident_id=incident_id,
-                    evidence_index={},
-                    events=[],
-                    report=dict(status="ERROR", root_cause=None, stop_reason=execution_error),
-                    tool_calls_used=None,
-                )
-            elapsed = (time.monotonic() - started) * 1000
-            if public_provider.dataset_revision != revision:
-                raise ValueError("public dataset changed during execution")
-            # Private truth cannot enter graph construction, prompts or tool dispatch.
-            try:
-                oracle = load_oracle_after_run(data_root, incident_id, state)
-                scores = score_completed(state, oracle)
-                evaluation_error = None
-            except (OSError, ValueError, KeyError, TypeError) as exc:
-                oracle = None
-                evaluation_error = type(exc).__name__
-                scores = dict(
-                    identifiable=None,
-                    root_cause_correct=None,
-                    correct_abstention=None,
-                    misleading_case=None,
-                    misleading_correct=None,
-                    citation_count=0,
-                    valid_citation_count=0,
-                    citation_existence_validity=None,
-                    unsupported_claim_rate=None,
-                    semantic_review_status="unreviewed",
-                )
-            root = state["report"].get("root_cause")
-            row = dict(
-                incident_id=incident_id,
+        initial_hash = digest(initial)
+        if initial_hashes.setdefault(incident_id, initial_hash) != initial_hash:
+            raise ValueError("initial public input changed between variants")
+        if public_provider.dataset_revision != revision:
+            raise ValueError("public dataset changed during evaluation")
+        delegate = provider_factory()
+        if any(delegate is previous for previous in delegates):
+            raise ValueError("provider factory must create an independent provider per run")
+        delegates.append(delegate)
+        provider = MeasuredProvider(delegate)
+        if (provider_name == "mock") != (provider.source == "mock"):
+            raise ValueError("requested provider does not match actual provider")
+        config = dict(
+            provider=provider_name,
+            jobs=jobs,
+            source=provider.source,
+            model_id=provider.model_id,
+            temperature=provider.temperature,
+            model_parameters=copy.deepcopy(provider.model_parameters),
+            budget=budget.model_dump(mode="json"),
+            dataset_revision=revision,
+            cache_mode="off",
+            semantic_cache_attached=False,
+        )
+        if reference_config is None:
+            reference_config = copy.deepcopy(config)
+        elif config != reference_config:
+            raise ValueError("provider or budget configuration changed between variants")
+        started = time.monotonic()
+        execution_error = None
+        try:
+            # None is explicit even if CACHE_MODE or historical SQLite files exist.
+            completed = await run_investigation(
+                incident_id,
+                provider,
+                data_root=data_root,
+                budget=budget.model_copy(deep=True),
                 variant=variant,
-                split=split,
-                source=provider.source,
-                provider=provider_name,
-                model_id=provider.model_id,
-                temperature=provider.temperature,
-                model_parameters_json=json.dumps(provider.model_parameters, sort_keys=True),
-                cache_mode="off",
-                config_sha256=digest(config),
-                initial_public_sha256=digest(initial),
-                dataset_revision=revision,
-                status=state["report"]["status"],
-                predicted_service=root["culprit_service"] if root else None,
-                predicted_failure_mode=root["failure_mode"] if root else None,
-                tool_calls=state.get("tool_calls_used"),
-                latency_ms=elapsed,
-                stop_reason=state["report"].get("stop_reason"),
-                execution_error=execution_error,
-                evaluation_error=evaluation_error,
-                **usage_metrics(provider, state),
-                **scores,
+                cache=None,
             )
-            rows.append(row)
-            raw.append(
-                dict(
-                    metrics=row,
-                    fairness=config,
-                    initial_public=initial,
-                    state=state,
-                    measured_calls=provider.calls,
-                    oracle_scoring_fields={
-                        k: oracle.get(k)
-                        for k in (
-                            "is_identifiable",
-                            "culprit_service",
-                            "failure_mode",
-                            "misleading_evidence_ids",
-                        )
-                    }
-                    if oracle
-                    else None,
-                )
+            state = completed.model_dump(mode="json")
+            if state.get("report") is None:
+                raise ValueError("run returned no report")
+        except Exception as exc:
+            execution_error = type(exc).__name__
+            state = dict(
+                incident_id=incident_id,
+                evidence_index={},
+                events=[],
+                report=dict(status="ERROR", root_cause=None, stop_reason=execution_error),
+                tool_calls_used=None,
             )
-            # Persist every completed case so an interrupted paid run remains auditable.
-            with (out / "raw-runs.jsonl").open(
-                "a" if len(raw) > 1 else "w", encoding="utf-8"
-            ) as stream:
-                stream.write(json.dumps(raw[-1], ensure_ascii=False) + "\n")
-            write_csv(out / "case-level.csv", rows)
+        elapsed = (time.monotonic() - started) * 1000
+        if public_provider.dataset_revision != revision:
+            raise ValueError("public dataset changed during execution")
+        # Private truth cannot enter graph construction, prompts or tool dispatch.
+        try:
+            oracle = load_oracle_after_run(data_root, incident_id, state)
+            scores = score_completed(state, oracle)
+            evaluation_error = None
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            oracle = None
+            evaluation_error = type(exc).__name__
+            scores = dict(
+                identifiable=None,
+                root_cause_correct=None,
+                correct_abstention=None,
+                misleading_case=None,
+                misleading_correct=None,
+                citation_count=0,
+                valid_citation_count=0,
+                citation_existence_validity=None,
+                unsupported_claim_rate=None,
+                semantic_review_status="unreviewed",
+            )
+        root = state["report"].get("root_cause")
+        row = dict(
+            incident_id=incident_id,
+            variant=variant,
+            split=split,
+            jobs=jobs,
+            source=provider.source,
+            provider=provider_name,
+            model_id=provider.model_id,
+            temperature=provider.temperature,
+            model_parameters_json=json.dumps(provider.model_parameters, sort_keys=True),
+            cache_mode="off",
+            config_sha256=digest(config),
+            initial_public_sha256=digest(initial),
+            dataset_revision=revision,
+            status=state["report"]["status"],
+            predicted_service=root["culprit_service"] if root else None,
+            predicted_failure_mode=root["failure_mode"] if root else None,
+            tool_calls=state.get("tool_calls_used"),
+            latency_ms=elapsed,
+            stop_reason=state["report"].get("stop_reason"),
+            execution_error=execution_error,
+            evaluation_error=evaluation_error,
+            **usage_metrics(provider, state),
+            **scores,
+        )
+        rows.append(row)
+        raw.append(
+            dict(
+                metrics=row,
+                fairness=config,
+                initial_public=initial,
+                state=state,
+                measured_calls=provider.calls,
+                oracle_scoring_fields={
+                    k: oracle.get(k)
+                    for k in (
+                        "is_identifiable",
+                        "culprit_service",
+                        "failure_mode",
+                        "misleading_evidence_ids",
+                    )
+                }
+                if oracle
+                else None,
+            )
+        )
+        # Persist every completed case so an interrupted paid run remains auditable.
+        with (out / "raw-runs.jsonl").open(
+            "a" if len(raw) > 1 else "w", encoding="utf-8"
+        ) as stream:
+            stream.write(json.dumps(raw[-1], ensure_ascii=False) + "\n")
+        write_csv(out / "case-level.csv", sorted(rows, key=run_key))
+
+    tasks = [asyncio.create_task(execute(i, v)) for i in ids for v in variants]
+    try:
+        await asyncio.gather(*tasks)
+    finally:
+        for task in tasks:
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+    rows.sort(key=run_key)
+    raw.sort(key=lambda item: run_key(item["metrics"]))
+    sorted_raw = out / "raw-runs.jsonl.tmp"
+    with sorted_raw.open("w", encoding="utf-8") as stream:
+        for record in raw:
+            stream.write(json.dumps(record, ensure_ascii=False) + "\n")
+    sorted_raw.replace(out / "raw-runs.jsonl")
+    write_csv(out / "case-level.csv", rows)
     totals = aggregate(rows)
     write_csv(out / "aggregate.csv", totals)
     lines = [

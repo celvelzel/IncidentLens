@@ -18,6 +18,7 @@ def main(argv=None):
     parser.add_argument("--split", choices=("seed", "dev", "test"), default="seed")
     parser.add_argument("--variant", choices=("all", *VARIANTS), default="all")
     parser.add_argument("--provider", choices=("mock", "real"), default="mock")
+    parser.add_argument("--jobs", type=int, choices=range(1, 5), default=1)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--data-root", type=Path, default=Path("data"))
     parser.add_argument("--max-rounds", type=int, default=4)
@@ -29,7 +30,8 @@ def main(argv=None):
     parser.add_argument("--thinking", choices=("enabled", "disabled"))
     parser.add_argument("--request-timeout", type=float)
     args = parser.parse_args(argv)
-    load_dotenv()
+    if args.provider == "real":
+        load_dotenv()
     try:
         budget = Budget(
             max_rounds=args.max_rounds,
@@ -61,6 +63,7 @@ def main(argv=None):
                 args.out,
                 budget=budget,
                 provider_name=args.provider,
+                jobs=args.jobs,
             )
         )
     except (ProviderError, ValueError, OSError) as exc:
