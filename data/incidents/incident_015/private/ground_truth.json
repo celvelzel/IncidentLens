@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "backend_compute_and_worker_saturation",
+  "culprit_service": "backend",
+  "failure_mode": "backend_resource_saturation",
+  "decisive_evidence_ids": [
+    "incident_015-L001",
+    "incident_015-M009",
+    "incident_015-D001"
+  ],
+  "misleading_evidence_ids": [
+    "incident_015-C002",
+    "incident_015-L004"
+  ],
+  "causal_chain": [
+    "Worker capacity falls while incoming concurrency remains high",
+    "Backend CPU and worker queue saturate",
+    "Backend deadlines propagate to gateway errors"
+  ],
+  "valid_alternatives": [],
+  "is_identifiable": true,
+  "split": "dev",
+  "generator_seed": 17015
+}

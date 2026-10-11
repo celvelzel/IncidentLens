@@ -1,0 +1,13 @@
+evidence_id,service,observed_at,metric_name,value,unit,excerpt
+incident_018-M001,backend,2026-10-18T12:58:36+00:00,cpu_percent,22,%,cpu_percent=22 %
+incident_018-M002,gateway,2026-10-18T13:04:36+00:00,error_rate,0.38,fraction,error_rate=0.38 fraction
+incident_018-M003,postgres,2026-10-18T13:04:36+00:00,cpu_percent,19,%,cpu_percent=19 %
+incident_018-M004,postgres,2026-10-18T13:04:36+00:00,connections_active,27,connections,connections_active=27 connections
+incident_018-M005,postgres,2026-10-18T13:04:36+00:00,max_connections,100,connections,max_connections=100 connections
+incident_018-M006,backend,2026-10-18T13:04:36+00:00,cpu_percent,38,%,cpu_percent=38 %
+incident_018-M007,redis,2026-10-18T13:04:36+00:00,availability,0,fraction,availability=0 fraction
+incident_018-M008,payment,2026-10-18T13:04:36+00:00,p95_latency_ms,156,ms,p95_latency_ms=156 ms
+incident_018-M009,backend,2026-10-18T13:04:36+00:00,cache_fallback_rate,89,per_second,cache_fallback_rate=89 per_second
+incident_018-M010,postgres,2026-10-18T13:04:36+00:00,query_p95_ms,20,ms,query_p95_ms=20 ms
+incident_018-M011,backend,2026-10-18T13:04:36+00:00,inflight_requests,52,requests,inflight_requests=52 requests
+incident_018-M012,gateway,2026-10-18T12:58:36+00:00,request_rate,75,per_second,request_rate=75 per_second

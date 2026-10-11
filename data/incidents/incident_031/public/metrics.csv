@@ -1,0 +1,10 @@
+evidence_id,service,observed_at,metric_name,value,unit,excerpt
+incident_031-M001,backend,2026-10-31T19:58:14+00:00,cpu_percent,22,%,cpu_percent=22 %
+incident_031-M002,gateway,2026-10-31T20:04:14+00:00,error_rate,0.4,fraction,error_rate=0.4 fraction
+incident_031-M003,postgres,2026-10-31T20:04:14+00:00,cpu_percent,22,%,cpu_percent=22 %
+incident_031-M006,backend,2026-10-31T20:04:14+00:00,cpu_percent,38,%,cpu_percent=38 %
+incident_031-M007,redis,2026-10-31T20:04:14+00:00,availability,1,fraction,availability=1 fraction
+incident_031-M008,payment,2026-10-31T20:04:14+00:00,p95_latency_ms,178,ms,p95_latency_ms=178 ms
+incident_031-M010,postgres,2026-10-31T20:04:14+00:00,query_p95_ms,16,ms,query_p95_ms=16 ms
+incident_031-M011,backend,2026-10-31T20:04:14+00:00,inflight_requests,78,requests,inflight_requests=78 requests
+incident_031-M012,gateway,2026-10-31T19:58:14+00:00,request_rate,82,per_second,request_rate=82 per_second
