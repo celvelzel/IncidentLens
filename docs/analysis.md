@@ -26,6 +26,10 @@ Root accuracy is undefined for unidentifiable groups and abstention accuracy is
 undefined for identifiable groups; citation validity is undefined without citations.
 STOP failures remain in the relevant denominator.
 
+`errors.jsonl` preserves per-run stop reasons and staged STOP/MODEL_FAILURE events,
+plus outer execution/evaluation errors. Normal evidence-based abstentions are not
+classified as runtime errors. The source raw traces remain unchanged.
+
 The source design's F1–F5 are deployment/config regression, database connection
 exhaustion, Redis unavailability, external payment timeout and backend resource
 saturation. Slices preserve exact stored failure-mode values rather than guessing

@@ -200,6 +200,29 @@ def export(source, out):
         raise ValueError("input contains no completed runs")
     coordination, slices, reviews = analyze(records)
     out.mkdir(parents=True, exist_ok=False)
+    errors = []
+    for record in records:
+        metrics, state = record["metrics"], record["state"]
+        failure_events = [
+            event
+            for event in state.get("events", [])
+            if event.get("event_type") in {"STOP", "MODEL_FAILURE"}
+        ]
+        if failure_events or metrics.get("execution_error") or metrics.get("evaluation_error"):
+            errors.append(
+                dict(
+                    incident_id=state["incident_id"],
+                    run_id=state.get("run_id"),
+                    variant=metrics["variant"],
+                    stop_reason=state["report"].get("stop_reason"),
+                    execution_error=metrics.get("execution_error"),
+                    evaluation_error=metrics.get("evaluation_error"),
+                    failure_events=failure_events,
+                )
+            )
+    (out / "errors.jsonl").write_text(
+        "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in errors), encoding="utf-8"
+    )
     for name, rows in (("coordination.csv", coordination), ("mechanism-slices.csv", slices)):
         with (out / name).open("w", encoding="utf-8", newline="") as stream:
             writer = csv.DictWriter(stream, fieldnames=list(rows[0]))

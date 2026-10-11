@@ -163,3 +163,19 @@ def test_followup_matches_stable_task_and_reports_zero_ordinary():
     _, _, bundle = analysis.analyze([item])
     assert bundle["followup_examples"]["examples"][0]["matched_checks"] == []
     assert bundle["followup_examples"]["reviews_with_matched_checks"] == 0
+
+
+def test_export_preserves_runtime_failure_and_does_not_mark_normal_abstention(tmp_path):
+    failed = record()
+    failed["state"]["events"].append(
+        {"event_type": "STOP", "message": "TIMEOUT", "details": {"stage": "verify"}}
+    )
+    failed["state"]["report"]["stop_reason"] = "TIMEOUT"
+    source = tmp_path / "input" / "raw.jsonl"
+    source.parent.mkdir()
+    source.write_text(json.dumps(failed) + "\n" + json.dumps(record()) + "\n", encoding="utf-8")
+    out = tmp_path / "output"
+    analysis.export(source, out)
+    errors = [json.loads(line) for line in (out / "errors.jsonl").read_text().splitlines()]
+    assert len(errors) == 1 and errors[0]["stop_reason"] == "TIMEOUT"
+    assert errors[0]["failure_events"][0]["details"]["stage"] == "verify"
