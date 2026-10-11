@@ -1,0 +1,2018 @@
+{
+  "schema_version": "v1",
+  "provider": "real",
+  "variant": "full",
+  "cache_mode": "off",
+  "elapsed_ms": 866275.9322999918,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_001",
+    "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+    "public_summary": {
+      "incident_id": "incident_001",
+      "title": "Service incident 001",
+      "started_at": "2026-10-01T14:03:00Z",
+      "observed_symptoms": [
+        "API 500 responses increased",
+        "Backend request latency elevated"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 4,
+      "max_tool_calls": 12,
+      "max_llm_calls": 16,
+      "max_wall_seconds": 180.0,
+      "max_tokens": null
+    },
+    "round_index": 2,
+    "findings": [
+      {
+        "finding_id": "finding_logs_backend_errors_20261001",
+        "task_id": "logs_backend_errors_20261001",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "role": "logs",
+        "claim": "Backend logs show repeated DB connection acquire timeouts and 500 errors starting at 14:03 UTC, indicating database connection pool exhaustion.",
+        "evidence_ids": [
+          "incident_001-L001",
+          "incident_001-L002",
+          "incident_001-L022"
+        ],
+        "relation": "supports",
+        "confidence_qualifier": "supported",
+        "followup_question": "Are there corresponding Postgres logs showing connection limits or pool saturation?"
+      },
+      {
+        "finding_id": "finding_metrics_backend_latency_001",
+        "task_id": "metrics_backend_latency_20261001",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "role": "metrics",
+        "claim": "Backend latency and error rate metrics from 14:00 to 14:15 UTC are unavailable; no evidence was collected.",
+        "evidence_ids": [],
+        "relation": "neutral",
+        "confidence_qualifier": "unknown",
+        "followup_question": "Query metrics for backend service with metric_names=[] to discover available metrics, then query request_latency_seconds and error_rate."
+      },
+      {
+        "finding_id": "finding_logs_postgres_conn_errors_001",
+        "task_id": "logs_postgres_connection_errors",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "role": "logs",
+        "claim": "Postgres logs show no 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC",
+        "evidence_ids": [],
+        "relation": "neutral",
+        "confidence_qualifier": "unknown",
+        "followup_question": "Are there any Postgres logs at all in this window, or is the service not logging? Please check with broader filters (e.g., all severities, wider time range) to confirm absence."
+      },
+      {
+        "finding_id": "finding_metrics_postgres_connections_001",
+        "task_id": "metrics_postgres_connections",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "role": "metrics",
+        "claim": "Postgres active connections (22) are far below max_connections (100) at 14:04 UTC, indicating no connection pool exhaustion.",
+        "evidence_ids": [
+          "incident_001-M004",
+          "incident_001-M005"
+        ],
+        "relation": "refutes",
+        "confidence_qualifier": "supported",
+        "followup_question": "Are there any other Postgres metrics (e.g., connections_waiting, connection_errors) that might indicate pool pressure despite low active connections?"
+      }
+    ],
+    "evidence_index": {
+      "incident_001-L001": {
+        "evidence_id": "incident_001-L001",
+        "incident_id": "incident_001",
+        "source_type": "logs",
+        "service": "backend",
+        "observed_at": "2026-10-01T14:03:00Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+        "metadata": {
+          "severity": "ERROR",
+          "request_id": "req-1-01"
+        }
+      },
+      "incident_001-L002": {
+        "evidence_id": "incident_001-L002",
+        "incident_id": "incident_001",
+        "source_type": "logs",
+        "service": "backend",
+        "observed_at": "2026-10-01T14:03:12Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "database acquire failed; request returned 500",
+        "metadata": {
+          "severity": "ERROR"
+        }
+      },
+      "incident_001-L022": {
+        "evidence_id": "incident_001-L022",
+        "incident_id": "incident_001",
+        "source_type": "logs",
+        "service": "backend",
+        "observed_at": "2026-10-01T14:04:00Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+        "metadata": {
+          "severity": "ERROR",
+          "request_id": "noise-1-15"
+        }
+      },
+      "incident_001-M004": {
+        "evidence_id": "incident_001-M004",
+        "incident_id": "incident_001",
+        "source_type": "metrics",
+        "service": "postgres",
+        "observed_at": "2026-10-01T14:04:00Z",
+        "source_path": "public/metrics.csv",
+        "excerpt": "connections_active=22 connections",
+        "metadata": {
+          "metric_name": "connections_active",
+          "value": 22.0,
+          "unit": "connections"
+        }
+      },
+      "incident_001-M005": {
+        "evidence_id": "incident_001-M005",
+        "incident_id": "incident_001",
+        "source_type": "metrics",
+        "service": "postgres",
+        "observed_at": "2026-10-01T14:04:00Z",
+        "source_path": "public/metrics.csv",
+        "excerpt": "max_connections=100 connections",
+        "metadata": {
+          "metric_name": "max_connections",
+          "value": 100.0,
+          "unit": "connections"
+        }
+      }
+    },
+    "hypotheses": [
+      {
+        "hypothesis_id": "hyp_postgres_connection_exhaustion",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [
+          "incident_001-L001",
+          "incident_001-L002",
+          "incident_001-L022"
+        ],
+        "against_ids": [
+          "incident_001-M004",
+          "incident_001-M005"
+        ],
+        "predicted_observations": [
+          "Active connections should approach or plateau at max_connections during the incident window.",
+          "Connection wait or error metrics should increase."
+        ],
+        "status": "REJECTED",
+        "open_questions": [
+          "Are there other Postgres metrics indicating connection pressure not captured by active_connections?"
+        ]
+      },
+      {
+        "hypothesis_id": "hyp_backend_pool_config_regression",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_001-L001",
+          "incident_001-L022"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Recent deployment changed pool settings (e.g., max connections, timeout)",
+          "Backend logs show pool wait queue exceeded even when DB has capacity",
+          "Metrics show pool size lower than expected"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "Was there a recent configuration change to the connection pool?",
+          "What is the current pool size vs. historical baseline?"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "task_id": "logs_backend_errors_20261001",
+        "role": "logs",
+        "question": "What errors or warnings appear in backend logs around the incident start (14:00-14:10 UTC)?",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "service": "backend",
+          "start_ts": "2026-10-01T14:00:00Z",
+          "end_ts": "2026-10-01T14:10:00Z",
+          "severity": "ERROR",
+          "limit": 50
+        },
+        "reason": "Backend is the primary service showing latency and 500s; logs may reveal exception types or connection failures.",
+        "expected_discriminator": "Presence of specific error messages (e.g., DB connection refused, timeout, null pointer) that point to a subsystem."
+      },
+      {
+        "task_id": "metrics_backend_latency_20261001",
+        "role": "metrics",
+        "question": "What are the backend latency and error rate metrics from 14:00 to 14:15 UTC?",
+        "allowed_tools": [
+          "query_metrics"
+        ],
+        "filters": {
+          "service": "backend",
+          "start_ts": "2026-10-01T14:00:00Z",
+          "end_ts": "2026-10-01T14:15:00Z",
+          "metric_names": [
+            "request_latency_seconds",
+            "error_rate"
+          ]
+        },
+        "reason": "Quantify the spike in latency and 500s to correlate with other evidence.",
+        "expected_discriminator": "A sharp increase in latency and error rate starting at 14:03, possibly with a plateau or continuing trend."
+      },
+      {
+        "task_id": "logs_postgres_connection_errors",
+        "role": "logs",
+        "question": "Do Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC?",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "service": "postgres",
+          "start_ts": "2026-10-01T14:00:00Z",
+          "end_ts": "2026-10-01T14:10:00Z",
+          "severity": "ERROR",
+          "limit": 50
+        },
+        "reason": "To confirm connection exhaustion at the database level, which is a predicted observation of the hypothesis.",
+        "expected_discriminator": "Presence of Postgres errors indicating connection limit reached or too many clients."
+      },
+      {
+        "task_id": "metrics_postgres_connections",
+        "role": "metrics",
+        "question": "What are the Postgres connection pool metrics (e.g., max_connections, active_connections) from 14:00 to 14:15 UTC?",
+        "allowed_tools": [
+          "query_metrics"
+        ],
+        "filters": {
+          "service": "postgres",
+          "start_ts": "2026-10-01T14:00:00Z",
+          "end_ts": "2026-10-01T14:15:00Z",
+          "metric_names": [
+            "max_connections",
+            "active_connections"
+          ]
+        },
+        "reason": "To verify if the connection pool reached its maximum, providing quantitative evidence for exhaustion.",
+        "expected_discriminator": "Active connections reaching or plateauing at max_connections during the incident window."
+      }
+    ],
+    "reviews": [
+      {
+        "target_hypothesis_id": "hyp_postgres_connection_exhaustion",
+        "verdict": "insufficient",
+        "contradictions": [],
+        "requested_checks": [
+          {
+            "task_id": "logs_postgres_connection_errors",
+            "role": "logs",
+            "question": "Do Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC?",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {
+              "service": "postgres",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:10:00Z",
+              "severity": "ERROR",
+              "limit": 50
+            },
+            "reason": "To confirm connection exhaustion at the database level, which is a predicted observation of the hypothesis.",
+            "expected_discriminator": "Presence of Postgres errors indicating connection limit reached or too many clients."
+          },
+          {
+            "task_id": "metrics_postgres_connections",
+            "role": "metrics",
+            "question": "What are the Postgres connection pool metrics (e.g., max_connections, active_connections) from 14:00 to 14:15 UTC?",
+            "allowed_tools": [
+              "query_metrics"
+            ],
+            "filters": {
+              "service": "postgres",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:15:00Z",
+              "metric_names": [
+                "max_connections",
+                "active_connections"
+              ]
+            },
+            "reason": "To verify if the connection pool reached its maximum, providing quantitative evidence for exhaustion.",
+            "expected_discriminator": "Active connections reaching or plateauing at max_connections during the incident window."
+          },
+          {
+            "task_id": "changes_backend_pool_config",
+            "role": "changes",
+            "question": "Were there any recent configuration changes or deployments to the backend service that could have altered connection pool settings?",
+            "allowed_tools": [
+              "query_changes",
+              "get_config_diff"
+            ],
+            "filters": {
+              "service": "backend",
+              "start_ts": "2026-09-30T00:00:00Z",
+              "end_ts": "2026-10-01T14:10:00Z",
+              "change_type": "config"
+            },
+            "reason": "To rule out a backend pool configuration regression as an alternative cause, which would contradict the Postgres exhaustion hypothesis.",
+            "expected_discriminator": "A config change altering pool size or timeout settings around the incident time."
+          }
+        ],
+        "cited_evidence_ids": [
+          "incident_001-L001",
+          "incident_001-L002",
+          "incident_001-L022"
+        ],
+        "rationale": "The hypothesis is supported by backend log evidence showing DB connection acquire timeouts and 500 errors, but there is no independent evidence from Postgres logs or metrics confirming connection pool exhaustion. The metrics finding explicitly states no metrics were collected. Therefore, the evidence is insufficient to confirm the hypothesis."
+      },
+      {
+        "target_hypothesis_id": "hyp_postgres_connection_exhaustion",
+        "verdict": "conflicted",
+        "contradictions": [
+          "Postgres metrics show active connections (22) far below max_connections (100) at 14:04 UTC, directly contradicting the predicted observation of connection pool exhaustion.",
+          "Postgres logs show no connection limit errors, further contradicting the hypothesis."
+        ],
+        "requested_checks": [
+          {
+            "task_id": "changes_backend_pool_config",
+            "role": "changes",
+            "question": "Were there any recent configuration changes or deployments to the backend service that could have altered connection pool settings?",
+            "allowed_tools": [
+              "query_changes",
+              "get_config_diff"
+            ],
+            "filters": {
+              "service": "backend",
+              "start_ts": "2026-09-30T00:00:00Z",
+              "end_ts": "2026-10-01T14:10:00Z",
+              "change_type": "config"
+            },
+            "reason": "To rule out a backend pool configuration regression as an alternative cause, which would contradict the Postgres exhaustion hypothesis.",
+            "expected_discriminator": "A config change altering pool size or timeout settings around the incident time."
+          },
+          {
+            "task_id": "metrics_backend_pool_size",
+            "role": "metrics",
+            "question": "What is the backend connection pool size (e.g., pool_size, max_pool_size) from 14:00 to 14:15 UTC?",
+            "allowed_tools": [
+              "query_metrics"
+            ],
+            "filters": {
+              "service": "backend",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:15:00Z",
+              "metric_names": [
+                "pool_size",
+                "max_pool_size"
+              ]
+            },
+            "reason": "To verify if the backend pool size is lower than expected, which would support the backend pool config regression hypothesis.",
+            "expected_discriminator": "Pool size metrics showing a value lower than the historical baseline or configured maximum."
+          }
+        ],
+        "cited_evidence_ids": [
+          "incident_001-L001",
+          "incident_001-L002",
+          "incident_001-L022",
+          "incident_001-M004",
+          "incident_001-M005"
+        ],
+        "rationale": "The hypothesis is supported by backend logs showing DB connection acquire timeouts, but directly contradicted by Postgres metrics showing active connections (22) far below max_connections (100) and by the absence of Postgres connection limit errors. This indicates the connection pool exhaustion is not at the database level, but likely at the backend pool level. Further checks are needed to confirm a backend pool configuration regression."
+      }
+    ],
+    "decisions": [
+      {
+        "action": "INVESTIGATE",
+        "reason": "Initial investigation: incident started at 2026-10-01T14:03:00Z with API 500s and elevated latency. Need to gather evidence across logs, metrics, and changes to identify root cause. Prioritize checking backend logs for errors, backend latency metrics, and recent changes/deployments.",
+        "assignments": [
+          {
+            "task_id": "logs_backend_errors_20261001",
+            "role": "logs",
+            "question": "What errors or warnings appear in backend logs around the incident start (14:00-14:10 UTC)?",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {
+              "service": "backend",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:10:00Z",
+              "severity": "ERROR",
+              "limit": 50
+            },
+            "reason": "Backend is the primary service showing latency and 500s; logs may reveal exception types or connection failures.",
+            "expected_discriminator": "Presence of specific error messages (e.g., DB connection refused, timeout, null pointer) that point to a subsystem."
+          },
+          {
+            "task_id": "metrics_backend_latency_20261001",
+            "role": "metrics",
+            "question": "What are the backend latency and error rate metrics from 14:00 to 14:15 UTC?",
+            "allowed_tools": [
+              "query_metrics"
+            ],
+            "filters": {
+              "service": "backend",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:15:00Z",
+              "metric_names": [
+                "request_latency_seconds",
+                "error_rate"
+              ]
+            },
+            "reason": "Quantify the spike in latency and 500s to correlate with other evidence.",
+            "expected_discriminator": "A sharp increase in latency and error rate starting at 14:03, possibly with a plateau or continuing trend."
+          }
+        ],
+        "selected_hypothesis_id": null,
+        "stop_reason": null
+      },
+      {
+        "action": "INVESTIGATE",
+        "reason": "Round 1 findings: backend logs show DB connection acquire timeouts and 500s, but metrics for backend were unavailable. Need to verify Postgres connection exhaustion and rule out backend pool config regression. Prioritize Postgres logs and metrics checks from the review, plus a changes check for backend config.",
+        "assignments": [
+          {
+            "task_id": "logs_postgres_connection_errors",
+            "role": "logs",
+            "question": "Do Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC?",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {
+              "service": "postgres",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:10:00Z",
+              "severity": "ERROR",
+              "limit": 50
+            },
+            "reason": "To confirm connection exhaustion at the database level, which is a predicted observation of the hypothesis.",
+            "expected_discriminator": "Presence of Postgres errors indicating connection limit reached or too many clients."
+          },
+          {
+            "task_id": "metrics_postgres_connections",
+            "role": "metrics",
+            "question": "What are the Postgres connection pool metrics (e.g., max_connections, active_connections) from 14:00 to 14:15 UTC?",
+            "allowed_tools": [
+              "query_metrics"
+            ],
+            "filters": {
+              "service": "postgres",
+              "start_ts": "2026-10-01T14:00:00Z",
+              "end_ts": "2026-10-01T14:15:00Z",
+              "metric_names": [
+                "max_connections",
+                "active_connections"
+              ]
+            },
+            "reason": "To verify if the connection pool reached its maximum, providing quantitative evidence for exhaustion.",
+            "expected_discriminator": "Active connections reaching or plateauing at max_connections during the incident window."
+          }
+        ],
+        "selected_hypothesis_id": null,
+        "stop_reason": null
+      }
+    ],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:09.269814Z",
+        "event_type": "LLM_CALL",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 2244,
+          "completion_tokens": 500,
+          "total_tokens": 2744,
+          "measured_total_tokens": 2744,
+          "tokens_complete": true,
+          "elapsed_ms": 14159.49800000817,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:09.269899Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Initial investigation: incident started at 2026-10-01T14:03:00Z with API 500s and elevated latency. Need to gather evidence across logs, metrics, and changes to identify root cause. Prioritize checking backend logs for errors, backend latency metrics, and recent changes/deployments.",
+        "details": {
+          "decision": {
+            "action": "INVESTIGATE",
+            "reason": "Initial investigation: incident started at 2026-10-01T14:03:00Z with API 500s and elevated latency. Need to gather evidence across logs, metrics, and changes to identify root cause. Prioritize checking backend logs for errors, backend latency metrics, and recent changes/deployments.",
+            "assignments": [
+              {
+                "task_id": "logs_backend_errors_20261001",
+                "role": "logs",
+                "question": "What errors or warnings appear in backend logs around the incident start (14:00-14:10 UTC)?",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {
+                  "service": "backend",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:10:00Z",
+                  "severity": "ERROR",
+                  "limit": 50
+                },
+                "reason": "Backend is the primary service showing latency and 500s; logs may reveal exception types or connection failures.",
+                "expected_discriminator": "Presence of specific error messages (e.g., DB connection refused, timeout, null pointer) that point to a subsystem."
+              },
+              {
+                "task_id": "metrics_backend_latency_20261001",
+                "role": "metrics",
+                "question": "What are the backend latency and error rate metrics from 14:00 to 14:15 UTC?",
+                "allowed_tools": [
+                  "query_metrics"
+                ],
+                "filters": {
+                  "service": "backend",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:15:00Z",
+                  "metric_names": [
+                    "request_latency_seconds",
+                    "error_rate"
+                  ]
+                },
+                "reason": "Quantify the spike in latency and 500s to correlate with other evidence.",
+                "expected_discriminator": "A sharp increase in latency and error rate starting at 14:03, possibly with a plateau or continuing trend."
+              }
+            ],
+            "selected_hypothesis_id": null,
+            "stop_reason": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:17.069161Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1039,
+          "completion_tokens": 70,
+          "total_tokens": 1109,
+          "measured_total_tokens": 1109,
+          "tokens_complete": true,
+          "elapsed_ms": 4841.416900002514,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:17.072147Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "backend",
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:15:00Z",
+            "metric_names": [
+              "request_latency_seconds",
+              "error_rate"
+            ]
+          },
+          "result": {
+            "call_id": "call-5201ea18725f431288cd7c0184638ce0",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 2.467199999955483,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "metrics_backend_latency_20261001"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-5",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:20.047568Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 952,
+          "completion_tokens": 95,
+          "total_tokens": 1047,
+          "measured_total_tokens": 1047,
+          "tokens_complete": true,
+          "elapsed_ms": 10772.42190000834,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-6",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:20.052201Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:10:00Z",
+            "service": "backend",
+            "severity": "ERROR",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-fd0d20d52f4c440ebe97600b133e0a84",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_001-L001",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "req-1-01"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L002",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:12Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "database acquire failed; request returned 500",
+                "metadata": {
+                  "severity": "ERROR"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L022",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "noise-1-15"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 4.166700004134327,
+            "record_count": 3,
+            "next_cursor": null
+          },
+          "task_id": "logs_backend_errors_20261001"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-7",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:25.756176Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1519,
+          "completion_tokens": 186,
+          "total_tokens": 1705,
+          "measured_total_tokens": 1705,
+          "tokens_complete": true,
+          "elapsed_ms": 8682.210899991333,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-8",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:28.848920Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1792,
+          "completion_tokens": 544,
+          "total_tokens": 2336,
+          "measured_total_tokens": 2336,
+          "tokens_complete": true,
+          "elapsed_ms": 8794.234999993932,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-9",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:28.851136Z",
+        "event_type": "MERGE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "findings": [
+            {
+              "finding_id": "finding_logs_backend_errors_20261001",
+              "task_id": "logs_backend_errors_20261001",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "logs",
+              "claim": "Backend logs show repeated DB connection acquire timeouts and 500 errors starting at 14:03 UTC, indicating database connection pool exhaustion.",
+              "evidence_ids": [
+                "incident_001-L001",
+                "incident_001-L002",
+                "incident_001-L022"
+              ],
+              "relation": "supports",
+              "confidence_qualifier": "supported",
+              "followup_question": "Are there corresponding Postgres logs showing connection limits or pool saturation?"
+            },
+            {
+              "finding_id": "finding_metrics_backend_latency_001",
+              "task_id": "metrics_backend_latency_20261001",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "metrics",
+              "claim": "Backend latency and error rate metrics from 14:00 to 14:15 UTC are unavailable; no evidence was collected.",
+              "evidence_ids": [],
+              "relation": "neutral",
+              "confidence_qualifier": "unknown",
+              "followup_question": "Query metrics for backend service with metric_names=[] to discover available metrics, then query request_latency_seconds and error_rate."
+            }
+          ],
+          "hypotheses": [
+            {
+              "hypothesis_id": "hyp_postgres_connection_exhaustion",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_connection_exhaustion",
+              "support_ids": [
+                "incident_001-L001",
+                "incident_001-L002",
+                "incident_001-L022"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors",
+                "Backend logs show connection acquire timeouts increasing in frequency",
+                "DB pool metrics show max connections reached"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "What is the configured max pool size and current connection count?",
+                "Are there long-running queries or leaked connections?"
+              ]
+            },
+            {
+              "hypothesis_id": "hyp_backend_pool_config_regression",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_001-L001",
+                "incident_001-L022"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Recent deployment changed pool settings (e.g., max connections, timeout)",
+                "Backend logs show pool wait queue exceeded even when DB has capacity",
+                "Metrics show pool size lower than expected"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Was there a recent configuration change to the connection pool?",
+                "What is the current pool size vs. historical baseline?"
+              ]
+            }
+          ]
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-10",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:28.852111Z",
+        "event_type": "TOOL_CALL",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "fetch_evidence_by_ids",
+          "result": {
+            "call_id": "call-3d8d3fa2b5dc4387a1669ddf59a8bb1a",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_001-L001",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "req-1-01"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L002",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:12Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "database acquire failed; request returned 500",
+                "metadata": {
+                  "severity": "ERROR"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L022",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "noise-1-15"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 0.13979998766444623,
+            "record_count": 3,
+            "next_cursor": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-11",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:38.765250Z",
+        "event_type": "LLM_CALL",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 3964,
+          "completion_tokens": 704,
+          "total_tokens": 4668,
+          "measured_total_tokens": 4668,
+          "tokens_complete": true,
+          "elapsed_ms": 9909.553200006485,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-12",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:38.765464Z",
+        "event_type": "REVIEW",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "review": {
+            "target_hypothesis_id": "hyp_postgres_connection_exhaustion",
+            "verdict": "insufficient",
+            "contradictions": [],
+            "requested_checks": [
+              {
+                "task_id": "logs_postgres_connection_errors",
+                "role": "logs",
+                "question": "Do Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC?",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {
+                  "service": "postgres",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:10:00Z",
+                  "severity": "ERROR",
+                  "limit": 50
+                },
+                "reason": "To confirm connection exhaustion at the database level, which is a predicted observation of the hypothesis.",
+                "expected_discriminator": "Presence of Postgres errors indicating connection limit reached or too many clients."
+              },
+              {
+                "task_id": "metrics_postgres_connections",
+                "role": "metrics",
+                "question": "What are the Postgres connection pool metrics (e.g., max_connections, active_connections) from 14:00 to 14:15 UTC?",
+                "allowed_tools": [
+                  "query_metrics"
+                ],
+                "filters": {
+                  "service": "postgres",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:15:00Z",
+                  "metric_names": [
+                    "max_connections",
+                    "active_connections"
+                  ]
+                },
+                "reason": "To verify if the connection pool reached its maximum, providing quantitative evidence for exhaustion.",
+                "expected_discriminator": "Active connections reaching or plateauing at max_connections during the incident window."
+              },
+              {
+                "task_id": "changes_backend_pool_config",
+                "role": "changes",
+                "question": "Were there any recent configuration changes or deployments to the backend service that could have altered connection pool settings?",
+                "allowed_tools": [
+                  "query_changes",
+                  "get_config_diff"
+                ],
+                "filters": {
+                  "service": "backend",
+                  "start_ts": "2026-09-30T00:00:00Z",
+                  "end_ts": "2026-10-01T14:10:00Z",
+                  "change_type": "config"
+                },
+                "reason": "To rule out a backend pool configuration regression as an alternative cause, which would contradict the Postgres exhaustion hypothesis.",
+                "expected_discriminator": "A config change altering pool size or timeout settings around the incident time."
+              }
+            ],
+            "cited_evidence_ids": [
+              "incident_001-L001",
+              "incident_001-L002",
+              "incident_001-L022"
+            ],
+            "rationale": "The hypothesis is supported by backend log evidence showing DB connection acquire timeouts and 500 errors, but there is no independent evidence from Postgres logs or metrics confirming connection pool exhaustion. The metrics finding explicitly states no metrics were collected. Therefore, the evidence is insufficient to confirm the hypothesis."
+          },
+          "hypothesis_sha256": "034ded5a51bc6f6e5dcd8ba672db92cdccbcca005831c0546d6cf071acb774c4",
+          "evidence_sha256": "d7ba7e518f6b4ce3f4ef590ddcb2e31f354c017ebd13953727f6fd7d77c92161"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-13",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:47.069875Z",
+        "event_type": "LLM_CALL",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 5041,
+          "completion_tokens": 487,
+          "total_tokens": 5528,
+          "measured_total_tokens": 5528,
+          "tokens_complete": true,
+          "elapsed_ms": 8296.851799997967,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-14",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:47.069924Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Round 1 findings: backend logs show DB connection acquire timeouts and 500s, but metrics for backend were unavailable. Need to verify Postgres connection exhaustion and rule out backend pool config regression. Prioritize Postgres logs and metrics checks from the review, plus a changes check for backend config.",
+        "details": {
+          "decision": {
+            "action": "INVESTIGATE",
+            "reason": "Round 1 findings: backend logs show DB connection acquire timeouts and 500s, but metrics for backend were unavailable. Need to verify Postgres connection exhaustion and rule out backend pool config regression. Prioritize Postgres logs and metrics checks from the review, plus a changes check for backend config.",
+            "assignments": [
+              {
+                "task_id": "logs_postgres_connection_errors",
+                "role": "logs",
+                "question": "Do Postgres logs show 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC?",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {
+                  "service": "postgres",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:10:00Z",
+                  "severity": "ERROR",
+                  "limit": 50
+                },
+                "reason": "To confirm connection exhaustion at the database level, which is a predicted observation of the hypothesis.",
+                "expected_discriminator": "Presence of Postgres errors indicating connection limit reached or too many clients."
+              },
+              {
+                "task_id": "metrics_postgres_connections",
+                "role": "metrics",
+                "question": "What are the Postgres connection pool metrics (e.g., max_connections, active_connections) from 14:00 to 14:15 UTC?",
+                "allowed_tools": [
+                  "query_metrics"
+                ],
+                "filters": {
+                  "service": "postgres",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:15:00Z",
+                  "metric_names": [
+                    "max_connections",
+                    "active_connections"
+                  ]
+                },
+                "reason": "To verify if the connection pool reached its maximum, providing quantitative evidence for exhaustion.",
+                "expected_discriminator": "Active connections reaching or plateauing at max_connections during the incident window."
+              }
+            ],
+            "selected_hypothesis_id": null,
+            "stop_reason": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-15",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:55.586682Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1671,
+          "completion_tokens": 173,
+          "total_tokens": 1844,
+          "measured_total_tokens": 1844,
+          "tokens_complete": true,
+          "elapsed_ms": 5569.2718999926,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-16",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:55.592505Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:15:00Z",
+            "metric_names": []
+          },
+          "result": {
+            "call_id": "call-6327a3d14a15492795acd3bce0251b61",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_001-M003",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "cpu_percent=28 %",
+                "metadata": {
+                  "metric_name": "cpu_percent",
+                  "value": 28.0,
+                  "unit": "%"
+                }
+              },
+              {
+                "evidence_id": "incident_001-M004",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "connections_active=22 connections",
+                "metadata": {
+                  "metric_name": "connections_active",
+                  "value": 22.0,
+                  "unit": "connections"
+                }
+              },
+              {
+                "evidence_id": "incident_001-M005",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "max_connections=100 connections",
+                "metadata": {
+                  "metric_name": "max_connections",
+                  "value": 100.0,
+                  "unit": "connections"
+                }
+              },
+              {
+                "evidence_id": "incident_001-M010",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "query_p95_ms=19 ms",
+                "metadata": {
+                  "metric_name": "query_p95_ms",
+                  "value": 19.0,
+                  "unit": "ms"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 5.151699995622039,
+            "record_count": 4,
+            "next_cursor": null
+          },
+          "task_id": "metrics_postgres_connections"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-17",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:55.597317Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:15:00Z",
+            "metric_names": [
+              "max_connections",
+              "active_connections"
+            ]
+          },
+          "result": {
+            "call_id": "call-78651b548a8044cc991746e57d5a3966",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_001-M005",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "max_connections=100 connections",
+                "metadata": {
+                  "metric_name": "max_connections",
+                  "value": 100.0,
+                  "unit": "connections"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 4.124799990677275,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "metrics_postgres_connections"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-18",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:58.697602Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1580,
+          "completion_tokens": 191,
+          "total_tokens": 1771,
+          "measured_total_tokens": 1771,
+          "tokens_complete": true,
+          "elapsed_ms": 11622.947399999248,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-19",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:58.706956Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:10:00Z",
+            "severity": "ERROR",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-294bebdc24894b81b6cb98b8487dc069",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 8.628499999758787,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "logs_postgres_connection_errors"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-20",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:05:58.710753Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T14:00:00Z",
+            "end_ts": "2026-10-01T14:10:00Z",
+            "severity": "ERROR",
+            "contains": "remaining connection slots",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-fdf6c57ca67a47d3b798d04b89d1b712",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 3.318299990496598,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "logs_postgres_connection_errors"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-21",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:05.905189Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1936,
+          "completion_tokens": 350,
+          "total_tokens": 2286,
+          "measured_total_tokens": 2286,
+          "tokens_complete": true,
+          "elapsed_ms": 10306.27829999139,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-22",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:06.285436Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 1472,
+          "completion_tokens": 351,
+          "total_tokens": 1823,
+          "measured_total_tokens": 1823,
+          "tokens_complete": true,
+          "elapsed_ms": 7571.330300008412,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-23",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:06.288777Z",
+        "event_type": "MERGE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "findings": [
+            {
+              "finding_id": "finding_logs_backend_errors_20261001",
+              "task_id": "logs_backend_errors_20261001",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "logs",
+              "claim": "Backend logs show repeated DB connection acquire timeouts and 500 errors starting at 14:03 UTC, indicating database connection pool exhaustion.",
+              "evidence_ids": [
+                "incident_001-L001",
+                "incident_001-L002",
+                "incident_001-L022"
+              ],
+              "relation": "supports",
+              "confidence_qualifier": "supported",
+              "followup_question": "Are there corresponding Postgres logs showing connection limits or pool saturation?"
+            },
+            {
+              "finding_id": "finding_metrics_backend_latency_001",
+              "task_id": "metrics_backend_latency_20261001",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "metrics",
+              "claim": "Backend latency and error rate metrics from 14:00 to 14:15 UTC are unavailable; no evidence was collected.",
+              "evidence_ids": [],
+              "relation": "neutral",
+              "confidence_qualifier": "unknown",
+              "followup_question": "Query metrics for backend service with metric_names=[] to discover available metrics, then query request_latency_seconds and error_rate."
+            },
+            {
+              "finding_id": "finding_logs_postgres_conn_errors_001",
+              "task_id": "logs_postgres_connection_errors",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "logs",
+              "claim": "Postgres logs show no 'remaining connection slots are reserved' or 'too many clients' errors between 14:00 and 14:10 UTC",
+              "evidence_ids": [],
+              "relation": "neutral",
+              "confidence_qualifier": "unknown",
+              "followup_question": "Are there any Postgres logs at all in this window, or is the service not logging? Please check with broader filters (e.g., all severities, wider time range) to confirm absence."
+            },
+            {
+              "finding_id": "finding_metrics_postgres_connections_001",
+              "task_id": "metrics_postgres_connections",
+              "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+              "incident_id": "incident_001",
+              "role": "metrics",
+              "claim": "Postgres active connections (22) are far below max_connections (100) at 14:04 UTC, indicating no connection pool exhaustion.",
+              "evidence_ids": [
+                "incident_001-M004",
+                "incident_001-M005"
+              ],
+              "relation": "refutes",
+              "confidence_qualifier": "supported",
+              "followup_question": "Are there any other Postgres metrics (e.g., connections_waiting, connection_errors) that might indicate pool pressure despite low active connections?"
+            }
+          ],
+          "hypotheses": [
+            {
+              "hypothesis_id": "hyp_postgres_connection_exhaustion",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_connection_exhaustion",
+              "support_ids": [
+                "incident_001-L001",
+                "incident_001-L002",
+                "incident_001-L022"
+              ],
+              "against_ids": [
+                "incident_001-M004",
+                "incident_001-M005"
+              ],
+              "predicted_observations": [
+                "Active connections should approach or plateau at max_connections during the incident window.",
+                "Connection wait or error metrics should increase."
+              ],
+              "status": "REJECTED",
+              "open_questions": [
+                "Are there other Postgres metrics indicating connection pressure not captured by active_connections?"
+              ]
+            },
+            {
+              "hypothesis_id": "hyp_backend_pool_config_regression",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_001-L001",
+                "incident_001-L022"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Recent deployment changed pool settings (e.g., max connections, timeout)",
+                "Backend logs show pool wait queue exceeded even when DB has capacity",
+                "Metrics show pool size lower than expected"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Was there a recent configuration change to the connection pool?",
+                "What is the current pool size vs. historical baseline?"
+              ]
+            }
+          ]
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-24",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:06.290258Z",
+        "event_type": "TOOL_CALL",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "fetch_evidence_by_ids",
+          "result": {
+            "call_id": "call-cd6e15dbb4d342bbac6dd6d8293e8138",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_001-L001",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "req-1-01"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L002",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:03:12Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "database acquire failed; request returned 500",
+                "metadata": {
+                  "severity": "ERROR"
+                }
+              },
+              {
+                "evidence_id": "incident_001-L022",
+                "incident_id": "incident_001",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline",
+                "metadata": {
+                  "severity": "ERROR",
+                  "request_id": "noise-1-15"
+                }
+              },
+              {
+                "evidence_id": "incident_001-M004",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "connections_active=22 connections",
+                "metadata": {
+                  "metric_name": "connections_active",
+                  "value": 22.0,
+                  "unit": "connections"
+                }
+              },
+              {
+                "evidence_id": "incident_001-M005",
+                "incident_id": "incident_001",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-01T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "max_connections=100 connections",
+                "metadata": {
+                  "metric_name": "max_connections",
+                  "value": 100.0,
+                  "unit": "connections"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 0.2125000028172508,
+            "record_count": 5,
+            "next_cursor": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-25",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:15.522924Z",
+        "event_type": "LLM_CALL",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 6497,
+          "completion_tokens": 611,
+          "total_tokens": 7108,
+          "measured_total_tokens": 7108,
+          "tokens_complete": true,
+          "elapsed_ms": 9228.081900000689,
+          "prompt_version": "roles-v6",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_object",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-26",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:06:15.523126Z",
+        "event_type": "REVIEW",
+        "role": "verifier",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "review": {
+            "target_hypothesis_id": "hyp_postgres_connection_exhaustion",
+            "verdict": "conflicted",
+            "contradictions": [
+              "Postgres metrics show active connections (22) far below max_connections (100) at 14:04 UTC, directly contradicting the predicted observation of connection pool exhaustion.",
+              "Postgres logs show no connection limit errors, further contradicting the hypothesis."
+            ],
+            "requested_checks": [
+              {
+                "task_id": "changes_backend_pool_config",
+                "role": "changes",
+                "question": "Were there any recent configuration changes or deployments to the backend service that could have altered connection pool settings?",
+                "allowed_tools": [
+                  "query_changes",
+                  "get_config_diff"
+                ],
+                "filters": {
+                  "service": "backend",
+                  "start_ts": "2026-09-30T00:00:00Z",
+                  "end_ts": "2026-10-01T14:10:00Z",
+                  "change_type": "config"
+                },
+                "reason": "To rule out a backend pool configuration regression as an alternative cause, which would contradict the Postgres exhaustion hypothesis.",
+                "expected_discriminator": "A config change altering pool size or timeout settings around the incident time."
+              },
+              {
+                "task_id": "metrics_backend_pool_size",
+                "role": "metrics",
+                "question": "What is the backend connection pool size (e.g., pool_size, max_pool_size) from 14:00 to 14:15 UTC?",
+                "allowed_tools": [
+                  "query_metrics"
+                ],
+                "filters": {
+                  "service": "backend",
+                  "start_ts": "2026-10-01T14:00:00Z",
+                  "end_ts": "2026-10-01T14:15:00Z",
+                  "metric_names": [
+                    "pool_size",
+                    "max_pool_size"
+                  ]
+                },
+                "reason": "To verify if the backend pool size is lower than expected, which would support the backend pool config regression hypothesis.",
+                "expected_discriminator": "Pool size metrics showing a value lower than the historical baseline or configured maximum."
+              }
+            ],
+            "cited_evidence_ids": [
+              "incident_001-L001",
+              "incident_001-L002",
+              "incident_001-L022",
+              "incident_001-M004",
+              "incident_001-M005"
+            ],
+            "rationale": "The hypothesis is supported by backend logs showing DB connection acquire timeouts, but directly contradicted by Postgres metrics showing active connections (22) far below max_connections (100) and by the absence of Postgres connection limit errors. This indicates the connection pool exhaustion is not at the database level, but likely at the backend pool level. Further checks are needed to confirm a backend pool configuration regression."
+          },
+          "hypothesis_sha256": "1dfdb04470f1239171576408e41d1905280b4e99697829295cd61d79bd389ae4",
+          "evidence_sha256": "ec3d0105d29e6498e94e2641e568c7384ffce88a6c9790bd099b53b0d8e10c99"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-27",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:19:21.331482Z",
+        "event_type": "STOP",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "PROVIDER_TIMEOUT",
+        "details": {},
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-28",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:19:21.341468Z",
+        "event_type": "MODEL_FAILURE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 785805.7767999999,
+          "error_code": "PROVIDER_TIMEOUT",
+          "failed": true
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-29",
+        "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-11T07:19:21.342127Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+            "incident_id": "incident_001",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [
+              {
+                "hypothesis_id": "hyp_postgres_connection_exhaustion",
+                "culprit_service": "postgres",
+                "failure_mode": "postgres_connection_exhaustion",
+                "support_ids": [
+                  "incident_001-L001",
+                  "incident_001-L002",
+                  "incident_001-L022"
+                ],
+                "against_ids": [
+                  "incident_001-M004",
+                  "incident_001-M005"
+                ],
+                "predicted_observations": [
+                  "Active connections should approach or plateau at max_connections during the incident window.",
+                  "Connection wait or error metrics should increase."
+                ],
+                "status": "REJECTED",
+                "open_questions": [
+                  "Are there other Postgres metrics indicating connection pressure not captured by active_connections?"
+                ]
+              }
+            ],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "PROVIDER_TIMEOUT"
+          },
+          "variant": "full",
+          "tokens_complete": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+      "incident_id": "incident_001",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp_postgres_connection_exhaustion",
+          "culprit_service": "postgres",
+          "failure_mode": "postgres_connection_exhaustion",
+          "support_ids": [
+            "incident_001-L001",
+            "incident_001-L002",
+            "incident_001-L022"
+          ],
+          "against_ids": [
+            "incident_001-M004",
+            "incident_001-M005"
+          ],
+          "predicted_observations": [
+            "Active connections should approach or plateau at max_connections during the incident window.",
+            "Connection wait or error metrics should increase."
+          ],
+          "status": "REJECTED",
+          "open_questions": [
+            "Are there other Postgres metrics indicating connection pressure not captured by active_connections?"
+          ]
+        }
+      ],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "PROVIDER_TIMEOUT"
+    },
+    "stop_reason": "PROVIDER_TIMEOUT",
+    "open_questions": [],
+    "requested_checks": [
+      {
+        "task_id": "changes_backend_pool_config",
+        "role": "changes",
+        "question": "Were there any recent configuration changes or deployments to the backend service that could have altered connection pool settings?",
+        "allowed_tools": [
+          "query_changes",
+          "get_config_diff"
+        ],
+        "filters": {
+          "service": "backend",
+          "start_ts": "2026-09-30T00:00:00Z",
+          "end_ts": "2026-10-01T14:10:00Z",
+          "change_type": "config"
+        },
+        "reason": "To rule out a backend pool configuration regression as an alternative cause, which would contradict the Postgres exhaustion hypothesis.",
+        "expected_discriminator": "A config change altering pool size or timeout settings around the incident time."
+      },
+      {
+        "task_id": "metrics_backend_pool_size",
+        "role": "metrics",
+        "question": "What is the backend connection pool size (e.g., pool_size, max_pool_size) from 14:00 to 14:15 UTC?",
+        "allowed_tools": [
+          "query_metrics"
+        ],
+        "filters": {
+          "service": "backend",
+          "start_ts": "2026-10-01T14:00:00Z",
+          "end_ts": "2026-10-01T14:15:00Z",
+          "metric_names": [
+            "pool_size",
+            "max_pool_size"
+          ]
+        },
+        "reason": "To verify if the backend pool size is lower than expected, which would support the backend pool config regression hypothesis.",
+        "expected_discriminator": "Pool size metrics showing a value lower than the historical baseline or configured maximum."
+      }
+    ],
+    "completed_task_ids": [
+      "logs_backend_errors_20261001",
+      "metrics_backend_latency_20261001",
+      "logs_postgres_connection_errors",
+      "metrics_postgres_connections"
+    ],
+    "tool_calls_used": 8,
+    "llm_calls_used": 13,
+    "tokens_used": 33969
+  },
+  "model_id": "deepseek-v4-flash-0731",
+  "prompt_version": "roles-v6"
+}

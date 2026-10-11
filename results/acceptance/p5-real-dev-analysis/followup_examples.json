@@ -1,0 +1,1105 @@
+{
+  "interpretation": "Descriptive matches requested checks; not causal proof",
+  "examples": [
+    {
+      "incident_id": "incident_007",
+      "run_id": "run-97bbc1121aa44e609066c26da869ba45",
+      "variant": "full",
+      "review_event_id": "event-13",
+      "review_event_index": 12,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "chk_metrics_pool",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool exhaustion (e.g., pool_size, active_connections, wait_time) between 17:00 and 17:30 to see if pool limits were hit.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-07T17:00:00Z",
+            "end_ts": "2026-10-07T17:30:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_time"
+            ]
+          },
+          "reason": "To confirm or refute connection pool exhaustion as a cause, which would support the hypothesis if pool metrics show saturation.",
+          "expected_discriminator": "Pool metrics showing active connections at max and high wait times."
+        },
+        {
+          "task_id": "chk_config_diff",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-7-01 and change-7-02 to see if any connection pool settings were modified.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-7-01"
+          },
+          "reason": "The hypothesis claims a pool config regression; the config diff is the direct evidence needed to confirm or refute.",
+          "expected_discriminator": "Config diff showing changes to pool limits or timeouts."
+        },
+        {
+          "task_id": "chk_logs_more",
+          "role": "logs",
+          "question": "Query backend logs for additional 'connection refused' or 'pool exhausted' errors between 17:00 and 17:30 to see if the single error is part of a pattern.",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-07T17:00:00Z",
+            "end_ts": "2026-10-07T17:30:00Z",
+            "service": "backend",
+            "contains": "connection"
+          },
+          "reason": "To determine if the database connectivity issue is widespread, which would support the hypothesis or point to postgres issues.",
+          "expected_discriminator": "Multiple connection refused or pool exhaustion errors."
+        }
+      ],
+      "next_investigate_event_id": "event-15",
+      "next_investigate_event_index": 14,
+      "next_assignments": [
+        {
+          "task_id": "chk_metrics_pool",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool exhaustion (e.g., pool_size, active_connections, wait_time) between 17:00 and 17:30 to see if pool limits were hit.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-07T17:00:00Z",
+            "end_ts": "2026-10-07T17:30:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_time"
+            ]
+          },
+          "reason": "To confirm or refute connection pool exhaustion as a cause, which would support the hypothesis if pool metrics show saturation.",
+          "expected_discriminator": "Pool metrics showing active connections at max and high wait times."
+        },
+        {
+          "task_id": "chk_config_diff",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-7-01 and change-7-02 to see if any connection pool settings were modified.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-7-01"
+          },
+          "reason": "The hypothesis claims a pool config regression; the config diff is the direct evidence needed to confirm or refute.",
+          "expected_discriminator": "Config diff showing changes to pool limits or timeouts."
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "chk_metrics_pool",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool exhaustion (e.g., pool_size, active_connections, wait_time) between 17:00 and 17:30 to see if pool limits were hit.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-07T17:00:00Z",
+            "end_ts": "2026-10-07T17:30:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_time"
+            ]
+          },
+          "reason": "To confirm or refute connection pool exhaustion as a cause, which would support the hypothesis if pool metrics show saturation.",
+          "expected_discriminator": "Pool metrics showing active connections at max and high wait times."
+        },
+        {
+          "task_id": "chk_config_diff",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-7-01 and change-7-02 to see if any connection pool settings were modified.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-7-01"
+          },
+          "reason": "The hypothesis claims a pool config regression; the config diff is the direct evidence needed to confirm or refute.",
+          "expected_discriminator": "Config diff showing changes to pool limits or timeouts."
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-aaa8a46d3b0544a3bad3e6cce7ccd0c7",
+      "variant": "full",
+      "review_event_id": "event-12",
+      "review_event_index": 11,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "task_logs_redis_errors",
+          "role": "logs",
+          "question": "Are there any Redis service logs showing connection refused, timeout, or other errors between 17:59:54Z and 18:13:54Z?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "redis",
+            "start_ts": "2026-10-08T17:59:54Z",
+            "end_ts": "2026-10-08T18:13:54Z",
+            "severity": "ERROR",
+            "limit": 50
+          },
+          "reason": "If Redis is unavailable, its logs should show connection errors or timeouts. This directly tests the hypothesis.",
+          "expected_discriminator": "Presence of Redis connection errors or timeouts"
+        },
+        {
+          "task_id": "task_metrics_redis_db",
+          "role": "metrics",
+          "question": "What are the Redis cache hit rate, backend database latency, and backend CPU/memory usage during the incident window (18:00-18:15Z)?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "cache_hit_rate",
+              "db_latency",
+              "cpu_usage",
+              "memory_usage"
+            ]
+          },
+          "reason": "If Redis is unavailable, cache hit rate should drop and database latency should increase. If backend is saturated, CPU/memory usage should be high. This helps discriminate between hypotheses.",
+          "expected_discriminator": "Low cache hit rate and high db latency vs. high CPU/memory usage"
+        },
+        {
+          "task_id": "task_changes_redis_detail",
+          "role": "changes",
+          "question": "What is the detailed content of the Redis maintenance change (change-8-01)? Did it involve a restart or failover? Was it completed successfully?",
+          "allowed_tools": [
+            "get_config_diff",
+            "query_changes"
+          ],
+          "filters": {
+            "change_id": "change-8-01"
+          },
+          "reason": "Understanding the maintenance details (e.g., restart, failover) and its completion status is crucial to confirm whether it caused Redis unavailability.",
+          "expected_discriminator": "Maintenance involved restart/failover and was not completed successfully"
+        }
+      ],
+      "next_investigate_event_id": "event-14",
+      "next_investigate_event_index": 13,
+      "next_assignments": [
+        {
+          "task_id": "task_logs_redis_errors",
+          "role": "logs",
+          "question": "Are there any Redis service logs showing connection refused, timeout, or other errors between 17:59:54Z and 18:13:54Z?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "redis",
+            "start_ts": "2026-10-08T17:59:54Z",
+            "end_ts": "2026-10-08T18:13:54Z",
+            "severity": "ERROR",
+            "limit": 50
+          },
+          "reason": "If Redis is unavailable, its logs should show connection errors or timeouts. This directly tests the hypothesis.",
+          "expected_discriminator": "Presence of Redis connection errors or timeouts"
+        },
+        {
+          "task_id": "task_metrics_redis_db",
+          "role": "metrics",
+          "question": "What are the Redis cache hit rate, backend database latency, and backend CPU/memory usage during the incident window (18:00-18:15Z)?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "cache_hit_rate",
+              "db_latency",
+              "cpu_usage",
+              "memory_usage"
+            ]
+          },
+          "reason": "If Redis is unavailable, cache hit rate should drop and database latency should increase. If backend is saturated, CPU/memory usage should be high. This helps discriminate between hypotheses.",
+          "expected_discriminator": "Low cache hit rate and high db latency vs. high CPU/memory usage"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "task_logs_redis_errors",
+          "role": "logs",
+          "question": "Are there any Redis service logs showing connection refused, timeout, or other errors between 17:59:54Z and 18:13:54Z?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "redis",
+            "start_ts": "2026-10-08T17:59:54Z",
+            "end_ts": "2026-10-08T18:13:54Z",
+            "severity": "ERROR",
+            "limit": 50
+          },
+          "reason": "If Redis is unavailable, its logs should show connection errors or timeouts. This directly tests the hypothesis.",
+          "expected_discriminator": "Presence of Redis connection errors or timeouts"
+        },
+        {
+          "task_id": "task_metrics_redis_db",
+          "role": "metrics",
+          "question": "What are the Redis cache hit rate, backend database latency, and backend CPU/memory usage during the incident window (18:00-18:15Z)?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "cache_hit_rate",
+              "db_latency",
+              "cpu_usage",
+              "memory_usage"
+            ]
+          },
+          "reason": "If Redis is unavailable, cache hit rate should drop and database latency should increase. If backend is saturated, CPU/memory usage should be high. This helps discriminate between hypotheses.",
+          "expected_discriminator": "Low cache hit rate and high db latency vs. high CPU/memory usage"
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-b8e16710c3ae4954a132f8b9024bd239",
+      "variant": "single",
+      "review_event_id": "event-12",
+      "review_event_index": 11,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "logs_redis_errors",
+          "role": "logs",
+          "question": "Are there Redis connection errors or timeouts in backend or redis logs during the incident window?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "redis",
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:10:00Z",
+            "severity": "ERROR",
+            "contains": "redis"
+          },
+          "reason": "To confirm Redis unavailability by finding connection errors or timeouts.",
+          "expected_discriminator": "Redis connection refused or timeout errors."
+        },
+        {
+          "task_id": "metrics_redis_availability",
+          "role": "metrics",
+          "question": "What are Redis availability and error metrics during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "redis",
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:10:00Z",
+            "metric_names": [
+              "redis_up",
+              "redis_errors_total"
+            ]
+          },
+          "reason": "To check if Redis was down or erroring during the incident.",
+          "expected_discriminator": "Redis availability metric drops or error count spikes."
+        },
+        {
+          "task_id": "metrics_backend_db_load",
+          "role": "metrics",
+          "question": "What are database load metrics for postgres during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "postgres",
+            "start_ts": "2026-10-08T18:00:00Z",
+            "end_ts": "2026-10-08T18:10:00Z",
+            "metric_names": [
+              "db_connections",
+              "db_query_duration_seconds"
+            ]
+          },
+          "reason": "To verify increased database load due to fallback from cache.",
+          "expected_discriminator": "Elevated DB connections or query latency."
+        }
+      ],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_009",
+      "run_id": "run-b12b61f315de470fba93f16484e308bd",
+      "variant": "full",
+      "review_event_id": "event-12",
+      "review_event_index": 11,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check_payment_logs_timeout",
+          "role": "logs",
+          "question": "Are there backend logs around 17:03:33Z showing timeouts or connection errors to the payment service?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "contains": "payment"
+          },
+          "reason": "To find additional evidence of payment service timeouts or connection failures that would corroborate the payment timeout hypothesis.",
+          "expected_discriminator": "Presence of multiple log entries indicating payment timeout or connection errors."
+        },
+        {
+          "task_id": "check_payment_metrics_latency",
+          "role": "metrics",
+          "question": "What are the payment service metrics for latency and error rate during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "payment",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "metric_names": [
+              "request_latency",
+              "error_rate"
+            ]
+          },
+          "reason": "To check if the payment service experienced elevated latency or errors that would support the external timeout hypothesis.",
+          "expected_discriminator": "A spike in payment latency or error rate around 17:03:33Z."
+        },
+        {
+          "task_id": "check_changes_payment_deploy",
+          "role": "changes",
+          "question": "Were there any recent changes or deployments to the payment service or backend around the incident time?",
+          "allowed_tools": [
+            "query_changes"
+          ],
+          "filters": {
+            "service": "payment",
+            "start_ts": "2026-10-09T16:00:00Z",
+            "end_ts": "2026-10-09T17:20:00Z"
+          },
+          "reason": "To identify if a change to the payment service or its configuration could have caused the timeout.",
+          "expected_discriminator": "A deployment or config change to payment service shortly before the incident."
+        }
+      ],
+      "next_investigate_event_id": "event-14",
+      "next_investigate_event_index": 13,
+      "next_assignments": [
+        {
+          "task_id": "check_payment_logs_timeout",
+          "role": "logs",
+          "question": "Are there backend logs around 17:03:33Z showing timeouts or connection errors to the payment service?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "contains": "payment"
+          },
+          "reason": "To find additional evidence of payment service timeouts or connection failures that would corroborate the payment timeout hypothesis.",
+          "expected_discriminator": "Presence of multiple log entries indicating payment timeout or connection errors."
+        },
+        {
+          "task_id": "check_payment_metrics_latency",
+          "role": "metrics",
+          "question": "What are the payment service metrics for latency and error rate during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "payment",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "metric_names": [
+              "request_latency",
+              "error_rate"
+            ]
+          },
+          "reason": "To check if the payment service experienced elevated latency or errors that would support the external timeout hypothesis.",
+          "expected_discriminator": "A spike in payment latency or error rate around 17:03:33Z."
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "check_payment_logs_timeout",
+          "role": "logs",
+          "question": "Are there backend logs around 17:03:33Z showing timeouts or connection errors to the payment service?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "contains": "payment"
+          },
+          "reason": "To find additional evidence of payment service timeouts or connection failures that would corroborate the payment timeout hypothesis.",
+          "expected_discriminator": "Presence of multiple log entries indicating payment timeout or connection errors."
+        },
+        {
+          "task_id": "check_payment_metrics_latency",
+          "role": "metrics",
+          "question": "What are the payment service metrics for latency and error rate during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "payment",
+            "start_ts": "2026-10-09T17:00:00Z",
+            "end_ts": "2026-10-09T17:10:00Z",
+            "metric_names": [
+              "request_latency",
+              "error_rate"
+            ]
+          },
+          "reason": "To check if the payment service experienced elevated latency or errors that would support the external timeout hypothesis.",
+          "expected_discriminator": "A spike in payment latency or error rate around 17:03:33Z."
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_011",
+      "run_id": "run-a05ce81ed4b84a258557edb92f06ba5d",
+      "variant": "full",
+      "review_event_id": "event-13",
+      "review_event_index": 12,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "chk_config_diff_011",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-11-01 (change_id: change-11-01) and report whether it modifies connection pool size, timeouts, or resource limits.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-11-01"
+          },
+          "reason": "To confirm whether the config change directly altered pool settings, which would support the hypothesis.",
+          "expected_discriminator": "The diff shows a reduction in pool size or timeout values."
+        },
+        {
+          "task_id": "chk_metrics_pool_011",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool usage (e.g., pool_size, active_connections, wait_queue_length) from 19:50Z to 20:15Z to see if pool saturation occurred and when.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-11T19:50:00Z",
+            "end_ts": "2026-10-11T20:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_queue_length"
+            ]
+          },
+          "reason": "To verify that pool exhaustion actually occurred and correlate timing with the config change.",
+          "expected_discriminator": "Metrics show active connections reaching max pool size and wait queue growing after 19:58Z."
+        },
+        {
+          "task_id": "chk_postgres_logs_011",
+          "role": "logs",
+          "question": "Query postgres service logs for connection limit errors or long-running queries between 19:50Z and 20:15Z.",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-11T19:50:00Z",
+            "end_ts": "2026-10-11T20:15:00Z",
+            "service": "postgres",
+            "severity": "ERROR"
+          },
+          "reason": "To rule out database-side connection limits or query issues as an alternative cause.",
+          "expected_discriminator": "No postgres-side errors, indicating the issue is backend pool configuration."
+        }
+      ],
+      "next_investigate_event_id": "event-15",
+      "next_investigate_event_index": 14,
+      "next_assignments": [
+        {
+          "task_id": "chk_config_diff_011",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-11-01 (change_id: change-11-01) and report whether it modifies connection pool size, timeouts, or resource limits.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-11-01"
+          },
+          "reason": "To confirm whether the config change directly altered pool settings, which would support the hypothesis.",
+          "expected_discriminator": "The diff shows a reduction in pool size or timeout values."
+        },
+        {
+          "task_id": "chk_metrics_pool_011",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool usage (e.g., pool_size, active_connections, wait_queue_length) from 19:50Z to 20:15Z to see if pool saturation occurred and when.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-11T19:50:00Z",
+            "end_ts": "2026-10-11T20:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_queue_length"
+            ]
+          },
+          "reason": "To verify that pool exhaustion actually occurred and correlate timing with the config change.",
+          "expected_discriminator": "Metrics show active connections reaching max pool size and wait queue growing after 19:58Z."
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "chk_config_diff_011",
+          "role": "changes",
+          "question": "Retrieve the config diff for change-11-01 (change_id: change-11-01) and report whether it modifies connection pool size, timeouts, or resource limits.",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-11-01"
+          },
+          "reason": "To confirm whether the config change directly altered pool settings, which would support the hypothesis.",
+          "expected_discriminator": "The diff shows a reduction in pool size or timeout values."
+        },
+        {
+          "task_id": "chk_metrics_pool_011",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool usage (e.g., pool_size, active_connections, wait_queue_length) from 19:50Z to 20:15Z to see if pool saturation occurred and when.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-11T19:50:00Z",
+            "end_ts": "2026-10-11T20:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "pool_size",
+              "active_connections",
+              "wait_queue_length"
+            ]
+          },
+          "reason": "To verify that pool exhaustion actually occurred and correlate timing with the config change.",
+          "expected_discriminator": "Metrics show active connections reaching max pool size and wait queue growing after 19:58Z."
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_013",
+      "run_id": "run-f1ad96cbbebb476eb46c2b239ba1654f",
+      "variant": "full",
+      "review_event_id": "event-12",
+      "review_event_index": 11,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "task_013_metrics_redis",
+          "role": "metrics",
+          "question": "Query Redis metrics for connection failures, error rates, latency, and availability during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "metric_names": [
+              "redis_connection_errors",
+              "redis_latency",
+              "redis_availability"
+            ]
+          },
+          "reason": "To confirm Redis unavailability, we need direct metrics showing connection failures or high latency. This will discriminate between Redis being the cause versus a symptom of backend issues.",
+          "expected_discriminator": "If Redis metrics show connection refused or timeout errors, it supports Redis unavailability. If metrics are normal, it suggests the cache error is secondary."
+        },
+        {
+          "task_id": "task_013_logs_redis",
+          "role": "logs",
+          "question": "Query Redis service logs for ERROR or CRITICAL messages during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "severity": "ERROR"
+          },
+          "reason": "To find direct evidence of Redis failure, such as connection refused or timeout logs. This provides a second independent source to corroborate the backend log.",
+          "expected_discriminator": "Presence of Redis error logs indicating outage or connection issues would strongly support the hypothesis. Absence would weaken it."
+        },
+        {
+          "task_id": "task_013_metrics_backend_pool",
+          "role": "metrics",
+          "question": "Query backend metrics for connection pool usage, error rates, and latency during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "backend",
+            "metric_names": [
+              "backend_connection_pool_usage",
+              "backend_error_rate",
+              "backend_latency"
+            ]
+          },
+          "reason": "To check if the fallback to synchronous DB lookups caused connection pool exhaustion or increased latency, which could be the actual cause of 500s. This helps discriminate between Redis failure and downstream effects.",
+          "expected_discriminator": "If backend connection pool usage is at max and error rates spike, it may indicate pool exhaustion. If metrics are normal, Redis failure is more likely the root cause."
+        }
+      ],
+      "next_investigate_event_id": "event-14",
+      "next_investigate_event_index": 13,
+      "next_assignments": [
+        {
+          "task_id": "task_013_metrics_redis",
+          "role": "metrics",
+          "question": "Query Redis metrics for connection failures, error rates, latency, and availability during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "metric_names": [
+              "redis_connection_errors",
+              "redis_latency",
+              "redis_availability"
+            ]
+          },
+          "reason": "To confirm Redis unavailability, we need direct metrics showing connection failures or high latency. This will discriminate between Redis being the cause versus a symptom of backend issues.",
+          "expected_discriminator": "If Redis metrics show connection refused or timeout errors, it supports Redis unavailability. If metrics are normal, it suggests the cache error is secondary."
+        },
+        {
+          "task_id": "task_013_logs_redis",
+          "role": "logs",
+          "question": "Query Redis service logs for ERROR or CRITICAL messages during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "severity": "ERROR"
+          },
+          "reason": "To find direct evidence of Redis failure, such as connection refused or timeout logs. This provides a second independent source to corroborate the backend log.",
+          "expected_discriminator": "Presence of Redis error logs indicating outage or connection issues would strongly support the hypothesis. Absence would weaken it."
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "task_013_metrics_redis",
+          "role": "metrics",
+          "question": "Query Redis metrics for connection failures, error rates, latency, and availability during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "metric_names": [
+              "redis_connection_errors",
+              "redis_latency",
+              "redis_availability"
+            ]
+          },
+          "reason": "To confirm Redis unavailability, we need direct metrics showing connection failures or high latency. This will discriminate between Redis being the cause versus a symptom of backend issues.",
+          "expected_discriminator": "If Redis metrics show connection refused or timeout errors, it supports Redis unavailability. If metrics are normal, it suggests the cache error is secondary."
+        },
+        {
+          "task_id": "task_013_logs_redis",
+          "role": "logs",
+          "question": "Query Redis service logs for ERROR or CRITICAL messages during the incident window (2026-10-13T07:03:57Z to 08:03:57Z).",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-13T07:03:57Z",
+            "end_ts": "2026-10-13T08:03:57Z",
+            "service": "redis",
+            "severity": "ERROR"
+          },
+          "reason": "To find direct evidence of Redis failure, such as connection refused or timeout logs. This provides a second independent source to corroborate the backend log.",
+          "expected_discriminator": "Presence of Redis error logs indicating outage or connection issues would strongly support the hypothesis. Absence would weaken it."
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-d9937272c4674e97a26277ee0769504f",
+      "variant": "full",
+      "review_event_id": "event-12",
+      "review_event_index": 11,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "chk_014_chg01_diff",
+          "role": "changes",
+          "question": "Retrieve the configuration diff for change-14-01 to determine if it includes changes to connection pool settings (e.g., max connections, timeout).",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-14-01"
+          },
+          "reason": "To confirm whether the backend deployment altered connection pool configuration as predicted.",
+          "expected_discriminator": "Diff shows changes to connection pool parameters."
+        },
+        {
+          "task_id": "chk_014_chg01_metrics",
+          "role": "metrics",
+          "question": "Query backend metrics for error rate, latency, and connection pool usage (e.g., pool exhaustion, active connections) between 12:58Z and 13:10Z.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T12:58:00Z",
+            "end_ts": "2026-10-14T13:10:00Z",
+            "service": "backend",
+            "metric_names": [
+              "error_rate",
+              "latency",
+              "connection_pool_exhaustion"
+            ]
+          },
+          "reason": "To verify predicted spike in backend errors or pool exhaustion after deployment.",
+          "expected_discriminator": "Metrics show a spike in error rate or pool exhaustion starting around 13:03Z."
+        },
+        {
+          "task_id": "chk_014_chg01_logs",
+          "role": "logs",
+          "question": "Retrieve backend logs between 13:00Z and 13:10Z with severity ERROR or WARN, searching for connection pool or timeout related messages.",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T13:00:00Z",
+            "end_ts": "2026-10-14T13:10:00Z",
+            "service": "backend",
+            "severity": "ERROR",
+            "contains": "connection pool"
+          },
+          "reason": "To find evidence of connection pool exhaustion or related errors in backend logs.",
+          "expected_discriminator": "Logs contain connection pool exhaustion or timeout errors."
+        }
+      ],
+      "next_investigate_event_id": "event-14",
+      "next_investigate_event_index": 13,
+      "next_assignments": [
+        {
+          "task_id": "chk_014_chg01_diff",
+          "role": "changes",
+          "question": "Retrieve the configuration diff for change-14-01 to determine if it includes changes to connection pool settings (e.g., max connections, timeout).",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-14-01"
+          },
+          "reason": "To confirm whether the backend deployment altered connection pool configuration as predicted.",
+          "expected_discriminator": "Diff shows changes to connection pool parameters."
+        },
+        {
+          "task_id": "chk_014_chg01_metrics",
+          "role": "metrics",
+          "question": "Query backend metrics for error rate, latency, and connection pool usage (e.g., pool exhaustion, active connections) between 12:58Z and 13:10Z.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T12:58:00Z",
+            "end_ts": "2026-10-14T13:10:00Z",
+            "service": "backend",
+            "metric_names": [
+              "error_rate",
+              "latency",
+              "connection_pool_exhaustion"
+            ]
+          },
+          "reason": "To verify predicted spike in backend errors or pool exhaustion after deployment.",
+          "expected_discriminator": "Metrics show a spike in error rate or pool exhaustion starting around 13:03Z."
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "chk_014_chg01_diff",
+          "role": "changes",
+          "question": "Retrieve the configuration diff for change-14-01 to determine if it includes changes to connection pool settings (e.g., max connections, timeout).",
+          "allowed_tools": [
+            "get_config_diff"
+          ],
+          "filters": {
+            "change_id": "change-14-01"
+          },
+          "reason": "To confirm whether the backend deployment altered connection pool configuration as predicted.",
+          "expected_discriminator": "Diff shows changes to connection pool parameters."
+        },
+        {
+          "task_id": "chk_014_chg01_metrics",
+          "role": "metrics",
+          "question": "Query backend metrics for error rate, latency, and connection pool usage (e.g., pool exhaustion, active connections) between 12:58Z and 13:10Z.",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T12:58:00Z",
+            "end_ts": "2026-10-14T13:10:00Z",
+            "service": "backend",
+            "metric_names": [
+              "error_rate",
+              "latency",
+              "connection_pool_exhaustion"
+            ]
+          },
+          "reason": "To verify predicted spike in backend errors or pool exhaustion after deployment.",
+          "expected_discriminator": "Metrics show a spike in error rate or pool exhaustion starting around 13:03Z."
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-26b7a4a73300489ea655603f3c6fb454",
+      "variant": "single",
+      "review_event_id": "event-14",
+      "review_event_index": 13,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check_backend_metrics_trend",
+          "role": "metrics",
+          "question": "What are the backend CPU, memory, and inflight request trends from 13:00 to 13:15? Is there a spike before 13:03:38Z?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T13:00:00Z",
+            "end_ts": "2026-10-14T13:15:00Z",
+            "service": "backend",
+            "metric_names": [
+              "cpu_percent",
+              "memory_percent",
+              "inflight_requests"
+            ]
+          },
+          "reason": "Determine if backend resource saturation occurred before the gateway error spike.",
+          "expected_discriminator": "A clear spike in CPU or inflight requests preceding the gateway error rate increase."
+        },
+        {
+          "task_id": "check_backend_logs_errors",
+          "role": "logs",
+          "question": "Are there backend logs showing database connection errors, timeouts, or resource exhaustion around 13:03:38Z?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T13:00:00Z",
+            "end_ts": "2026-10-14T13:15:00Z",
+            "service": "backend",
+            "severity": "ERROR",
+            "contains": "timeout"
+          },
+          "reason": "Check for backend resource exhaustion or dependency failures.",
+          "expected_discriminator": "Logs indicating connection pool exhaustion, timeouts, or resource limits."
+        },
+        {
+          "task_id": "check_gateway_latency",
+          "role": "metrics",
+          "question": "What are the gateway and backend latency metrics during the incident window?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "start_ts": "2026-10-14T13:00:00Z",
+            "end_ts": "2026-10-14T13:15:00Z",
+            "service": "gateway",
+            "metric_names": [
+              "latency_p50",
+              "latency_p95",
+              "latency_p99"
+            ]
+          },
+          "reason": "Assess if latency correlates with backend saturation or gateway misconfiguration.",
+          "expected_discriminator": "Elevated latency in gateway or backend that aligns with error rate spikes."
+        }
+      ],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_016",
+      "run_id": "run-1825146868514ec1837b78dc1bb36ed8",
+      "variant": "full",
+      "review_event_id": "event-13",
+      "review_event_index": 12,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "task_003_changes_backend",
+          "role": "changes",
+          "question": "Were there any deployments, config changes, or scaling events to the backend service between 2026-10-16T08:00:00Z and 2026-10-16T09:15:00Z?",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-16T08:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z"
+          },
+          "reason": "To test hyp_001 (backend_pool_config_regression), we need to know if a recent change altered the DB pool size or timeout.",
+          "expected_discriminator": "A recent backend deployment or config change that modifies pool settings"
+        },
+        {
+          "task_id": "task_004_logs_postgres",
+          "role": "logs",
+          "question": "What errors or warnings appear in postgres logs between 2026-10-16T09:00:00Z and 2026-10-16T09:15:00Z, specifically regarding connection limits or max_connections?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "postgres",
+            "start_ts": "2026-10-16T09:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z",
+            "contains": "connection"
+          },
+          "reason": "To test hyp_002 (postgres_connection_exhaustion), we need to see if the Postgres server itself is rejecting connections due to max_connections being reached.",
+          "expected_discriminator": "Postgres logs showing 'max_connections' reached or connection rejection errors"
+        },
+        {
+          "task_id": "task_005_metrics_backend",
+          "role": "metrics",
+          "question": "What are the backend pool_active and pool_waiters metrics between 2026-10-16T09:00:00Z and 2026-10-16T09:15:00Z?",
+          "allowed_tools": [
+            "query_metrics"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-16T09:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z",
+            "metric_names": [
+              "pool_active",
+              "pool_waiters"
+            ]
+          },
+          "reason": "To discriminate between the hypotheses: if pool_active remains low while pool_waiters is high, it suggests the pool is not acquiring connections (config regression or DB exhaustion). If pool_active is high, it suggests the pool is saturated.",
+          "expected_discriminator": "Time series showing pool_active and pool_waiters trends during the incident"
+        }
+      ],
+      "next_investigate_event_id": "event-15",
+      "next_investigate_event_index": 14,
+      "next_assignments": [
+        {
+          "task_id": "task_003_changes_backend",
+          "role": "changes",
+          "question": "Were there any deployments, config changes, or scaling events to the backend service between 2026-10-16T08:00:00Z and 2026-10-16T09:15:00Z?",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-16T08:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z"
+          },
+          "reason": "To test hyp_001 (backend_pool_config_regression), we need to know if a recent change altered the DB pool size or timeout.",
+          "expected_discriminator": "A recent backend deployment or config change that modifies pool settings"
+        },
+        {
+          "task_id": "task_004_logs_postgres",
+          "role": "logs",
+          "question": "What errors or warnings appear in postgres logs between 2026-10-16T09:00:00Z and 2026-10-16T09:15:00Z, specifically regarding connection limits or max_connections?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "postgres",
+            "start_ts": "2026-10-16T09:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z",
+            "contains": "connection"
+          },
+          "reason": "To test hyp_002 (postgres_connection_exhaustion), we need to see if the Postgres server itself is rejecting connections due to max_connections being reached.",
+          "expected_discriminator": "Postgres logs showing 'max_connections' reached or connection rejection errors"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "task_003_changes_backend",
+          "role": "changes",
+          "question": "Were there any deployments, config changes, or scaling events to the backend service between 2026-10-16T08:00:00Z and 2026-10-16T09:15:00Z?",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "start_ts": "2026-10-16T08:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z"
+          },
+          "reason": "To test hyp_001 (backend_pool_config_regression), we need to know if a recent change altered the DB pool size or timeout.",
+          "expected_discriminator": "A recent backend deployment or config change that modifies pool settings"
+        },
+        {
+          "task_id": "task_004_logs_postgres",
+          "role": "logs",
+          "question": "What errors or warnings appear in postgres logs between 2026-10-16T09:00:00Z and 2026-10-16T09:15:00Z, specifically regarding connection limits or max_connections?",
+          "allowed_tools": [
+            "query_logs"
+          ],
+          "filters": {
+            "service": "postgres",
+            "start_ts": "2026-10-16T09:00:00Z",
+            "end_ts": "2026-10-16T09:15:00Z",
+            "contains": "connection"
+          },
+          "reason": "To test hyp_002 (postgres_connection_exhaustion), we need to see if the Postgres server itself is rejecting connections due to max_connections being reached.",
+          "expected_discriminator": "Postgres logs showing 'max_connections' reached or connection rejection errors"
+        }
+      ],
+      "matches_requested_checks": true
+    }
+  ],
+  "reviews": 9,
+  "reviews_with_matched_checks": 7
+}

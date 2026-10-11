@@ -1,0 +1,41 @@
+incident_id,run_id,variant,rounds,investigate_decisions,replanning_decisions,task_roles,tool_calls,review_insufficient,review_conflicted,requested_checks,dynamic_role_transitions
+incident_007,run-8fba20500371499ca9f5298b9c45e5d3,dynamic_no_verifier,1,1,0,"[""changes"", ""logs""]",3,0,0,0,0
+incident_007,run-ea2bc45c302846efb1f3e93c14d61184,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",6,0,0,0,0
+incident_007,run-d3f8b4d2e92b4b4fa6ed38dd247a6d84,full,1,1,0,"[""changes"", ""logs""]",3,1,0,3,0
+incident_007,run-36a01463c1d14b8f8921ebee3d642e74,single,1,1,0,"[""metrics"", ""changes""]",4,0,0,0,0
+incident_008,run-dd90701e4363428d8622ea7f4bf83a6b,dynamic_no_verifier,1,1,0,"[""logs"", ""metrics""]",2,0,0,0,0
+incident_008,run-b0cd20ce774f4095aa7d8013f0ca77bb,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",3,0,0,0,0
+incident_008,run-f4a9e08083d04393809947cc1fdb79f4,full,1,1,0,"[""metrics"", ""logs""]",4,0,0,0,0
+incident_008,run-5b48f3b5ae35421da01f85198fd8b987,single,0,0,0,[],0,0,0,0,0
+incident_009,run-c9093ea2c9164ee6826ab2feecb7a4b4,dynamic_no_verifier,2,2,1,"[""metrics"", ""changes"", ""changes"", ""metrics""]",5,0,0,0,0
+incident_009,run-89ed861266074312aefd038f54792a9d,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_009,run-2c88e7b36b3a46b2883b927464ef8daa,full,1,1,0,"[""changes"", ""logs""]",2,0,0,0,0
+incident_009,run-023d4ec67710424eabaa97ad8056508b,single,0,0,0,[],0,0,0,0,0
+incident_010,run-3fa98cc0e06e4bc087291bf86942a941,dynamic_no_verifier,2,2,1,"[""logs"", ""metrics"", ""changes"", ""metrics""]",5,0,0,0,1
+incident_010,run-d6ceecb2c90d4c2ebfccbd31a3682c51,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_010,run-a714be0f172e40b49b7fc9c105c9fb6e,full,2,2,1,"[""changes"", ""logs"", ""metrics"", ""changes""]",3,1,0,3,1
+incident_010,run-cc404256ef164553b729d982231c52d7,single,1,1,0,"[""logs"", ""changes""]",1,0,0,0,0
+incident_011,run-b08083ebdbbb48cfb0f8ac051ed7ce70,dynamic_no_verifier,2,2,1,"[""logs"", ""metrics"", ""logs"", ""changes""]",3,0,0,0,1
+incident_011,run-5f3d0854ade241f6b410373abb218a60,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_011,run-88722aaf50a7413aaf850d36ed729336,full,1,1,0,"[""logs"", ""metrics""]",2,0,0,0,0
+incident_011,run-5f9cebd22c3847ce85b25dc66d6d4b0b,single,0,0,0,[],0,0,0,0,0
+incident_012,run-fd3ae44bff0b4a759303d31a1970a356,dynamic_no_verifier,2,2,1,"[""changes"", ""logs"", ""changes"", ""metrics""]",3,0,0,0,1
+incident_012,run-490faf4982a54f61a4801726e77ca3a9,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_012,run-f4e6e45a4aae4a4aad63818e8126886b,full,1,1,0,"[""changes"", ""logs""]",4,0,0,0,0
+incident_012,run-77c3aa9d36914b41b92db268c8f6e440,single,1,1,0,"[""logs"", ""changes""]",4,0,0,0,0
+incident_013,run-97f211b84a624454b92983c31a351730,dynamic_no_verifier,2,2,1,"[""logs"", ""metrics"", ""logs"", ""metrics""]",4,0,0,0,0
+incident_013,run-4c815598a1f3448894ea2006d8c71dae,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_013,run-f15b0f7b60914856b4d53909a1821906,full,2,2,1,"[""logs"", ""metrics"", ""logs"", ""metrics""]",3,1,0,3,0
+incident_013,run-13ef61d9e7b340438c99e3eca173b4fe,single,1,1,0,"[""logs"", ""metrics""]",4,0,0,0,0
+incident_014,run-f733d4abfc034037b24657bf7d7ce3cd,dynamic_no_verifier,2,2,1,"[""logs"", ""metrics"", ""logs"", ""metrics""]",4,0,0,0,0
+incident_014,run-37ea49a4006d4c1bb98cad6838379cf3,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_014,run-5a21a92f984a4a95a8642e8eb3cb170b,full,1,1,0,"[""changes"", ""logs""]",3,1,0,3,0
+incident_014,run-f375a307341143c784b9fd281827ec24,single,1,1,0,"[""logs"", ""metrics""]",4,1,0,3,0
+incident_015,run-609ed129afae4566b545a3a664f244ef,dynamic_no_verifier,2,2,1,"[""changes"", ""logs"", ""metrics"", ""changes""]",6,0,0,0,1
+incident_015,run-ee8e2fbf8c0c40bbb621f49c5d61c5df,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",6,0,0,0,0
+incident_015,run-e0d4a5258fef47cf827a0963b346bdf0,full,1,1,0,"[""logs"", ""metrics""]",5,1,0,2,0
+incident_015,run-afd77ef369f541e6b86668c4d9aa043e,single,1,1,0,"[""logs"", ""metrics""]",5,0,0,0,0
+incident_016,run-d8c0fa3aa0e449e0ad269e1da08d60cc,dynamic_no_verifier,1,1,0,"[""logs"", ""metrics""]",3,0,0,0,0
+incident_016,run-bbbc75775ec3410fbefd00b6efd19bf6,fixed,1,1,0,"[""logs"", ""metrics"", ""changes""]",5,0,0,0,0
+incident_016,run-5ac966f879dc446085d96af624e7b58b,full,1,1,0,"[""logs"", ""metrics""]",0,0,0,0,0
+incident_016,run-883ce81b00f549e6821e77b036b21d26,single,2,2,1,"[""logs"", ""metrics"", ""changes"", ""metrics""]",5,1,0,3,1

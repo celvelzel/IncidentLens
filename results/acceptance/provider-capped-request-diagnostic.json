@@ -1,0 +1,25 @@
+{
+  "purpose": "Post-benchmark public-seed availability diagnostic with explicit output cap; no test input or scoring",
+  "model_id": "deepseek-v4-flash-0731",
+  "max_tokens": 2048,
+  "request_timeout_seconds": 30,
+  "structured_repair_retries": 0,
+  "validated_output": false,
+  "error_code": "STRUCTURED_OUTPUT_INVALID",
+  "usage": {
+    "source": "model",
+    "model_id": "deepseek-v4-flash-0731",
+    "llm_calls": 1,
+    "prompt_tokens": 2228,
+    "completion_tokens": 370,
+    "total_tokens": 2598,
+    "measured_total_tokens": 2598,
+    "tokens_complete": true,
+    "elapsed_ms": 13861.475799989421
+  },
+  "http_statuses": [
+    200
+  ],
+  "request_attempts": 1,
+  "elapsed_ms": 13866.693600008148
+}

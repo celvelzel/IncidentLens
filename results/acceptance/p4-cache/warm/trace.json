@@ -3,11 +3,11 @@
   "provider": "mock",
   "variant": "full",
   "cache_mode": "semantic",
-  "elapsed_ms": 125.68040000041947,
+  "elapsed_ms": 337.5573999946937,
   "state": {
     "workspace_id": "incident-lens",
     "incident_id": "incident_001",
-    "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+    "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
     "public_summary": {
       "incident_id": "incident_001",
       "title": "Service incident 001",
@@ -36,7 +36,7 @@
       {
         "finding_id": "finding-check-logs-0",
         "task_id": "check-logs-0",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
         "role": "logs",
         "claim": "Observed evidence incident_001-L001, incident_001-L002, incident_001-L005, incident_001-L022, incident_001-L006, incident_001-L025",
@@ -55,7 +55,7 @@
       {
         "finding_id": "finding-check-metrics-0",
         "task_id": "check-metrics-0",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
         "role": "metrics",
         "claim": "Observed evidence incident_001-M003, incident_001-M004, incident_001-M005, incident_001-M010, incident_001-M006, incident_001-M009, incident_001-M011: database health is normal; check backend pool configuration",
@@ -75,7 +75,7 @@
       {
         "finding_id": "finding-check-changes-2",
         "task_id": "check-changes-2",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
         "role": "changes",
         "claim": "Observed evidence incident_001-C001",
@@ -89,7 +89,7 @@
       {
         "finding_id": "finding-check-changes-3",
         "task_id": "check-changes-3",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
         "role": "changes",
         "claim": "Observed evidence incident_001-D001, incident_001-C001",
@@ -318,7 +318,9 @@
           "incident_001-M004"
         ],
         "predicted_observations": [
-          "Database capacity should be exhausted"
+          "Database capacity should be exhausted",
+          "Database sessions reach server connection capacity",
+          "New database sessions are rejected and backend requests fail"
         ],
         "status": "REJECTED",
         "open_questions": []
@@ -334,8 +336,8 @@
         ],
         "against_ids": [],
         "predicted_observations": [
-          "Reduced backend pool capacity causes local acquisition contention",
-          "Acquisition deadlines fail while database capacity remains available"
+          "Acquisition deadlines fail while database capacity remains available",
+          "Reduced backend pool capacity causes local acquisition contention"
         ],
         "status": "OPEN",
         "open_questions": []
@@ -555,9 +557,9 @@
     "events": [
       {
         "event_id": "event-1",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.003300Z",
+        "timestamp": "2026-10-11T15:10:39.370611Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -570,8 +572,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.09699999645818025,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.11140000424347818,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -581,9 +583,9 @@
       },
       {
         "event_id": "event-2",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.003357Z",
+        "timestamp": "2026-10-11T15:10:39.370642Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -628,9 +630,9 @@
       },
       {
         "event_id": "event-3",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.004557Z",
+        "timestamp": "2026-10-11T15:10:39.371859Z",
         "event_type": "LLM_CALL",
         "role": "logs",
         "task_id": null,
@@ -643,8 +645,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.04400000034365803,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.043799998820759356,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -654,9 +656,9 @@
       },
       {
         "event_id": "event-4",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.004727Z",
+        "timestamp": "2026-10-11T15:10:39.372393Z",
         "event_type": "LLM_CALL",
         "role": "metrics",
         "task_id": null,
@@ -669,8 +671,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.0371999922208488,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.04600000102072954,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -680,9 +682,9 @@
       },
       {
         "event_id": "event-5",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.008794Z",
+        "timestamp": "2026-10-11T15:10:39.376093Z",
         "event_type": "TOOL_CALL",
         "role": "logs",
         "task_id": null,
@@ -698,7 +700,7 @@
             "limit": 50
           },
           "result": {
-            "call_id": "call-da25144edf8249b5be70a3334fc9c0b0",
+            "call_id": "call-21be830b7b37411498106f69e1f0e8fc",
             "ok": true,
             "records": [
               {
@@ -779,7 +781,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 3.4257000079378486,
+            "elapsed_ms": 3.238899997086264,
             "record_count": 6,
             "next_cursor": null
           },
@@ -790,9 +792,9 @@
       },
       {
         "event_id": "event-6",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.027013Z",
+        "timestamp": "2026-10-11T15:10:39.392456Z",
         "event_type": "CACHE_HIT",
         "role": "logs",
         "task_id": null,
@@ -801,7 +803,7 @@
         "message": "",
         "details": {
           "cache_mode": "semantic",
-          "cache_namespace_digest": "4c72821a0d17c993a6c583419de26ec90c4f645b57d850bf60fb51105d8c91f9",
+          "cache_namespace_digest": "118cc1703bd8969a14419ba96d0b5c0b46d5bf08de8715006b97fd2bbf0210e7",
           "agent_role": "logs",
           "task_id": "check-logs-0",
           "evidence_snapshot_sha256": "848870a9d848d6ff743295663a69b54ab2cb7cbb3178f4c3058c3e39362aca43",
@@ -810,7 +812,7 @@
           "cache_hit": true,
           "cache_validated": true,
           "cache_invalidation_reason": null,
-          "cache_lookup_ms": 18.181899999035522,
+          "cache_lookup_ms": 16.322600000421517,
           "llm_calls_avoided": 1
         },
         "source": "cache",
@@ -818,9 +820,9 @@
       },
       {
         "event_id": "event-7",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.027185Z",
+        "timestamp": "2026-10-11T15:10:39.392657Z",
         "event_type": "TOOL_CALL",
         "role": "metrics",
         "task_id": null,
@@ -836,7 +838,7 @@
             "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-eccf7fb0d4c54532a3f4dfc321c1ffec",
+            "call_id": "call-56a492b8ebfe40ff9f0e0c0018a2ba60",
             "ok": true,
             "records": [
               {
@@ -897,7 +899,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 3.7370000063674524,
+            "elapsed_ms": 4.409300003317185,
             "record_count": 4,
             "next_cursor": null
           },
@@ -908,9 +910,9 @@
       },
       {
         "event_id": "event-8",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.030047Z",
+        "timestamp": "2026-10-11T15:10:39.395881Z",
         "event_type": "TOOL_CALL",
         "role": "metrics",
         "task_id": null,
@@ -926,7 +928,7 @@
             "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-d8f0b53498b440d7a5634467483a08d0",
+            "call_id": "call-3bfcd4d1e6f346c188f911a25042d3cc",
             "ok": true,
             "records": [
               {
@@ -973,7 +975,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 2.5037000013981014,
+            "elapsed_ms": 2.921399995102547,
             "record_count": 3,
             "next_cursor": null
           },
@@ -984,9 +986,9 @@
       },
       {
         "event_id": "event-9",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.048694Z",
+        "timestamp": "2026-10-11T15:10:39.412198Z",
         "event_type": "CACHE_HIT",
         "role": "metrics",
         "task_id": null,
@@ -995,7 +997,7 @@
         "message": "",
         "details": {
           "cache_mode": "semantic",
-          "cache_namespace_digest": "24f40eb24b29d56b30cdf666d02bf2bbf1e650770578e38812f75ad2c5ae4674",
+          "cache_namespace_digest": "ac51448e0f395ee196e828880037535107c40d0a80995dc4f3c963e7cf9897b7",
           "agent_role": "metrics",
           "task_id": "check-metrics-0",
           "evidence_snapshot_sha256": "bd513ee52cbe72047d494a21b8003258bb854eeb06324ba6ae9f49e05d4efc86",
@@ -1004,7 +1006,7 @@
           "cache_hit": true,
           "cache_validated": true,
           "cache_invalidation_reason": null,
-          "cache_lookup_ms": 18.60659998783376,
+          "cache_lookup_ms": 16.28149999305606,
           "llm_calls_avoided": 1
         },
         "source": "cache",
@@ -1012,9 +1014,9 @@
       },
       {
         "event_id": "event-10",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.051065Z",
+        "timestamp": "2026-10-11T15:10:39.414164Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -1026,7 +1028,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "logs",
               "claim": "Observed evidence incident_001-L001, incident_001-L002, incident_001-L005, incident_001-L022, incident_001-L006, incident_001-L025",
@@ -1045,7 +1047,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "metrics",
               "claim": "Observed evidence incident_001-M003, incident_001-M004, incident_001-M005, incident_001-M010, incident_001-M006, incident_001-M009, incident_001-M011: database health is normal; check backend pool configuration",
@@ -1078,7 +1080,9 @@
                 "incident_001-M004"
               ],
               "predicted_observations": [
-                "Database capacity should be exhausted"
+                "Database capacity should be exhausted",
+                "Database sessions reach server connection capacity",
+                "New database sessions are rejected and backend requests fail"
               ],
               "status": "REJECTED",
               "open_questions": []
@@ -1092,8 +1096,8 @@
               ],
               "against_ids": [],
               "predicted_observations": [
-                "Reduced backend pool capacity causes local acquisition contention",
-                "Acquisition deadlines fail while database capacity remains available"
+                "Acquisition deadlines fail while database capacity remains available",
+                "Reduced backend pool capacity causes local acquisition contention"
               ],
               "status": "OPEN",
               "open_questions": []
@@ -1105,9 +1109,9 @@
       },
       {
         "event_id": "event-11",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.052797Z",
+        "timestamp": "2026-10-11T15:10:39.415855Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1117,7 +1121,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-1d67ab23748a4949befb44fbf81edc59",
+            "call_id": "call-f7527e7011ff42748eaf0bebab286b97",
             "ok": true,
             "records": [
               {
@@ -1296,7 +1300,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.32130000181496143,
+            "elapsed_ms": 0.6690000009257346,
             "record_count": 13,
             "next_cursor": null
           }
@@ -1306,9 +1310,9 @@
       },
       {
         "event_id": "event-12",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.053485Z",
+        "timestamp": "2026-10-11T15:10:39.417986Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1321,8 +1325,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.20289998792577535,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.25460000324528664,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1332,9 +1336,9 @@
       },
       {
         "event_id": "event-13",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.053623Z",
+        "timestamp": "2026-10-11T15:10:39.418152Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -1370,7 +1374,7 @@
             ],
             "rationale": "Missing independent causal support or an unresolved contradictory observation"
           },
-          "hypothesis_sha256": "baf3dab4e5e894dd39e1a0819a7e0235e0975857f905a14d605e30255ebee660",
+          "hypothesis_sha256": "64e1d23d16d816ef09169b18fc902c4afd82413d5eb1c7bc0864f2f44e47583f",
           "evidence_sha256": "9c42eb70235fcbe04ca661cd658c8021fbad7109d37c09d98caf21aa2b8e026c"
         },
         "source": "runtime",
@@ -1378,9 +1382,9 @@
       },
       {
         "event_id": "event-14",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.054795Z",
+        "timestamp": "2026-10-11T15:10:39.421317Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -1393,8 +1397,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.08150000940077007,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.17109999316744506,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1404,9 +1408,9 @@
       },
       {
         "event_id": "event-15",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.054815Z",
+        "timestamp": "2026-10-11T15:10:39.421343Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -1442,9 +1446,9 @@
       },
       {
         "event_id": "event-16",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.055624Z",
+        "timestamp": "2026-10-11T15:10:39.422763Z",
         "event_type": "LLM_CALL",
         "role": "changes",
         "task_id": null,
@@ -1457,8 +1461,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.06439999560825527,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.07229999755509198,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1468,9 +1472,9 @@
       },
       {
         "event_id": "event-17",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.058112Z",
+        "timestamp": "2026-10-11T15:10:39.425682Z",
         "event_type": "TOOL_CALL",
         "role": "changes",
         "task_id": null,
@@ -1485,7 +1489,7 @@
             "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-901e491797344ee988197807163e2b19",
+            "call_id": "call-799905ff93fc4a0b8515456ad08ee65e",
             "ok": true,
             "records": [
               {
@@ -1503,7 +1507,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 2.2333999950205907,
+            "elapsed_ms": 2.6429999998072162,
             "record_count": 1,
             "next_cursor": null
           },
@@ -1514,9 +1518,9 @@
       },
       {
         "event_id": "event-18",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.075585Z",
+        "timestamp": "2026-10-11T15:10:39.442653Z",
         "event_type": "CACHE_HIT",
         "role": "changes",
         "task_id": null,
@@ -1525,7 +1529,7 @@
         "message": "",
         "details": {
           "cache_mode": "semantic",
-          "cache_namespace_digest": "dea1514cbffbb3b97c4eb6fa9b514ad605aa4d736517b9544ea32ae06d49ba6d",
+          "cache_namespace_digest": "5ba874eb86521d26e78bd3cdfa1a7eaddc8e1ce2e69ee48e863bbb65af09dd7d",
           "agent_role": "changes",
           "task_id": "check-changes-2",
           "evidence_snapshot_sha256": "bb6ce2daf7c3b71cc6879a312152aad7f8aa01f68904fdbeb669c95ea5cfcd72",
@@ -1534,7 +1538,7 @@
           "cache_hit": true,
           "cache_validated": true,
           "cache_invalidation_reason": null,
-          "cache_lookup_ms": 17.430899999453686,
+          "cache_lookup_ms": 16.925499992794357,
           "llm_calls_avoided": 1
         },
         "source": "cache",
@@ -1542,9 +1546,9 @@
       },
       {
         "event_id": "event-19",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.077894Z",
+        "timestamp": "2026-10-11T15:10:39.445958Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -1556,7 +1560,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "logs",
               "claim": "Observed evidence incident_001-L001, incident_001-L002, incident_001-L005, incident_001-L022, incident_001-L006, incident_001-L025",
@@ -1575,7 +1579,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "metrics",
               "claim": "Observed evidence incident_001-M003, incident_001-M004, incident_001-M005, incident_001-M010, incident_001-M006, incident_001-M009, incident_001-M011: database health is normal; check backend pool configuration",
@@ -1595,7 +1599,7 @@
             {
               "finding_id": "finding-check-changes-2",
               "task_id": "check-changes-2",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "changes",
               "claim": "Observed evidence incident_001-C001",
@@ -1622,7 +1626,9 @@
                 "incident_001-M004"
               ],
               "predicted_observations": [
-                "Database capacity should be exhausted"
+                "Database capacity should be exhausted",
+                "Database sessions reach server connection capacity",
+                "New database sessions are rejected and backend requests fail"
               ],
               "status": "REJECTED",
               "open_questions": []
@@ -1636,8 +1642,8 @@
               ],
               "against_ids": [],
               "predicted_observations": [
-                "Reduced backend pool capacity causes local acquisition contention",
-                "Acquisition deadlines fail while database capacity remains available"
+                "Acquisition deadlines fail while database capacity remains available",
+                "Reduced backend pool capacity causes local acquisition contention"
               ],
               "status": "OPEN",
               "open_questions": []
@@ -1649,9 +1655,9 @@
       },
       {
         "event_id": "event-20",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.079567Z",
+        "timestamp": "2026-10-11T15:10:39.447722Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1661,7 +1667,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-914ed190f5ac4e31b79aaacc6825ed66",
+            "call_id": "call-9b0ea299a773462da45c2dd31ec0322b",
             "ok": true,
             "records": [
               {
@@ -1853,7 +1859,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.3809999907389283,
+            "elapsed_ms": 0.34949999826494604,
             "record_count": 14,
             "next_cursor": null
           }
@@ -1863,9 +1869,9 @@
       },
       {
         "event_id": "event-21",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.080311Z",
+        "timestamp": "2026-10-11T15:10:39.450125Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1878,8 +1884,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.1841000048443675,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.2364999963901937,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1889,9 +1895,9 @@
       },
       {
         "event_id": "event-22",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.080454Z",
+        "timestamp": "2026-10-11T15:10:39.450293Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -1928,7 +1934,7 @@
             ],
             "rationale": "Missing independent causal support or an unresolved contradictory observation"
           },
-          "hypothesis_sha256": "baf3dab4e5e894dd39e1a0819a7e0235e0975857f905a14d605e30255ebee660",
+          "hypothesis_sha256": "64e1d23d16d816ef09169b18fc902c4afd82413d5eb1c7bc0864f2f44e47583f",
           "evidence_sha256": "e5d19fee429b08b91a2988fa9d016a911989d60f125e8df72705d722f3dcf648"
         },
         "source": "runtime",
@@ -1936,9 +1942,9 @@
       },
       {
         "event_id": "event-23",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.081909Z",
+        "timestamp": "2026-10-11T15:10:39.452762Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -1951,8 +1957,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.10570000449661165,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.1838000025600195,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1962,9 +1968,9 @@
       },
       {
         "event_id": "event-24",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.081937Z",
+        "timestamp": "2026-10-11T15:10:39.452795Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -2001,9 +2007,9 @@
       },
       {
         "event_id": "event-25",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.082865Z",
+        "timestamp": "2026-10-11T15:10:39.454479Z",
         "event_type": "LLM_CALL",
         "role": "changes",
         "task_id": null,
@@ -2016,8 +2022,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.06340000254567713,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.11100000119768083,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -2027,9 +2033,9 @@
       },
       {
         "event_id": "event-26",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.087175Z",
+        "timestamp": "2026-10-11T15:10:39.460960Z",
         "event_type": "TOOL_CALL",
         "role": "changes",
         "task_id": null,
@@ -2042,7 +2048,7 @@
             "change_id": "change-1-01"
           },
           "result": {
-            "call_id": "call-7ca5e1271d8b4acc96a81033dd9eb193",
+            "call_id": "call-a21d214c59dc4d8d8f42e0c54f5fa36a",
             "ok": true,
             "records": [
               {
@@ -2059,7 +2065,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 4.013299985672347,
+            "elapsed_ms": 6.102899991674349,
             "record_count": 1,
             "next_cursor": null
           },
@@ -2070,9 +2076,9 @@
       },
       {
         "event_id": "event-27",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.089491Z",
+        "timestamp": "2026-10-11T15:10:39.464226Z",
         "event_type": "TOOL_CALL",
         "role": "changes",
         "task_id": null,
@@ -2087,7 +2093,7 @@
             "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-716ae4f86b8f43bea68afc5d7bf126b8",
+            "call_id": "call-4edc3221f09c4a24906d20ed0d070274",
             "ok": true,
             "records": [
               {
@@ -2105,7 +2111,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 2.0394999883137643,
+            "elapsed_ms": 2.9538999951910228,
             "record_count": 1,
             "next_cursor": null
           },
@@ -2116,9 +2122,9 @@
       },
       {
         "event_id": "event-28",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.107179Z",
+        "timestamp": "2026-10-11T15:10:39.481828Z",
         "event_type": "CACHE_HIT",
         "role": "changes",
         "task_id": null,
@@ -2127,7 +2133,7 @@
         "message": "",
         "details": {
           "cache_mode": "semantic",
-          "cache_namespace_digest": "5229a258685986687adf0a72850f6fb69aff389930ecc91aa654c2fc7f56d1fb",
+          "cache_namespace_digest": "d0a23dc31da01a8969665c69803a3bef56322424694350717b80a0adaccf3ade",
           "agent_role": "changes",
           "task_id": "check-changes-3",
           "evidence_snapshot_sha256": "545f7cf5ede98e4514d0de90aaa2cdbb87f3edee6a4cc47231ef7d16febe07fe",
@@ -2136,7 +2142,7 @@
           "cache_hit": true,
           "cache_validated": true,
           "cache_invalidation_reason": null,
-          "cache_lookup_ms": 17.64609999372624,
+          "cache_lookup_ms": 17.56159999058582,
           "llm_calls_avoided": 1
         },
         "source": "cache",
@@ -2144,9 +2150,9 @@
       },
       {
         "event_id": "event-29",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.110230Z",
+        "timestamp": "2026-10-11T15:10:39.485333Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -2158,7 +2164,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "logs",
               "claim": "Observed evidence incident_001-L001, incident_001-L002, incident_001-L005, incident_001-L022, incident_001-L006, incident_001-L025",
@@ -2177,7 +2183,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "metrics",
               "claim": "Observed evidence incident_001-M003, incident_001-M004, incident_001-M005, incident_001-M010, incident_001-M006, incident_001-M009, incident_001-M011: database health is normal; check backend pool configuration",
@@ -2197,7 +2203,7 @@
             {
               "finding_id": "finding-check-changes-2",
               "task_id": "check-changes-2",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "changes",
               "claim": "Observed evidence incident_001-C001",
@@ -2211,7 +2217,7 @@
             {
               "finding_id": "finding-check-changes-3",
               "task_id": "check-changes-3",
-              "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+              "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
               "incident_id": "incident_001",
               "role": "changes",
               "claim": "Observed evidence incident_001-D001, incident_001-C001",
@@ -2239,7 +2245,9 @@
                 "incident_001-M004"
               ],
               "predicted_observations": [
-                "Database capacity should be exhausted"
+                "Database capacity should be exhausted",
+                "Database sessions reach server connection capacity",
+                "New database sessions are rejected and backend requests fail"
               ],
               "status": "REJECTED",
               "open_questions": []
@@ -2255,8 +2263,8 @@
               ],
               "against_ids": [],
               "predicted_observations": [
-                "Reduced backend pool capacity causes local acquisition contention",
-                "Acquisition deadlines fail while database capacity remains available"
+                "Acquisition deadlines fail while database capacity remains available",
+                "Reduced backend pool capacity causes local acquisition contention"
               ],
               "status": "OPEN",
               "open_questions": []
@@ -2268,9 +2276,9 @@
       },
       {
         "event_id": "event-30",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.111847Z",
+        "timestamp": "2026-10-11T15:10:39.487180Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -2280,7 +2288,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-fd7bf9df17f549bab9e64f4bcd36bbe5",
+            "call_id": "call-83c6701148cb4f89abe9e1987f5f1698",
             "ok": true,
             "records": [
               {
@@ -2484,7 +2492,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.39450000622309744,
+            "elapsed_ms": 0.3133999998681247,
             "record_count": 15,
             "next_cursor": null
           }
@@ -2494,9 +2502,9 @@
       },
       {
         "event_id": "event-31",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.112642Z",
+        "timestamp": "2026-10-11T15:10:39.489223Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -2509,8 +2517,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.20599999697878957,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.25779999850783497,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -2520,9 +2528,9 @@
       },
       {
         "event_id": "event-32",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.112800Z",
+        "timestamp": "2026-10-11T15:10:39.489375Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -2543,7 +2551,7 @@
             ],
             "rationale": "Independent sources and a cause discriminator support the candidate"
           },
-          "hypothesis_sha256": "51a0a52cda25f048641870860c86442537a8443b39138d9b99d826ec78b09813",
+          "hypothesis_sha256": "19e2bbc51d96991b245ce4d97fc985191cc7547481e5f45ac5c044a42ebd5f2a",
           "evidence_sha256": "35bceec61c3ec0ea80c6b2071bdfcbf9ea87820f78be724149c0a7346f73b5f3"
         },
         "source": "runtime",
@@ -2551,9 +2559,9 @@
       },
       {
         "event_id": "event-33",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.114096Z",
+        "timestamp": "2026-10-11T15:10:39.493118Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -2566,8 +2574,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.09790000331122428,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.1399000029778108,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -2577,9 +2585,9 @@
       },
       {
         "event_id": "event-34",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.114120Z",
+        "timestamp": "2026-10-11T15:10:39.493140Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -2600,9 +2608,9 @@
       },
       {
         "event_id": "event-35",
-        "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+        "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
         "incident_id": "incident_001",
-        "timestamp": "2026-10-11T04:26:27.115854Z",
+        "timestamp": "2026-10-11T15:10:39.494504Z",
         "event_type": "REPORT",
         "role": null,
         "task_id": null,
@@ -2611,7 +2619,7 @@
         "message": "",
         "details": {
           "report": {
-            "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+            "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
             "incident_id": "incident_001",
             "status": "RESOLVED",
             "root_cause": {
@@ -2625,15 +2633,15 @@
               ],
               "against_ids": [],
               "predicted_observations": [
-                "Reduced backend pool capacity causes local acquisition contention",
-                "Acquisition deadlines fail while database capacity remains available"
+                "Acquisition deadlines fail while database capacity remains available",
+                "Reduced backend pool capacity causes local acquisition contention"
               ],
               "status": "SUPPORTED",
               "open_questions": []
             },
             "causal_chain": [
-              "Reduced backend pool capacity causes local acquisition contention",
-              "Acquisition deadlines fail while database capacity remains available"
+              "Acquisition deadlines fail while database capacity remains available",
+              "Reduced backend pool capacity causes local acquisition contention"
             ],
             "supporting_evidence_ids": [
               "incident_001-C001",
@@ -2655,7 +2663,9 @@
                   "incident_001-M004"
                 ],
                 "predicted_observations": [
-                  "Database capacity should be exhausted"
+                  "Database capacity should be exhausted",
+                  "Database sessions reach server connection capacity",
+                  "New database sessions are rejected and backend requests fail"
                 ],
                 "status": "REJECTED",
                 "open_questions": []
@@ -2672,7 +2682,7 @@
       }
     ],
     "report": {
-      "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+      "run_id": "run-c4ce80b8c7e94281b619047ad5783b4a",
       "incident_id": "incident_001",
       "status": "RESOLVED",
       "root_cause": {
@@ -2686,15 +2696,15 @@
         ],
         "against_ids": [],
         "predicted_observations": [
-          "Reduced backend pool capacity causes local acquisition contention",
-          "Acquisition deadlines fail while database capacity remains available"
+          "Acquisition deadlines fail while database capacity remains available",
+          "Reduced backend pool capacity causes local acquisition contention"
         ],
         "status": "SUPPORTED",
         "open_questions": []
       },
       "causal_chain": [
-        "Reduced backend pool capacity causes local acquisition contention",
-        "Acquisition deadlines fail while database capacity remains available"
+        "Acquisition deadlines fail while database capacity remains available",
+        "Reduced backend pool capacity causes local acquisition contention"
       ],
       "supporting_evidence_ids": [
         "incident_001-C001",
@@ -2716,7 +2726,9 @@
             "incident_001-M004"
           ],
           "predicted_observations": [
-            "Database capacity should be exhausted"
+            "Database capacity should be exhausted",
+            "Database sessions reach server connection capacity",
+            "New database sessions are rejected and backend requests fail"
           ],
           "status": "REJECTED",
           "open_questions": []
@@ -2739,5 +2751,5 @@
     "tokens_used": 0
   },
   "model_id": "deterministic-public-policy-v1",
-  "prompt_version": "roles-v2"
+  "prompt_version": "roles-v6"
 }

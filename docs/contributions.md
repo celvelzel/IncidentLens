@@ -14,3 +14,8 @@ This matrix maps requested roles to generated implementation, not student author
 
 Isolated cache implementation was integrated as 7fdf08d. Lead revalidated and
 fixed integration against current main. No PR or remote push was performed.
+
+Continuation evidence: 00d8c93 bounded experiments; 5928131/198f12c failure-aware
+scoring and Verifier STOP; 0d24227 publication/reconciliation guards; dbc54c5 and
+5aaf783 saved-artifact analysis. Independent QA recomputed complete dev/test
+artifacts separately from judging model quality. Human ownership remains unconfirmed.

@@ -1,6 +1,6 @@
 # IncidentLens — INCONCLUSIVE
 
-Run: `run-1d2d2c4b3da14572be9abf9201c15868`
+Run: `run-336ff02a305147fdb211933d21351b94`
 
 Incident: `incident_006`
 
@@ -20,4 +20,4 @@ No supported root cause
 - Need additional discriminating evidence
 
 ## Stop reason
-Repeated investigation with unchanged evidence
+Missing discriminating evidence

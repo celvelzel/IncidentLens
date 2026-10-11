@@ -45,3 +45,12 @@ completion evidence belongs in live-continuation.md.
 Automatic acceptance does not establish human semantic annotation, student
 contribution ownership, video or Canvas submission. Analysis explicitly reports
 ordinary coverage zero and pending annotation.
+
+## Final resumed checkpoint
+
+The configured dev 40 and held-out test 80 records are complete and retained.
+Investigation source stayed at 198f12c throughout both formal experiments.
+The full final suite passed 217 tests with one Windows privilege skip; seven
+fresh-clone installation commands passed. Three bounded post-benchmark Provider
+probes were kept separately and did not alter the frozen implementation.
+See live-continuation.md for negative outcomes and remaining acceptance limits.

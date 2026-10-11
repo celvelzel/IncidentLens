@@ -1,5 +1,5 @@
-variant,source,split,runs,error_runs,resolved_runs,inconclusive_runs,root_cause_correct,identifiable_denominator,root_cause_accuracy,correct_abstentions,unidentifiable_denominator,correct_abstention_rate,misleading_correct,misleading_identifiable_denominator,misleading_accuracy,valid_citations,citation_denominator,citation_existence_validity,tool_calls,llm_requests,total_tokens,cost_usd,failed_calls,latency_ms,unsupported_claim_rate,semantic_review_status,cache_mode
-single,mock,dev,10,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,57,102,,,0,384.14900001953356,,unreviewed,off
-fixed,mock,dev,10,0,4,6,4,9,0.4444444444444444,1,1,1.0,4,9,0.4444444444444444,31,31,1.0,40,60,,,0,260.50410003517754,,unreviewed,off
-dynamic_no_verifier,mock,dev,10,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,39,84,,,0,315.58860003133304,,unreviewed,off
-full,mock,dev,10,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,57,102,,,0,354.4825999852037,,unreviewed,off
+variant,source,split,runs,error_runs,runtime_failure_runs,resolved_runs,inconclusive_runs,root_cause_correct,identifiable_denominator,root_cause_accuracy,correct_abstentions,unidentifiable_denominator,correct_abstention_rate,misleading_correct,misleading_identifiable_denominator,misleading_accuracy,valid_citations,citation_denominator,citation_existence_validity,tool_calls,llm_requests,total_tokens,cost_usd,failed_calls,latency_ms,unsupported_claim_rate,semantic_review_status,cache_mode
+single,mock,dev,10,0,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,57,102,,,0,7952.003900005366,,unreviewed,off
+fixed,mock,dev,10,0,0,4,6,4,9,0.4444444444444444,1,1,1.0,4,9,0.4444444444444444,31,31,1.0,40,60,,,0,1758.963499989477,,unreviewed,off
+dynamic_no_verifier,mock,dev,10,0,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,39,84,,,0,4888.485499992385,,unreviewed,off
+full,mock,dev,10,0,0,9,1,9,9,1.0,1,1,1.0,9,9,1.0,46,46,1.0,57,102,,,0,4612.90680001548,,unreviewed,off

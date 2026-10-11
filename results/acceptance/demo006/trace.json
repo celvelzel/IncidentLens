@@ -3,11 +3,11 @@
   "provider": "mock",
   "variant": "full",
   "cache_mode": "off",
-  "elapsed_ms": 54.71539999416564,
+  "elapsed_ms": 69.06059999892022,
   "state": {
     "workspace_id": "incident-lens",
     "incident_id": "incident_006",
-    "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+    "run_id": "run-336ff02a305147fdb211933d21351b94",
     "public_summary": {
       "incident_id": "incident_006",
       "title": "Service incident 006",
@@ -36,7 +36,7 @@
       {
         "finding_id": "finding-check-logs-0",
         "task_id": "check-logs-0",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
         "role": "logs",
         "claim": "Observed evidence incident_006-L001, incident_006-L002, incident_006-L006, incident_006-L028, incident_006-L029",
@@ -54,7 +54,7 @@
       {
         "finding_id": "finding-check-metrics-0",
         "task_id": "check-metrics-0",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
         "role": "metrics",
         "claim": "Observed evidence incident_006-M003, incident_006-M010, incident_006-M006, incident_006-M011",
@@ -71,7 +71,7 @@
       {
         "finding_id": "finding-check-logs-2",
         "task_id": "check-logs-2",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
         "role": "logs",
         "claim": "Observed evidence incident_006-L021, incident_006-L022, incident_006-L024",
@@ -85,16 +85,14 @@
         "followup_question": null
       },
       {
-        "finding_id": "finding-check-logs-3",
-        "task_id": "check-logs-3",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "finding_id": "finding-check-changes-3",
+        "task_id": "check-changes-3",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "role": "logs",
-        "claim": "Observed evidence incident_006-L021, incident_006-L022, incident_006-L024",
+        "role": "changes",
+        "claim": "Observed evidence incident_006-C001",
         "evidence_ids": [
-          "incident_006-L021",
-          "incident_006-L022",
-          "incident_006-L024"
+          "incident_006-C001"
         ],
         "relation": "neutral",
         "confidence_qualifier": "supported",
@@ -260,6 +258,19 @@
           "severity": "INFO",
           "request_id": "noise-6-17"
         }
+      },
+      "incident_006-C001": {
+        "evidence_id": "incident_006-C001",
+        "incident_id": "incident_006",
+        "source_type": "changes",
+        "service": "backend",
+        "observed_at": "2026-10-06T14:00:00Z",
+        "source_path": "public/changes.jsonl",
+        "excerpt": "runtime environment update applied",
+        "metadata": {
+          "change_id": "change-6-01",
+          "change_type": "config"
+        }
       }
     },
     "hypotheses": [
@@ -320,14 +331,15 @@
         "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
       },
       {
-        "task_id": "check-logs-3",
-        "role": "logs",
-        "question": "Check direct database rejection observations",
+        "task_id": "check-changes-3",
+        "role": "changes",
+        "question": "Check recent backend changes",
         "allowed_tools": [
-          "query_logs"
+          "query_changes",
+          "get_config_diff"
         ],
         "filters": {
-          "service": "postgres"
+          "service": "backend"
         },
         "reason": "Resolve an evidence gap in the current candidate",
         "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
@@ -471,17 +483,18 @@
       },
       {
         "action": "INVESTIGATE",
-        "reason": "Follow verifier discriminating check",
+        "reason": "Check changes against observed symptoms",
         "assignments": [
           {
-            "task_id": "check-logs-3",
-            "role": "logs",
-            "question": "Check direct database rejection observations",
+            "task_id": "check-changes-3",
+            "role": "changes",
+            "question": "Check recent backend changes",
             "allowed_tools": [
-              "query_logs"
+              "query_changes",
+              "get_config_diff"
             ],
             "filters": {
-              "service": "postgres"
+              "service": "backend"
             },
             "reason": "Resolve an evidence gap in the current candidate",
             "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
@@ -491,33 +504,19 @@
         "stop_reason": null
       },
       {
-        "action": "INVESTIGATE",
-        "reason": "Follow verifier discriminating check",
-        "assignments": [
-          {
-            "task_id": "check-logs-4",
-            "role": "logs",
-            "question": "Check direct database rejection observations",
-            "allowed_tools": [
-              "query_logs"
-            ],
-            "filters": {
-              "service": "postgres"
-            },
-            "reason": "Resolve an evidence gap in the current candidate",
-            "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
-          }
-        ],
+        "action": "ABSTAIN",
+        "reason": "Observed evidence lacks sufficient causal support",
+        "assignments": [],
         "selected_hypothesis_id": null,
-        "stop_reason": null
+        "stop_reason": "Missing discriminating evidence"
       }
     ],
     "events": [
       {
         "event_id": "event-1",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.293729Z",
+        "timestamp": "2026-10-11T15:06:24.176074Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -530,8 +529,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.10069999552797526,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.14509999891743064,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -541,9 +540,9 @@
       },
       {
         "event_id": "event-2",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.293788Z",
+        "timestamp": "2026-10-11T15:06:24.176136Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -588,9 +587,9 @@
       },
       {
         "event_id": "event-3",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.295703Z",
+        "timestamp": "2026-10-11T15:06:24.178773Z",
         "event_type": "LLM_CALL",
         "role": "logs",
         "task_id": null,
@@ -603,8 +602,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.03979999746661633,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.05610000516753644,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -614,9 +613,9 @@
       },
       {
         "event_id": "event-4",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.295839Z",
+        "timestamp": "2026-10-11T15:06:24.179363Z",
         "event_type": "LLM_CALL",
         "role": "metrics",
         "task_id": null,
@@ -629,8 +628,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.027699992642737925,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.04959999932907522,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -640,9 +639,71 @@
       },
       {
         "event_id": "event-5",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.299610Z",
+        "timestamp": "2026-10-11T15:06:24.184128Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "postgres",
+            "metric_names": [],
+            "start_ts": "2026-10-06T14:03:00Z",
+            "end_ts": "9999-12-31T23:59:59Z"
+          },
+          "result": {
+            "call_id": "call-981169447e01437c981a3152fe37916b",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_006-M003",
+                "incident_id": "incident_006",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-06T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "cpu_percent=28 %",
+                "metadata": {
+                  "metric_name": "cpu_percent",
+                  "value": 28.0,
+                  "unit": "%"
+                }
+              },
+              {
+                "evidence_id": "incident_006-M010",
+                "incident_id": "incident_006",
+                "source_type": "metrics",
+                "service": "postgres",
+                "observed_at": "2026-10-06T14:04:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "query_p95_ms=15 ms",
+                "metadata": {
+                  "metric_name": "query_p95_ms",
+                  "value": 15.0,
+                  "unit": "ms"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 3.756299993256107,
+            "record_count": 2,
+            "next_cursor": null
+          },
+          "task_id": "check-metrics-0"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-6",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
+        "incident_id": "incident_006",
+        "timestamp": "2026-10-11T15:06:24.184303Z",
         "event_type": "TOOL_CALL",
         "role": "logs",
         "task_id": null,
@@ -658,7 +719,7 @@
             "limit": 50
           },
           "result": {
-            "call_id": "call-d8078465323d4ac6a30b69dc9f3e637c",
+            "call_id": "call-002dee2c3bee4e89b0728d2ea649a55a",
             "ok": true,
             "records": [
               {
@@ -727,7 +788,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 3.390799989574589,
+            "elapsed_ms": 4.497899994021282,
             "record_count": 5,
             "next_cursor": null
           },
@@ -737,10 +798,10 @@
         "elapsed_ms": null
       },
       {
-        "event_id": "event-6",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "event_id": "event-7",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.299850Z",
+        "timestamp": "2026-10-11T15:06:24.184559Z",
         "event_type": "LLM_CALL",
         "role": "logs",
         "task_id": null,
@@ -753,8 +814,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.14910000027157366,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.14940000255592167,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -763,72 +824,10 @@
         "elapsed_ms": null
       },
       {
-        "event_id": "event-7",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
-        "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.300353Z",
-        "event_type": "TOOL_CALL",
-        "role": "metrics",
-        "task_id": null,
-        "call_id": null,
-        "evidence_ids": [],
-        "message": "",
-        "details": {
-          "tool_name": "query_metrics",
-          "args": {
-            "service": "postgres",
-            "metric_names": [],
-            "start_ts": "2026-10-06T14:03:00Z",
-            "end_ts": "9999-12-31T23:59:59Z"
-          },
-          "result": {
-            "call_id": "call-83c9f7a15b3644f39a6e5604fc20d691",
-            "ok": true,
-            "records": [
-              {
-                "evidence_id": "incident_006-M003",
-                "incident_id": "incident_006",
-                "source_type": "metrics",
-                "service": "postgres",
-                "observed_at": "2026-10-06T14:04:00Z",
-                "source_path": "public/metrics.csv",
-                "excerpt": "cpu_percent=28 %",
-                "metadata": {
-                  "metric_name": "cpu_percent",
-                  "value": 28.0,
-                  "unit": "%"
-                }
-              },
-              {
-                "evidence_id": "incident_006-M010",
-                "incident_id": "incident_006",
-                "source_type": "metrics",
-                "service": "postgres",
-                "observed_at": "2026-10-06T14:04:00Z",
-                "source_path": "public/metrics.csv",
-                "excerpt": "query_p95_ms=15 ms",
-                "metadata": {
-                  "metric_name": "query_p95_ms",
-                  "value": 15.0,
-                  "unit": "ms"
-                }
-              }
-            ],
-            "error_code": null,
-            "elapsed_ms": 4.119999997783452,
-            "record_count": 2,
-            "next_cursor": null
-          },
-          "task_id": "check-metrics-0"
-        },
-        "source": "runtime",
-        "elapsed_ms": null
-      },
-      {
         "event_id": "event-8",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.302562Z",
+        "timestamp": "2026-10-11T15:06:24.187279Z",
         "event_type": "TOOL_CALL",
         "role": "metrics",
         "task_id": null,
@@ -844,7 +843,7 @@
             "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-77221adf77bc4281a00ed0768a2b68f0",
+            "call_id": "call-5ecbd1105ebf4cff931660727f54d78c",
             "ok": true,
             "records": [
               {
@@ -877,7 +876,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 1.9809000077657402,
+            "elapsed_ms": 2.5051999982679263,
             "record_count": 2,
             "next_cursor": null
           },
@@ -888,9 +887,9 @@
       },
       {
         "event_id": "event-9",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.302752Z",
+        "timestamp": "2026-10-11T15:06:24.187508Z",
         "event_type": "LLM_CALL",
         "role": "metrics",
         "task_id": null,
@@ -903,8 +902,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.10739998833741993,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.12440000136848539,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -914,9 +913,9 @@
       },
       {
         "event_id": "event-10",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.304297Z",
+        "timestamp": "2026-10-11T15:06:24.189285Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -928,7 +927,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "logs",
               "claim": "Observed evidence incident_006-L001, incident_006-L002, incident_006-L006, incident_006-L028, incident_006-L029",
@@ -946,7 +945,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "metrics",
               "claim": "Observed evidence incident_006-M003, incident_006-M010, incident_006-M006, incident_006-M011",
@@ -987,9 +986,9 @@
       },
       {
         "event_id": "event-11",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.305307Z",
+        "timestamp": "2026-10-11T15:06:24.190492Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -999,7 +998,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-b135405ae7794f928a9f1cf63cb18d6a",
+            "call_id": "call-8b94d798ba2c4b39bbabd5f4151efa80",
             "ok": true,
             "records": [
               {
@@ -1124,7 +1123,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.2506000018911436,
+            "elapsed_ms": 0.2308999974047765,
             "record_count": 9,
             "next_cursor": null
           }
@@ -1134,9 +1133,9 @@
       },
       {
         "event_id": "event-12",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.305715Z",
+        "timestamp": "2026-10-11T15:06:24.193224Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1149,8 +1148,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.16150000737980008,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.45590000809170306,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1160,9 +1159,9 @@
       },
       {
         "event_id": "event-13",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.305850Z",
+        "timestamp": "2026-10-11T15:06:24.193472Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -1205,9 +1204,9 @@
       },
       {
         "event_id": "event-14",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.306629Z",
+        "timestamp": "2026-10-11T15:06:24.196848Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -1220,8 +1219,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.061400001868605614,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.15160000475589186,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1231,9 +1230,9 @@
       },
       {
         "event_id": "event-15",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.306646Z",
+        "timestamp": "2026-10-11T15:06:24.196886Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
@@ -1268,9 +1267,9 @@
       },
       {
         "event_id": "event-16",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.307206Z",
+        "timestamp": "2026-10-11T15:06:24.198326Z",
         "event_type": "LLM_CALL",
         "role": "logs",
         "task_id": null,
@@ -1283,8 +1282,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.03460000152699649,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.05629999213851988,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1294,9 +1293,9 @@
       },
       {
         "event_id": "event-17",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.309830Z",
+        "timestamp": "2026-10-11T15:06:24.201160Z",
         "event_type": "TOOL_CALL",
         "role": "logs",
         "task_id": null,
@@ -1312,7 +1311,7 @@
             "limit": 50
           },
           "result": {
-            "call_id": "call-199d4b41d4884a8ab2b25b36d800f411",
+            "call_id": "call-bca351e452bd49be83e13504caf300b7",
             "ok": true,
             "records": [
               {
@@ -1356,7 +1355,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 2.410900007816963,
+            "elapsed_ms": 2.5419000012334436,
             "record_count": 3,
             "next_cursor": null
           },
@@ -1367,9 +1366,9 @@
       },
       {
         "event_id": "event-18",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.310010Z",
+        "timestamp": "2026-10-11T15:06:24.201361Z",
         "event_type": "LLM_CALL",
         "role": "logs",
         "task_id": null,
@@ -1382,8 +1381,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.08900000830180943,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.09070000669453293,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1393,9 +1392,9 @@
       },
       {
         "event_id": "event-19",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.312119Z",
+        "timestamp": "2026-10-11T15:06:24.203235Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -1407,7 +1406,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "logs",
               "claim": "Observed evidence incident_006-L001, incident_006-L002, incident_006-L006, incident_006-L028, incident_006-L029",
@@ -1425,7 +1424,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "metrics",
               "claim": "Observed evidence incident_006-M003, incident_006-M010, incident_006-M006, incident_006-M011",
@@ -1442,7 +1441,7 @@
             {
               "finding_id": "finding-check-logs-2",
               "task_id": "check-logs-2",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "logs",
               "claim": "Observed evidence incident_006-L021, incident_006-L022, incident_006-L024",
@@ -1482,9 +1481,9 @@
       },
       {
         "event_id": "event-20",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.313218Z",
+        "timestamp": "2026-10-11T15:06:24.204454Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1494,7 +1493,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-29798535f83f4284a5f6bee88bde60aa",
+            "call_id": "call-dbeee5fa7dcb41d1a3ecb40900b94044",
             "ok": true,
             "records": [
               {
@@ -1658,7 +1657,7 @@
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.26819999038707465,
+            "elapsed_ms": 0.26729999808594584,
             "record_count": 12,
             "next_cursor": null
           }
@@ -1668,9 +1667,9 @@
       },
       {
         "event_id": "event-21",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.314014Z",
+        "timestamp": "2026-10-11T15:06:24.206672Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -1683,8 +1682,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.1984999980777502,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.3121999907307327,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1694,9 +1693,9 @@
       },
       {
         "event_id": "event-22",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.314164Z",
+        "timestamp": "2026-10-11T15:06:24.206908Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -1739,9 +1738,9 @@
       },
       {
         "event_id": "event-23",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.315384Z",
+        "timestamp": "2026-10-11T15:06:24.210547Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -1754,8 +1753,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.09460000728722662,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.20410001161508262,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1765,29 +1764,30 @@
       },
       {
         "event_id": "event-24",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.315406Z",
+        "timestamp": "2026-10-11T15:06:24.210585Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
         "call_id": null,
         "evidence_ids": [],
-        "message": "Follow verifier discriminating check",
+        "message": "Check changes against observed symptoms",
         "details": {
           "decision": {
             "action": "INVESTIGATE",
-            "reason": "Follow verifier discriminating check",
+            "reason": "Check changes against observed symptoms",
             "assignments": [
               {
-                "task_id": "check-logs-3",
-                "role": "logs",
-                "question": "Check direct database rejection observations",
+                "task_id": "check-changes-3",
+                "role": "changes",
+                "question": "Check recent backend changes",
                 "allowed_tools": [
-                  "query_logs"
+                  "query_changes",
+                  "get_config_diff"
                 ],
                 "filters": {
-                  "service": "postgres"
+                  "service": "backend"
                 },
                 "reason": "Resolve an evidence gap in the current candidate",
                 "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
@@ -1802,11 +1802,11 @@
       },
       {
         "event_id": "event-25",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.316284Z",
+        "timestamp": "2026-10-11T15:06:24.212089Z",
         "event_type": "LLM_CALL",
-        "role": "logs",
+        "role": "changes",
         "task_id": null,
         "call_id": null,
         "evidence_ids": [],
@@ -1817,8 +1817,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.04579999949783087,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.07049999840091914,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1828,84 +1828,57 @@
       },
       {
         "event_id": "event-26",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.319544Z",
+        "timestamp": "2026-10-11T15:06:24.214718Z",
         "event_type": "TOOL_CALL",
-        "role": "logs",
+        "role": "changes",
         "task_id": null,
         "call_id": null,
         "evidence_ids": [],
         "message": "",
         "details": {
-          "tool_name": "query_logs",
+          "tool_name": "query_changes",
           "args": {
-            "service": "postgres",
-            "start_ts": "2026-10-06T14:03:00Z",
-            "end_ts": "9999-12-31T23:59:59Z",
-            "limit": 50
+            "service": "backend",
+            "start_ts": "2026-10-06T13:53:00+00:00",
+            "end_ts": "9999-12-31T23:59:59Z"
           },
           "result": {
-            "call_id": "call-f473fba3d1e444b8854492fac0668afc",
+            "call_id": "call-6d470afefe6b44da9a7dde44337863af",
             "ok": true,
             "records": [
               {
-                "evidence_id": "incident_006-L021",
+                "evidence_id": "incident_006-C001",
                 "incident_id": "incident_006",
-                "source_type": "logs",
-                "service": "postgres",
-                "observed_at": "2026-10-06T14:03:24Z",
-                "source_path": "public/logs.jsonl",
-                "excerpt": "background batch completed",
+                "source_type": "changes",
+                "service": "backend",
+                "observed_at": "2026-10-06T14:00:00Z",
+                "source_path": "public/changes.jsonl",
+                "excerpt": "runtime environment update applied",
                 "metadata": {
-                  "severity": "INFO",
-                  "request_id": "noise-6-14"
-                }
-              },
-              {
-                "evidence_id": "incident_006-L022",
-                "incident_id": "incident_006",
-                "source_type": "logs",
-                "service": "postgres",
-                "observed_at": "2026-10-06T14:04:00Z",
-                "source_path": "public/logs.jsonl",
-                "excerpt": "periodic readiness check completed",
-                "metadata": {
-                  "severity": "INFO",
-                  "request_id": "noise-6-15"
-                }
-              },
-              {
-                "evidence_id": "incident_006-L024",
-                "incident_id": "incident_006",
-                "source_type": "logs",
-                "service": "postgres",
-                "observed_at": "2026-10-06T14:05:12Z",
-                "source_path": "public/logs.jsonl",
-                "excerpt": "background batch completed",
-                "metadata": {
-                  "severity": "INFO",
-                  "request_id": "noise-6-17"
+                  "change_id": "change-6-01",
+                  "change_type": "config"
                 }
               }
             ],
             "error_code": null,
-            "elapsed_ms": 2.9639999993378296,
-            "record_count": 3,
+            "elapsed_ms": 2.3132000060286373,
+            "record_count": 1,
             "next_cursor": null
           },
-          "task_id": "check-logs-3"
+          "task_id": "check-changes-3"
         },
         "source": "runtime",
         "elapsed_ms": null
       },
       {
         "event_id": "event-27",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.319725Z",
+        "timestamp": "2026-10-11T15:06:24.214934Z",
         "event_type": "LLM_CALL",
-        "role": "logs",
+        "role": "changes",
         "task_id": null,
         "call_id": null,
         "evidence_ids": [],
@@ -1916,8 +1889,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.08060000254772604,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.0788999896030873,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -1927,9 +1900,9 @@
       },
       {
         "event_id": "event-28",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.321655Z",
+        "timestamp": "2026-10-11T15:06:24.217313Z",
         "event_type": "MERGE",
         "role": null,
         "task_id": null,
@@ -1941,7 +1914,7 @@
             {
               "finding_id": "finding-check-logs-0",
               "task_id": "check-logs-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "logs",
               "claim": "Observed evidence incident_006-L001, incident_006-L002, incident_006-L006, incident_006-L028, incident_006-L029",
@@ -1959,7 +1932,7 @@
             {
               "finding_id": "finding-check-metrics-0",
               "task_id": "check-metrics-0",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "metrics",
               "claim": "Observed evidence incident_006-M003, incident_006-M010, incident_006-M006, incident_006-M011",
@@ -1976,7 +1949,7 @@
             {
               "finding_id": "finding-check-logs-2",
               "task_id": "check-logs-2",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
               "role": "logs",
               "claim": "Observed evidence incident_006-L021, incident_006-L022, incident_006-L024",
@@ -1990,16 +1963,14 @@
               "followup_question": null
             },
             {
-              "finding_id": "finding-check-logs-3",
-              "task_id": "check-logs-3",
-              "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+              "finding_id": "finding-check-changes-3",
+              "task_id": "check-changes-3",
+              "run_id": "run-336ff02a305147fdb211933d21351b94",
               "incident_id": "incident_006",
-              "role": "logs",
-              "claim": "Observed evidence incident_006-L021, incident_006-L022, incident_006-L024",
+              "role": "changes",
+              "claim": "Observed evidence incident_006-C001",
               "evidence_ids": [
-                "incident_006-L021",
-                "incident_006-L022",
-                "incident_006-L024"
+                "incident_006-C001"
               ],
               "relation": "neutral",
               "confidence_qualifier": "supported",
@@ -2032,9 +2003,9 @@
       },
       {
         "event_id": "event-29",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.322747Z",
+        "timestamp": "2026-10-11T15:06:24.218590Z",
         "event_type": "TOOL_CALL",
         "role": "verifier",
         "task_id": null,
@@ -2044,7 +2015,7 @@
         "details": {
           "tool_name": "fetch_evidence_by_ids",
           "result": {
-            "call_id": "call-283d024fc65349089b5c50115f846b3b",
+            "call_id": "call-61890779f74946e3932e01cc488dc88c",
             "ok": true,
             "records": [
               {
@@ -2205,11 +2176,24 @@
                   "severity": "INFO",
                   "request_id": "noise-6-17"
                 }
+              },
+              {
+                "evidence_id": "incident_006-C001",
+                "incident_id": "incident_006",
+                "source_type": "changes",
+                "service": "backend",
+                "observed_at": "2026-10-06T14:00:00Z",
+                "source_path": "public/changes.jsonl",
+                "excerpt": "runtime environment update applied",
+                "metadata": {
+                  "change_id": "change-6-01",
+                  "change_type": "config"
+                }
               }
             ],
             "error_code": null,
-            "elapsed_ms": 0.23689999943599105,
-            "record_count": 12,
+            "elapsed_ms": 0.2724000078160316,
+            "record_count": 13,
             "next_cursor": null
           }
         },
@@ -2218,9 +2202,9 @@
       },
       {
         "event_id": "event-30",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.323447Z",
+        "timestamp": "2026-10-11T15:06:24.221011Z",
         "event_type": "LLM_CALL",
         "role": "verifier",
         "task_id": null,
@@ -2233,8 +2217,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.23039999359752983,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.3107999946223572,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -2244,9 +2228,9 @@
       },
       {
         "event_id": "event-31",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.323580Z",
+        "timestamp": "2026-10-11T15:06:24.221196Z",
         "event_type": "REVIEW",
         "role": "verifier",
         "task_id": null,
@@ -2282,16 +2266,16 @@
             "rationale": "Missing independent causal support or an unresolved contradictory observation"
           },
           "hypothesis_sha256": "5124fa9e64f55d4c6b2a81cd4afe33cf852c8a398d93b86fe83e0dab85ae1dba",
-          "evidence_sha256": "bd864ad4a989595ee621a5ae9e66ef786ae295ecacdca76feebe46897076086d"
+          "evidence_sha256": "81c2a49c6b30f5b8b2277d7de5c9fbe9339d15ab4368c79db3d90d4e02766130"
         },
         "source": "runtime",
         "elapsed_ms": null
       },
       {
         "event_id": "event-32",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.324641Z",
+        "timestamp": "2026-10-11T15:06:24.224474Z",
         "event_type": "LLM_CALL",
         "role": "coordinator",
         "task_id": null,
@@ -2304,8 +2288,8 @@
           "prompt_tokens": null,
           "completion_tokens": null,
           "total_tokens": null,
-          "elapsed_ms": 0.08969999908003956,
-          "prompt_version": "roles-v2",
+          "elapsed_ms": 0.18790000467561185,
+          "prompt_version": "roles-v6",
           "model_parameters": {
             "temperature": 0.0
           }
@@ -2315,36 +2299,22 @@
       },
       {
         "event_id": "event-33",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.324659Z",
+        "timestamp": "2026-10-11T15:06:24.224509Z",
         "event_type": "DECISION",
         "role": "coordinator",
         "task_id": null,
         "call_id": null,
         "evidence_ids": [],
-        "message": "Follow verifier discriminating check",
+        "message": "Observed evidence lacks sufficient causal support",
         "details": {
           "decision": {
-            "action": "INVESTIGATE",
-            "reason": "Follow verifier discriminating check",
-            "assignments": [
-              {
-                "task_id": "check-logs-4",
-                "role": "logs",
-                "question": "Check direct database rejection observations",
-                "allowed_tools": [
-                  "query_logs"
-                ],
-                "filters": {
-                  "service": "postgres"
-                },
-                "reason": "Resolve an evidence gap in the current candidate",
-                "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
-              }
-            ],
+            "action": "ABSTAIN",
+            "reason": "Observed evidence lacks sufficient causal support",
+            "assignments": [],
             "selected_hypothesis_id": null,
-            "stop_reason": null
+            "stop_reason": "Missing discriminating evidence"
           }
         },
         "source": "runtime",
@@ -2352,24 +2322,9 @@
       },
       {
         "event_id": "event-34",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+        "run_id": "run-336ff02a305147fdb211933d21351b94",
         "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.324707Z",
-        "event_type": "STOP",
-        "role": null,
-        "task_id": null,
-        "call_id": null,
-        "evidence_ids": [],
-        "message": "Repeated investigation with unchanged evidence",
-        "details": {},
-        "source": "runtime",
-        "elapsed_ms": null
-      },
-      {
-        "event_id": "event-35",
-        "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
-        "incident_id": "incident_006",
-        "timestamp": "2026-10-11T04:31:39.325277Z",
+        "timestamp": "2026-10-11T15:06:24.225759Z",
         "event_type": "REPORT",
         "role": null,
         "task_id": null,
@@ -2378,7 +2333,7 @@
         "message": "",
         "details": {
           "report": {
-            "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+            "run_id": "run-336ff02a305147fdb211933d21351b94",
             "incident_id": "incident_006",
             "status": "INCONCLUSIVE",
             "root_cause": null,
@@ -2388,7 +2343,7 @@
             "unresolved": [
               "Need additional discriminating evidence"
             ],
-            "stop_reason": "Repeated investigation with unchanged evidence"
+            "stop_reason": "Missing discriminating evidence"
           },
           "variant": "full",
           "tokens_complete": false
@@ -2398,7 +2353,7 @@
       }
     ],
     "report": {
-      "run_id": "run-1d2d2c4b3da14572be9abf9201c15868",
+      "run_id": "run-336ff02a305147fdb211933d21351b94",
       "incident_id": "incident_006",
       "status": "INCONCLUSIVE",
       "root_cause": null,
@@ -2408,9 +2363,9 @@
       "unresolved": [
         "Need additional discriminating evidence"
       ],
-      "stop_reason": "Repeated investigation with unchanged evidence"
+      "stop_reason": "Missing discriminating evidence"
     },
-    "stop_reason": "Repeated investigation with unchanged evidence",
+    "stop_reason": "Missing discriminating evidence",
     "open_questions": [],
     "requested_checks": [
       {
@@ -2431,12 +2386,12 @@
       "check-logs-0",
       "check-metrics-0",
       "check-logs-2",
-      "check-logs-3"
+      "check-changes-3"
     ],
     "tool_calls_used": 8,
     "llm_calls_used": 15,
     "tokens_used": 0
   },
   "model_id": "deterministic-public-policy-v1",
-  "prompt_version": "roles-v2"
+  "prompt_version": "roles-v6"
 }

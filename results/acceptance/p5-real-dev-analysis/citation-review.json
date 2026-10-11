@@ -1,0 +1,698 @@
+{
+  "evidence_label": "Synthetic incident traces; no human semantic annotation",
+  "semantic_review_status": "awaiting_human",
+  "runs": [
+    {
+      "incident_id": "incident_007",
+      "run_id": "run-b40c19fab6aa4153b8f90cdffb95b612",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_007",
+      "run_id": "run-0ef3de5c57234510ae4d520623b1c03e",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_007",
+      "run_id": "run-97bbc1121aa44e609066c26da869ba45",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_007",
+      "run_id": "run-07d3160cd039431fb2c649e32c4bcd19",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-00741ea89f87438e9390fcaa6d4c3469",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-ec1bd02332824ab1afe31fc94777009a",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp_008_backend_resource_saturation",
+          "culprit_service": "backend",
+          "failure_mode": "backend_resource_saturation",
+          "support_ids": [
+            "incident_008-L002"
+          ],
+          "against_ids": [
+            "incident_008-M006",
+            "incident_008-M009",
+            "incident_008-M011"
+          ],
+          "predicted_observations": [
+            "Backend logs show resource exhaustion (e.g., thread pool, memory) around the same time",
+            "CPU percent would be high, not moderate",
+            "Cache fallback is a symptom of resource pressure, not root cause",
+            "Increased latency or timeouts in backend logs",
+            "backend CPU or memory would be near saturation",
+            "inflight_requests would be high but cache_fallback_rate would not necessarily be elevated"
+          ],
+          "status": "REJECTED",
+          "open_questions": []
+        }
+      ],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_008-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "cache unavailable; falling back to synchronous database lookup"
+        },
+        {
+          "evidence_id": "incident_008-M006",
+          "source_path": "public/metrics.csv",
+          "excerpt": "cpu_percent=40 %"
+        },
+        {
+          "evidence_id": "incident_008-M009",
+          "source_path": "public/metrics.csv",
+          "excerpt": "cache_fallback_rate=92 per_second"
+        },
+        {
+          "evidence_id": "incident_008-M011",
+          "source_path": "public/metrics.csv",
+          "excerpt": "inflight_requests=72 requests"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-aaa8a46d3b0544a3bad3e6cce7ccd0c7",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_008",
+      "run_id": "run-b8e16710c3ae4954a132f8b9024bd239",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_009",
+      "run_id": "run-bd401dccb5e54fa5a96017632e3a9dd1",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_009",
+      "run_id": "run-44c724ee678c4c1baec5f259156f906b",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_009",
+      "run_id": "run-b12b61f315de470fba93f16484e308bd",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_009",
+      "run_id": "run-5a5aca76aa094e988a56ecd92af6e0d3",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp_002",
+          "culprit_service": "backend",
+          "failure_mode": "backend_resource_saturation",
+          "support_ids": [
+            "incident_009-L003",
+            "incident_009-M011"
+          ],
+          "against_ids": [
+            "incident_009-L002",
+            "incident_009-M006"
+          ],
+          "predicted_observations": [
+            "Backend CPU would be high (e.g., >80%) if saturated.",
+            "Backend logs show resource exhaustion errors (e.g., connection pool, memory)",
+            "Error rate would be elevated on backend as well.",
+            "Gateway logs show 500 errors due to backend overload",
+            "Inflight requests would be near capacity limits."
+          ],
+          "status": "REJECTED",
+          "open_questions": [
+            "Are there any backend error rate metrics available?",
+            "What is the capacity limit for inflight requests on backend?"
+          ]
+        }
+      ],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_009-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "checkout failed following payment deadline"
+        },
+        {
+          "evidence_id": "incident_009-L003",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "upstream backend returned 500; gateway retry limit reached"
+        },
+        {
+          "evidence_id": "incident_009-M006",
+          "source_path": "public/metrics.csv",
+          "excerpt": "cpu_percent=33 %"
+        },
+        {
+          "evidence_id": "incident_009-M011",
+          "source_path": "public/metrics.csv",
+          "excerpt": "inflight_requests=79 requests"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_010",
+      "run_id": "run-4cf41bbded254b86aae2604892d09283",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_010",
+      "run_id": "run-6a162fa7116a47f787bfc934b7267e8d",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_010",
+      "run_id": "run-aff99f29dea342f1814eca170769c5ba",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_010",
+      "run_id": "run-36403de3d4664e98b224181a4883ce6f",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_011",
+      "run_id": "run-bdc70219ea85497ca3554dbcc98af1fd",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_011",
+      "run_id": "run-4228ad0a4be745f7a6335dc407407de5",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_011",
+      "run_id": "run-a05ce81ed4b84a258557edb92f06ba5d",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_011",
+      "run_id": "run-7fa482065e6e4a3ebae9ab005bd1c5f7",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_012",
+      "run_id": "run-b34ccb080ac4484eb1981eeafc5c7666",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_012",
+      "run_id": "run-73599e9e33cc4f87b03f808b87d18857",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_012",
+      "run_id": "run-500534cc256247eeb28c6c236a9be5be",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_012",
+      "run_id": "run-b0e1e5fcb085455b9193f24cd9d89a3a",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_013",
+      "run_id": "run-6a8197efa74e4f748b7fb699d466e3af",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_013",
+      "run_id": "run-5ba0a43fd21141b0b3527dacac6fe98f",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_013",
+      "run_id": "run-f1ad96cbbebb476eb46c2b239ba1654f",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_013",
+      "run_id": "run-f3759ca035ee45f7b6129c1a6940b658",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-bb07658079e9449d8e745e137e80f054",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-9e1b9329dcd9451b861ec83fa8b0bc8a",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-d9937272c4674e97a26277ee0769504f",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_014",
+      "run_id": "run-26b7a4a73300489ea655603f3c6fb454",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_015",
+      "run_id": "run-ebe159604eea4ceb875ca30c867a1987",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_015",
+      "run_id": "run-97fff9a163724a45831144fd23d0bfb0",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_015",
+      "run_id": "run-6080cb8aeb3647d4ac09cb39b0cd9af1",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_015",
+      "run_id": "run-738b63fe9d6b498cbab660ea23c8cc0c",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_016",
+      "run_id": "run-1030d107504f42bd8a63200e54919ec2",
+      "variant": "dynamic_no_verifier",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_016",
+      "run_id": "run-339e37a83dff4b3fa2f09a4260d99a39",
+      "variant": "fixed",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_016",
+      "run_id": "run-1825146868514ec1837b78dc1bb36ed8",
+      "variant": "full",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_016",
+      "run_id": "run-25ee878b8b2845008018a69dc7841edb",
+      "variant": "single",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": null,
+      "causal_chain": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "supporting_evidence_ids": [],
+      "cited_evidence": [],
+      "missing_cited_evidence_ids": []
+    }
+  ]
+}

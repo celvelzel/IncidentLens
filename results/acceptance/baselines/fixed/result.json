@@ -1,0 +1,35 @@
+{
+  "run_id": "run-a19d8bb935f04b18a79ad0545ef3169d",
+  "incident_id": "incident_001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-postgres_connection_exhaustion",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_001-L001",
+        "incident_001-L002",
+        "incident_001-L022",
+        "incident_001-L025"
+      ],
+      "against_ids": [
+        "incident_001-M004"
+      ],
+      "predicted_observations": [
+        "Database capacity should be exhausted",
+        "Database sessions reach server connection capacity",
+        "New database sessions are rejected and backend requests fail"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed"
+}

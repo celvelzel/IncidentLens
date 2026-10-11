@@ -1,0 +1,36 @@
+{
+  "run_id": "run-71247e6bde544f35b995f67c27ccd9cd",
+  "incident_id": "incident_001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp_postgres_connection_exhaustion",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_001-L001",
+        "incident_001-L002",
+        "incident_001-L022"
+      ],
+      "against_ids": [
+        "incident_001-M004",
+        "incident_001-M005"
+      ],
+      "predicted_observations": [
+        "Active connections should approach or plateau at max_connections during the incident window.",
+        "Connection wait or error metrics should increase."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Are there other Postgres metrics indicating connection pressure not captured by active_connections?"
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "PROVIDER_TIMEOUT"
+}

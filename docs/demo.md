@@ -18,7 +18,8 @@ Run commands from the repository root with its installed `.venv` interpreter.
    Mock labels. Cache off/cold/warm has 15/15/11 requests, four warm hits, same
    report and nine tools. Local timing does not establish billing/latency savings.
 7. **8:00–9:00** Show tests, fresh installation log and limitations: synthetic
-   templates, five-mechanism rules, live LLM results pending and semantic review
-   not yet performed.
+   templates, five-mechanism rules, negative real dev/test outcomes and semantic
+   review not yet performed. Show the saved live aggregate and distinguish runtime
+   failures from evidence-based abstention; do not demonstrate successful live RCA.
 
 This is a runnable demo guide, not a claim that a video was recorded/submitted.

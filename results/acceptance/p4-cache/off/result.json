@@ -1,5 +1,5 @@
 {
-  "run_id": "run-d19176520056499897218aac663925f0",
+  "run_id": "run-fd99dc9206b1452e9c2f27b2a676023b",
   "incident_id": "incident_001",
   "status": "RESOLVED",
   "root_cause": {
@@ -13,15 +13,15 @@
     ],
     "against_ids": [],
     "predicted_observations": [
-      "Reduced backend pool capacity causes local acquisition contention",
-      "Acquisition deadlines fail while database capacity remains available"
+      "Acquisition deadlines fail while database capacity remains available",
+      "Reduced backend pool capacity causes local acquisition contention"
     ],
     "status": "SUPPORTED",
     "open_questions": []
   },
   "causal_chain": [
-    "Reduced backend pool capacity causes local acquisition contention",
-    "Acquisition deadlines fail while database capacity remains available"
+    "Acquisition deadlines fail while database capacity remains available",
+    "Reduced backend pool capacity causes local acquisition contention"
   ],
   "supporting_evidence_ids": [
     "incident_001-C001",
@@ -43,7 +43,9 @@
         "incident_001-M004"
       ],
       "predicted_observations": [
-        "Database capacity should be exhausted"
+        "Database capacity should be exhausted",
+        "Database sessions reach server connection capacity",
+        "New database sessions are rejected and backend requests fail"
       ],
       "status": "REJECTED",
       "open_questions": []

@@ -1,0 +1,13 @@
+{
+  "mechanisms": {
+    "postgres_connection_exhaustion": 16,
+    "redis_unavailable": 16,
+    "payment_external_timeout": 16,
+    "backend_resource_saturation": 16,
+    "backend_pool_config_regression": 16
+  },
+  "ordinary": 0,
+  "misleading": 80,
+  "complete": 72,
+  "missing": 8
+}

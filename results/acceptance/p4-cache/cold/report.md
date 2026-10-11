@@ -1,6 +1,6 @@
 # IncidentLens — RESOLVED
 
-Run: `run-987fb3ff05024497ae59d73c36e8ae55`
+Run: `run-5924c7b920d9478dabca1a82faef706c`
 
 Incident: `incident_001`
 
@@ -8,8 +8,8 @@ Incident: `incident_001`
 backend_pool_config_regression
 
 ## Causal chain
-- Reduced backend pool capacity causes local acquisition contention
 - Acquisition deadlines fail while database capacity remains available
+- Reduced backend pool capacity causes local acquisition contention
 
 ## Supporting evidence
 - `incident_001-C001`

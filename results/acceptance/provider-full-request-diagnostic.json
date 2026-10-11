@@ -1,0 +1,26 @@
+{
+  "purpose": "Post-benchmark full Coordinator public-seed request; no test input or scoring",
+  "model_id": "deepseek-v4-flash-0731",
+  "response_format": "json_object",
+  "thinking": "disabled",
+  "request_timeout_seconds": 30,
+  "structured_repair_retries": 0,
+  "validated_output": false,
+  "error_code": "PROVIDER_HTTP_ERROR",
+  "usage": {
+    "source": "model",
+    "model_id": "deepseek-v4-flash-0731",
+    "llm_calls": 1,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "measured_total_tokens": 0,
+    "tokens_complete": false,
+    "elapsed_ms": 368.5900999989826
+  },
+  "http_statuses": [
+    429
+  ],
+  "request_attempts": 1,
+  "elapsed_ms": 2583.9912999945227
+}

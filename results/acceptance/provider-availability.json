@@ -1,0 +1,15 @@
+{
+  "purpose": "Post-benchmark availability diagnostic; no incident input or scoring",
+  "model_id": "deepseek-v4-flash-0731",
+  "response_format": "json_object",
+  "thinking": "disabled",
+  "request_timeout_seconds": 15,
+  "max_tokens": 64,
+  "http_status": 200,
+  "measured_tokens": {
+    "prompt_tokens": 13,
+    "completion_tokens": 5,
+    "total_tokens": 18
+  },
+  "elapsed_ms": 3904.3487000017194
+}

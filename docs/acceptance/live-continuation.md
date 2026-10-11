@@ -74,7 +74,7 @@ Claim Rate require human annotation. The exported review bundle remains
 Canvas submission and a learned-embedding experiment are not established by code
 generation or synthetic Mock tests.
 
-Final implementation and analysis checks: 216 passed, one Windows symlink-privilege skip;
+Final implementation and analysis checks: 217 passed, one Windows symlink-privilege skip;
 Ruff lint/format and pip check pass. Independent QA accepted current implementation
 after 55 focused tests and in-memory failure reproductions. The skipped symlink
 test is supplemented by an actual passing Windows junction denial test.
@@ -105,6 +105,45 @@ and 40 human-review bundles. Matching requests describes recorded behavior; it
 does not prove a causal improvement from the Verifier. Ordinary coverage is zero.
 Token/billing totals remain unknown where requests have incomplete usage.
 
-The held-out 80-run experiment was started with the same frozen implementation
-and arguments. It is not accepted as complete until all 80 records and independent
-recomputation are confirmed.
+## Completed held-out execution
+
+All 80 runs are saved with the same frozen source and parameters. Each variant
+has 0/18 correct roots, 0/2 correct abstentions and 20/20 runtime failures;
+outer execution/evaluation errors are zero. There were 144 actual request
+attempts, with 42,044 known measured tokens. Full token and billing totals remain
+unknown. Independent final artifact audit is recorded in P7.md.
+
+Failure events include 95 PROVIDER_HTTP_ERROR, 27 PROVIDER_TIMEOUT and one
+STRUCTURED_OUTPUT_INVALID. Concurrent/cancelled calls mean these event counts
+are not a per-run or per-request failure-rate denominator. Execution failures
+prevent conclusions about intrinsic model reasoning accuracy. No test labels
+were used to change prompts or implementation after the freeze.
+
+Analysis covers 80 coordination rows and 80 pending human review bundles;
+ordinary coverage remains zero, misleading 80, identifiable 72, missing 8.
+
+## Post-benchmark availability probes
+
+Three separate bounded requests used benign input or public seed incident_001,
+never held-out input. Their JSON files are retained under results/acceptance:
+provider-availability.json, provider-full-request-diagnostic.json and
+provider-capped-request-diagnostic.json. A tiny request capped at 64 output tokens
+returned HTTP 200; the full Coordinator request without an output cap returned
+HTTP 429; a full request capped at 2048 returned HTTP 200 but failed schema
+validation (2,598 measured tokens). Different request times prevent a causal
+claim about the cap. Historical HTTP error events did not record status codes,
+so the later 429 cannot establish their individual statuses. These probes are
+excluded from the four-variant evaluation. No automatic fallback or credential
+rewrite was introduced, and the frozen negative results are retained.
+
+## Post-experiment accounting correction
+
+Independent final QA found two raw per-call request overcounts in held-out
+incident_021/fixed and incident_026/fixed. Each run's budget guard and aggregate
+correctly report three actual requests, but cancelled sibling-call fallback usage
+sums to six because it subtracted a shared counter. Historical records remain
+unchanged: do not sum their per-call llm_calls as an actual request total.
+Evaluator-only correction `1b0a0e1` uses task-local ContextVar counting to fix the fallback and has a concurrent
+cancellation/repair regression. This evaluator-only change follows the frozen
+experiments; their recorded source digest and negative scores are retained.
+It does not alter investigation decisions, prompts or held-out inputs.
