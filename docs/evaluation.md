@@ -29,6 +29,11 @@ Caching is explicitly disabled with `cache=None`, regardless of `CACHE_MODE` or
 historical cache files. Cold/warm cache performance is a separate experiment.
 Defaults are 4 rounds, 12 tools, 16 model requests and 90 seconds per run, temperature
 0. CLI options override these bounds and optionally set `--max-tokens`.
+`--jobs` defaults to 1 and accepts integers 1 through 4. It bounds concurrently
+executing runs with an asyncio semaphore; each case/variant has its own provider,
+budget and public data reader. Jobs is recorded in raw fairness settings and CSV.
+Concurrency can affect wall-clock latency and provider rate limits; compare accuracy
+and usage with identical jobs settings for real experiments.
 Equal upper bounds do not imply equal actual computation; inspect measured usage.
 Seed/dev support smoke checks and development. Do not tune prompts using hidden test
 results. Mock policy results are offline correctness checks, not model performance.
@@ -39,7 +44,10 @@ results. Mock policy results are offline correctness checks, not model performan
   configuration and initial public hashes, errors and stop reason.
 - `aggregate.csv`: per-variant numerators and denominators, rates and usage totals.
 - `raw-runs.jsonl`: full completed states, external decisions, actual tool results,
-  per-call usage, frozen settings and evaluator scoring fields. Recompute using
+  per-call usage, frozen settings and evaluator scoring fields. Both raw JSONL and
+  case-level CSV are saved after every completed run, including on partial failure.
+  Successful final artifacts are sorted by incident ID and variant; interrupted
+  raw JSONL retains completion order. Recompute using
   `score_completed(record['state'], record['oracle_scoring_fields'])`.
 - `error-analysis.md`: denominator summary and cases requiring review.
 
@@ -57,10 +65,12 @@ requires manual annotation; unsupported claim rate stays blank and review status
 stays `unreviewed` until that work exists.
 
 Model requests include provider repair attempts via the runtime request guard.
-Tool calls come from the runtime registry. Failed model calls count structured-call
-invocations that raised, and failed tool calls count explicit unsuccessful tool
-results; internal repaired attempts are included in request counts but their separate
-failure count is unavailable from the provider contract. Latency uses a monotonic
+Tool calls come from the runtime registry. `provider_failures` counts structured-call
+invocations that raised. `failed_model_calls` is the maximum of provider failures
+and runtime `MODEL_FAILURE` events, so schema and role validation failures are
+counted without counting the same provider exception twice. `failed_calls` adds
+explicit unsuccessful tool results to failed model calls. Internal repaired attempts
+are included in request counts but their separate failure count is unavailable from the provider contract. Latency uses a monotonic
 clock around actual graph execution. Unknown tokens and cost are `None` in JSON and
 blank in CSV, including mock tokens; no tariff is inferred. Aggregate usage is blank
 if any constituent value is unknown. Cost remains unavailable without measured
