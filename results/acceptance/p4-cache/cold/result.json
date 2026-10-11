@@ -1,0 +1,54 @@
+{
+  "run_id": "run-987fb3ff05024497ae59d73c36e8ae55",
+  "incident_id": "incident_001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-backend_pool_config_regression",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_001-C001",
+      "incident_001-D001",
+      "incident_001-M009"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Reduced backend pool capacity causes local acquisition contention",
+      "Acquisition deadlines fail while database capacity remains available"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "Reduced backend pool capacity causes local acquisition contention",
+    "Acquisition deadlines fail while database capacity remains available"
+  ],
+  "supporting_evidence_ids": [
+    "incident_001-C001",
+    "incident_001-D001",
+    "incident_001-M009"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-postgres_connection_exhaustion",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_001-L001",
+        "incident_001-L002",
+        "incident_001-L022",
+        "incident_001-L025"
+      ],
+      "against_ids": [
+        "incident_001-M004"
+      ],
+      "predicted_observations": [
+        "Database capacity should be exhausted"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Evidence sufficient"
+}

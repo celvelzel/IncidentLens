@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "phase": "off",
+      "provider": "mock",
+      "model_id": "deterministic-public-policy-v1",
+      "run_id": "run-d19176520056499897218aac663925f0",
+      "incident_id": "incident_001",
+      "status": "RESOLVED",
+      "llm_calls": 15,
+      "tool_calls": 9,
+      "tokens": null,
+      "cost": null,
+      "elapsed_ms": 61.349399999016896,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "cache_hit_rate": null,
+      "llm_calls_avoided": 0,
+      "semantic_error_reuse_rate": null
+    },
+    {
+      "phase": "cold",
+      "provider": "mock",
+      "model_id": "deterministic-public-policy-v1",
+      "run_id": "run-987fb3ff05024497ae59d73c36e8ae55",
+      "incident_id": "incident_001",
+      "status": "RESOLVED",
+      "llm_calls": 15,
+      "tool_calls": 9,
+      "tokens": null,
+      "cost": null,
+      "elapsed_ms": 123.41899999591988,
+      "cache_hits": 0,
+      "cache_misses": 4,
+      "cache_hit_rate": 0.0,
+      "llm_calls_avoided": 0,
+      "semantic_error_reuse_rate": null
+    },
+    {
+      "phase": "warm",
+      "provider": "mock",
+      "model_id": "deterministic-public-policy-v1",
+      "run_id": "run-ff8d2ed5070440f3952e3251b11be8db",
+      "incident_id": "incident_001",
+      "status": "RESOLVED",
+      "llm_calls": 11,
+      "tool_calls": 9,
+      "tokens": null,
+      "cost": null,
+      "elapsed_ms": 125.68040000041947,
+      "cache_hits": 4,
+      "cache_misses": 0,
+      "cache_hit_rate": 1.0,
+      "llm_calls_avoided": 4,
+      "semantic_error_reuse_rate": null
+    }
+  ],
+  "identical_reports": true,
+  "label": "Offline mock correctness/timing only",
+  "limits": "Small paired sample; cache gain is separate from agent architecture quality. Unknown tokens/cost remain null."
+}
