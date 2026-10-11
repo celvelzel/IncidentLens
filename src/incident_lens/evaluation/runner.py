@@ -10,6 +10,7 @@ import stat
 import time
 from pathlib import Path
 
+from incident_lens.agents.service import PROMPT_VERSION
 from incident_lens.llm import LLMProvider, MockProvider
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
@@ -176,6 +177,13 @@ async def evaluate_split(
     budget = budget or Budget()
     public_provider = EvidenceProvider(data_root)
     revision = public_provider.dataset_revision
+    package_root = Path(__file__).resolve().parents[1]
+    source_sha256 = digest(
+        {
+            str(path.relative_to(package_root)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(package_root.rglob("*.py"))
+        }
+    )
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     rows, raw = [], []
@@ -214,6 +222,9 @@ async def evaluate_split(
             model_id=provider.model_id,
             temperature=provider.temperature,
             model_parameters=copy.deepcopy(provider.model_parameters),
+            prompt_version=PROMPT_VERSION,
+            output_schema_version="schema-v1",
+            source_sha256=source_sha256,
             budget=budget.model_dump(mode="json"),
             dataset_revision=revision,
             cache_mode="off",

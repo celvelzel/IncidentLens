@@ -49,3 +49,33 @@ def test_streamlit_mock_run_and_labeled_replay(monkeypatch):
 def test_ui_source_has_no_oracle_loader():
     source = Path("src/incident_lens/ui/app.py").read_text(encoding="utf-8")
     assert "ground_truth" not in source
+
+
+def test_real_request_controls_are_explicit_and_do_not_call_provider(monkeypatch):
+    from incident_lens.llm.provider import RealChatProvider
+
+    async def forbidden(*args, **kwargs):
+        raise AssertionError("Selecting transport options must not send requests")
+
+    monkeypatch.setattr(RealChatProvider, "structured_call", forbidden)
+    monkeypatch.setenv("INCIDENT_LENS_RESPONSE_FORMAT", "json_object")
+    monkeypatch.setenv("INCIDENT_LENS_THINKING", "disabled")
+    monkeypatch.setenv("INCIDENT_LENS_REQUEST_TIMEOUT", "60")
+    app = AppTest.from_file(Path("src/incident_lens/ui/app.py").resolve()).run()
+    next(box for box in app.selectbox if box.label == "Provider").set_value("real").run()
+    assert not app.exception
+    assert (
+        next(box for box in app.selectbox if box.label == "Structured response format").value
+        == "json_object"
+    )
+    assert next(box for box in app.selectbox if box.label == "Thinking mode").value == "disabled"
+    assert app.number_input[0].value == 60
+    assert "investigation" not in app.session_state
+
+
+def test_invalid_provider_request_settings_are_visible_without_traceback(monkeypatch):
+    monkeypatch.setenv("INCIDENT_LENS_REQUEST_TIMEOUT", "not-a-number")
+    app = AppTest.from_file(Path("src/incident_lens/ui/app.py").resolve()).run()
+    next(box for box in app.selectbox if box.label == "Provider").set_value("real").run()
+    assert not app.exception
+    assert any("Invalid project-local" in message.value for message in app.error)

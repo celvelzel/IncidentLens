@@ -79,7 +79,14 @@ Copy `.env.example` to project-local `.env`. Real mode requires:
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider real --out results/real001
 ```
 
-The endpoint must support the emitted strict JSON Schema. Missing configuration,
+The default `json_schema` mode requires server support for strict JSON Schema.
+For a JSON-mode endpoint, explicitly select `--response-format json_object`;
+both modes validate every response against the same local Pydantic contract.
+`--thinking disabled` and `--request-timeout 60` are explicit optional transport
+settings. The corresponding project-local environment variables are
+`INCIDENT_LENS_RESPONSE_FORMAT`, `INCIDENT_LENS_THINKING`, and
+`INCIDENT_LENS_REQUEST_TIMEOUT`; the dashboard exposes these settings too.
+Missing configuration,
 incompatibility and transport failures are explicit; real never falls back to
 Mock. HTTP fixture tests validate adapter behavior, not live endpoint compatibility.
 Mock is deterministic over supplied public evidence and never reads private

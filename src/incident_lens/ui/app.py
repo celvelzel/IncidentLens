@@ -142,6 +142,43 @@ def main():
             incident = st.selectbox("Incident", [c.incident_id for c in cases])
             llm = st.selectbox("Provider", ["mock", "real"])
             cache_mode = st.selectbox("Local explanation cache", ["off", "semantic", "exact"])
+            live_options = None
+            if llm == "real":
+                try:
+                    defaults = provider_options()
+                    if defaults["response_format_mode"] not in ("json_schema", "json_object"):
+                        raise ValueError("invalid response format")
+                    if defaults["thinking"] not in (None, "enabled", "disabled"):
+                        raise ValueError("invalid thinking mode")
+                    if not 1 <= defaults["timeout"] < float("inf"):
+                        raise ValueError("invalid request timeout")
+                except ValueError:
+                    st.error("Invalid project-local provider request settings")
+                    return
+                with st.expander("Provider request settings"):
+                    formats = ["json_schema", "json_object"]
+                    response_format = st.selectbox(
+                        "Structured response format",
+                        formats,
+                        index=formats.index(defaults["response_format_mode"]),
+                    )
+                    thinking_modes = ["provider default", "disabled", "enabled"]
+                    thinking = st.selectbox(
+                        "Thinking mode",
+                        thinking_modes,
+                        index=thinking_modes.index(defaults["thinking"] or "provider default"),
+                    )
+                    timeout = st.number_input(
+                        "Request timeout (seconds)",
+                        min_value=1.0,
+                        value=float(defaults["timeout"]),
+                    )
+                    live_options = provider_options(
+                        response_format,
+                        None if thinking == "provider default" else thinking,
+                        timeout,
+                    )
+                    live_options["thinking"] = None if thinking == "provider default" else thinking
             st.caption("Limits: 4 rounds · 12 tools · 16 model requests · 90 seconds")
             if st.button("Run investigation", type="primary"):
                 try:
@@ -152,7 +189,7 @@ def main():
                             os.getenv("INCIDENT_LENS_BASE_URL"),
                             os.getenv("INCIDENT_LENS_API_KEY"),
                             os.getenv("INCIDENT_LENS_MODEL"),
-                            **provider_options(),
+                            **live_options,
                         )
                     )
                     cache = None

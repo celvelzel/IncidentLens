@@ -60,7 +60,7 @@ async def experiment(args):
             os.getenv("INCIDENT_LENS_BASE_URL"),
             os.getenv("INCIDENT_LENS_API_KEY"),
             os.getenv("INCIDENT_LENS_MODEL"),
-            **provider_options(),
+            **provider_options(args.response_format, args.thinking, args.request_timeout),
         )
     args.out.mkdir(parents=True, exist_ok=True)
     embedder = SentenceTransformerBackend(args.embedding_model) if args.embedding_model else None
@@ -115,6 +115,9 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--case", default="incident_001")
     parser.add_argument("--provider", choices=["mock", "real"], default="mock")
+    parser.add_argument("--response-format", choices=["json_schema", "json_object"])
+    parser.add_argument("--thinking", choices=["enabled", "disabled"])
+    parser.add_argument("--request-timeout", type=float)
     parser.add_argument("--cache-mode", choices=["exact", "semantic"], default="semantic")
     parser.add_argument("--data-root", type=Path, default=Path("data"))
     parser.add_argument("--out", type=Path, default=Path("results/cache-experiment"))

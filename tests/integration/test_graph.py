@@ -81,6 +81,90 @@ async def test_dynamic_dispatch_rejects_more_than_two_assignments():
     assert state.tool_calls_used == 0 and state.llm_calls_used == 1
 
 
+async def test_expert_hypothesis_aliases_merge_into_stable_cause_identity():
+    class Aliases(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "AnalysisOutput":
+                for hypothesis in output.hypotheses:
+                    hypothesis.hypothesis_id = args[0] + "-" + hypothesis.hypothesis_id
+            return output, usage
+
+    state = await run_investigation("incident_001", Aliases())
+    assert state.report.status == "RESOLVED"
+    concepts = {(h.culprit_service, h.failure_mode) for h in state.hypotheses}
+    assert len(concepts) == len(state.hypotheses)
+    database = next(h for h in state.hypotheses if h.culprit_service == "postgres")
+    assert database.status == "REJECTED" and database.support_ids and database.against_ids
+
+
+async def test_duplicate_finding_id_cannot_silently_drop_an_expert():
+    class Duplicate(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "AnalysisOutput":
+                output.finding.finding_id = "same-for-both"
+            return output, usage
+
+    state = await run_investigation("incident_001", Duplicate())
+    assert state.report.status == "INCONCLUSIVE"
+    assert state.findings == [] and state.evidence_index == {}
+
+
+async def test_hypothesis_citations_publish_even_when_not_in_finding():
+    class NarrowFinding(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "AnalysisOutput":
+                output.finding.evidence_ids = output.finding.evidence_ids[:1]
+            return output, usage
+
+    state = await run_investigation("incident_001", NarrowFinding())
+    assert state.report.status == "RESOLVED"
+    finding_refs = {eid for finding in state.findings for eid in finding.evidence_ids}
+    hypothesis_refs = {eid for h in state.hypotheses for eid in h.support_ids + h.against_ids}
+    assert hypothesis_refs - finding_refs
+    assert hypothesis_refs.issubset(state.evidence_index)
+
+
+async def test_same_batch_hypothesis_status_is_independent_of_task_order():
+    class Reversed(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "DynamicDecision":
+                output.assignments.reverse()
+            return output, usage
+
+    normal = await run_investigation("incident_001", MockProvider())
+    reversed_state = await run_investigation("incident_001", Reversed())
+    assert normal.report.status == reversed_state.report.status == "RESOLVED"
+    assert normal.report.root_cause.failure_mode == reversed_state.report.root_cause.failure_mode
+    assert (
+        next(h for h in reversed_state.hypotheses if h.culprit_service == "postgres").status
+        == "REJECTED"
+    )
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+async def test_conflicting_grounded_assessments_stay_open(reverse):
+    class Conflicting(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[-1].__name__ == "DynamicDecision" and reverse:
+                output.assignments.reverse()
+            if args[-1].__name__ == "AnalysisOutput" and args[0] == "logs":
+                for h in output.hypotheses:
+                    if h.culprit_service == "postgres":
+                        h.status = "SUPPORTED"
+            return output, usage
+
+    state = await run_investigation("incident_001", Conflicting(), budget=Budget(max_rounds=1))
+    h = next(h for h in state.hypotheses if h.culprit_service == "postgres")
+    assert h.status == "OPEN" and h.support_ids and h.against_ids
+    assert "Conflicting current assessments" in " ".join(h.open_questions)
+    assert state.report.status == "INCONCLUSIVE"
+
+
 @pytest.mark.parametrize(
     "budget",
     [

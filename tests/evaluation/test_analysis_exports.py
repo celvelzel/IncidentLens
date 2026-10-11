@@ -5,23 +5,68 @@ from pathlib import Path
 
 import pytest
 
-SPEC = importlib.util.spec_from_file_location("analyze_eval", Path(__file__).resolve().parents[2] / "scripts/analyze_eval.py")
+SPEC = importlib.util.spec_from_file_location(
+    "analyze_eval", Path(__file__).resolve().parents[2] / "scripts/analyze_eval.py"
+)
 analysis = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(analysis)
 
 
 def record():
-    evidence = dict(evidence_id="e1", incident_id="case", source_path="public/logs.jsonl", excerpt="request timed out")
-    return dict(metrics=dict(variant="full", root_cause_correct=False), state=dict(
-        incident_id="case", run_id="run", round_index=2, evidence_index={"e1": evidence},
-        report=dict(status="RESOLVED", root_cause=dict(culprit_service="api", failure_mode="external_timeout", support_ids=["e1"]), causal_chain=["external timeout causes API failure"], supporting_evidence_ids=["e1", "missing"]),
-        events=[
-            dict(event_type="DECISION", details=dict(decision=dict(action="INVESTIGATE", assignments=[dict(role="logs")]))),
-            dict(event_type="REVIEW", details=dict(review=dict(verdict="insufficient", requested_checks=[dict(role="metrics")]))),
-            dict(event_type="DECISION", details=dict(decision=dict(action="INVESTIGATE", assignments=[dict(role="metrics")]))),
-            dict(event_type="REVIEW", details=dict(review=dict(verdict="conflicted", requested_checks=[]))),
-            dict(event_type="TOOL_CALL", details=dict(result=dict(records=[evidence]))),
-        ]), oracle_scoring_fields=dict(is_identifiable=True, culprit_service="api", failure_mode="external_timeout", misleading_evidence_ids=["decoy"]))
+    evidence = dict(
+        evidence_id="e1",
+        incident_id="case",
+        source_path="public/logs.jsonl",
+        excerpt="request timed out",
+    )
+    return dict(
+        metrics=dict(variant="full", root_cause_correct=False),
+        state=dict(
+            incident_id="case",
+            run_id="run",
+            round_index=2,
+            evidence_index={"e1": evidence},
+            report=dict(
+                status="RESOLVED",
+                root_cause=dict(
+                    culprit_service="api", failure_mode="external_timeout", support_ids=["e1"]
+                ),
+                causal_chain=["external timeout causes API failure"],
+                supporting_evidence_ids=["e1", "missing"],
+            ),
+            events=[
+                dict(
+                    event_type="DECISION",
+                    details=dict(
+                        decision=dict(action="INVESTIGATE", assignments=[dict(role="logs")])
+                    ),
+                ),
+                dict(
+                    event_type="REVIEW",
+                    details=dict(
+                        review=dict(verdict="insufficient", requested_checks=[dict(role="metrics")])
+                    ),
+                ),
+                dict(
+                    event_type="DECISION",
+                    details=dict(
+                        decision=dict(action="INVESTIGATE", assignments=[dict(role="metrics")])
+                    ),
+                ),
+                dict(
+                    event_type="REVIEW",
+                    details=dict(review=dict(verdict="conflicted", requested_checks=[])),
+                ),
+                dict(event_type="TOOL_CALL", details=dict(result=dict(records=[evidence]))),
+            ],
+        ),
+        oracle_scoring_fields=dict(
+            is_identifiable=True,
+            culprit_service="api",
+            failure_mode="external_timeout",
+            misleading_evidence_ids=["decoy"],
+        ),
+    )
 
 
 def test_counts_slices_and_actual_citations():
@@ -31,7 +76,13 @@ def test_counts_slices_and_actual_citations():
     rows, slices, bundle = analysis.analyze([first, stopped])
     assert rows[0]["rounds"] == rows[0]["investigate_decisions"] == 2
     assert rows[0]["replanning_decisions"] == rows[0]["dynamic_role_transitions"] == 1
-    assert rows[0]["review_insufficient"] == rows[0]["review_conflicted"] == rows[0]["requested_checks"] == rows[0]["tool_calls"] == 1
+    assert (
+        rows[0]["review_insufficient"]
+        == rows[0]["review_conflicted"]
+        == rows[0]["requested_checks"]
+        == rows[0]["tool_calls"]
+        == 1
+    )
     assert json.loads(rows[0]["task_roles"]) == ["logs", "metrics"]
     assert slices[0]["n"] == 2
     assert slices[0]["correct"] == slices[0]["runtime_failure"] == 1
@@ -68,7 +119,11 @@ def test_export_preserves_input_and_rejects_existing_output(tmp_path):
     out = tmp_path / "analysis"
     analysis.export(source, out)
     assert source.read_text(encoding="utf-8") == original
-    assert {p.name for p in out.iterdir()} == {"coordination.csv", "mechanism-slices.csv", "citation-review.json"}
+    assert {p.name for p in out.iterdir()} == {
+        "coordination.csv",
+        "mechanism-slices.csv",
+        "citation-review.json",
+    }
     with pytest.raises(FileExistsError):
         analysis.export(source, out)
     with pytest.raises(ValueError, match="separate"):

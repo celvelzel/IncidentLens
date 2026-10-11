@@ -13,7 +13,8 @@ def completed(events, status="INCONCLUSIVE"):
             "status": status,
             "root_cause": (
                 {"culprit_service": "api", "failure_mode": "timeout"}
-                if status == "RESOLVED" else None
+                if status == "RESOLVED"
+                else None
             ),
         },
     }
@@ -28,9 +29,15 @@ def oracle(identifiable):
     }
 
 
-@pytest.mark.parametrize("reason", [
-    "TimeoutError", "Invalid model output", "ValidationError", "Tool budget exhausted",
-])
+@pytest.mark.parametrize(
+    "reason",
+    [
+        "TimeoutError",
+        "Invalid model output",
+        "ValidationError",
+        "Tool budget exhausted",
+    ],
+)
 @pytest.mark.parametrize("identifiable", [False, True])
 def test_stop_failure_retains_denominator(reason, identifiable):
     state = completed([{"event_type": "STOP", "message": reason}])
@@ -50,7 +57,9 @@ def test_stop_failure_retains_denominator(reason, identifiable):
 
 
 def test_explicit_abstain_without_stop_receives_credit():
-    score = score_completed(completed([{"event_type": "COORDINATE", "details": {"action": "ABSTAIN"}}]), oracle(False))
+    score = score_completed(
+        completed([{"event_type": "COORDINATE", "details": {"action": "ABSTAIN"}}]), oracle(False)
+    )
     assert score["runtime_failure"] is False
     assert score["correct_abstention"] is True
     row = dict(score, variant="full", source="synthetic", split="dev", status="INCONCLUSIVE")

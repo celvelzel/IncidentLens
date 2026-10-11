@@ -244,6 +244,15 @@ class InvestigationRun:
         # expose their type only; no request payload, credentials or stack traces.
         if isinstance(exc, (TimeoutError, asyncio.TimeoutError)):
             return "TIMEOUT"
+        merge_codes = {
+            "Rejected worker identity/task mismatch": "MERGE_IDENTITY_MISMATCH",
+            "Finding cites evidence not observed by this worker": "MERGE_UNOBSERVED_FINDING",
+            "Hypothesis cites unpublished or unobserved evidence": "MERGE_UNOBSERVED_HYPOTHESIS",
+            "Finding ID reused for a different observation/task": "MERGE_FINDING_ID_COLLISION",
+            "Hypothesis ID reused for a different cause": "MERGE_HYPOTHESIS_ID_COLLISION",
+        }
+        if isinstance(exc, ValueError) and str(exc) in merge_codes:
+            return merge_codes[str(exc)]
         known = str(exc)
         if (
             isinstance(exc, RuntimeError)
@@ -356,7 +365,13 @@ class InvestigationRun:
             }
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "STOP", message=state.stop_reason)
+            self.event(
+                state,
+                "STOP",
+                message=state.stop_reason,
+                stage="merge",
+                error_type=type(exc).__name__,
+            )
             return {"investigation": state, "route": "report"}
 
     async def verify(self, value):

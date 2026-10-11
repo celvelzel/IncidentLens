@@ -293,6 +293,17 @@ class MockProvider(LLMProvider):
                 selected_hypothesis_id=latest[-1]["target_hypothesis_id"],
                 stop_reason="Evidence sufficient",
             )
+        completed_checks = {
+            json.dumps((t["role"], t["question"], t.get("filters", {})), sort_keys=True)
+            for t in tasks
+            if t.get("task_id") in completed
+        }
+        checks = [
+            c
+            for c in checks
+            if json.dumps((c["role"], c["question"], c.get("filters", {})), sort_keys=True)
+            not in completed_checks
+        ]
         if checks:
             return dict(
                 action="INVESTIGATE",
