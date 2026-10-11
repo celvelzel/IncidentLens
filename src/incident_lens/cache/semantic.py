@@ -5,7 +5,7 @@ import json
 import re
 from time import perf_counter, time
 
-from incident_lens.agents.service import AnalysisOutput
+from incident_lens.agents.service import PROMPT_VERSION, AnalysisOutput
 from incident_lens.cache.policy import CacheNamespace, CachePolicy
 from incident_lens.schemas import EvidenceRecord
 from incident_lens.security.context import ROLE_TOOL_ACL
@@ -42,7 +42,7 @@ class SemanticCacheAdapter:
         self.dataset_revision = dataset_revision
         self.embedder = embedder or FakeEmbedder()
         self.store = SQLiteCacheStore(db_path)
-        self.prompt_version = "roles-v1"
+        self.prompt_version = PROMPT_VERSION
         self.output_schema_version = "schema-v1"
         self.tool_acl_version = "ACLv1"
 

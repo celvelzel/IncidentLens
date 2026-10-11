@@ -1,8 +1,25 @@
 """Deterministic grounding and final acceptance, independent of confidence."""
 
+import hashlib
+import json
 import re
 
 from incident_lens.schemas import Hypothesis, InvestigationState
+
+
+def review_fingerprint(hypothesis):
+    return hashlib.sha256(
+        json.dumps(hypothesis.model_dump(mode="json"), sort_keys=True).encode()
+    ).hexdigest()
+
+
+def evidence_fingerprint(state):
+    return hashlib.sha256(
+        json.dumps(
+            {k: v.model_dump(mode="json") for k, v in sorted(state.evidence_index.items())},
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()
 
 
 def cause_discriminator(hypothesis, record):
@@ -51,6 +68,8 @@ def cause_discriminator(hypothesis, record):
 
 def grounding_errors(state: InvestigationState, hypothesis: Hypothesis) -> list[str]:
     errors = []
+    if hypothesis.status == "REJECTED":
+        errors.append("Rejected hypothesis cannot be finalized")
     refs = hypothesis.support_ids + hypothesis.against_ids
     if not set(refs).issubset(state.evidence_index):
         return ["Candidate cites unobserved evidence"]
@@ -71,6 +90,15 @@ def grounding_errors(state: InvestigationState, hypothesis: Hypothesis) -> list[
 
 def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="full") -> list[str]:
     errors = grounding_errors(state, hypothesis)
+    if state.open_questions:
+        errors.append("Unresolved shared questions prevent finalization")
+    if any(
+        h.hypothesis_id != hypothesis.hypothesis_id
+        and h.status != "REJECTED"
+        and (h.support_ids or h.open_questions)
+        for h in state.hypotheses
+    ):
+        errors.append("Competing hypothesis remains unresolved")
     if variant == "full":
         review = next(
             (
@@ -86,4 +114,21 @@ def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="
             errors.append("Verifier still requests checks or reports contradictions")
         elif not review.cited_evidence_ids:
             errors.append("Verifier did not cite observed evidence")
+        else:
+            event = next(
+                (
+                    e
+                    for e in reversed(state.events)
+                    if e.event_type == "REVIEW"
+                    and e.details.get("review", {}).get("target_hypothesis_id")
+                    == hypothesis.hypothesis_id
+                ),
+                None,
+            )
+            if (
+                event is None
+                or event.details.get("hypothesis_sha256") != review_fingerprint(hypothesis)
+                or event.details.get("evidence_sha256") != evidence_fingerprint(state)
+            ):
+                errors.append("Verifier review does not match current candidate/evidence snapshot")
     return errors

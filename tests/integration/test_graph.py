@@ -54,6 +54,15 @@ async def test_missing_case_abstains_and_gate_blocks_fabrication():
     assert finalize_errors(state, fake)
 
 
+async def test_no_verifier_replans_from_safe_shared_catalog():
+    state = await run_investigation("incident_001", MockProvider(), variant="dynamic_no_verifier")
+    assert state.report.status == "RESOLVED"
+    assert state.report.root_cause.failure_mode == "backend_pool_config_regression"
+    assert state.reviews == []
+    assert state.llm_calls_used == 12 and state.tool_calls_used == 6
+    assert state.decisions[1].assignments[0].role == "changes"
+
+
 @pytest.mark.parametrize(
     "budget",
     [

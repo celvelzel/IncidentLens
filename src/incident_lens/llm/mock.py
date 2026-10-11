@@ -107,7 +107,7 @@ def task(role, index, question, filters=None):
 
 
 def records_from(state):
-    records = state.get("evidence_index", {})
+    records = state.get("evidence_index") or state.get("evidence_catalog", {})
     return list(records.values()) if isinstance(records, dict) else records
 
 
@@ -133,7 +133,8 @@ def review(state):
         (h for h in hypotheses if h["failure_mode"] == "backend_pool_config_regression"),
         next((h for h in hypotheses if h.get("status") != "REJECTED"), None),
     )
-    if candidate is None and normal_database(records):
+    database_normal = normal_database(records) or state.get("database_health_normal", False)
+    if candidate is None and database_normal:
         candidate = next(
             (h for h in hypotheses if h["failure_mode"] == "postgres_connection_exhaustion"), None
         )
@@ -141,7 +142,9 @@ def review(state):
     ids = candidate.get("support_ids", []) if candidate else []
     supporting = [r for r in records if r["evidence_id"] in ids]
     distinct = {(r["source_type"], r["source_path"]) for r in supporting}
-    discriminator = any(
+    discriminator = bool(
+        candidate and set(ids).intersection(state.get("discriminator_matches", {}).get(target, []))
+    ) or any(
         classify(r) and classify(r)[2] and candidate and classify(r)[1] == candidate["failure_mode"]
         for r in supporting
     )
@@ -163,9 +166,15 @@ def review(state):
         and classify(r)[1] == "backend_pool_config_regression"
         and classify(r)[2]
         for r in records
+    ) or bool(
+        candidate
+        and candidate["failure_mode"] == "backend_pool_config_regression"
+        and set(candidate.get("support_ids", [])).intersection(
+            state.get("discriminator_matches", {}).get(target, [])
+        )
     )
     if (
-        normal_database(records)
+        database_normal
         and candidate
         and candidate["failure_mode"]
         in ("postgres_connection_exhaustion", "backend_pool_config_regression")

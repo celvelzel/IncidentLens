@@ -11,7 +11,12 @@ from uuid import uuid4
 from langgraph.graph import END, START, StateGraph
 
 from incident_lens.orchestration.budget import CallBudget
-from incident_lens.orchestration.guards import finalize_errors
+from incident_lens.orchestration.guards import (
+    cause_discriminator,
+    evidence_fingerprint,
+    finalize_errors,
+    review_fingerprint,
+)
 from incident_lens.orchestration.merge import merge_results
 from incident_lens.schemas import (
     Budget,
@@ -47,7 +52,11 @@ class InvestigationRun:
         self.evidence_provider = evidence_provider
         self.limits = limits or Budget()
         self.variant = variant
-        self.cache = cache
+        self.cache = copy.copy(cache) if cache is not None else None
+        if self.cache is not None:
+            # Derive revision at each run boundary, including long-lived API adapters.
+            # Keep the caller's adapter unchanged for concurrent-run isolation.
+            self.cache.dataset_revision = evidence_provider.dataset_revision
         self.run_id = run_id or "run-" + uuid4().hex
         self.registry = ToolRegistry(
             evidence_provider,
@@ -61,6 +70,9 @@ class InvestigationRun:
         if hasattr(self.provider, "request_guard"):
             self.provider.request_guard = self.call_budget.consume_request
             self.call_budget.guarded_provider = True
+        if hasattr(self.provider, "token_observer"):
+            self.provider.token_observer = self.call_budget.observe_tokens
+            self.call_budget.observed_tokens = True
         self.signatures = set()
         self.failed_finalizations = set()
         self.tool_events_offset = 0
@@ -89,16 +101,50 @@ class InvestigationRun:
         )
         state.events.append(event)
 
-    def payload(self, state):
+    def payload(self, state, role="coordinator", fetched=None):
         value = state.model_dump(mode="json")
         value["variant"] = self.variant
-        # Provider gets validated public state only, never a file handle or oracle.
+        value["events"] = []
+        if role == "verifier":
+            value["evidence_index"] = {
+                r.evidence_id: r.model_dump(mode="json") for r in fetched or []
+            }
+        elif self.variant != "single":
+            value["evidence_index"] = {}
+            value["evidence_catalog"] = {
+                eid: {
+                    "evidence_id": eid,
+                    "service": record.service,
+                    "source_type": record.source_type,
+                    "source_path": record.source_path,
+                    "metadata": {"change_id": record.metadata["change_id"]}
+                    if "change_id" in record.metadata
+                    else {},
+                }
+                for eid, record in state.evidence_index.items()
+            }
+            value["discriminator_matches"] = {
+                h.hypothesis_id: [
+                    eid
+                    for eid, record in state.evidence_index.items()
+                    if cause_discriminator(h, record)
+                ]
+                for h in state.hypotheses
+            }
+            value["database_health_normal"] = any(
+                h.culprit_service == "postgres" and h.status == "REJECTED" and h.against_ids
+                for h in state.hypotheses
+            )
         return value
 
     def update_usage(self, state, usage, role):
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens
+        from incident_lens.agents.service import PROMPT_VERSION
+
         details = {key: value for key, value in usage.items() if key != "source"}
+        details["prompt_version"] = PROMPT_VERSION
+        details["model_parameters"] = {"temperature": self.provider.temperature}
         self.event(state, "LLM_CALL", role=role, source=usage.get("source", "model"), **details)
 
     def exhausted(self, state):
@@ -335,17 +381,33 @@ class InvestigationRun:
             )
             if not result.ok:
                 raise RuntimeError("Verifier tool failed: " + str(result.error_code))
-            review, usage = await self.call_budget.call(verify, self.provider, self.payload(state))
+            review, usage = await self.call_budget.call(
+                verify, self.provider, self.payload(state, "verifier", result.records)
+            )
             self.update_usage(state, usage, "single" if self.variant == "single" else "verifier")
-            if not set(review.cited_evidence_ids).issubset(state.evidence_index):
+            if not set(review.cited_evidence_ids).issubset(
+                {record.evidence_id for record in result.records}
+            ):
                 raise RuntimeError("Verifier cited unshared evidence")
             state.reviews.append(review)
             state.requested_checks = list(review.requested_checks)
+            if (
+                review.verdict == "sufficient"
+                and not review.contradictions
+                and not review.requested_checks
+            ):
+                state.open_questions = []
+            candidate = next(
+                (h for h in state.hypotheses if h.hypothesis_id == review.target_hypothesis_id),
+                None,
+            )
             self.event(
                 state,
                 "REVIEW",
                 role="single" if self.variant == "single" else "verifier",
                 review=review.model_dump(mode="json"),
+                hypothesis_sha256=review_fingerprint(candidate) if candidate else None,
+                evidence_sha256=evidence_fingerprint(state),
             )
             state.tool_calls_used = self.registry.call_count
             return {"investigation": state, "route": "coordinate"}
@@ -395,6 +457,13 @@ class InvestigationRun:
 
     def report(self, value):
         state = value["investigation"]
+        for usage in self.call_budget.failures:
+            self.event(
+                state,
+                "MODEL_FAILURE",
+                source=usage.get("source", "model"),
+                **{key: item for key, item in usage.items() if key != "source"},
+            )
         if state.report is None:
             state.report = RCAReport(
                 run_id=state.run_id,
@@ -408,7 +477,15 @@ class InvestigationRun:
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens
         self.event(
-            state, "REPORT", report=state.report.model_dump(mode="json"), variant=self.variant
+            state,
+            "REPORT",
+            report=state.report.model_dump(mode="json"),
+            variant=self.variant,
+            tokens_complete=bool(self.call_budget.usage)
+            and all(
+                item.get("tokens_complete", item.get("total_tokens") is not None)
+                for item in self.call_budget.usage
+            ),
         )
         # Revalidate every nested provenance/citation before writing artifacts.
         state = InvestigationState.model_validate_json(state.model_dump_json())

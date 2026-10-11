@@ -101,6 +101,7 @@ class MeasuredProvider(LLMProvider):
             self._measurement["actual_requests"] += 1
 
         self.delegate.request_guard = guard
+        self.delegate.token_observer = self.token_observer
         before = self.actual_requests
         try:
             result, usage = await self.delegate.structured_call(

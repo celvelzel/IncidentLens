@@ -1,5 +1,6 @@
 """Structured provider boundary. Exceptions never include request or response data."""
 
+import asyncio
 import json
 import time
 from abc import ABC, abstractmethod
@@ -21,6 +22,7 @@ class LLMProvider(ABC):
     model_id = "unknown"
     temperature = 0.0
     request_guard = None
+    token_observer = None
 
     @abstractmethod
     async def structured_call(self, role, system_prompt, user_payload, output_model):
@@ -57,6 +59,8 @@ class RealChatProvider(LLMProvider):
             prompt_tokens=None,
             completion_tokens=None,
             total_tokens=None,
+            measured_total_tokens=0,
+            tokens_complete=True,
         )
         messages = [
             {"role": "system", "content": system_prompt},
@@ -77,11 +81,16 @@ class RealChatProvider(LLMProvider):
         )
         client = self._client or httpx.AsyncClient(timeout=self.timeout)
         unknown_tokens = set()
+        request_pending = False
         try:
             for attempt in range(2):
                 if self.request_guard is not None:
-                    self.request_guard()
+                    try:
+                        self.request_guard()
+                    except RuntimeError:
+                        raise ProviderError("REQUEST_BUDGET_EXCEEDED", usage) from None
                 usage["llm_calls"] += 1
+                request_pending = True
                 try:
                     response = await client.post(
                         self.endpoint
@@ -93,6 +102,8 @@ class RealChatProvider(LLMProvider):
                     )
                 except httpx.TimeoutException:
                     raise ProviderError("PROVIDER_TIMEOUT", usage) from None
+                except asyncio.CancelledError:
+                    raise ProviderError("PROVIDER_TIMEOUT", usage) from None
                 except httpx.HTTPError:
                     raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage) from None
                 if response.status_code in (400, 404, 422):
@@ -101,7 +112,18 @@ class RealChatProvider(LLMProvider):
                     raise ProviderError("PROVIDER_HTTP_ERROR", usage)
                 try:
                     data = response.json()
+                    if not isinstance(data, dict):
+                        raise ValueError("Invalid response envelope")
                     token_usage = data.get("usage") or {}
+                    if not isinstance(token_usage, dict):
+                        raise ValueError("Invalid usage envelope")
+                    total = token_usage.get("total_tokens")
+                    if isinstance(total, int) and not isinstance(total, bool) and total >= 0:
+                        usage["measured_total_tokens"] += total
+                        if self.token_observer is not None:
+                            self.token_observer(total)
+                    else:
+                        usage["tokens_complete"] = False
                     for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
                         n = token_usage.get(key)
                         if key in unknown_tokens:
@@ -111,11 +133,18 @@ class RealChatProvider(LLMProvider):
                         else:
                             usage[key] = None
                             unknown_tokens.add(key)
+                    request_pending = False
                     content = data["choices"][0]["message"]["content"]
                     result = output_model.model_validate_json(content)
                     usage["elapsed_ms"] = (time.monotonic() - started) * 1000
                     return result, usage
                 except (ValueError, KeyError, IndexError, TypeError, ValidationError):
+                    if request_pending:
+                        usage["tokens_complete"] = False
+                        for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                            usage[key] = None
+                            unknown_tokens.add(key)
+                        request_pending = False
                     if attempt:
                         raise ProviderError("STRUCTURED_OUTPUT_INVALID", usage) from None
                     messages.append(
@@ -125,6 +154,10 @@ class RealChatProvider(LLMProvider):
                         }
                     )
         finally:
+            if request_pending:
+                usage["tokens_complete"] = False
+                for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                    usage[key] = None
             usage["elapsed_ms"] = (time.monotonic() - started) * 1000
             if self._client is None:
                 await client.aclose()

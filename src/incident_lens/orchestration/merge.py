@@ -8,6 +8,7 @@ def merge_results(state: InvestigationState, results: list, registry) -> Investi
     tasks = {t.task_id: t for t in state.tasks}
     known = {f.finding_id for f in state.findings}
     hypotheses = {h.hypothesis_id: h.model_dump(mode="json") for h in state.hypotheses}
+    publications = []
     for context, task, analysis in results:
         finding = analysis.finding
         if (finding.run_id, finding.incident_id, finding.task_id, finding.role) != (
@@ -27,7 +28,7 @@ def merge_results(state: InvestigationState, results: list, registry) -> Investi
             raise ValueError("Finding cites evidence not observed by this worker")
         if not all_refs.issubset(authorized | set(state.evidence_index)):
             raise ValueError("Hypothesis cites unpublished or unobserved evidence")
-        registry.publish(context, list(finding.evidence_ids))
+        publications.append((context, list(finding.evidence_ids)))
         for record in registry.get_observed_records(context):
             if record.evidence_id in finding.evidence_ids:
                 payload["evidence_index"][record.evidence_id] = record.model_dump(mode="json")
@@ -45,4 +46,7 @@ def merge_results(state: InvestigationState, results: list, registry) -> Investi
             hypotheses[h.hypothesis_id] = updated
     payload["hypotheses"] = list(hypotheses.values())
     # This final validation is performed atomically, before a new graph snapshot.
-    return InvestigationState.model_validate_json(__import__("json").dumps(payload))
+    validated = InvestigationState.model_validate_json(__import__("json").dumps(payload))
+    for context, ids in publications:
+        registry.publish(context, ids)
+    return validated
