@@ -1,9 +1,60 @@
 # IncidentLens
 
+**English** | [简体中文](README.zh-CN.md)
+
 An evidence-driven multi-agent system for software incident investigation.
 The MVP dynamically investigates five mechanisms: backend pool configuration,
 PostgreSQL connections, Redis outages, external payment timeouts and backend
 resource saturation. It produces a cited root-cause report or explicit abstention.
+
+## Background
+
+Production incident review is evidence-heavy: logs, metrics and change history
+must be cross-checked before any causal claim is credible. Generic LLM agents
+tend to over-claim here — they summarize plausible stories without citations,
+ignore data-access boundaries, and rarely admit when the evidence is not enough.
+
+IncidentLens is a personal research project built from scratch to explore a
+stricter contract for agent-driven root-cause analysis (RCA):
+
+- every conclusion must cite the exact records that support it;
+- agents operate inside explicit permission boundaries over read-only evidence;
+- when the visible evidence does not identify a cause, the system abstains
+  (`INCONCLUSIVE`) instead of guessing.
+
+The codebase doubles as a reproducible playground for studying multi-agent
+orchestration: dynamic dispatch, batch validation, verifier feedback loops and
+deterministic grounding gates are all inspectable end to end.
+
+## Highlights
+
+- **Dynamic investigation loop** — LangGraph StateGraph drives coordinator,
+  investigators, verifier and a grounding/review gate.
+- **Cited or abstain** — finalization rejects rejected candidates, unresolved
+  questions and missing causal support; otherwise the run ends in explicit
+  abstention.
+- **Evidence-first permissions** — six read-only tools, server-issued immutable
+  contexts, actual-query ledgers and public file allowlists.
+- **Offline Mock provider** — deterministic over supplied public evidence; no
+  API keys or model weights required.
+- **Reproducible evaluation** — four ablation variants sharing inputs, budgets
+  and grounding rules, with separated accuracy/abstention/citation denominators.
+- **Replay and UI** — saved traces replay without calling graph, tools or
+  provider; a Streamlit dashboard shows timelines, hypothesis transitions,
+  evidence, permissions and cache events.
+- **Optional explanation cache** — exact or conservative semantic reuse with
+  strict namespaces and citation validation.
+
+## Use cases
+
+- **Learning and prototyping** — study how a coordinator/investigator/verifier
+  multi-agent loop behaves under strict evidence and budget constraints.
+- **Offline demos and teaching** — run a full investigation, replay and UI tour
+  on a laptop with no model access.
+- **Architecture ablation studies** — compare single-agent, fixed-expert,
+  dynamic-no-verifier and full variants under identical budgets.
+- **Agent sandboxing patterns** — reference implementation for permission
+  ledgers, allowlists and untrusted-excerpt handling around LLM tool calls.
 
 ## Quick start (PowerShell)
 
@@ -18,8 +69,13 @@ python -m venv .venv
 .venv\Scripts\python.exe -m incident_lens.cli list-cases
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --out results/demo001
 .venv\Scripts\python.exe -m incident_lens.cli replay --trace results/demo001/trace.json
-.venv\Scripts\python.exe -m streamlit run src/incident_lens/ui/app.py --server.headless true --server.address 127.0.0.1
+.venv\Scripts\python.exe -m incident_lens.cli web
 ```
+
+Open http://127.0.0.1:8022 for the Web dashboard: overview, investigation,
+run details and trace library, with light/dark themes and responsive navigation.
+Use `web --port 8023` to change the port. The original Streamlit dashboard remains
+available via `python -m streamlit run src/incident_lens/ui/app.py`.
 
 Runs export `result.json`, `report.md` and `trace.json`. Replay validates saved
 state without calling graph, tools or provider. The UI shows timeline, hypothesis
@@ -145,11 +201,55 @@ Installation verification builds a wheel, installs pinned dependencies in a fres
 environment and runs validation/investigation/replay. It preserves logs and
 refuses to overwrite an existing verification environment.
 
-## Documents and limitations
+## Documentation
 
-See [protocol](docs/protocol.md), [dependencies/ownership](docs/phase-plan.md),
-[demo](docs/demo.md), [acceptance evidence](docs/acceptance/),
-[source snapshots](docs/source/) and [contribution mapping](docs/contributions.md).
+- [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
+- [Dependencies and ownership](docs/phase-plan.md) — phase plan and module map
+- [Demo walkthrough](docs/demo.md) — recorded demo script
+- [Evaluation protocol](docs/evaluation.md) — variants, metrics and scoring rules
+- [Cache design](docs/cache.md) — namespaces, hits and semantic reuse
+- [Analysis](docs/analysis.md) — result analysis notes
+- [Data generation and limitations](data/README.md) — synthetic fixtures and scope
+- [Acceptance evidence](docs/acceptance/) — acceptance runs and audits
+- [Source snapshots](docs/source/) — design and plan snapshots
+- [Contribution mapping](docs/contributions.md) — responsibility-to-evidence matrix
+
 Generated commits do not prove individual students' personal contributions.
-Live LLM comparisons, learned embedding performance and manual semantic citation
-review require separate measured acceptance before research-performance claims.
+
+## Contributing
+
+Contributions, questions and feature ideas are welcome — this is a personal
+project maintained on a best-effort basis, so small, focused changes are the
+easiest to review.
+
+- **Report a bug** — open an issue describing the case ID, provider
+  (`mock`/`real`), the exact CLI command and, if possible, the run's
+  `trace.json`. Mock runs are fully reproducible offline, which makes them the
+  preferred vehicle for bug reports.
+- **Suggest a feature or improvement** — open an issue first to discuss scope
+  before investing in a large change. Honest-scope additions (docs, evaluation
+  scripts, isolation tests) are especially welcome.
+- **Submit a pull request** — keep PRs focused on one change; keep the offline
+  Mock path working; update the matching section in both `README.md` and
+  `README.zh-CN.md` when behavior or commands change.
+- **Development checks** — before submitting, run:
+
+```powershell
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m ruff check src tests scripts
+```
+
+Code style follows Ruff (`line-length = 100`, `py311`). All external calls use
+explicit error handling and logging; coordinates, keys and thresholds are read
+from configuration rather than hardcoded.
+
+## Limitations and honest scope
+
+This is a personal research and learning project. Live LLM comparisons, learned
+embedding performance and manual semantic citation review require separate
+measured acceptance before research-performance claims. The synthetic dataset
+shares five causal templates and does not establish production generalization;
+test membership is a holdout convention, not proof of blind evaluation. Mock
+results demonstrate correctness of the pipeline, not real-model accuracy or
+architecture superiority. See the sections above and linked documents for the
+full boundary of every claim.

@@ -76,6 +76,9 @@ def main(argv=None):
     run.add_argument("--request-timeout", type=float)
     replay = sub.add_parser("replay")
     replay.add_argument("--trace", type=Path, required=True)
+    web = sub.add_parser("web")
+    web.add_argument("--host", default="127.0.0.1")
+    web.add_argument("--port", type=int, default=8022)
     export = sub.add_parser("export-schemas")
     export.add_argument("--out", type=Path, default=Path("docs/contracts"))
     args = parser.parse_args(argv)
@@ -104,6 +107,10 @@ def main(argv=None):
         _, state = load_replay(args.trace)
         print("Recorded Replay — no provider calls")
         print(render_report(state.report))
+    elif args.command == "web":
+        from incident_lens.web.__main__ import main as web_main
+
+        return web_main(["--host", args.host, "--port", str(args.port)])
     elif args.command in {"list-cases", "validate-data"}:
         from incident_lens.tools import EvidenceProvider
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>IncidentLens · 证据驱动的事件调查控制台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236366f1'/%3E%3Ccircle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M19 19 L25 25' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/core.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="主导航">
+      <div class="sidebar-brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="26" height="26"><rect width="32" height="32" rx="7" fill="currentColor" opacity="0.16"/><circle cx="14" cy="14" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19 19 L25 25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <strong>IncidentLens</strong>
+          <small>Evidence-driven RCA</small>
+        </span>
+      </div>
+      <nav class="sidebar-nav" aria-label="页面导航">
+        <a class="nav-item" href="#/" data-nav="overview">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="9" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="5.5" rx="1.6"/><rect x="13.5" y="12" width="7.5" height="9" rx="1.6"/><rect x="3" y="15.5" width="7.5" height="5.5" rx="1.6"/></svg>
+          <span>总览</span>
+        </a>
+        <a class="nav-item" href="#/investigate" data-nav="investigate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/><path d="M11 8v6M8 11h6"/></svg>
+          <span>新建调查</span>
+        </a>
+        <a class="nav-item" href="#/library" data-nav="library">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2.5h6.5A1.5 1.5 0 0 1 20 8v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg>
+          <span>痕迹档案库</span>
+        </a>
+        <a class="nav-item" href="#/run" data-nav="run">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6z"/></svg>
+          <span>运行详情</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-meta" id="sidebar-meta">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="sidebar-meta-text">正在连接…</span>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4L19 19M19 5l-1.6 1.6M6.6 17.4L5 19"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.5A8.3 8.3 0 0 1 9.5 3.8a8.3 8.3 0 1 0 10.7 10.7z"/></svg>
+          <span>切换主题</span>
+        </button>
+      </div>
+    </aside>
+    <div class="main-area">
+      <header class="topbar">
+        <button class="menu-btn" id="menu-btn" type="button" aria-label="打开导航菜单" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="topbar-title" id="topbar-title">总览</div>
+        <div class="topbar-actions">
+          <a class="btn btn-primary btn-sm" href="#/investigate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            新建调查
+          </a>
+        </div>
+      </header>
+      <main id="main" class="content" tabindex="-1"></main>
+    </div>
+  </div>
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+    <header class="drawer-header">
+      <h2 class="drawer-title" id="drawer-title">详情</h2>
+      <button class="icon-btn" id="drawer-close" type="button" aria-label="关闭详情面板">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+  <div class="toast-region" id="toast-region" role="status" aria-live="polite"></div>
+  <div class="scrim" id="scrim" hidden></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

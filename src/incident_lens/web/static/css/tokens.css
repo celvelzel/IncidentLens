@@ -1,0 +1,157 @@
+/* ============================================================
+   IncidentLens Design Tokens
+   Dark-first operations console; light theme via [data-theme].
+   Inspired by Linear/Vercel layered neutrals + shadcn token
+   architecture + Sentry/Datadog incident-status semantics.
+   ============================================================ */
+
+:root {
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono",
+    Consolas, "Liberation Mono", monospace;
+
+  --text-xs: 11.5px;
+  --text-sm: 12.5px;
+  --text-base: 13.5px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.55;
+
+  /* Spacing scale (4px grid) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-14: 56px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+
+  /* Layout */
+  --sidebar-width: 232px;
+  --topbar-height: 56px;
+  --content-max: 1280px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.32, 0.72, 0.24, 1);
+  --dur-fast: 120ms;
+  --dur: 180ms;
+  --dur-slow: 280ms;
+
+  /* Focus */
+  --focus-ring: 0 0 0 2px var(--bg-app), 0 0 0 4px var(--accent);
+}
+
+/* ---------- Dark theme (default) ---------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-app: #09090c;
+  --bg-surface: #0e0e13;
+  --bg-raised: #131318;
+  --bg-overlay: #17171e;
+  --bg-inset: #0b0b0f;
+  --bg-hover: rgba(255, 255, 255, 0.045);
+  --bg-active: rgba(255, 255, 255, 0.08);
+
+  --border-subtle: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text-1: #f2f2f5;
+  --text-2: #a3a3af;
+  --text-3: #90909d;
+
+  --accent: #8b93f8;
+  --accent-strong: #a8affc;
+  --accent-contrast: #0a0a14;
+  --accent-soft: rgba(139, 147, 248, 0.13);
+  --accent-border: rgba(139, 147, 248, 0.34);
+
+  --success: #3dd68c;
+  --success-soft: rgba(61, 214, 140, 0.12);
+  --success-border: rgba(61, 214, 140, 0.32);
+  --warning: #f5b93d;
+  --warning-soft: rgba(245, 185, 61, 0.12);
+  --warning-border: rgba(245, 185, 61, 0.32);
+  --danger: #f47174;
+  --danger-soft: rgba(244, 113, 116, 0.12);
+  --danger-border: rgba(244, 113, 116, 0.34);
+  --info: #5eb0f6;
+  --info-soft: rgba(94, 176, 246, 0.12);
+  --info-border: rgba(94, 176, 246, 0.32);
+  --neutral-soft: rgba(163, 163, 175, 0.12);
+  --neutral-border: rgba(163, 163, 175, 0.3);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
+
+  --code-bg: rgba(255, 255, 255, 0.05);
+  --scroll-thumb: rgba(255, 255, 255, 0.14);
+}
+
+/* ---------- Light theme ---------- */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-app: #f6f6f8;
+  --bg-surface: #ffffff;
+  --bg-raised: #ffffff;
+  --bg-overlay: #ffffff;
+  --bg-inset: #f1f1f4;
+  --bg-hover: rgba(23, 23, 30, 0.045);
+  --bg-active: rgba(23, 23, 30, 0.08);
+
+  --border-subtle: rgba(23, 23, 30, 0.07);
+  --border: rgba(23, 23, 30, 0.12);
+  --border-strong: rgba(23, 23, 30, 0.22);
+
+  --text-1: #17171e;
+  --text-2: #4c4c57;
+  --text-3: #666673;
+
+  --accent: #4f52e0;
+  --accent-strong: #3f42c4;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(79, 82, 224, 0.09);
+  --accent-border: rgba(79, 82, 224, 0.32);
+
+  --success: #087b4d;
+  --success-soft: rgba(15, 157, 99, 0.1);
+  --success-border: rgba(15, 157, 99, 0.3);
+  --warning: #b26a08;
+  --warning-soft: rgba(178, 106, 8, 0.1);
+  --warning-border: rgba(178, 106, 8, 0.3);
+  --danger: #d23b3f;
+  --danger-soft: rgba(210, 59, 63, 0.09);
+  --danger-border: rgba(210, 59, 63, 0.3);
+  --info: #1f6fd6;
+  --info-soft: rgba(31, 111, 214, 0.09);
+  --info-border: rgba(31, 111, 214, 0.3);
+  --neutral-soft: rgba(76, 76, 87, 0.09);
+  --neutral-border: rgba(76, 76, 87, 0.26);
+
+  --shadow-sm: 0 1px 2px rgba(23, 23, 30, 0.06);
+  --shadow-md: 0 4px 16px rgba(23, 23, 30, 0.09);
+  --shadow-lg: 0 16px 48px rgba(23, 23, 30, 0.16);
+
+  --code-bg: rgba(23, 23, 30, 0.05);
+  --scroll-thumb: rgba(23, 23, 30, 0.18);
+}
