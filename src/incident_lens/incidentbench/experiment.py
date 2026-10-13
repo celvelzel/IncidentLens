@@ -86,6 +86,11 @@ async def run_experiment(
         else ExperimentProtocol.model_validate(protocol)
     )
     root, public, cases = load_cases(dataset, split)
+    from .validator import validate_dataset
+
+    audit = validate_dataset(root)
+    if not audit["ok"]:
+        raise ValueError("public benchmark audit failed")
     if not cases:
         raise ValueError("empty split")
     if protocol.formal:
@@ -245,6 +250,9 @@ async def run_experiment(
             variant=variant,
             repeat_id=repeat,
             scenario_family_id=metadata[incident].scenario_family_id,
+            source_blueprint_id=metadata[incident].source_blueprint_id,
+            near_duplicate_cluster_id=metadata[incident].near_duplicate_cluster_id,
+            independence_status="unreviewed",
             cohort=metadata[incident].cohort,
             source=raw["source"],
             latency_ms=latency,

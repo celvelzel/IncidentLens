@@ -100,6 +100,8 @@ def merge_reviews(bundle, records, adjudications=None):
             raise ValueError("duplicate or unknown adjudication")
         if (
             item.get("source") != "human"
+            or not isinstance(item.get("reviewer_id"), str)
+            or not item["reviewer_id"].strip()
             or not item.get("rationale")
             or not item.get("reviewed_at")
         ):

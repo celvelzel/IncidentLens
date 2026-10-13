@@ -181,6 +181,13 @@ async def test_development_test_never_loads_oracle_and_empty_split_refuses(tmp_p
     (dataset / "rca/splits/test_ids.json").write_bytes(
         (dataset / "rca/splits/seed_ids.json").read_bytes()
     )
+    (dataset / "rca/splits/seed_ids.json").write_text("[]")
+    from incident_lens.incidentbench.manifest import digest_tree
+
+    manifest_path = dataset / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["rca_public_sha256"] = digest_tree(dataset / "rca")
+    manifest_path.write_text(json.dumps(manifest))
 
     def forbidden(*args, **kwargs):
         raise AssertionError("Test label read forbidden")
@@ -222,3 +229,36 @@ async def test_post_graph_dataset_drift_durable_then_abort(tmp_path, monkeypatch
     assert saved[0]["state"]["events"]
     assert saved[0]["state"]["execution_error"]["code"] == "PROTOCOL_MISMATCH"
     assert "ABORTED" in (out / "errors.jsonl").read_text()
+
+
+async def test_public_answer_metadata_refused_before_provider(tmp_path):
+    from incident_lens.incidentbench.experiment import run_experiment
+    from incident_lens.incidentbench.manifest import digest_tree
+
+    dataset, oracle = build_fixture(tmp_path)
+    index_path = dataset / "public_case_index.json"
+    index = json.loads(index_path.read_text())
+    public = dataset / "rca/incidents" / index[0]["incident_id"] / "public"
+    log = public / "logs.jsonl"
+    text = log.read_text()
+    log.write_text(text.replace("Request completed", "root_cause_code Request completed"))
+    index[0]["public_sha256"] = digest_tree(public)
+    index_path.write_text(json.dumps(index))
+    manifest_path = dataset / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["rca_public_sha256"] = digest_tree(dataset / "rca")
+    manifest_path.write_text(json.dumps(manifest))
+
+    def forbidden():
+        raise AssertionError("provider must not be constructed")
+
+    with pytest.raises(ValueError, match="public benchmark audit"):
+        await run_experiment(
+            dataset,
+            "seed",
+            forbidden,
+            tmp_path / "runs",
+            ExperimentProtocol(model_id=MockProvider.model_id),
+            oracle,
+        )
+    assert not (tmp_path / "runs").exists()

@@ -132,7 +132,14 @@ def aggregate(rows):
         item["citation_existence_validity"] = (
             sum(r.get("valid_citation_count", 0) for r in group) / cited if cited else None
         )
-        item["total_http_attempts"] = sum(r.get("actual_http_requests", 0) for r in group)
+        attempts = [r.get("actual_http_requests") for r in group]
+        item["total_http_attempts"] = (
+            sum(attempts) if all(v is not None for v in attempts) else None
+        )
+        item["request_count_completeness"] = (
+            sum(v is not None for v in attempts) / len(group) if group else None
+        )
+        item["known_http_attempts_lower_bound"] = sum(v for v in attempts if v is not None)
         item["token_completeness"] = (
             sum(r.get("total_tokens") is not None for r in group) / len(group) if group else None
         )

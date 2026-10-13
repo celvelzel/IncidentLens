@@ -38,3 +38,15 @@ def test_missing_repeat_and_duplicate_refuse():
 
 def test_no_labels_has_no_accuracy_claim():
     assert paired_comparison([], "baseline")["status"] == "no_scored_pairs"
+
+
+def test_disclosed_shared_source_merges_families_and_suppresses_ci():
+    values = rows()
+    for row in values:
+        row["near_duplicate_cluster_id"] = "same_encoder"
+        row["independence_status"] = "unreviewed"
+    result = paired_comparison(values, "baseline", samples=100)
+    assert result["declared_family_n"] == 2
+    assert result["effective_source_clusters"] == 1
+    assert result["ci95"] is None and result["exact_discordance_p"] is None
+    assert result["status"] == "insufficient_clusters"

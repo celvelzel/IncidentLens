@@ -87,3 +87,15 @@ def test_unknown_annotations_are_rejected():
             dict(incident_id="incident_001", report=None, events=[], evidence_index={}),
             annotations={},
         )
+
+
+def test_interrupted_requests_unknown_never_filled_with_zero():
+    result = aggregate(
+        [
+            {"variant": "full", "actual_http_requests": 3},
+            {"variant": "full", "actual_http_requests": None},
+        ]
+    )[0]
+    assert result["total_http_attempts"] is None
+    assert result["known_http_attempts_lower_bound"] == 3
+    assert result["request_count_completeness"] == 0.5

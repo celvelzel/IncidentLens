@@ -44,6 +44,13 @@ def test_conflict_pending_until_independent_adjudication():
     assert review_coverage(bundle, result)["unsupported_claim_rate"] == 1
 
 
+@pytest.mark.parametrize("identity", [None, "", " "])
+def test_adjudication_requires_named_independent_reviewer(identity):
+    item = record(identity)
+    with pytest.raises(ValueError, match="adjudication provenance"):
+        merge_reviews([{"claim_id": "c1"}], [record("a"), record("b", "INSUFFICIENT")], [item])
+
+
 @pytest.mark.parametrize(
     "field,value",
     [("source", "ai"), ("reviewed_at", None), ("rationale", ""), ("claim_id", "foreign")],

@@ -27,6 +27,14 @@ def validate_dataset(dataset, oracle_root=None):
         raw = json.loads(safe_path(index_path).read_bytes())
         rows = raw if isinstance(raw, list) else raw["cases"]
         metadata = [BenchmarkCaseMetadata.model_validate(row) for row in rows]
+        for split in ("seed", "dev", "test"):
+            for cohort in ("core", "monitoring", "ood"):
+                coverage[f"{split}/{cohort}"] = 0
+        pairs = Counter(
+            row.counterfactual_pair_id for row in metadata if row.counterfactual_pair_id
+        )
+        if any(count != 2 for count in pairs.values()):
+            errors.append("counterfactual group requires exactly two cases")
         ids = [row.incident_id for row in metadata]
         if len(ids) != len(set(ids)) or set(ids) != {
             case.incident_id for case in provider.list_cases()
@@ -105,6 +113,8 @@ def validate_dataset(dataset, oracle_root=None):
                 if (
                     oracle.incident_id != row.incident_id
                     or oracle.scenario_family_id != row.scenario_family_id
+                    or oracle.cohort != row.cohort
+                    or oracle.counterfactual_pair_id != row.counterfactual_pair_id
                 ):
                     errors.append("oracle metadata mismatch")
                 lookup = {r.evidence_id: r for r in records}

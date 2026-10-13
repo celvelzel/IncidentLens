@@ -92,12 +92,16 @@ def main():
         }
         row.update(
             scenario_family_id=metadata["scenario_family_id"],
+            source_blueprint_id=metadata["source_blueprint_id"],
+            near_duplicate_cluster_id=metadata["near_duplicate_cluster_id"],
+            independence_status="unreviewed",
             cohort=metadata["cohort"],
             **run["usage"],
             **score_benchmark_run(state, oracle),
         )
         if oracle and row.get("oracle_sha256") != original[run["run_key"]].get("oracle_sha256"):
             raise ValueError("oracle label digest mismatch")
+        row["score_error"] = original[run["run_key"]].get("score_error")
         rows.append(row)
     args.out.mkdir(parents=True, exist_ok=False)
     write_csv(args.out / "case-level.csv", rows)
