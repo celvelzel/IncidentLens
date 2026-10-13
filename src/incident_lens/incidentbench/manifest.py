@@ -15,7 +15,11 @@ def digest_tree(root, *, source_only=False):
     root = safe_path(root)
     digest = hashlib.sha256()
     for item in sorted(root.rglob("*")):
-        if source_only and ("__pycache__" in item.parts or item.suffix in {".pyc", ".pyo"}):
+        if source_only and (
+            "__pycache__" in item.parts
+            or any(part.endswith(".egg-info") for part in item.parts)
+            or item.suffix in {".pyc", ".pyo"}
+        ):
             continue
         path = safe_path(item)
         if path.is_dir():
