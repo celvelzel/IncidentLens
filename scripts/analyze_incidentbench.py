@@ -11,6 +11,7 @@ from incident_lens.incidentbench.experiment import (
     durable_write,
     export_paired,
     load_cases,
+    run_order,
 )
 from incident_lens.incidentbench.schemas import ExperimentProtocol
 from incident_lens.incidentbench.scorer import aggregate, score_benchmark_run
@@ -66,6 +67,8 @@ def main():
     if set(original) != set(expected_keys):
         raise ValueError("saved score keys must match the complete raw ledger")
     _, _, cases = load_cases(dataset, context["split"])
+    if order != [list(item) for item in run_order([case.incident_id for case in cases], protocol)]:
+        raise ValueError("saved run order differs from the frozen seeded schedule")
     metadata_index = {c.incident_id: c.model_dump(mode="json") for c in cases}
     for run in raw:
         state, metadata = run["state"], run["metadata"]
@@ -77,9 +80,11 @@ def main():
             raise ValueError("saved run identity/metadata mismatch")
         receipt = state["completion_receipt"]
         saved_state = {k: v for k, v in state.items() if k != "completion_receipt"}
-        if hashlib.sha256(canonical(saved_state)).hexdigest() != receipt["sha256"] or Path(
-            receipt["path"]
-        ).read_bytes() != canonical(saved_state):
+        expected_state = safe_path(args.input.parent / "states" / f"{run['run_key']}.json")
+        if safe_path(receipt["path"]) != expected_state or (
+            hashlib.sha256(canonical(saved_state)).hexdigest() != receipt["sha256"]
+            or expected_state.read_bytes() != canonical(saved_state)
+        ):
             raise ValueError("saved state receipt mismatch")
         # Development Test must remain unscored even in a privileged analysis.
         oracle = (
@@ -114,7 +119,8 @@ def main():
             **run["usage"],
             **score_benchmark_run(state, oracle),
         )
-        if oracle and row.get("oracle_sha256") != original[run["run_key"]].get("oracle_sha256"):
+        original_digest = original[run["run_key"]].get("oracle_sha256")
+        if oracle and original_digest is not None and row.get("oracle_sha256") != original_digest:
             raise ValueError("oracle label digest mismatch")
         row["score_error"] = original[run["run_key"]].get("score_error")
         row["failure_category"] = (
