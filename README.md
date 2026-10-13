@@ -3,9 +3,11 @@
 **English** | [简体中文](README.zh-CN.md)
 
 An evidence-driven multi-agent system for software incident investigation.
-The MVP dynamically investigates five mechanisms: backend pool configuration,
-PostgreSQL connections, Redis outages, external payment timeouts and backend
-resource saturation. It produces a cited root-cause report or explicit abstention.
+The system cross-checks logs, metrics, database observations and changes to investigate
+pool configuration, PostgreSQL connection exhaustion, lock contention and slow queries,
+Redis outages, external payment timeouts and resource saturation. It produces a cited
+root-cause report or explicit abstention. An optional response workflow adds public
+snapshot monitoring and remediation proposals without executing production changes.
 
 ## Background
 
@@ -28,22 +30,17 @@ deterministic grounding gates are all inspectable end to end.
 
 ## Highlights
 
-- **Dynamic investigation loop** — LangGraph StateGraph drives coordinator,
-  investigators, verifier and a grounding/review gate.
-- **Cited or abstain** — finalization rejects rejected candidates, unresolved
-  questions and missing causal support; otherwise the run ends in explicit
-  abstention.
-- **Evidence-first permissions** — six read-only tools, server-issued immutable
-  contexts, actual-query ledgers and public file allowlists.
-- **Offline Mock provider** — deterministic over supplied public evidence; no
-  API keys or model weights required.
-- **Reproducible evaluation** — four ablation variants sharing inputs, budgets
-  and grounding rules, with separated accuracy/abstention/citation denominators.
-- **Replay and UI** — saved traces replay without calling graph, tools or
-  provider; a Streamlit dashboard shows timelines, hypothesis transitions,
-  evidence, permissions and cache events.
-- **Optional explanation cache** — exact or conservative semantic reuse with
-  strict namespaces and citation validation.
+- **Dynamic investigation and response** — one LangGraph workflow connects monitoring,
+  coordination, four specialist roles, verification, finalization, proposals and unified stopping.
+- **Cited or abstain** — deterministic gates check candidates, citations and review versions;
+  insufficient evidence produces `INCONCLUSIVE`.
+- **Evidence-first permissions** — role-scoped read-only tools, immutable contexts,
+  actual-query ledgers and public file allowlists.
+- **Offline Mock provider** — deterministic over supplied public evidence, without API keys or model weights.
+- **Reproducible evaluation** — four original ablation variants, paired database ablations and task recovery experiments.
+- **Replay and UI** — Web and retained Streamlit dashboards expose evidence, hypotheses,
+  alerts, proposals, tasks and stop events.
+- **Optional explanation cache** — exact or conservative semantic reuse with strict namespaces and citation validation.
 
 ## Use cases
 
@@ -72,7 +69,7 @@ python -m venv .venv
 .venv\Scripts\python.exe -m incident_lens.cli web
 ```
 
-Open http://127.0.0.1:8022 for the Web dashboard: overview, investigation,
+Open the [local Web dashboard](http://127.0.0.1:8022) for the Web dashboard: overview, investigation,
 run details and trace library, with light/dark themes and responsive navigation.
 Use `web --port 8023` to change the port. The original Streamlit dashboard remains
 available via `python -m streamlit run src/incident_lens/ui/app.py`.
@@ -82,39 +79,112 @@ state without calling graph, tools or provider. The UI shows timeline, hypothesi
 transitions, evidence, permissions, cache events and downloads; Recorded Replay
 and Mock are visibly labeled.
 
-## Architecture
+## Agent workflow architecture
 
 ```mermaid
 flowchart TD
-    Input[Public incident summary] --> C[Coordinator]
-    C -->|1–2 tasks| D[Dispatch investigators]
-    D --> L[Logs]
-    D --> M[Metrics]
-    D --> X[Changes]
-    L --> B[Validated single merge]
+    I["Public incident summary"]
+    P["Public snapshot or offline replay"]
+    N["Monitoring"]
+    C["Coordinator / Supervisor"]
+    D["Dispatch 1–2 investigation tasks"]
+    L["Logs"]
+    M["Metrics / Dependencies"]
+    DB["Database"]
+    X["Changes"]
+    B["Validated merge and shared evidence board"]
+    V["Verifier / Skeptic"]
+    G["FinalizeGate"]
+    R["Remediation: PLAN_ONLY"]
+    S["Unified STOP"]
+    O["Report and trace"]
+    I --> C
+    P --> N
+    N -->|ALERT| C
+    N -->|NO_ALERT| S
+    C --> D
+    D --> L
+    D --> M
+    D --> DB
+    D --> X
+    L --> B
     M --> B
+    DB --> B
     X --> B
-    B --> V[Verifier: fetch shared evidence]
-    V -->|Contradictions / requested checks| C
-    C -->|Finalize| G[Grounding and review gate]
-    G -->|Insufficient and budget remains| C
-    G -->|Sufficient| R[Cited RCA report]
-    C -->|Abstain / failure / budget| A[INCONCLUSIVE]
-    A --> R
+    B --> V
+    V --> C
+    C --> G
+    G -->|Replan within budget| C
+    G -->|Accepted RCA, proposals enabled| R
+    G -->|Accepted RCA, proposals disabled| S
+    C -->|Abstain / budget / failure| S
+    R --> S
+    S --> O
 ```
 
-LangGraph StateGraph drives the entire loop. Investigators return local outputs;
-one merge validates the complete batch against issued identity and actual-query
-ledger before publishing. Coordinator receives findings and evidence references,
-without raw tool-event history. Verifier receives only authorized fetched records.
-Review fingerprints bind candidate and evidence versions. Finalization rejects
-rejected candidates, unresolved questions, competing hypotheses and missing causal
-support. Reporter is deterministic.
+The diagram shows the full dynamic workflow: default `legacy_rca` starts from an
+incident summary, while optional `incident_response` can begin with public snapshots
+or offline replay and finish immediately on `NO_ALERT`. Monitoring is disabled by default;
+the response profile can also start directly from an incident ID. `full` uses verifier
+feedback, `dynamic_no_verifier` skips verification, `fixed` retains one original
+three-expert batch, and `single` uses the single-agent baseline. Proposals run only after
+an accepted RCA; terminal paths from every phase pass through STOP.
 
-Defaults: 4 rounds, 12 tools, 16 actual model requests, 90 seconds, one JSON repair.
-CLI reads `configs/system.yaml`; flags override it. `--max-tokens` prevents further
-requests after measured usage exhausts the cap; an in-flight response may exceed
-it. Known subtotals are retained; unknown usage is explicitly marked incomplete.
+### Agent responsibilities
+
+| Agent / role ID | Responsibility in one sentence |
+| --- | --- |
+| Monitoring (`monitoring`) | Detect anomalies in public snapshots or replay and emit alerts, allowing `NO_ALERT` for normal or insufficient evidence. |
+| Coordinator / Supervisor (`coordinator`) | Assign or replan investigations from evidence gaps and remaining budgets, then choose finalization or abstention. |
+| Log Investigator (`logs`) | Reconstruct error chronology and propagation from logs while separating causal signals from symptoms. |
+| Metrics & Dependency Investigator (`metrics`) | Inspect service health, capacity and dependencies to locate the scope of an anomaly. |
+| Database Investigator (`database`) | Analyze connections, sessions, locks and slow queries to distinguish database faults, application pool issues and downstream symptoms. |
+| Change Investigator (`changes`) | Compare deployments and configuration changes with incident onset to identify possible triggers. |
+| Verifier / Skeptic (`verifier`) | Challenge candidate causes using authorized shared evidence and request concrete checks for contradictions or gaps. |
+| Remediation (`remediation`) | Produce evidence-supported proposals with preconditions, risks, verification and rollback steps for an accepted cause. |
+| Single-Agent baseline (`single`) | Use one agent for planning, investigation and self-reflection in architecture comparisons. |
+
+### Runtime and budgets
+
+All roles run in one LangGraph StateGraph with centralized communication. Investigators
+return local outputs; Merge validates each batch against issued identities and actual-query
+ledgers before publication to the shared evidence board. Coordinator receives findings and
+evidence references; Verifier fetches authorized records, and review fingerprints bind
+candidate and evidence versions. FinalizeGate rejects rejected candidates, unresolved
+questions, competing hypotheses and missing causal support. TaskManager manages bounded
+retries; StopController freezes tasks and tools, cancels work and waits for acknowledgements.
+These components and the deterministic Reporter are runtime components, not additional
+LLM agents. Tree communication is unsupported.
+
+| Configuration | Workflow | Rounds | Tool calls | Actual model requests | Total time |
+| --- | --- | --- | --- | --- | --- |
+| [system.yaml](configs/system.yaml) (default) | `legacy_rca` | 4 | 12 | 16 | 600 seconds |
+| [incident-response.yaml](configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 seconds |
+
+The response configuration also limits monitoring to 8 calls, remediation to 2 calls,
+each task to 2 attempts and stop acknowledgements to 5 seconds. Phase limits share global
+budgets, including JSON repair requests. Defaults allow 180 seconds per model request and
+one JSON repair. CLI flags override configuration; `--max-tokens` blocks further requests
+after measured usage exhausts the cap, although an in-flight response may exceed it.
+Unknown usage is explicitly marked incomplete.
+
+Diagnosis (`RESOLVED` / `INCONCLUSIVE`), remediation (`NOT_STARTED` / `PLAN_READY` /
+`PLAN_FAILED` / `SKIPPED`) and workflow (`RUNNING` / `STOPPING` / `FINISHED` / `FAILED`)
+statuses are recorded separately. The original `RCAReport.status` still supports
+`RESOLVED` / `INCONCLUSIVE` / `ERROR`; `PLAN_READY` means a proposal exists, not that service recovered.
+
+## Incident response workflow
+
+```powershell
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --out results/legacy-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --out results/response-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode manual_snapshot --snapshot data/monitoring/normal.json --out results/no-alert-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode offline_replay --snapshot data/monitoring/anomaly.json --out results/replay-demo
+```
+
+Monitoring JSON contains public `EvidenceRecord` objects for the selected incident.
+`manual_snapshot` analyzes a supplied snapshot; `offline_replay` uses offline input without
+connecting to production monitoring. Remediation is `PLAN_ONLY` and executes none of its proposed actions.
 
 ## Providers and configuration
 
@@ -151,21 +221,34 @@ not real-model accuracy or architecture superiority.
 
 ## Evidence and permissions
 
-The dataset contains 6 seed, 10 dev and 20 held-out synthetic cases with neutral
-IDs and frozen split files. Missing-data cases require abstention. Shared causal
-templates are smoke fixtures, not an independently collected production benchmark.
-See [data generation and limitations](data/README.md).
+The dataset contains the original 6 seed, 10 dev and 20 held-out synthetic cases plus
+4 cases (`incident_037`–`incident_040`) in a separate [database set](data/splits/database_ids.json),
+for 40 cases total. Original splits remain frozen. Added scenarios cover connection exhaustion,
+application pool misconfiguration with a healthy database, locks and slow queries, and insufficient
+evidence. Missing evidence requires abstention; synthetic templates are not an independently
+collected production benchmark. See [data generation and limitations](data/README.md).
 
-The six tools are read-only: query_logs; query_metrics/get_dependencies;
-query_changes/get_config_diff; fetch_evidence_by_ids. Server-issued immutable
-contexts enforce role/workspace/incident/run and actual-query ledgers. Public file
-allowlists reject private truth, traversal and symlink/junction escapes. Excerpts
-are untrusted data. This is application isolation, not an OS Python sandbox.
+All tools are read-only:
+
+| Evidence type | Tools |
+| --- | --- |
+| Logs | `query_logs` |
+| Metrics and dependencies | `query_metrics`, `get_dependencies` |
+| Changes | `query_changes`, `get_config_diff` |
+| Database | `get_db_connections`, `get_db_active_sessions`, `get_db_lock_waits`, `get_db_slow_queries`, `get_db_health_metrics` |
+| Shared evidence | `fetch_evidence_by_ids` |
+
+Database observations use optional `public/database.jsonl`; older packs need no additional file.
+ToolRegistry enforces role permissions; fair comparisons can explicitly enable
+`database_equivalent_tools` for equivalent database access by Metrics / Single.
+Server-issued immutable contexts constrain role, workspace, incident, run and actual-query ledgers.
+Public file allowlists reject private truth, traversal and symlink/junction escapes. Excerpts are
+untrusted data. This is application isolation, not an OS Python sandbox.
 
 ## Local explanation cache
 
-Only logs/metrics/changes explanations are cacheable. Routing, reviews, reports
-and tool queries execute normally. Hits require current queried records, strict
+Only local logs/metrics/database/changes explanations are cacheable. Monitoring, routing,
+reviews, proposals, final acceptance, reports and tool queries execute normally. Hits require current queried records, strict
 namespace and valid citations; finding/task/run identities are rebound before
 merge. Each run refreshes dataset revision. Namespace also includes evidence hash,
 identity, task type, prompt, model/parameters, schema and ACL versions.
@@ -184,6 +267,8 @@ SentenceTransformer uses explicitly installed local weights. See [cache](docs/ca
 .venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider mock --out results/eval-mock
 .venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider real --out results/eval-real
 .venv\Scripts\python.exe scripts/run_eval.py --split test --variant all --provider real --out results/final
+.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_037 incident_038 incident_039 incident_040 --out results/v12-eval
+.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_001 incident_037 --skip-legacy --inject-transient-failure --out results/v12-recovery
 .venv\Scripts\python.exe -m pytest -q
 .venv\Scripts\python.exe -m ruff check src tests scripts
 .venv\Scripts\python.exe scripts/verify_install.py --out results/fresh-install
@@ -196,6 +281,11 @@ only after execution. Outputs: case-level.csv, aggregate.csv, raw-runs.jsonl and
 error-analysis.md. Accuracy/abstention/citation denominators remain separate;
 unknown tokens/cost and unreviewed semantic support stay blank. Equal tool budgets
 do not imply equal tokens. See [evaluation protocol](docs/evaluation.md).
+
+Paired database evaluation gives Metrics equivalent database tools in both arms with
+cache off to compare the additional Database role. Failure injection checks bounded retries
+and recovery. Mock results establish deterministic behavior; real-model quality and remediation
+effectiveness require separate measurement.
 
 Installation verification builds a wheel, installs pinned dependencies in a fresh
 environment and runs validation/investigation/replay. It preserves logs and
@@ -239,16 +329,15 @@ easiest to review.
 .venv\Scripts\python.exe -m ruff check src tests scripts
 ```
 
-Code style follows Ruff (`line-length = 100`, `py311`). All external calls use
-explicit error handling and logging; coordinates, keys and thresholds are read
-from configuration rather than hardcoded.
+Code style follows Ruff (`line-length = 100`, `py311`). New roles should update public
+contracts, read-only tool permissions and corresponding tests. Never commit local secrets.
 
 ## Limitations and honest scope
 
 This is a personal research and learning project. Live LLM comparisons, learned
 embedding performance and manual semantic citation review require separate
 measured acceptance before research-performance claims. The synthetic dataset
-shares five causal templates and does not establish production generalization;
+uses shared causal templates and does not establish production generalization;
 test membership is a holdout convention, not proof of blind evaluation. Mock
 results demonstrate correctness of the pipeline, not real-model accuracy or
 architecture superiority. See the sections above and linked documents for the

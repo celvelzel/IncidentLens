@@ -3,8 +3,9 @@
 [English](README.md) | **简体中文**
 
 一个以证据为驱动的软件事故排查多智能体系统。
-MVP 会动态排查五类故障机制:后端连接池配置、PostgreSQL 连接、Redis 不可用、
-外部支付超时以及后端资源饱和。最终产出一份带引用的根因报告,或明确弃权。
+系统交叉调查日志、指标、数据库与变更记录，覆盖连接池配置、PostgreSQL 连接耗尽、
+锁竞争与慢查询、Redis 不可用、外部支付超时以及资源饱和，产出带引用的根因报告或明确弃权。
+可选事件响应流程支持公开快照监控和修复方案生成；修复阶段只输出建议，不执行生产变更。
 
 ## 项目背景
 
@@ -24,18 +25,13 @@ IncidentLens 是一个从零构建的个人研究项目,旨在探索智能体驱
 
 ## 功能亮点
 
-- **动态排查循环** —— LangGraph StateGraph 驱动协调者、调查者、验证器与
-  落地/评审门控。
-- **有据可依,否则弃权** —— 定稿阶段拒绝被否决的候选、未解决的疑问与缺失的
-  因果支撑;否则本次运行以明确弃权收尾。
-- **证据优先的权限体系** —— 六个只读工具、服务端签发的不可变上下文、实际查询
-  账本与公共文件白名单。
-- **离线 Mock 提供方** —— 在给定公共证据上完全确定;无需 API 密钥或模型权重。
-- **可复现的评估体系** —— 四个消融变体共享输入、预算与落地规则,准确率/弃权率/
-  引用率的分母彼此分离。
-- **回放与 UI** —— 保存的轨迹无需调用图、工具或提供方即可回放;Streamlit
-  仪表盘展示时间线、假设迁移、证据、权限与缓存事件。
-- **可选解释缓存** —— 精确匹配或保守的语义复用,带严格命名空间与引用校验。
+- **动态调查与事件响应** —— 单一 LangGraph 工作流连接监控、协调、四类调查者、验证、定稿、修复建议和统一停止。
+- **有据可依，否则弃权** —— 确定性门控检查候选、引用与评审版本，证据不足时输出 `INCONCLUSIVE`。
+- **证据优先的权限体系** —— 按角色授权的只读工具、不可变上下文、实际查询账本与公共文件白名单。
+- **离线 Mock 提供方** —— 在给定公共证据上确定性运行，无需 API 密钥或模型权重。
+- **可复现评估** —— 四个原有消融变体、数据库配对消融与任务失败恢复实验。
+- **回放与 UI** —— Web 控制台和保留的 Streamlit 页面展示证据、假设、告警、修复方案、任务与停止事件。
+- **可选解释缓存** —— 精确匹配或保守语义复用，带严格命名空间与引用校验。
 
 ## 使用场景
 
@@ -64,7 +60,7 @@ python -m venv .venv
 .venv\Scripts\python.exe -m incident_lens.cli web
 ```
 
-打开 http://127.0.0.1:8022 使用 Web 控制台：总览、新建调查、运行详情与痕迹档案库，
+打开 [本地 Web 控制台](http://127.0.0.1:8022) 使用 Web 控制台：总览、新建调查、运行详情与痕迹档案库，
 支持深浅主题和移动端导航。可用 `web --port 8023` 更改端口。
 原 Streamlit 页面仍可通过 `python -m streamlit run src/incident_lens/ui/app.py` 启动。
 
@@ -72,37 +68,102 @@ python -m venv .venv
 不调用图、工具或提供方。UI 展示时间线、假设迁移、证据、权限、缓存事件与下载;
 录制回放和 Mock 均有明确标识。
 
-## 架构
+## Agent 工作流架构
 
 ```mermaid
 flowchart TD
-    Input[Public incident summary] --> C[Coordinator]
-    C -->|1–2 tasks| D[Dispatch investigators]
-    D --> L[Logs]
-    D --> M[Metrics]
-    D --> X[Changes]
-    L --> B[Validated single merge]
+    I["公开事件摘要"]
+    P["公开快照或离线回放"]
+    N["Monitoring"]
+    C["Coordinator / Supervisor"]
+    D["分发 1–2 个调查任务"]
+    L["Logs"]
+    M["Metrics / Dependencies"]
+    DB["Database"]
+    X["Changes"]
+    B["校验合并与共享证据板"]
+    V["Verifier / Skeptic"]
+    G["FinalizeGate"]
+    R["Remediation：仅生成方案"]
+    S["统一 STOP"]
+    O["报告与轨迹"]
+    I --> C
+    P --> N
+    N -->|ALERT| C
+    N -->|NO_ALERT| S
+    C --> D
+    D --> L
+    D --> M
+    D --> DB
+    D --> X
+    L --> B
     M --> B
+    DB --> B
     X --> B
-    B --> V[Verifier: fetch shared evidence]
-    V -->|Contradictions / requested checks| C
-    C -->|Finalize| G[Grounding and review gate]
-    G -->|Insufficient and budget remains| C
-    G -->|Sufficient| R[Cited RCA report]
-    C -->|Abstain / failure / budget| A[INCONCLUSIVE]
-    A --> R
+    B --> V
+    V --> C
+    C --> G
+    G -->|预算内重新规划| C
+    G -->|接受根因且启用修复建议| R
+    G -->|接受根因且关闭修复建议| S
+    C -->|弃权 / 预算耗尽 / 失败| S
+    R --> S
+    S --> O
 ```
 
-LangGraph StateGraph 驱动整个循环。调查者返回局部输出;单次合并会在发布前,
-依据已签发的身份与实际查询账本校验完整批次。协调者接收发现与证据引用,
-而不接收原始工具事件历史。验证器仅接收已授权拉取的记录。评审指纹绑定候选与
-证据版本。定稿阶段拒绝被否决的候选、未解决的疑问、相互竞争的假设与缺失的
-因果支撑。报告生成器是确定性的。
+图中展示完整动态流程：默认 `legacy_rca` 从事件摘要进入协调者；可选
+`incident_response` 可从公开快照或离线回放进入监控，无告警时直接收尾。
+监控默认关闭，事件响应模式也可直接由事件 ID 启动。`full` 使用验证反馈回路，
+`dynamic_no_verifier` 跳过验证器，`fixed` 保留一次原有三专家批次，`single` 使用单智能体基线。
+只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径统一经过 STOP。
 
-默认预算:4 轮、12 次工具调用、16 次实际模型请求、90 秒、一次 JSON 修复。
-CLI 读取 `configs/system.yaml`;命令行参数可覆盖配置。`--max-tokens` 在已计量
-用量达到上限后阻止进一步请求;进行中的响应可能略微超出上限。已知的小计会被
-保留;未知用量会显式标记为不完整。
+### Agent 职责
+
+| Agent / 角色标识 | 一句话职责 |
+| --- | --- |
+| Monitoring (`monitoring`) | 根据公开快照或回放识别异常并生成告警，证据不足或正常时允许输出 `NO_ALERT`。 |
+| Coordinator / Supervisor (`coordinator`) | 根据证据缺口和剩余预算分配或重规划调查任务，并决定定稿或弃权。 |
+| Log Investigator (`logs`) | 从日志还原错误时间线与传播过程，区分因果信号和伴随症状。 |
+| Metrics & Dependency Investigator (`metrics`) | 检查服务健康、容量与依赖状态，定位异常影响范围。 |
+| Database Investigator (`database`) | 分析连接、会话、锁和慢查询，区分数据库内部故障、应用连接池问题与下游症状。 |
+| Change Investigator (`changes`) | 对照事故起点检查部署和配置差异，识别可能触发故障的变更。 |
+| Verifier / Skeptic (`verifier`) | 基于授权共享证据质疑候选根因，并提出矛盾或具体补充检查。 |
+| Remediation (`remediation`) | 为已接受的根因生成带证据、前提、风险、验证与回滚步骤的修复建议。 |
+| Single-Agent 基线 (`single`) | 由同一智能体完成规划、调查和自我反思，用于架构对比。 |
+
+### 运行机制与预算
+
+所有角色运行在同一个 LangGraph StateGraph 中，采用中心化通信。
+调查者返回局部输出，Merge 在发布到共享证据板前按签发身份和实际查询账本校验批次；
+协调者接收发现与证据引用，验证器仅获取授权记录，评审指纹绑定候选和证据版本。
+FinalizeGate 拒绝被否决的候选、未解疑问、竞争假设和缺失的因果支撑。
+TaskManager 管理有限重试；StopController 冻结任务与工具调用、取消工作并等待停止确认。
+这些组件及确定性 Reporter 是运行时组件，不是额外的 LLM Agent；不支持树形通信。
+
+| 配置 | 工作流 | 轮次 | 工具调用 | 实际模型请求 | 总时限 |
+| --- | --- | --- | --- | --- | --- |
+| [system.yaml](configs/system.yaml)（默认） | `legacy_rca` | 4 | 12 | 16 | 600 秒 |
+| [incident-response.yaml](configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 秒 |
+
+事件响应配置还限制监控调用为 8 次、修复调用为 2 次、单任务尝试为 2 次、停止确认等待为 5 秒；
+阶段限额共享全局预算，JSON 修复请求也计入实际模型请求。默认单次模型请求时限为 180 秒，允许一次 JSON 修复。
+CLI 参数可覆盖配置；`--max-tokens` 在已计量用量耗尽后阻止进一步请求，进行中的响应可能超过上限，未知用量显式标记不完整。
+
+根因状态（`RESOLVED` / `INCONCLUSIVE`）、修复状态（`NOT_STARTED` / `PLAN_READY` / `PLAN_FAILED` / `SKIPPED`）
+与工作流状态（`RUNNING` / `STOPPING` / `FINISHED` / `FAILED`）分别记录。
+原有 `RCAReport.status` 仍支持 `RESOLVED` / `INCONCLUSIVE` / `ERROR`；`PLAN_READY` 只表示方案就绪，不表示服务恢复。
+
+## 事件响应工作流
+
+```powershell
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --out results/legacy-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --out results/response-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode manual_snapshot --snapshot data/monitoring/normal.json --out results/no-alert-demo
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode offline_replay --snapshot data/monitoring/anomaly.json --out results/replay-demo
+```
+
+监控 JSON 是所选事件的公开 `EvidenceRecord` 列表；`manual_snapshot` 分析给定快照，
+`offline_replay` 使用离线输入，不连接生产监控。修复阶段采用 `PLAN_ONLY`，不会执行建议中的动作。
 
 ## 模型提供方与配置
 
@@ -135,19 +196,29 @@ HTTP fixture 测试验证的是适配器行为,而非在线端点兼容性。Moc
 
 ## 证据与权限
 
-数据集包含 6 个种子、10 个开发与 20 个留出的合成用例,使用中性 ID 与冻结的
-划分文件。证据缺失的用例要求弃权。共享因果模板只是冒烟测试夹具,并非独立
-采集的生产基准。参见[数据生成与局限](data/README.md)。
+数据集包含原有 6 个种子、10 个开发与 20 个留出合成用例，以及独立
+[数据库用例集](data/splits/database_ids.json)中的 4 个用例（`incident_037`–`incident_040`），共 40 个。
+原有划分保持冻结；新增用例覆盖连接耗尽、健康数据库下的应用连接池误配置、锁竞争与慢查询、证据不足。
+证据不足时要求弃权；合成模板不是独立采集的生产基准。参见[数据生成与局限](data/README.md)。
 
-六个工具均为只读:query_logs;query_metrics/get_dependencies;
-query_changes/get_config_diff;fetch_evidence_by_ids。服务端签发的不可变上下文
-强制执行角色/工作区/事故/运行与实际查询账本。公共文件白名单拒绝私有真值、
-路径穿越与符号链接/junction 逃逸。摘录被视为不可信数据。这是应用层隔离,
-不是操作系统级 Python 沙箱。
+所有工具均为只读：
+
+| 证据类型 | 工具 |
+| --- | --- |
+| 日志 | `query_logs` |
+| 指标与依赖 | `query_metrics`、`get_dependencies` |
+| 变更 | `query_changes`、`get_config_diff` |
+| 数据库 | `get_db_connections`、`get_db_active_sessions`、`get_db_lock_waits`、`get_db_slow_queries`、`get_db_health_metrics` |
+| 共享证据 | `fetch_evidence_by_ids` |
+
+数据库观测位于可选 `public/database.jsonl`，旧数据包无需补充该文件。
+ToolRegistry 强制执行角色权限；公平对比可显式启用 `database_equivalent_tools`，为 Metrics / Single 提供等价数据库工具。
+服务端签发的不可变上下文约束角色、工作区、事件、运行与实际查询账本；公共文件白名单拒绝私有真值、
+路径穿越和符号链接/junction 逃逸。摘录视为不可信数据；这是应用层隔离，不是操作系统级 Python 沙箱。
 
 ## 本地解释缓存
 
-仅日志/指标/变更的解释可被缓存。路由、评审、报告与工具查询照常执行。
+仅日志/指标/数据库/变更的局部解释可被缓存。监控、路由、评审、修复建议、最终定稿、报告与工具查询照常执行。
 命中要求当前已查询记录、严格命名空间与有效引用;finding/task/run 身份在合并前
 会重新绑定。每次运行都会刷新数据集修订号。命名空间还包含证据哈希、身份、
 任务类型、提示词、模型/参数、schema 与 ACL 版本。
@@ -166,6 +237,8 @@ query_changes/get_config_diff;fetch_evidence_by_ids。服务端签发的不可�
 .venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider mock --out results/eval-mock
 .venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider real --out results/eval-real
 .venv\Scripts\python.exe scripts/run_eval.py --split test --variant all --provider real --out results/final
+.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_037 incident_038 incident_039 incident_040 --out results/v12-eval
+.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_001 incident_037 --skip-legacy --inject-transient-failure --out results/v12-recovery
 .venv\Scripts\python.exe -m pytest -q
 .venv\Scripts\python.exe -m ruff check src tests scripts
 .venv\Scripts\python.exe scripts/verify_install.py --out results/fresh-install
@@ -177,6 +250,9 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 与 error-analysis.md。准确率/弃权率/引用率的分母彼此分离;未知 token/成本与
 未复核的语义支撑保持空白。相同的工具预算不意味着相同的 token 用量。参见
 [评估协议](docs/evaluation.md)。
+
+数据库配对评估在两组中均为 Metrics 开放等价数据库工具，并关闭缓存，以比较新增 Database 角色的效果；
+失败注入实验检查有限重试与恢复行为。Mock 结果只验证确定性流程，真实模型质量和修复有效性需另行测量。
 
 安装验证会构建 wheel,在全新环境中安装锁定依赖并执行验证/排查/回放。它会
 保留日志,并拒绝覆盖已存在的验证环境。
@@ -216,13 +292,12 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 .venv\Scripts\python.exe -m ruff check src tests scripts
 ```
 
-代码风格遵循 Ruff(`line-length = 100`、`py311`)。所有外部调用都使用显式
-错误处理与日志;坐标、密钥与阈值均从配置读取,不硬编码。
+代码风格遵循 Ruff（`line-length = 100`、`py311`）。新增角色应同步维护公共契约、只读工具权限和对应测试；不要提交本地密钥。
 
 ## 局限性与诚实声明
 
 这是一个个人研究与学习项目。在线 LLM 对比、学习型嵌入的性能与人工语义引用
-复核,都需要单独的实测验收后才能支撑研究性结论。合成数据集共享五套因果模板,
+复核,都需要单独的实测验收后才能支撑研究性结论。合成数据集使用共享因果模板,
 不能证明生产泛化能力;测试集归属只是留出约定,并非盲测证明。Mock 结果证明的
 是流水线的正确性,而不是真实模型精度或架构优越性。每项声明的完整边界详见
 上文章节与所链接的文档。
