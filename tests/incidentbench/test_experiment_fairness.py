@@ -262,3 +262,288 @@ async def test_public_answer_metadata_refused_before_provider(tmp_path):
             oracle,
         )
     assert not (tmp_path / "runs").exists()
+
+
+class SimulatedCrash(BaseException):
+    pass
+
+
+async def test_resume_last_raw_before_score_requires_zero_graph_calls(tmp_path, monkeypatch):
+    from incident_lens.incidentbench import experiment
+
+    dataset, oracle = build_fixture(tmp_path)
+    protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10)
+    out = tmp_path / "last-score-partial"
+    original_append = experiment.append
+    scores = 0
+
+    def crash_last_score(path, value):
+        nonlocal scores
+        if path.name == "scores.jsonl":
+            scores += 1
+            if scores == 8:
+                raise SimulatedCrash()
+        original_append(path, value)
+
+    monkeypatch.setattr(experiment, "append", crash_last_score)
+    with pytest.raises(SimulatedCrash):
+        await experiment.run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+    before = (out / "raw-runs.jsonl").read_bytes()
+    monkeypatch.setattr(experiment, "append", original_append)
+
+    def forbidden():
+        raise AssertionError("post-durable recovery must make zero provider/Graph calls")
+
+    rows = await experiment.run_experiment(
+        dataset, "seed", forbidden, out, protocol, oracle, resume=True
+    )
+    assert len(rows) == 8
+    assert (out / "raw-runs.jsonl").read_bytes() == before
+
+
+async def test_resume_raw_before_score_no_completed_graph_reexecution(tmp_path, monkeypatch):
+    from incident_lens.incidentbench import experiment
+
+    dataset, oracle = build_fixture(tmp_path)
+    protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10)
+    out = tmp_path / "raw-partial"
+    real_append, real_graph = experiment.append, experiment.run_investigation
+    executed = []
+
+    async def tracked(*args, **kwargs):
+        executed.append(kwargs["run_id"])
+        return await real_graph(*args, **kwargs)
+
+    def crash_before_score(path, value):
+        if path.name == "scores.jsonl":
+            raise SimulatedCrash()
+        real_append(path, value)
+
+    monkeypatch.setattr(experiment, "run_investigation", tracked)
+    monkeypatch.setattr(experiment, "append", crash_before_score)
+    with pytest.raises(SimulatedCrash):
+        await experiment.run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+    initial_raw = (out / "raw-runs.jsonl").read_bytes()
+    completed_id = executed[0]
+    monkeypatch.setattr(experiment, "append", real_append)
+    rows = await experiment.run_experiment(
+        dataset, "seed", MockProvider, out, protocol, oracle, resume=True
+    )
+    assert len(rows) == 8 and len(executed) == 8
+    assert executed.count(completed_id) == 1
+    assert (out / "raw-runs.jsonl").read_bytes().startswith(initial_raw)
+    before = {p.relative_to(out).as_posix(): p.read_bytes() for p in out.rglob("*") if p.is_file()}
+
+    def forbidden_factory():
+        raise AssertionError("completed resume must construct no provider")
+
+    assert (
+        await experiment.run_experiment(
+            dataset, "seed", forbidden_factory, out, protocol, oracle, resume=True
+        )
+        == rows
+    )
+    assert before == {
+        p.relative_to(out).as_posix(): p.read_bytes() for p in out.rglob("*") if p.is_file()
+    }
+    with pytest.raises(ValueError, match="lock drift"):
+        await experiment.run_experiment(
+            dataset,
+            "seed",
+            forbidden_factory,
+            out,
+            protocol.model_copy(update={"run_order_seed": 99}),
+            oracle,
+            resume=True,
+        )
+
+
+async def test_resume_started_without_state_retains_failure_unknown_usage(tmp_path, monkeypatch):
+    from incident_lens.incidentbench import experiment
+
+    dataset, oracle = build_fixture(tmp_path)
+    protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10)
+    out = tmp_path / "started-partial"
+    real_append = experiment.append
+
+    def crash_after_started(path, value):
+        real_append(path, value)
+        if path.name == "progress.jsonl" and value.get("status") == "STARTED":
+            raise SimulatedCrash()
+
+    monkeypatch.setattr(experiment, "append", crash_after_started)
+    with pytest.raises(SimulatedCrash):
+        await experiment.run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+    monkeypatch.setattr(experiment, "append", real_append)
+    factory_calls = []
+
+    def factory():
+        factory_calls.append(True)
+        return MockProvider()
+
+    rows = await experiment.run_experiment(
+        dataset, "seed", factory, out, protocol, oracle, resume=True
+    )
+    assert len(rows) == 8 and len(factory_calls) == 7
+    assert rows[0]["technical_completion"] is False
+    assert rows[0]["actual_http_requests"] is None
+    assert rows[0]["total_tokens"] is None and rows[0]["latency_ms"] is None
+    assert all(
+        rows[0][field] is None
+        for field in (
+            "llm_requests",
+            "logical_structured_calls",
+            "task_retries",
+            "transport_retries",
+            "repair_requests",
+            "failed_calls",
+            "provider_failures",
+            "failed_model_calls",
+            "failed_tool_calls",
+            "prompt_tokens",
+            "completion_tokens",
+            "cost_usd",
+        )
+    )
+    raw = [json.loads(line) for line in (out / "raw-runs.jsonl").read_text().splitlines()]
+    assert raw[0]["state"]["execution_error"]["code"] == "INTERRUPTED"
+    assert rows[0]["failure_category"] == "INTERRUPTED"
+    assert len({r["run_key"] for r in raw}) == 8
+
+
+async def test_resume_receipt_tamper_and_existing_output_refuse(tmp_path, monkeypatch):
+    from incident_lens.incidentbench import experiment
+
+    dataset, oracle = build_fixture(tmp_path)
+    protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10)
+    out = tmp_path / "tampered-partial"
+    real_append = experiment.append
+
+    def crash_before_score(path, value):
+        if path.name == "scores.jsonl":
+            raise SimulatedCrash()
+        real_append(path, value)
+
+    monkeypatch.setattr(experiment, "append", crash_before_score)
+    with pytest.raises(SimulatedCrash):
+        await experiment.run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+    monkeypatch.setattr(experiment, "append", real_append)
+
+    def forbidden():
+        raise AssertionError("tampered resume must not execute")
+
+    with pytest.raises(FileExistsError):
+        await experiment.run_experiment(dataset, "seed", forbidden, out, protocol, oracle)
+    state_path = next((out / "states").glob("*.json"))
+    state_path.write_text("{}")
+    with pytest.raises(ValueError, match="receipt mismatch"):
+        await experiment.run_experiment(
+            dataset, "seed", forbidden, out, protocol, oracle, resume=True
+        )
+
+
+@pytest.mark.parametrize("artifact", ["case-level.csv", "reproducibility.txt", "coverage.json"])
+async def test_completed_resume_rejects_derived_tamper(tmp_path, artifact):
+    from incident_lens.incidentbench.experiment import run_experiment
+
+    dataset, oracle = build_fixture(tmp_path)
+    protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10)
+    out = tmp_path / "complete"
+    await run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+    path = out / artifact
+    path.write_bytes(path.read_bytes() + b" ")
+    before = {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}
+
+    def forbidden():
+        raise AssertionError("tampered completed resume must not construct a provider")
+
+    # Whitespace alone preserves JSON meaning, so change its value as well.
+    if artifact.endswith(".json"):
+        value = json.loads(path.read_bytes())
+        value["run_n"] += 1
+        path.write_text(json.dumps(value))
+        before[path.relative_to(out)] = path.read_bytes()
+    with pytest.raises(ValueError, match="mismatch"):
+        await run_experiment(dataset, "seed", forbidden, out, protocol, oracle, resume=True)
+    assert before == {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}
+
+
+def test_execution_lock_refuses_concurrent_process_and_nonfile(tmp_path):
+    import os
+    import subprocess
+    import sys
+
+    from incident_lens.incidentbench.experiment import execution_lock
+
+    code = (
+        "from pathlib import Path; import sys; "
+        "from incident_lens.incidentbench.experiment import execution_lock; "
+        "manager = execution_lock(Path(sys.argv[1])); manager.__enter__(); manager.__exit__(None,None,None)"
+    )
+    with execution_lock(tmp_path):
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(tmp_path)],
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+        )
+        assert result.returncode != 0 and "concurrent resume refused" in result.stderr
+    result = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path)],
+        capture_output=True,
+        text=True,
+        env=os.environ.copy(),
+    )
+    assert result.returncode == 0, result.stderr
+    (tmp_path / ".execution.lock").unlink()
+    (tmp_path / ".execution.lock").mkdir()
+    with pytest.raises(PermissionError, match="regular file"):
+        with execution_lock(tmp_path):
+            pytest.fail("directory lock accepted")
+
+
+def test_partial_jsonl_retained_without_truncation(tmp_path):
+    from incident_lens.incidentbench.experiment import read_jsonl
+
+    path = tmp_path / "progress.jsonl"
+    raw = b'{"status":"STARTED"}\n{"status":'
+    path.write_bytes(raw)
+    with pytest.raises(ValueError, match="partial JSONL"):
+        read_jsonl(path)
+    assert path.read_bytes() == raw
+
+
+@pytest.mark.parametrize("surface", ["dataset", "lock"])
+def test_link_paths_refused_before_resolve(tmp_path, surface):
+    import os
+    import subprocess
+
+    from incident_lens.incidentbench.experiment import dataset_paths, execution_lock
+
+    target = tmp_path / "target"
+    target.mkdir()
+    output = tmp_path / "output"
+    output.mkdir()
+    link = output / (".execution.lock" if surface == "lock" else "dataset")
+    if os.name == "nt":
+        result = subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(link), str(target)], capture_output=True, text=True
+        )
+        assert result.returncode == 0, result.stderr
+    else:
+        link.symlink_to(target, target_is_directory=True)
+    try:
+        with pytest.raises(
+            PermissionError, match="unsafe evaluator path|evaluator resource unavailable"
+        ):
+            if surface == "dataset":
+                dataset_paths(link)
+            else:
+                with execution_lock(output):
+                    pytest.fail("linked lock accepted")
+        assert list(target.iterdir()) == []
+    finally:
+        if os.name == "nt":
+            link.rmdir()
+        else:
+            link.unlink()
