@@ -252,6 +252,7 @@ async def run_experiment(
             scenario_family_id=metadata[incident].scenario_family_id,
             source_blueprint_id=metadata[incident].source_blueprint_id,
             near_duplicate_cluster_id=metadata[incident].near_duplicate_cluster_id,
+            counterfactual_pair_id=metadata[incident].counterfactual_pair_id,
             independence_status="unreviewed",
             cohort=metadata[incident].cohort,
             source=raw["source"],

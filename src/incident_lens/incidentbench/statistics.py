@@ -20,7 +20,12 @@ def effective_clusters(rows):
     for row in rows:
         keys = [
             (field, row[field])
-            for field in ("scenario_family_id", "source_blueprint_id", "near_duplicate_cluster_id")
+            for field in (
+                "scenario_family_id",
+                "source_blueprint_id",
+                "near_duplicate_cluster_id",
+                "counterfactual_pair_id",
+            )
             if row.get(field)
         ]
         if not keys:

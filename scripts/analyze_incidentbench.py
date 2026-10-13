@@ -94,6 +94,7 @@ def main():
             scenario_family_id=metadata["scenario_family_id"],
             source_blueprint_id=metadata["source_blueprint_id"],
             near_duplicate_cluster_id=metadata["near_duplicate_cluster_id"],
+            counterfactual_pair_id=metadata["counterfactual_pair_id"],
             independence_status="unreviewed",
             cohort=metadata["cohort"],
             **run["usage"],
