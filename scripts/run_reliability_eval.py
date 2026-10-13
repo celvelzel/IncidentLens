@@ -40,6 +40,7 @@ RUNTIME_CHECKS = {
     ],
     "F20": [
         "tests/cache/test_semantic.py::test_actual_cold_warm_graph_calls_and_grounding",
+        "tests/integration/test_artifacts.py::test_replay_roundtrip_without_provider",
         "tests/integration/test_workflow_v12.py::test_normal_snapshot_stops_without_diagnosis_or_remediation",
     ],
 }

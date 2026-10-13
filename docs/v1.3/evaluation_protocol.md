@@ -41,7 +41,7 @@ R1 still has production fallback deadline/physical-cap logic and hard guards. It
 | F17 | Valid-looking response with finish_reason=length |
 | F18 | Existing actual incident-response PLAN_READY/DIAGNOSIS_READY normal-stop scoring |
 | F19 | Existing actual insufficient-evidence incident_040 INCONCLUSIVE scoring |
-| F20 | Existing cold/warm legacy graph cache/grounding and normal monitoring workflow |
+| F20 | Existing cold/warm legacy graph cache/grounding, provider-free artifact Replay roundtrip and normal monitoring workflow |
 | F23 | 429 with one total permit |
 | F24 | 429 with one monitoring-stage permit |
 | F25 | Transport retry followed by schema repair |
@@ -58,3 +58,4 @@ Known measured token sums are lower bounds. Any unmeasured dispatched attempt ke
 
 Live compatibility and paired Seed/Dev experiments remain a separate Lead phase. They must preserve model, input/prompt/schema/config hashes, budgets, jobs, response mode and cache setting, alternate R0/R3 execution order, and report unknown usage as NULL. Offline fixture outcomes cannot substitute for live evidence.
 `F26/F27` deny an unissued JSON/schema repair at final global/stage permits; `F28` permits a repair using the final second request; `F29/F30` exercise the four-attempt bound across two HTTP retries and one repair. Actual dispatch-derived counts are checked against production retry/repair usage counters, including zero for denied requests. The oracle-free `technical_completion` helper uses existing termination normalization so explicitly recovered model failures do not invalidate a normal terminal run.
+
