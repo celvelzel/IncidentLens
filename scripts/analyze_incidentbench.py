@@ -122,7 +122,7 @@ def main():
         original_digest = original[run["run_key"]].get("oracle_sha256")
         if oracle and original_digest is not None and row.get("oracle_sha256") != original_digest:
             raise ValueError("oracle label digest mismatch")
-        row["score_error"] = original[run["run_key"]].get("score_error")
+        row["score_error"] = None if oracle else original[run["run_key"]].get("score_error")
         row["failure_category"] = (
             (
                 (state.get("execution_error") or {}).get("code")

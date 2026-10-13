@@ -821,7 +821,7 @@ def export_paired(out, rows, protocol):
 
     analyses = analyze(rows, seed=protocol.analysis_seed, samples=protocol.bootstrap_samples)
     summaries = [
-        dict(baseline=a["baseline"], scenario_family_id=family, difference=value)
+        dict(baseline=a["baseline"], effective_source_cluster_id=family, difference=value)
         for a in analyses
         for family, value in a.get("family_differences", {}).items()
     ]

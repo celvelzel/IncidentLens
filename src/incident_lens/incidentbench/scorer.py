@@ -115,7 +115,7 @@ def aggregate(rows):
             "label_status_counts": dict(Counter(r.get("label_status", "unscored") for r in group)),
             "failure_counts": dict(
                 Counter(
-                    r.get("termination_reason", "UNKNOWN")
+                    r.get("failure_category") or r.get("termination_reason") or "UNKNOWN"
                     for r in group
                     if not r.get("technical_completion")
                 )
