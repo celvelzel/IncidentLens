@@ -11,10 +11,12 @@ from incident_lens.incidentbench.experiment import (
     durable_write,
     export_paired,
     load_cases,
+    run_identity,
     run_order,
+    score_saved_raw,
 )
 from incident_lens.incidentbench.schemas import ExperimentProtocol
-from incident_lens.incidentbench.scorer import aggregate, score_benchmark_run
+from incident_lens.incidentbench.scorer import aggregate
 from incident_lens.incidentbench.statistics import analyze
 
 
@@ -29,7 +31,7 @@ def main():
     )
     lock = json.loads((args.input.parent / "protocol.lock.json").read_text(encoding="utf-8"))
     from incident_lens.incidentbench.manifest import verify_lock
-    from incident_lens.incidentbench.oracle_store import OracleStore, safe_path
+    from incident_lens.incidentbench.oracle_store import safe_path
 
     dataset = json.loads(
         (args.input.parent / "experiment-context.json").read_text(encoding="utf-8")
@@ -40,7 +42,9 @@ def main():
     if set(digests) != expected_files:
         raise ValueError("saved artifact digest contract mismatch")
     if hashlib.sha256(safe_path(args.input).read_bytes()).hexdigest() != digests["raw-runs.jsonl"]:
-        raise ValueError("analysis input must match the complete hashed raw ledger")
+        raise ValueError(
+            "analysis input digest mismatch: must match the complete hashed raw ledger"
+        )
     for name, digest in digests.items():
         if hashlib.sha256(safe_path(args.input.parent / name).read_bytes()).hexdigest() != digest:
             raise ValueError("saved artifact digest mismatch")
@@ -76,6 +80,7 @@ def main():
             metadata != metadata_index[run["incident_id"]]
             or state["incident_id"] != run["incident_id"]
             or state["run_id"] != run["run_id"]
+            or run["run_id"] != run_identity(context["experiment_id"], run["run_key"])
         ):
             raise ValueError("saved run identity/metadata mismatch")
         receipt = state["completion_receipt"]
@@ -86,52 +91,16 @@ def main():
             or expected_state.read_bytes() != canonical(saved_state)
         ):
             raise ValueError("saved state receipt mismatch")
-        # Development Test must remain unscored even in a privileged analysis.
-        oracle = (
-            OracleStore(args.oracle_root, public_root=dataset).load_after_completion(
-                run["incident_id"], state
-            )
-            if args.oracle_root
-            and metadata["split"] != "test"
-            and state.get("report")
-            and (state.get("execution_error") or {}).get("code") != "PROTOCOL_MISMATCH"
-            else None
-        )
-        row = {
-            k: run[k]
-            for k in (
-                "run_key",
-                "incident_id",
-                "run_id",
-                "variant",
-                "repeat_id",
-                "source",
-                "latency_ms",
-            )
-        }
-        row.update(
-            scenario_family_id=metadata["scenario_family_id"],
-            source_blueprint_id=metadata["source_blueprint_id"],
-            near_duplicate_cluster_id=metadata["near_duplicate_cluster_id"],
-            counterfactual_pair_id=metadata["counterfactual_pair_id"],
-            independence_status="unreviewed",
-            cohort=metadata["cohort"],
-            **run["usage"],
-            **score_benchmark_run(state, oracle),
-        )
+        # The same completion-gated evaluator path preserves oracle errors and
+        # blocks development Test labels without ever constructing a provider.
+        row = score_saved_raw(run, args.oracle_root, dataset)
         original_digest = original[run["run_key"]].get("oracle_sha256")
-        if oracle and original_digest is not None and row.get("oracle_sha256") != original_digest:
+        if (
+            args.oracle_root
+            and original_digest is not None
+            and row.get("oracle_sha256") != original_digest
+        ):
             raise ValueError("oracle label digest mismatch")
-        row["score_error"] = None if oracle else original[run["run_key"]].get("score_error")
-        row["failure_category"] = (
-            (
-                (state.get("execution_error") or {}).get("code")
-                or row.get("termination_reason")
-                or "UNKNOWN"
-            )
-            if not row["technical_completion"]
-            else None
-        )
         rows.append(row)
     args.out.mkdir(parents=True, exist_ok=False)
     write_csv(args.out / "case-level.csv", rows)
