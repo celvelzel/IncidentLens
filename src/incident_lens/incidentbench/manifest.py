@@ -111,6 +111,12 @@ def seal_dataset(dataset, protocol, oracle_root, salt_path, readiness):
     audit = validate_dataset(dataset, oracle_root)
     if not audit["ok"]:
         raise ValueError("dataset audit failed")
+    metadata = json.loads(safe_path(Path(dataset) / "public_case_index.json").read_bytes())
+    if isinstance(metadata, dict):
+        metadata = metadata["cases"]
+    test_core = [row for row in metadata if row["split"] == "test" and row["cohort"] == "core"]
+    if not test_core:
+        raise ValueError("formal seal requires nonempty Frozen Test core")
     root = safe_path(oracle_root)
     check_private_git(root, Path(__file__).resolve().parents[3])
     oracle_paths = list(root.rglob("benchmark_oracle.json"))
@@ -123,8 +129,36 @@ def seal_dataset(dataset, protocol, oracle_root, salt_path, readiness):
             raise ValueError("formal seal requires authentic double review")
         validate_truth_reviews(oracle, json.loads(safe_path(review_path).read_bytes()))
     salt_path = Path(salt_path).absolute()
-    if salt_path.is_relative_to(Path(dataset).absolute()):
+    if ".." in salt_path.parts:
+        raise PermissionError("unsafe private salt path")
+    ancestor = salt_path.parent
+    while not ancestor.exists():
+        ancestor = ancestor.parent
+    safe_path(ancestor)
+    salt_resolved = salt_path.resolve()
+    if salt_resolved.is_relative_to(safe_path(dataset)):
         raise PermissionError("private salt cannot be in public output")
+    repository = Path(__file__).resolve().parents[3]
+    if salt_resolved.is_relative_to(repository):
+        relative = salt_resolved.relative_to(repository).as_posix()
+        tracked = (
+            subprocess.run(
+                ["git", "ls-files", "--error-unmatch", "--", relative],
+                cwd=repository,
+                capture_output=True,
+            ).returncode
+            == 0
+        )
+        ignored = (
+            subprocess.run(
+                ["git", "check-ignore", "-q", "--", relative],
+                cwd=repository,
+                capture_output=True,
+            ).returncode
+            == 0
+        )
+        if tracked or not ignored:
+            raise PermissionError("private salt must be untracked and ignored")
     if not salt_path.exists():
         salt_path.parent.mkdir(parents=True, exist_ok=True)
         with salt_path.open("xb") as stream:
