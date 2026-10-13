@@ -1,0 +1,7 @@
+# Frozen test protocol
+
+Development snapshots are explicitly unsealed and development_visible. Current candidate labels have no human acceptance. Formal sealing is blocked until authentic double-review records, resolved disagreements, compatible frozen real provider and an independent label owner exist.
+
+Keep evaluator labels outside the public runtime tree and ignored/untracked when in a repository. An independent label owner must retain test labels and random commitment salt outside public artifacts. The public lock contains only salted commitment, never salt or label bytes. Run agents on public inputs only. Persist/fsync each completed or ERROR state before evaluator access, then attach completion_receipt with durable path and exact file SHA256. OracleStore matches state, report incident/run identity and completed workflow before reading labels.
+
+Locks cover public bundle, protocol, source, prompts and configs. Any drift blocks reuse. Path guards reject traversal and links/reparse points in all ancestors; errors omit private paths. Same-process filesystem checks have a time-of-check/time-of-use race: use an evaluator account and immutable restricted directories for adversarial environments. OS permissions and independent access control are operational requirements, not provided by Python checks. Anonymous review exports omit experiment identity but cannot guarantee style-based blindness.
