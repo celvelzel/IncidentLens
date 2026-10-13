@@ -139,6 +139,21 @@ def test_public_never_reads_corrupt_private(benchmark_fixture):
     assert not validate_dataset(dataset, private)["ok"]
 
 
+def test_external_pair_cardinality_and_oracle_cohort_must_match(benchmark_fixture):
+    import json
+
+    dataset, private, public, label = benchmark_fixture
+    oracle = json.loads(label.read_text())
+    oracle["cohort"] = "ood"
+    label.write_text(json.dumps(oracle))
+    assert "oracle metadata mismatch" in validate_dataset(dataset, private)["errors"]
+    index_path = dataset / "public_case_index.json"
+    index = json.loads(index_path.read_text())
+    index[0]["counterfactual_pair_id"] = "singleton_pair"
+    index_path.write_text(json.dumps(index))
+    assert "counterfactual group requires exactly two cases" in validate_dataset(dataset)["errors"]
+
+
 def test_privileged_support_and_split_negative_cases(benchmark_fixture):
     import json
 

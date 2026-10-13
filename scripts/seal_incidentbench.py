@@ -16,6 +16,11 @@ parser.add_argument("--oracle-root")
 parser.add_argument("--salt-path")
 parser.add_argument("--readiness")
 args = parser.parse_args()
+out = Path(args.out).absolute()
+if out.exists():
+    parser.error("seal requires a fresh output directory")
+if args.salt_path and Path(args.salt_path).resolve().is_relative_to(out.resolve()):
+    parser.error("private salt cannot be in public artifacts")
 protocol = ExperimentProtocol.model_validate(
     yaml.safe_load(Path(args.protocol).read_text(encoding="utf-8"))
 )
@@ -31,7 +36,6 @@ else:
         args.salt_path,
         json.loads(Path(args.readiness).read_text(encoding="utf-8")),
     )
-out = Path(args.out)
 out.mkdir(parents=True, exist_ok=False)
 (out / "protocol.lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
 print(json.dumps({"sealed": lock["sealed"], "public_sha256": lock["public_sha256"]}))
