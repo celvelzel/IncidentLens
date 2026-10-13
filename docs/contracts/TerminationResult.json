@@ -1,0 +1,75 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "const": "2",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "reason": {
+      "enum": [
+        "PLAN_READY",
+        "DIAGNOSIS_READY",
+        "INCONCLUSIVE",
+        "BUDGET_EXHAUSTED",
+        "PLAN_FAILED",
+        "UNRECOVERABLE_ERROR",
+        "NO_ALERT",
+        "STOP_TIMEOUT"
+      ],
+      "title": "Reason",
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "SUCCESS",
+        "ABSTAINED",
+        "NO_ACTION",
+        "FAILED"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "failure_stage": {
+      "anyOf": [
+        {
+          "enum": [
+            "monitoring",
+            "coordinate",
+            "dispatch",
+            "merge",
+            "verify",
+            "finalize",
+            "diagnosis",
+            "remediation",
+            "stop",
+            "runtime"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure Stage"
+    },
+    "stop_completed": {
+      "title": "Stop Completed",
+      "type": "boolean"
+    },
+    "runtime_failure": {
+      "title": "Runtime Failure",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "reason",
+    "outcome",
+    "failure_stage",
+    "stop_completed",
+    "runtime_failure"
+  ],
+  "title": "TerminationResult",
+  "type": "object"
+}

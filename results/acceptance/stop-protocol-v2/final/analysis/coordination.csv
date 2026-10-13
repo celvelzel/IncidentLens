@@ -1,0 +1,5 @@
+incident_id,run_id,variant,rounds,investigate_decisions,replanning_decisions,task_roles,tool_calls,review_insufficient,review_conflicted,requested_checks,dynamic_role_transitions
+incident_001,run-e7ad9ba7d68b4c548895b03ac6550f6b,v12_database_enabled,4,4,3,"[""logs"", ""metrics"", ""database"", ""changes"", ""changes""]",13,3,0,3,2
+incident_001,run-9ee1f0cb0b2b4d97aac61d999a623708,v12_database_disabled,4,4,3,"[""logs"", ""metrics"", ""metrics"", ""changes"", ""changes""]",13,3,0,3,2
+incident_037,run-20d25e200a4147bd8703f1c5414b6b5a,v12_database_enabled,2,2,1,"[""logs"", ""metrics"", ""database""]",8,0,0,0,1
+incident_037,run-ed65c7b5f596486c8d41b5468a55598b,v12_database_disabled,2,2,1,"[""logs"", ""metrics"", ""metrics""]",8,0,0,0,1

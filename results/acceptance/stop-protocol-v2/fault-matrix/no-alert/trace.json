@@ -1,0 +1,229 @@
+{
+  "schema_version": "v1",
+  "provider": "mock",
+  "variant": "full",
+  "cache_mode": "off",
+  "elapsed_ms": 14.72420000936836,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_001",
+    "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+    "public_summary": {
+      "incident_id": "incident_001",
+      "title": "Service incident 001",
+      "started_at": "2026-10-01T14:03:00Z",
+      "observed_symptoms": [
+        "API 500 responses increased",
+        "Backend request latency elevated"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 4,
+      "max_tool_calls": 24,
+      "max_llm_calls": 40,
+      "max_wall_seconds": 600.0,
+      "max_tokens": null
+    },
+    "round_index": 0,
+    "findings": [],
+    "evidence_index": {},
+    "hypotheses": [],
+    "tasks": [],
+    "reviews": [],
+    "decisions": [],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:03:17.769459Z",
+        "event_type": "LLM_CALL",
+        "role": "monitoring",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deterministic-public-policy-v1",
+          "llm_calls": 0,
+          "total_tokens": 0,
+          "observed_records": 1,
+          "prompt_version": "roles-v12",
+          "model_parameters": {
+            "temperature": 0.0
+          }
+        },
+        "source": "mock",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:03:17.769535Z",
+        "event_type": "INCIDENT_ALERT",
+        "role": "monitoring",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "alert": {
+            "incident_id": "incident_001",
+            "status": "NO_ALERT",
+            "summary": "No anomaly detected by deterministic monitoring thresholds.",
+            "evidence_ids": [],
+            "affected_services": []
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:03:17.770519Z",
+        "event_type": "WORKFLOW_STOP_REQUESTED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_001",
+          "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+          "stop_reason": "NO_ALERT",
+          "message_type": "WORKFLOW_STOP_REQUESTED",
+          "protocol_version": "2",
+          "required_roles": []
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:03:17.770592Z",
+        "event_type": "NORMAL_TERMINATION",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "protocol_version": "2",
+          "reason": "NO_ALERT",
+          "outcome": "NO_ACTION",
+          "failure_stage": null,
+          "stop_completed": true,
+          "runtime_failure": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-5",
+        "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:03:17.771053Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+            "incident_id": "incident_001",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "NO_ALERT",
+            "diagnosis_status": "INCONCLUSIVE",
+            "remediation_status": "SKIPPED",
+            "workflow_status": "FINISHED",
+            "remediation_plan": null,
+            "termination": {
+              "protocol_version": "2",
+              "reason": "NO_ALERT",
+              "outcome": "NO_ACTION",
+              "failure_stage": null,
+              "stop_completed": true,
+              "runtime_failure": false
+            }
+          },
+          "variant": "full",
+          "tokens_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-a66236ce07f3473b9442387c5d75e1e4",
+      "incident_id": "incident_001",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "NO_ALERT",
+      "diagnosis_status": "INCONCLUSIVE",
+      "remediation_status": "SKIPPED",
+      "workflow_status": "FINISHED",
+      "remediation_plan": null,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "NO_ALERT",
+        "outcome": "NO_ACTION",
+        "failure_stage": null,
+        "stop_completed": true,
+        "runtime_failure": false
+      }
+    },
+    "stop_reason": "NO_ALERT",
+    "open_questions": [],
+    "requested_checks": [],
+    "completed_task_ids": [],
+    "tool_calls_used": 0,
+    "llm_calls_used": 1,
+    "tokens_used": 0,
+    "incident_alert": {
+      "incident_id": "incident_001",
+      "status": "NO_ALERT",
+      "summary": "No anomaly detected by deterministic monitoring thresholds.",
+      "evidence_ids": [],
+      "affected_services": []
+    },
+    "task_records": [],
+    "workflow_status": "FINISHED",
+    "termination": {
+      "protocol_version": "2",
+      "reason": "NO_ALERT",
+      "outcome": "NO_ACTION",
+      "failure_stage": null,
+      "stop_completed": true,
+      "runtime_failure": false
+    }
+  },
+  "model_id": "deterministic-public-policy-v1",
+  "prompt_version": "roles-v12"
+}

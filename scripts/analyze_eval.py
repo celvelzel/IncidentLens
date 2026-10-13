@@ -2,11 +2,13 @@
 
 import argparse
 import csv
+import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
 
-from incident_lens.evaluation.metrics import report_citations, score_completed
+from incident_lens.evaluation.metrics import report_citations, score_completed, score_without_oracle
+from incident_lens.evaluation.termination import SCORING_VERSION, normalize_termination
 
 
 def analyze(records):
@@ -19,13 +21,12 @@ def analyze(records):
         if not isinstance(state.get("report"), dict):
             raise ValueError("analysis requires a completed report before oracle access")
         oracle = record["oracle_scoring_fields"]
-        if not isinstance(oracle, dict):
-            raise ValueError("completed run has no stored scoring oracle")
-        score = score_completed(state, oracle)
-        mode = oracle["failure_mode"]
+        score = score_completed(state, oracle) if isinstance(oracle, dict) else score_without_oracle(state)
+        mode = oracle["failure_mode"] if isinstance(oracle, dict) else "unknown"
         coverage["mechanisms"][mode] = coverage["mechanisms"].get(mode, 0) + 1
         coverage["misleading" if score["misleading_case"] else "ordinary"] += 1
-        coverage["complete" if score["identifiable"] else "missing"] += 1
+        if score["identifiable"] is not None:
+            coverage["complete" if score["identifiable"] else "missing"] += 1
         metrics = record["metrics"]
         identity = dict(
             incident_id=state["incident_id"], run_id=state.get("run_id"), variant=metrics["variant"]
@@ -104,7 +105,7 @@ def analyze(records):
         )
         key = (
             metrics["variant"],
-            oracle["failure_mode"],
+            mode,
             score["misleading_case"],
             score["identifiable"],
         )
@@ -137,7 +138,9 @@ def analyze(records):
             )
         )
     rows = []
-    for (variant, mode, misleading, identifiable), scores in sorted(slices.items()):
+    for (variant, mode, misleading, identifiable), scores in sorted(
+        slices.items(), key=lambda item: str(item[0])
+    ):
         n = len(scores)
         citations = sum(s["citation_count"] for s in scores)
         valid = sum(s["valid_citation_count"] for s in scores)
@@ -147,14 +150,17 @@ def analyze(records):
         rows.append(
             dict(
                 variant=variant,
+                scoring_version=SCORING_VERSION,
                 failure_mode=mode,
                 misleading=misleading,
                 identifiable=identifiable,
                 n=n,
                 correct=correct,
-                correct_rate=correct / n if identifiable else None,
+                correct_rate=correct / sum(s["root_cause_correct"] is not None for s in scores)
+                if any(s["root_cause_correct"] is not None for s in scores) else None,
                 abstain=abstain,
-                correct_abstention_rate=abstain / n if not identifiable else None,
+                correct_abstention_rate=abstain / sum(s["correct_abstention"] is not None for s in scores)
+                if any(s["correct_abstention"] is not None for s in scores) else None,
                 runtime_failure=failures,
                 runtime_failure_rate=failures / n,
                 citation_count=citations,
@@ -162,6 +168,13 @@ def analyze(records):
                 citation_existence_validity=valid / citations if citations else None,
             )
         )
+        for field in ("workflow_success", "remediation_success", "stop_completion", "protocol_valid"):
+            values = [s[field] for s in scores if s.get(field) is not None]
+            rows[-1].update({field + "_denominator": len(values),
+                             field + "_failures": sum(v is False for v in values),
+                             field + "_unknown": n - len(values),
+                             field + "_rate": sum(v is True for v in values) / len(values)
+                             if values else None})
     return (
         coordination,
         rows,
@@ -206,9 +219,15 @@ def export(source, out):
         failure_events = [
             event
             for event in state.get("events", [])
-            if event.get("event_type") in {"STOP", "MODEL_FAILURE"}
+            if event.get("event_type") in {
+                "STOP", "MODEL_FAILURE", "RUNTIME_ERROR", "RUNTIME_FAILURE", "STOP_TIMEOUT",
+                "REMEDIATION_FAILED",
+            }
         ]
-        if failure_events or metrics.get("execution_error") or metrics.get("evaluation_error"):
+        terminal = normalize_termination(state)
+        if (terminal["runtime_failure"] or terminal["termination_outcome"] == "FAILED"
+                or terminal["protocol_valid"] is False
+                or metrics.get("execution_error") or metrics.get("evaluation_error")):
             errors.append(
                 dict(
                     incident_id=state["incident_id"],
@@ -218,11 +237,16 @@ def export(source, out):
                     execution_error=metrics.get("execution_error"),
                     evaluation_error=metrics.get("evaluation_error"),
                     failure_events=failure_events,
+                    **terminal,
                 )
             )
     (out / "errors.jsonl").write_text(
         "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in errors), encoding="utf-8"
     )
+    (out / "manifest.json").write_text(json.dumps(dict(
+        scoring_version=SCORING_VERSION, input_path=str(source),
+        input_sha256=hashlib.sha256(source.read_bytes()).hexdigest(), provider_executed=False,
+    ), indent=2) + "\n", encoding="utf-8")
     for name, rows in (("coordination.csv", coordination), ("mechanism-slices.csv", slices)):
         with (out / name).open("w", encoding="utf-8", newline="") as stream:
             writer = csv.DictWriter(stream, fieldnames=list(rows[0]))

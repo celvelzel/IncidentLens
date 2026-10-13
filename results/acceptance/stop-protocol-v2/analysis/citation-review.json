@@ -1,0 +1,322 @@
+{
+  "evidence_label": "Synthetic incident traces; no human semantic annotation",
+  "semantic_review_status": "awaiting_human",
+  "runs": [
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-44361eefadf94e498dd26509f12de1e4",
+      "variant": "v12_database_enabled",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": {
+        "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_001-C001",
+          "incident_001-D001",
+          "incident_001-M009"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Acquisition deadlines fail while database capacity remains available",
+          "Reduced backend pool capacity causes local acquisition contention"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      },
+      "causal_chain": [
+        "Acquisition deadlines fail while database capacity remains available",
+        "Reduced backend pool capacity causes local acquisition contention"
+      ],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+          "culprit_service": "postgres",
+          "failure_mode": "postgres_connection_exhaustion",
+          "support_ids": [
+            "incident_001-L001",
+            "incident_001-L002",
+            "incident_001-L022",
+            "incident_001-L025"
+          ],
+          "against_ids": [
+            "incident_001-M004"
+          ],
+          "predicted_observations": [
+            "Database capacity should be exhausted",
+            "Database sessions reach server connection capacity",
+            "New database sessions are rejected and backend requests fail"
+          ],
+          "status": "REJECTED",
+          "open_questions": []
+        }
+      ],
+      "unresolved": [],
+      "supporting_evidence_ids": [
+        "incident_001-C001",
+        "incident_001-D001",
+        "incident_001-M009"
+      ],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_001-C001",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "runtime environment update applied"
+        },
+        {
+          "evidence_id": "incident_001-D001",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "DB_POOL_MAX: 64 -> 2; instance_concurrency: 60 -> 60; acquire_timeout_ms: 1000 -> 1000"
+        },
+        {
+          "evidence_id": "incident_001-L001",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "database acquire failed; request returned 500"
+        },
+        {
+          "evidence_id": "incident_001-L022",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-L025",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-M004",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connections_active=22 connections"
+        },
+        {
+          "evidence_id": "incident_001-M009",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=58 requests"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-1d8e1cb7ee514e318414659aa76f76a5",
+      "variant": "v12_database_disabled",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": {
+        "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_001-C001",
+          "incident_001-D001",
+          "incident_001-M009"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Acquisition deadlines fail while database capacity remains available",
+          "Reduced backend pool capacity causes local acquisition contention"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      },
+      "causal_chain": [
+        "Acquisition deadlines fail while database capacity remains available",
+        "Reduced backend pool capacity causes local acquisition contention"
+      ],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+          "culprit_service": "postgres",
+          "failure_mode": "postgres_connection_exhaustion",
+          "support_ids": [
+            "incident_001-L001",
+            "incident_001-L002",
+            "incident_001-L022",
+            "incident_001-L025"
+          ],
+          "against_ids": [
+            "incident_001-M004"
+          ],
+          "predicted_observations": [
+            "Database capacity should be exhausted",
+            "Database sessions reach server connection capacity",
+            "New database sessions are rejected and backend requests fail"
+          ],
+          "status": "REJECTED",
+          "open_questions": []
+        }
+      ],
+      "unresolved": [],
+      "supporting_evidence_ids": [
+        "incident_001-C001",
+        "incident_001-D001",
+        "incident_001-M009"
+      ],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_001-C001",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "runtime environment update applied"
+        },
+        {
+          "evidence_id": "incident_001-D001",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "DB_POOL_MAX: 64 -> 2; instance_concurrency: 60 -> 60; acquire_timeout_ms: 1000 -> 1000"
+        },
+        {
+          "evidence_id": "incident_001-L001",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "database acquire failed; request returned 500"
+        },
+        {
+          "evidence_id": "incident_001-L022",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-L025",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "DB connection acquire timeout after 1000ms; local pool wait queue exceeded deadline"
+        },
+        {
+          "evidence_id": "incident_001-M004",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connections_active=22 connections"
+        },
+        {
+          "evidence_id": "incident_001-M009",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=58 requests"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-ed0539107abe487f8e50eb67b5672263",
+      "variant": "v12_database_enabled",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": {
+        "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [
+          "incident_037-DB001",
+          "incident_037-L002",
+          "incident_037-M004",
+          "incident_037-M009"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Database sessions reach server connection capacity",
+          "New database sessions are rejected and backend requests fail"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      },
+      "causal_chain": [
+        "Database sessions reach server connection capacity",
+        "New database sessions are rejected and backend requests fail"
+      ],
+      "rejected_hypotheses": [],
+      "unresolved": [],
+      "supporting_evidence_ids": [
+        "incident_037-DB001",
+        "incident_037-L002",
+        "incident_037-M004",
+        "incident_037-M009"
+      ],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_037-DB001",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Database connections at server capacity"
+        },
+        {
+          "evidence_id": "incident_037-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "database connection refused; request returned 500"
+        },
+        {
+          "evidence_id": "incident_037-M004",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connections_active=100 connections"
+        },
+        {
+          "evidence_id": "incident_037-M009",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connection_rejections=30 per_minute"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-d858dbf0e1644a16847f71878ed6dee6",
+      "variant": "v12_database_disabled",
+      "semantic_review_status": "awaiting_human",
+      "root_cause": {
+        "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [
+          "incident_037-DB001",
+          "incident_037-L002",
+          "incident_037-M004",
+          "incident_037-M009"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Database sessions reach server connection capacity",
+          "New database sessions are rejected and backend requests fail"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      },
+      "causal_chain": [
+        "Database sessions reach server connection capacity",
+        "New database sessions are rejected and backend requests fail"
+      ],
+      "rejected_hypotheses": [],
+      "unresolved": [],
+      "supporting_evidence_ids": [
+        "incident_037-DB001",
+        "incident_037-L002",
+        "incident_037-M004",
+        "incident_037-M009"
+      ],
+      "cited_evidence": [
+        {
+          "evidence_id": "incident_037-DB001",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Database connections at server capacity"
+        },
+        {
+          "evidence_id": "incident_037-L002",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "database connection refused; request returned 500"
+        },
+        {
+          "evidence_id": "incident_037-M004",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connections_active=100 connections"
+        },
+        {
+          "evidence_id": "incident_037-M009",
+          "source_path": "public/metrics.csv",
+          "excerpt": "connection_rejections=30 per_minute"
+        }
+      ],
+      "missing_cited_evidence_ids": []
+    }
+  ]
+}

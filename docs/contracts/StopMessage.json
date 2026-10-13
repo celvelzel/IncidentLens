@@ -18,22 +18,30 @@
     "stop_reason": {
       "enum": [
         "PLAN_READY",
+        "DIAGNOSIS_READY",
         "INCONCLUSIVE",
         "BUDGET_EXHAUSTED",
         "PLAN_FAILED",
         "UNRECOVERABLE_ERROR",
-        "NO_ALERT"
+        "NO_ALERT",
+        "STOP_TIMEOUT"
       ],
       "title": "Stop Reason",
       "type": "string"
     },
     "message_type": {
-      "default": "STOP",
+      "default": "WORKFLOW_STOP_REQUESTED",
       "enum": [
-        "STOP",
+        "WORKFLOW_STOP_REQUESTED",
         "STOP_ACK"
       ],
       "title": "Message Type",
+      "type": "string"
+    },
+    "protocol_version": {
+      "const": "2",
+      "default": "2",
+      "title": "Protocol Version",
       "type": "string"
     },
     "role": {

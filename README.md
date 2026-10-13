@@ -96,7 +96,7 @@ flowchart TD
     V["Verifier / Skeptic"]
     G["FinalizeGate"]
     R["Remediation: PLAN_ONLY"]
-    S["Unified STOP"]
+    S["Unified shutdown"]
     O["Report and trace"]
     I --> C
     P --> N
@@ -128,7 +128,7 @@ or offline replay and finish immediately on `NO_ALERT`. Monitoring is disabled b
 the response profile can also start directly from an incident ID. `full` uses verifier
 feedback, `dynamic_no_verifier` skips verification, `fixed` retains one original
 three-expert batch, and `single` uses the single-agent baseline. Proposals run only after
-an accepted RCA; terminal paths from every phase pass through STOP.
+an accepted RCA; terminal paths from every phase pass through the shutdown protocol.
 
 ### Agent responsibilities
 
@@ -342,3 +342,7 @@ test membership is a holdout convention, not proof of blind evaluation. Mock
 results demonstrate correctness of the pipeline, not real-model accuracy or
 architecture superiority. See the sections above and linked documents for the
 full boundary of every claim.
+
+### Termination and scoring
+
+New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a final `NORMAL_TERMINATION` or `RUNTIME_FAILURE`. State and report share a structured termination result. Normal shutdown and recovered model-call failures preserve accepted diagnosis credit; plan generation failure and shutdown failure are reported separately and fail the complete workflow. `PLAN_ONLY` never implies service recovery. Historical STOP traces remain readable through conservative normalization. See [evaluation semantics](docs/evaluation.md) for applicable denominators and offline rescoring.

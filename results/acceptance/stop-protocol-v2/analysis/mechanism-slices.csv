@@ -1,0 +1,5 @@
+variant,scoring_version,failure_mode,misleading,identifiable,n,correct,correct_rate,abstain,correct_abstention_rate,runtime_failure,runtime_failure_rate,citation_count,valid_citation_count,citation_existence_validity,workflow_success_denominator,workflow_success_failures,workflow_success_unknown,workflow_success_rate,remediation_success_denominator,remediation_success_failures,remediation_success_unknown,remediation_success_rate,stop_completion_denominator,stop_completion_failures,stop_completion_unknown,stop_completion_rate,protocol_valid_denominator,protocol_valid_failures,protocol_valid_unknown,protocol_valid_rate
+v12_database_disabled,2,backend_pool_config_regression,True,True,1,1,1.0,0,,0,0.0,8,8,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0
+v12_database_disabled,2,postgres_connection_exhaustion,True,True,1,1,1.0,0,,0,0.0,4,4,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0
+v12_database_enabled,2,backend_pool_config_regression,True,True,1,1,1.0,0,,0,0.0,8,8,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0
+v12_database_enabled,2,postgres_connection_exhaustion,True,True,1,1,1.0,0,,0,0.0,4,4,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0,1,0,0,1.0

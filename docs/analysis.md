@@ -7,7 +7,8 @@ python scripts/analyze_eval.py --input results/acceptance/p5-dev/raw-runs.jsonl 
 Use a new, separate output folder. Existing output folders are rejected; input
 artifacts are preserved. The script executes no graph, provider or tools and reads
 no dataset oracle files. Each stored state must have a completed report before its
-stored `oracle_scoring_fields` are accessed. Missing scoring oracles fail explicitly.
+stored `oracle_scoring_fields` are accessed. Missing scoring oracles preserve known execution
+facts and leave answer-quality metrics unknown; no oracle is inferred from runtime output.
 Metrics are recomputed with `score_completed`, not copied from cached metrics.
 
 `coordination.csv` contains one row per run: round index, INVESTIGATE decisions,
@@ -63,3 +64,7 @@ incident records in actual TOOL_CALL results, without opening those paths. Missi
 citations are listed explicitly. Every bundle remains `awaiting_human`; no supported
 or unsupported annotation or semantic support rate is fabricated. Mock outputs are
 offline checks, not real-provider quality evidence.
+
+## Scoring version 2 exports
+
+Analysis recomputes scores from complete, immutable traces through the public classifier. Orderly stop and recovered call failures are not exported as run failures. Business plan failure, invalid protocols and terminal runtime failure remain explicit. Layered success/failure/unknown counts accompany each denominator; manifest.json records scoring_version=2 and the source SHA-256. Historical score rows must be rescored before comparison with new rows.

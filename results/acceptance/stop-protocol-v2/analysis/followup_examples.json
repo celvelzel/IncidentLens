@@ -1,0 +1,471 @@
+{
+  "interpretation": "Descriptive matches requested checks; not causal proof",
+  "examples": [
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-44361eefadf94e498dd26509f12de1e4",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-28",
+      "review_event_index": 27,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-2",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-30",
+      "next_investigate_event_index": 29,
+      "next_assignments": [
+        {
+          "task_id": "check-database-2",
+          "role": "database",
+          "question": "Distinguish database internal fault from upstream pool symptoms",
+          "allowed_tools": [
+            "get_db_connections",
+            "get_db_active_sessions",
+            "get_db_lock_waits",
+            "get_db_slow_queries",
+            "get_db_health_metrics"
+          ],
+          "filters": {
+            "database_internal": true,
+            "service": "postgres"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-44361eefadf94e498dd26509f12de1e4",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-41",
+      "review_event_index": 40,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-43",
+      "next_investigate_event_index": 42,
+      "next_assignments": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-44361eefadf94e498dd26509f12de1e4",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-53",
+      "review_event_index": 52,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-55",
+      "next_investigate_event_index": 54,
+      "next_assignments": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-44361eefadf94e498dd26509f12de1e4",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-66",
+      "review_event_index": 65,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-1d8e1cb7ee514e318414659aa76f76a5",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-28",
+      "review_event_index": 27,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-2",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-30",
+      "next_investigate_event_index": 29,
+      "next_assignments": [
+        {
+          "task_id": "check-metrics-2",
+          "role": "metrics",
+          "question": "Distinguish database internal fault from upstream pool symptoms",
+          "allowed_tools": [
+            "query_metrics",
+            "get_dependencies",
+            "get_db_connections",
+            "get_db_active_sessions",
+            "get_db_lock_waits",
+            "get_db_slow_queries",
+            "get_db_health_metrics"
+          ],
+          "filters": {
+            "database_internal": true,
+            "service": "postgres"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-1d8e1cb7ee514e318414659aa76f76a5",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-41",
+      "review_event_index": 40,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-43",
+      "next_investigate_event_index": 42,
+      "next_assignments": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "check-changes-3",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-1d8e1cb7ee514e318414659aa76f76a5",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-53",
+      "review_event_index": 52,
+      "review_verdict": "insufficient",
+      "requested_checks": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "next_investigate_event_id": "event-55",
+      "next_investigate_event_index": 54,
+      "next_assignments": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [
+        {
+          "task_id": "check-changes-4",
+          "role": "changes",
+          "question": "Check backend pool configuration and its recent change",
+          "allowed_tools": [
+            "query_changes",
+            "get_config_diff"
+          ],
+          "filters": {
+            "service": "backend",
+            "change_id": "change-1-01"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matches_requested_checks": true
+    },
+    {
+      "incident_id": "incident_001",
+      "run_id": "run-1d8e1cb7ee514e318414659aa76f76a5",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-66",
+      "review_event_index": 65,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-ed0539107abe487f8e50eb67b5672263",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-28",
+      "review_event_index": 27,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": "event-30",
+      "next_investigate_event_index": 29,
+      "next_assignments": [
+        {
+          "task_id": "check-database-2",
+          "role": "database",
+          "question": "Distinguish database internal fault from upstream pool symptoms",
+          "allowed_tools": [
+            "get_db_connections",
+            "get_db_active_sessions",
+            "get_db_lock_waits",
+            "get_db_slow_queries",
+            "get_db_health_metrics"
+          ],
+          "filters": {
+            "database_internal": true,
+            "service": "postgres"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-ed0539107abe487f8e50eb67b5672263",
+      "variant": "v12_database_enabled",
+      "review_event_id": "event-41",
+      "review_event_index": 40,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-d858dbf0e1644a16847f71878ed6dee6",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-28",
+      "review_event_index": 27,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": "event-30",
+      "next_investigate_event_index": 29,
+      "next_assignments": [
+        {
+          "task_id": "check-metrics-2",
+          "role": "metrics",
+          "question": "Distinguish database internal fault from upstream pool symptoms",
+          "allowed_tools": [
+            "query_metrics",
+            "get_dependencies",
+            "get_db_connections",
+            "get_db_active_sessions",
+            "get_db_lock_waits",
+            "get_db_slow_queries",
+            "get_db_health_metrics"
+          ],
+          "filters": {
+            "database_internal": true,
+            "service": "postgres"
+          },
+          "reason": "Resolve an evidence gap in the current candidate",
+          "expected_discriminator": "Compare direct cause indicators with downstream symptoms"
+        }
+      ],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    },
+    {
+      "incident_id": "incident_037",
+      "run_id": "run-d858dbf0e1644a16847f71878ed6dee6",
+      "variant": "v12_database_disabled",
+      "review_event_id": "event-41",
+      "review_event_index": 40,
+      "review_verdict": "sufficient",
+      "requested_checks": [],
+      "next_investigate_event_id": null,
+      "next_investigate_event_index": null,
+      "next_assignments": [],
+      "matched_checks": [],
+      "matches_requested_checks": false
+    }
+  ],
+  "reviews": 12,
+  "reviews_with_matched_checks": 4
+}

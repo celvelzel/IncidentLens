@@ -35,7 +35,16 @@ Object.assign(SOURCE_TYPE_META, { database: { label: "数据库", tone: "info" }
 Object.assign(EVENT_KIND, {
   INCIDENT_ALERT: { kind: "other", label: "监控判断", tone: "info" },
   PLAN_READY: { kind: "other", label: "建议方案就绪", tone: "info" },
-  STOP: { kind: "other", label: "停止请求", tone: "warning" },
+  STOP: { kind: "other", label: "历史停止事件", tone: "neutral" },
+  WORKFLOW_STOP_REQUESTED: { kind: "other", label: "停止请求", tone: "neutral" },
+  NORMAL_TERMINATION: { kind: "other", label: "有序结束", tone: "neutral" },
+  RUNTIME_FAILURE: { kind: "other", label: "运行失败", tone: "danger" },
+  RUNTIME_ERROR: { kind: "other", label: "执行异常", tone: "danger" },
+  STOP_TIMEOUT: { kind: "other", label: "停止确认超时", tone: "danger" },
+  MODEL_FAILURE: { kind: "llm", label: "调用失败", tone: "warning" },
+  MODEL_RECOVERED: { kind: "other", label: "调用失败已恢复", tone: "info" },
+  REMEDIATION_FAILED: { kind: "other", label: "方案生成失败", tone: "danger" },
+  DIAGNOSIS_ACCEPTED: { kind: "other", label: "诊断通过门禁", tone: "info" },
   STOP_ACK: { kind: "other", label: "停止确认", tone: "neutral" },
 });
 

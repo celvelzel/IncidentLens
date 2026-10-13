@@ -1,7 +1,6 @@
 """Cache-off paired V1.2 evaluation, with unchanged four legacy schedules."""
 import argparse
 import asyncio
-import copy
 import json
 import os
 import time
@@ -12,7 +11,12 @@ from dotenv import load_dotenv
 from incident_lens.agents.monitoring import validate_alert
 from incident_lens.agents.remediation import validate_plan
 from incident_lens.agents.service import PROMPT_VERSION
-from incident_lens.evaluation.metrics import VARIANTS, aggregate, score_completed
+from incident_lens.evaluation.metrics import (
+    VARIANTS,
+    aggregate,
+    score_completed,
+    score_without_oracle,
+)
 from incident_lens.evaluation.runner import (
     MeasuredProvider,
     digest,
@@ -21,6 +25,7 @@ from incident_lens.evaluation.runner import (
     usage_metrics,
     write_csv,
 )
+from incident_lens.evaluation.termination import normalize_termination
 from incident_lens.llm import MockProvider, ProviderError, RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
@@ -32,12 +37,14 @@ class TransientFailureMock(MockProvider):
     """One charged first-attempt analysis failure per independent evaluation run."""
 
     def __init__(self):
-        self.injected = False
+        # Per-call provider copies must share the single per-run injection flag.
+        self._injection = {"injected": False}
 
     async def structured_call(self, role, system_prompt, user_payload, output_model):
         result, usage = await super().structured_call(role, system_prompt, user_payload, output_model)
-        if role == "logs" and output_model.__name__ == "AnalysisOutput" and not self.injected:
-            self.injected = True
+        if (role == "logs" and output_model.__name__ == "AnalysisOutput"
+                and not self._injection["injected"]):
+            self._injection["injected"] = True
             raise ProviderError("INJECTED_TRANSIENT_ANALYSIS_FAILURE", usage)
         return result, usage
 
@@ -54,20 +61,10 @@ def workflow_metrics(completed, snapshot=()):
         except (ProviderError, ValueError):
             plan_valid = False
     events = completed.events
-    stops = [i for i, event in enumerate(events)
-             if event.event_type == "STOP" and event.details.get("message_type") == "STOP"]
-    stop_valid = len(stops) == 1 and not any(
-        event.event_type in {"TASK_ASSIGNED", "TASK_RUNNING", "MERGE", "REMEDIATION_PLAN"}
-        for event in events[stops[0] + 1:]
-    ) if stops else False
+    terminal = normalize_termination(state)
+    stop_valid = terminal["protocol_valid"]
     records = completed.task_records
-    stop_completion = bool(
-        len(stops) == 1
-        and not any(event.event_type == "STOP_TIMEOUT" for event in events)
-        and all(record.status not in {"ASSIGNED", "RUNNING"} for record in records)
-        and completed.workflow_status in {"FINISHED", "FAILED"}
-        and report.workflow_status in {"FINISHED", "FAILED"}
-    )
+    stop_completion = terminal["stop_completion"]
     retries = [r for r in records if r.attempt > 1]
     recovered_tasks = {r.task_id for r in retries if r.status == "COMPLETED"}
     failed_tasks = {r.task_id for r in records if r.status == "FAILED"}
@@ -162,28 +159,14 @@ async def evaluate(args, factory):
             if public.dataset_revision != revision:
                 raise ValueError("public dataset changed during evaluation")
             # Oracle is read only after graph execution has returned a completed report.
-            oracle_split = None
+            oracle_split = oracle = None
             try:
                 oracle = load_oracle_after_run(data_root, incident_id, state)
                 oracle_split = oracle.get("split")
-                scoring_state = copy.deepcopy(state)
-                # Mandatory normal STOP is a terminal protocol event, not a diagnosis failure.
-                scoring_state["events"] = [e for e in scoring_state["events"] if not (
-                    e["event_type"] == "STOP" and e.get("details", {}).get("message_type") == "STOP"
-                    and e["details"].get("stop_reason") in {
-                        "PLAN_READY", "INCONCLUSIVE", "NO_ALERT", "PLAN_FAILED"})]
-                scores = score_completed(scoring_state, oracle)
-                root = state["report"].get("root_cause")
-                scores["diagnosis_match"] = bool(
-                    state["report"]["status"] == "RESOLVED" and root
-                    and root["culprit_service"] == oracle["culprit_service"]
-                    and root["failure_mode"] == oracle["failure_mode"]
-                ) if oracle["is_identifiable"] else None
+                scores = score_completed(state, oracle)
             except (OSError, ValueError, KeyError, TypeError) as exc:
                 evaluation_error = type(exc).__name__
-                scores = {"root_cause_correct": None, "correct_abstention": None,
-                          "diagnosis_match": None,
-                          "unsupported_claim_rate": None, "semantic_review_status": "unreviewed"}
+                scores = score_without_oracle(state)
             row = {
                 "incident_id": incident_id, "variant": label,
                 "split": "explicit_incidents" if args.incidents else args.split,
@@ -195,11 +178,12 @@ async def evaluate(args, factory):
                 "status": state["report"]["status"], "latency_ms": elapsed,
                 "tool_calls": state.get("tool_calls_used"),
                 "execution_error": execution_error, "evaluation_error": evaluation_error,
-                **scores, **usage_metrics(provider, state), **extra,
+                **extra, **scores, **usage_metrics(provider, state),
             }
             rows.append(row)
             with (out / "raw-runs.jsonl").open("a", encoding="utf-8") as stream:
                 stream.write(json.dumps({"metrics": row, "fairness": config, "state": state,
+                                         "oracle_scoring_fields": oracle,
                                          "measured_calls": provider.calls}, ensure_ascii=False) + "\n")
             write_csv(out / "case-level.csv", rows)
     totals = []
@@ -214,7 +198,7 @@ async def evaluate(args, factory):
             summary[field] = sum(values) / len(values) if values else None
             summary[field + "_denominator"] = len(values)
         summary["stop_completion_rate"] = summary["stop_completion"]
-        summary["monitoring_accuracy"] = None
+        summary["monitoring_accuracy"] = summary["monitoring_accuracy_rate"]
         totals.append(summary)
     write_csv(out / "aggregate.csv", totals)
     (out / "README.md").write_text(
@@ -229,8 +213,9 @@ async def evaluate(args, factory):
         "checks identity, diagnosis version, accepted citations and PLAN_ONLY contracts, "
         "not operational effectiveness. Recovery is measured only when failures actually occur.\n\n"
         "diagnosis_match compares an accepted resolved cause with evaluator-only truth independently "
-        "of historical provider failures. root_cause_correct retains the older conservative "
-        "failure-sensitive metric. Transient-failure scenarios inject one charged mock logs analysis "
+        "of final execution quality. Scoring version 2 credits accepted diagnoses after explicit "
+        "recovery; remediation and stop failures are scored separately. Transient-failure scenarios "
+        "inject one charged mock logs analysis "
         "failure per run; scenario is recorded in raw fairness data and case-level rows.\n",
         encoding="utf-8",
     )

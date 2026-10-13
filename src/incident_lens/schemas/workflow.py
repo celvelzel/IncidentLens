@@ -8,12 +8,63 @@ from .contracts import EvidenceRecord, Identifier, StrictModel, Text
 
 StopReason = Literal[
     "PLAN_READY",
+    "DIAGNOSIS_READY",
     "INCONCLUSIVE",
     "BUDGET_EXHAUSTED",
     "PLAN_FAILED",
     "UNRECOVERABLE_ERROR",
     "NO_ALERT",
+    "STOP_TIMEOUT",
 ]
+
+PROTOCOL_VERSION = "2"
+NORMAL_REASONS = {"PLAN_READY", "DIAGNOSIS_READY", "INCONCLUSIVE", "NO_ALERT", "PLAN_FAILED"}
+
+
+class TerminationResult(StrictModel):
+    protocol_version: Literal["2"]
+    reason: StopReason
+    outcome: Literal["SUCCESS", "ABSTAINED", "NO_ACTION", "FAILED"]
+    failure_stage: Literal[
+        "monitoring", "coordinate", "dispatch", "merge", "verify", "finalize",
+        "diagnosis", "remediation", "stop", "runtime",
+    ] | None
+    stop_completed: bool
+    runtime_failure: bool
+
+    @model_validator(mode="after")
+    def consistent_termination(self):
+        expected = {
+            "PLAN_READY": "SUCCESS", "DIAGNOSIS_READY": "SUCCESS",
+            "INCONCLUSIVE": "ABSTAINED", "NO_ALERT": "NO_ACTION",
+        }.get(self.reason, "FAILED")
+        if self.outcome != expected:
+            raise ValueError("termination outcome must match reason")
+        if self.runtime_failure != (self.reason not in NORMAL_REASONS):
+            raise ValueError("runtime_failure must match terminal reason")
+        if (self.outcome == "FAILED") != (self.failure_stage is not None):
+            raise ValueError("failed outcomes require a failure_stage")
+        if self.reason == "STOP_TIMEOUT":
+            if self.stop_completed or self.failure_stage != "stop":
+                raise ValueError("STOP_TIMEOUT requires incomplete stop at stop stage")
+        elif not self.stop_completed:
+            raise ValueError("incomplete stop must terminate with STOP_TIMEOUT")
+        if self.reason == "PLAN_FAILED" and self.failure_stage != "remediation":
+            raise ValueError("PLAN_FAILED requires remediation stage")
+        return self
+
+
+def termination_result(reason: StopReason, failure_stage=None, stop_completed=True):
+    """One terminal reason table shared by producers and historical normalization."""
+    outcome = {
+        "PLAN_READY": "SUCCESS", "DIAGNOSIS_READY": "SUCCESS",
+        "INCONCLUSIVE": "ABSTAINED", "NO_ALERT": "NO_ACTION",
+    }.get(reason, "FAILED")
+    return TerminationResult(
+        protocol_version=PROTOCOL_VERSION, reason=reason, outcome=outcome,
+        failure_stage=(failure_stage or "runtime") if outcome == "FAILED" else None,
+        stop_completed=stop_completed, runtime_failure=reason not in NORMAL_REASONS,
+    )
 
 
 class IncidentAlert(StrictModel):
@@ -52,7 +103,8 @@ class StopMessage(StrictModel):
     incident_id: Identifier
     run_id: Identifier
     stop_reason: StopReason
-    message_type: Literal["STOP", "STOP_ACK"] = "STOP"
+    message_type: Literal["WORKFLOW_STOP_REQUESTED", "STOP_ACK"] = "WORKFLOW_STOP_REQUESTED"
+    protocol_version: Literal["2"] = PROTOCOL_VERSION
     role: str = "coordinator"
 
 

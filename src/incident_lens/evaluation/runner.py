@@ -17,7 +17,7 @@ from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
 from incident_lens.tools import EvidenceProvider
 
-from .metrics import VARIANTS, aggregate, score_completed
+from .metrics import VARIANTS, aggregate, score_completed, score_without_oracle
 
 SPLITS = ("seed", "dev", "test")
 CASE_ID = re.compile(r"^incident_[0-9]{3,}$")
@@ -103,17 +103,24 @@ class MeasuredProvider(LLMProvider):
         return self._measurement["actual_requests"]
 
     async def structured_call(self, role, system_prompt, user_payload, output_model):
+        request_guard = self.request_guard
+        token_observer = self.token_observer
+        delegate = copy.copy(self.delegate)
+
         def guard():
-            if self.request_guard is not None:
-                self.request_guard()
+            permit = request_guard() if request_guard is not None else None
             self._measurement["actual_requests"] += 1
             self._call_requests.set(self._call_requests.get() + 1)
+            return permit
 
-        self.delegate.request_guard = guard
-        self.delegate.token_observer = self.token_observer
+        delegate.request_guard = guard
+        delegate.token_observer = token_observer
+        for name in ("recovery_snapshot", "stop_guard", "event_observer", "request_reconciler"):
+            if hasattr(self, name):
+                setattr(delegate, name, getattr(self, name))
         token = self._call_requests.set(0)
         try:
-            result, usage = await self.delegate.structured_call(
+            result, usage = await delegate.structured_call(
                 role, system_prompt, user_payload, output_model
             )
             self.calls.append(dict(usage=usage, failed=False))
@@ -143,6 +150,14 @@ def usage_metrics(provider, state):
     failed_model_calls = max(provider_failures, model_failures)
     return dict(
         llm_requests=provider.actual_requests,
+        actual_http_requests=provider.actual_requests if provider.source != "mock" else 0,
+        logical_structured_calls=len(provider.calls),
+        task_retries=sum(
+            e.get("event_type") == "TASK_ASSIGNED" and e.get("details", {}).get("attempt", 1) > 1
+            for e in state.get("events", [])
+        ),
+        transport_retries=sum(c["usage"].get("transport_retries", 0) for c in provider.calls),
+        repair_requests=sum(c["usage"].get("repair_requests", 0) for c in provider.calls),
         prompt_tokens=token_sum("prompt_tokens"),
         completion_tokens=token_sum("completion_tokens"),
         total_tokens=token_sum("total_tokens"),
@@ -274,18 +289,7 @@ async def evaluate_split(
         except (OSError, ValueError, KeyError, TypeError) as exc:
             oracle = None
             evaluation_error = type(exc).__name__
-            scores = dict(
-                identifiable=None,
-                root_cause_correct=None,
-                correct_abstention=None,
-                misleading_case=None,
-                misleading_correct=None,
-                citation_count=0,
-                valid_citation_count=0,
-                citation_existence_validity=None,
-                unsupported_claim_rate=None,
-                semantic_review_status="unreviewed",
-            )
+            scores = score_without_oracle(state)
         root = state["report"].get("root_cause")
         row = dict(
             incident_id=incident_id,

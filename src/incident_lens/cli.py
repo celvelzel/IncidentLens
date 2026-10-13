@@ -30,6 +30,7 @@ from incident_lens.schemas.workflow import (
     RemediationPlan,
     StopMessage,
     TaskRecord,
+    TerminationResult,
     WorkflowOptions,
 )
 from incident_lens.security.context import AgentContext
@@ -54,6 +55,7 @@ CONTRACTS = [
     RemediationPlan,
     StopMessage,
     TaskRecord,
+    TerminationResult,
     WorkflowOptions,
 ]
 

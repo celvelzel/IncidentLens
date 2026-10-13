@@ -24,6 +24,8 @@ def test_streamlit_response_controls_and_separate_statuses():
     assert any(caption.value == "Diagnosis status" for caption in app.caption)
     assert any(caption.value == "Remediation status" for caption in app.caption)
     assert any(caption.value == "Workflow status" for caption in app.caption)
+    assert any(caption.value == "Stop confirmation: completed" for caption in app.caption)
+    assert report.termination.reason == "PLAN_READY"
     assert any("PLAN_ONLY" in caption.value for caption in app.caption)
     if report.remediation_plan:
         assert report.remediation_plan.execution_mode == "PLAN_ONLY"
@@ -61,6 +63,10 @@ def test_web_plan_component_escapes_untrusted_text_and_keeps_legacy_empty():
             "diagnosis_status": "RESOLVED",
             "remediation_status": "PLAN_READY",
             "workflow_status": "FINISHED",
+            "termination": {
+                "reason": "PLAN_READY", "outcome": "SUCCESS", "stop_completed": True,
+                "failure_stage": None,
+            },
             "remediation_plan": {
                 "objective": "<script>unsafe</script>",
                 "affected_services": ["backend"],
@@ -104,5 +110,6 @@ console.log(html);
         check=True,
     )
     assert "<script>" not in result.stdout and "&lt;script&gt;" in result.stdout
+    assert "停止确认：已完成" in result.stdout and "终止结果" in result.stdout
     for expected in ("PLAN_ONLY", "PLAN_READY", "FINISHED", "e1", "a1", "rollback", "precondition"):
         assert expected in result.stdout

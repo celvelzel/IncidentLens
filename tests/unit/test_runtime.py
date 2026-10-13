@@ -66,7 +66,7 @@ async def test_stop_ack_and_idempotence():
     stop.guard()
     await stop.stop("PLAN_READY", {"logs": cancel})
     await stop.stop("UNRECOVERABLE_ERROR", {"metrics": cancel})
-    assert [event for event, _ in events] == ["STOP", "STOP_ACK"]
+    assert [event for event, _ in events] == ["WORKFLOW_STOP_REQUESTED", "STOP_ACK"]
     assert events[1][1]["role"] == "logs"
 
 
@@ -91,7 +91,7 @@ async def test_hung_and_failed_callbacks_timeout_without_false_ack():
     await asyncio.wait_for(stop.stop("BUDGET_EXHAUSTED", {
         "logs": hung, "metrics": failed, "changes": declined,
     }), timeout=0.2)
-    assert [event for event, _ in events] == ["STOP", "STOP_TIMEOUT"]
+    assert [event for event, _ in events] == ["WORKFLOW_STOP_REQUESTED", "STOP_TIMEOUT"]
     assert events[-1][1]["missing_roles"] == ["changes", "logs", "metrics"]
     released.set()
     await asyncio.sleep(0)

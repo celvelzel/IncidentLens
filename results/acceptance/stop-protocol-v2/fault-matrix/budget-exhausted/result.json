@@ -1,0 +1,25 @@
+{
+  "run_id": "run-b6e8a50764b440a5acac5d6583232bef",
+  "incident_id": "incident_001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "LLM call budget exhausted",
+  "diagnosis_status": "INCONCLUSIVE",
+  "remediation_status": "SKIPPED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "BUDGET_EXHAUSTED",
+    "outcome": "FAILED",
+    "failure_stage": "coordinate",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

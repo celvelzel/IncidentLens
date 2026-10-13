@@ -88,6 +88,9 @@ class StopController:
         self.ack_timeout_seconds = ack_timeout_seconds
         self.stopped = False
         self.frozen = False
+        self.completed = False
+        self.missing_roles: list[str] = []
+        self.reason: StopReason | None = None
 
     def guard(self) -> None:
         if self.frozen:
@@ -99,7 +102,10 @@ class StopController:
             return
         message = StopMessage(incident_id=self.incident_id, run_id=self.run_id, stop_reason=reason)
         self.stopped = self.frozen = True
-        self.emit("STOP", **message.model_dump())
+        self.reason = reason
+        callbacks = dict(active or {})
+        self.emit("WORKFLOW_STOP_REQUESTED", **message.model_dump(),
+                  required_roles=sorted(callbacks))
         acknowledged: set[str] = set()
         accepting = True
 
@@ -113,7 +119,6 @@ class StopController:
                 ack = message.model_copy(update={"message_type": "STOP_ACK", "role": role})
                 self.emit("STOP_ACK", **ack.model_dump())
 
-        callbacks = dict(active or {})
         tasks = [asyncio.create_task(acknowledge(role, callback))
                  for role, callback in callbacks.items()]
         try:
@@ -125,6 +130,8 @@ class StopController:
                 if not task.done():
                     task.cancel()
         missing = sorted(set(callbacks) - acknowledged)
+        self.missing_roles = missing
+        self.completed = not missing
         if missing:
             self.emit("STOP_TIMEOUT", incident_id=self.incident_id, run_id=self.run_id,
                       stop_reason=reason, missing_roles=missing)

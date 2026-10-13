@@ -174,15 +174,17 @@ export function workflowReportHtml(state, evidenceIndex = {}) {
   const alert = state.incident_alert;
   const plan = report.remediation_plan;
   const taskRecords = state.task_records || [];
+  const termination = report.termination || state.termination;
   const list = (title, values) => values?.length ? `<section class="workflow-plan-section"><h4>${escapeHtml(title)}</h4><ul class="symptom-list">${values.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul></section>` : "";
-  if (!alert && !plan && !taskRecords.length && !report.diagnosis_status) return "";
+  if (!alert && !plan && !taskRecords.length && !report.diagnosis_status && !termination) return "";
   return `<section class="report-section workflow-result" aria-label="事件响应工作流">
     <h3>事件响应工作流</h3>
     <dl class="workflow-status-grid">
       <div><dt>诊断状态</dt><dd>${badge(report.diagnosis_status || report.status, "neutral")}</dd></div>
-      <div><dt>方案状态</dt><dd>${badge(report.remediation_status || "NOT_STARTED", "neutral")}</dd></div>
-      <div><dt>工作流状态</dt><dd>${badge(report.workflow_status || state.workflow_status || "FINISHED", "neutral")}</dd></div>
+      <div><dt>方案状态</dt><dd>${badge(report.remediation_status || "NOT_STARTED", report.remediation_status === "PLAN_FAILED" ? "danger" : "neutral")}</dd></div>
+      <div><dt>工作流状态</dt><dd>${badge(report.workflow_status || state.workflow_status || "FINISHED", (report.workflow_status || state.workflow_status) === "FAILED" ? "danger" : "neutral")}</dd></div>
     </dl>
+    ${termination ? `<section class="workflow-plan-section"><h4>终止结果</h4><div class="chip-row">${badge(termination.reason, termination.outcome === "FAILED" ? "danger" : "neutral")}${badge(termination.outcome)}</div><p>停止确认：${termination.stop_completed ? "已完成" : "未完成"}${termination.failure_stage ? ` · 失败阶段：${escapeHtml(termination.failure_stage)}` : ""}</p></section>` : ""}
     ${alert ? `<section class="workflow-plan-section"><h4>监控告警 · ${escapeHtml(alert.status)}</h4><p>${escapeHtml(alert.summary)}</p><div class="chip-row">${(alert.affected_services || []).map(service => badge(service)).join("")}</div><div class="cite-wrap">${evidenceChips(alert.evidence_ids, evidenceIndex)}</div></section>` : ""}
     ${plan ? `<div class="plan-only-note" role="note"><strong>PLAN_ONLY · 仅生成建议方案</strong><p>方案尚未执行；诊断完成和方案就绪不表示服务已恢复。变更前需操作人员确认。</p></div>
       <p>${escapeHtml(plan.objective)}</p><div class="chip-row">${plan.affected_services.map(service => badge(service)).join("")}</div>

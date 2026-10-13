@@ -42,4 +42,11 @@ def render_report(report: RCAReport) -> str:
                 + "\n"
                 + "\n".join("- " + v for v in getattr(plan, name))
             )
+    if report.termination:
+        result = report.termination
+        sections.append(
+            f"## Termination\nReason: {result.reason}\nOutcome: {result.outcome}"
+            f"\nStop completed: {result.stop_completed}\nRuntime failure: {result.runtime_failure}"
+            f"\nFailure stage: {result.failure_stage or 'none'}"
+        )
     return "\n\n".join(sections) + "\n"

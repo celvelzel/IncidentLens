@@ -1,0 +1,25 @@
+{
+  "run_id": "run-90d33f4a8b1b4b1a8d0769f86b973e4a",
+  "incident_id": "incident_001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "NO_ALERT",
+  "diagnosis_status": "INCONCLUSIVE",
+  "remediation_status": "SKIPPED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "NO_ALERT",
+    "outcome": "NO_ACTION",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

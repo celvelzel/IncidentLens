@@ -1,0 +1,20 @@
+{
+  "validation_scope": "isolated staged snapshot, excluding unrelated unstaged V1.3 work",
+  "baseline_ref": "8e5659fd621d393389a4fc1f361af213b5e150a7",
+  "full_run": {
+    "passed": 505,
+    "skipped": 2,
+    "historical_fixture_setup_errors": 96
+  },
+  "historical_fixture_recheck": {
+    "passed": 96,
+    "errors": 0,
+    "resolution": "snapshot Git object access restored; no source edits"
+  },
+  "ruff": "passed",
+  "indexed_python_matches_tested_snapshot": true,
+  "provider_runtime_dependencies_included": true,
+  "remaining_unstaged_work_preserved": true,
+  "published_log_format": "UTF-8; trailing whitespace removed from display copy; original retained in temporary validation directory",
+  "original_log_sha256": "e407d4fba351ae6a600e957ab8f25070f5db2ab08283beeddd6c692b9846f537"
+}

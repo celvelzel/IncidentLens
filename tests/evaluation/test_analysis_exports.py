@@ -126,6 +126,7 @@ def test_export_preserves_input_and_rejects_existing_output(tmp_path):
         "coverage.json",
         "followup_examples.json",
         "errors.jsonl",
+        "manifest.json",
     }
     with pytest.raises(FileExistsError):
         analysis.export(source, out)

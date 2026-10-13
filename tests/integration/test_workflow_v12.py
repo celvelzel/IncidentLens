@@ -31,7 +31,7 @@ async def test_normal_snapshot_stops_without_diagnosis_or_remediation():
     assert state.report.remediation_status == "SKIPPED"
     assert state.decisions == [] and state.tool_calls_used == 0
     assert state.workflow_status == "FINISHED"
-    assert any(e.event_type == "STOP" and e.details.get("stop_reason") == "NO_ALERT"
+    assert any(e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stop_reason") == "NO_ALERT"
                for e in state.events)
 
 
@@ -47,7 +47,7 @@ async def test_anomaly_reaches_accepted_diagnosis_and_valid_plan(mode):
     validate_plan(state.report.remediation_plan, state.report, state.evidence_index)
     events = [e.event_type for e in state.events]
     assert events.index("INCIDENT_ALERT") < events.index("DECISION")
-    assert events.index("REMEDIATION_PLAN") < events.index("STOP") < events.index("REPORT")
+    assert events.index("REMEDIATION_PLAN") < events.index("WORKFLOW_STOP_REQUESTED") < events.index("REPORT")
     assert state.task_records[-1].role == "remediation"
     assert state.task_records[-1].status == "COMPLETED"
 
@@ -157,7 +157,7 @@ async def test_failed_remediation_preserves_accepted_diagnosis(monkeypatch):
     attempts = [r for r in state.task_records if r.role == "remediation"]
     assert [r.attempt for r in attempts] == [1, 2]
     assert all(r.status == "FAILED" for r in attempts)
-    assert any(e.event_type == "STOP" and e.details.get("stop_reason") == "PLAN_FAILED"
+    assert any(e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stop_reason") == "PLAN_FAILED"
                for e in state.events)
 
 
@@ -167,7 +167,7 @@ async def test_monitoring_stage_zero_budget_prevents_other_work():
     assert state.llm_calls_used == state.tool_calls_used == 0
     assert state.report.root_cause is None and state.report.remediation_plan is None
     assert state.decisions == []
-    assert any(e.event_type == "STOP" and e.details.get("stop_reason") == "BUDGET_EXHAUSTED"
+    assert any(e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stop_reason") == "BUDGET_EXHAUSTED"
                for e in state.events)
 
 

@@ -3,6 +3,7 @@
 import asyncio
 import copy
 import json
+from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TypedDict
@@ -10,7 +11,7 @@ from uuid import uuid4
 
 from langgraph.graph import END, START, StateGraph
 
-from incident_lens.orchestration.budget import CallBudget
+from incident_lens.orchestration.budget import BudgetExceeded, CallBudget
 from incident_lens.orchestration.guards import (
     cause_discriminator,
     evidence_fingerprint,
@@ -26,7 +27,7 @@ from incident_lens.schemas import (
     RCAReport,
     TraceEvent,
 )
-from incident_lens.schemas.workflow import WorkflowOptions
+from incident_lens.schemas.workflow import WorkflowOptions, termination_result
 
 
 class GraphState(TypedDict):
@@ -60,6 +61,9 @@ class InvestigationRun:
         self.remediation_versions = set()
         self.active_workers = {}
         self.active_model_calls = {}
+        self.call_sequence = 0
+        self.call_context = ContextVar("incident_lens_call_context", default={})
+        self.request_stage = ContextVar("incident_lens_request_stage", default=None)
         self.cache = copy.copy(cache) if cache is not None else None
         if self.cache is not None:
             # Derive revision at each run boundary, including long-lived API adapters.
@@ -75,7 +79,19 @@ class InvestigationRun:
             timeout_seconds=min(10.0, self.limits.max_wall_seconds),
             database_equivalent_tools=self.workflow.database_equivalent_tools,
         )
-        self.call_budget = CallBudget(self.limits)
+        self.call_budget = CallBudget(
+            self.limits,
+            stage_limits={
+                "monitoring": self.workflow.monitoring_max_calls,
+                "remediation": self.workflow.remediation_max_calls,
+            },
+        )
+        self.provider.recovery_snapshot = lambda: self.call_budget.snapshot(
+            self.request_stage.get()
+        )
+        self.provider.stop_guard = lambda: self.stop_controller.guard()
+        self.provider.event_observer = self.runtime_event
+        self.provider.request_reconciler = self.call_budget.reconcile_request
         if hasattr(self.provider, "request_guard"):
             self.provider.request_guard = self.consume_request
             self.call_budget.guarded_provider = True
@@ -110,6 +126,8 @@ class InvestigationRun:
             timestamp=datetime.now(timezone.utc),
             event_type=event_type,
             role=role,
+            task_id=details.get("task_id"),
+            call_id=details.get("call_id"),
             source=source,
             message=message,
             details=details,
@@ -117,7 +135,7 @@ class InvestigationRun:
         state.events.append(event)
 
     def runtime_event(self, event_type, **details):
-        if event_type == "STOP":
+        if event_type == "WORKFLOW_STOP_REQUESTED":
             error = next(
                 (e for e in reversed(self.state.events) if e.event_type == "RUNTIME_ERROR"), None
             )
@@ -127,45 +145,80 @@ class InvestigationRun:
 
     def consume_request(self):
         self.stop_controller.guard()
-        self.call_budget.consume_request()
+        stage = self.request_stage.get()
+        maximum = getattr(self.workflow, stage + "_max_calls") if stage else None
+        if stage and self.stage_calls[stage] >= maximum:
+            raise BudgetExceeded(stage + " stage budget exhausted")
+        from incident_lens.llm.provider import HTTP_CALL_CONTEXT
+
+        permit = self.call_budget.consume_request(
+            stage=stage,
+            run_id=self.run_id,
+            logical_call_id=HTTP_CALL_CONTEXT.get() or self.call_context.get().get("call_id", ""),
+        )
+        if stage:
+            self.stage_calls[stage] += 1
+        return permit
 
     async def model_call(self, role, function, *args):
         self.stop_controller.guard()
-        pending = asyncio.create_task(self.call_budget.call(function, *args))
+        self.call_sequence += 1
+        stage = (
+            role
+            if role in {"monitoring", "remediation"}
+            else (
+                "verify"
+                if role == "verifier" or function.__name__ == "verify"
+                else "coordinate"
+                if role == "coordinator" or function.__name__ == "decide"
+                else "diagnosis"
+            )
+        )
+        metadata = {
+            "stage": stage,
+            **self.call_context.get(),
+            "call_id": f"model-call-{self.call_sequence}",
+        }
+        token = self.call_context.set(metadata)
+        pending = asyncio.create_task(self.call_budget.call(function, *args, metadata=metadata))
         self.active_model_calls[pending] = role
         try:
             result = await pending
             self.stop_controller.guard()
             return result
+        except BaseException:
+            for failure in self.call_budget.failures:
+                if failure.get("call_id") == metadata["call_id"]:
+                    self.event(
+                        self.state,
+                        "MODEL_FAILURE",
+                        role=role,
+                        source=failure.get("source", "model"),
+                        **{k: v for k, v in failure.items() if k != "source"},
+                        cancelled=self.stop_controller.stopped,
+                    )
+            raise
         finally:
             self.active_model_calls.pop(pending, None)
+            self.call_context.reset(token)
 
     async def stage_call(self, stage, function, *args):
-        maximum = getattr(self.workflow, stage + "_max_calls")
-        original_guard = getattr(self.provider, "request_guard", None)
-
-        def guard():
-            self.stop_controller.guard()
-            if self.stage_calls[stage] >= maximum:
-                raise RuntimeError(stage + " stage budget exhausted")
-            self.stage_calls[stage] += 1
-            self.call_budget.consume_request()
-
-        if hasattr(self.provider, "request_guard"):
-            self.provider.request_guard = guard
-        else:
-            if self.stage_calls[stage] >= maximum:
-                raise RuntimeError(stage + " stage budget exhausted")
-            self.stage_calls[stage] += 1
+        # The stable guard reads task-local stage; concurrent investigators never
+        # inherit a temporary monitoring/remediation guard.
+        token = self.request_stage.set(stage)
         try:
+            if not hasattr(self.provider, "request_guard"):
+                maximum = getattr(self.workflow, stage + "_max_calls")
+                if self.stage_calls[stage] >= maximum:
+                    raise BudgetExceeded(stage + " stage budget exhausted")
+                self.stage_calls[stage] += 1
             if getattr(self.provider, "model_id", "") == "deterministic-public-policy-v1":
-                guard()
+                self.consume_request()
             output, usage = await self.model_call(stage, function, *args)
             self.update_usage(self.state, usage, stage)
             return output
         finally:
-            if hasattr(self.provider, "request_guard"):
-                self.provider.request_guard = original_guard
+            self.request_stage.reset(token)
 
     async def monitor(self, value):
         from incident_lens.agents.monitoring import monitor
@@ -200,6 +253,7 @@ class InvestigationRun:
             return {"investigation": state, "route": "coordinate"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
+            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="monitoring")
             return {"investigation": state, "route": "stop"}
 
     def payload(self, state, role="coordinator", fetched=None):
@@ -357,7 +411,7 @@ class InvestigationRun:
             return {"investigation": state, "route": "dispatch"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "RUNTIME_ERROR", message=state.stop_reason)
+            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="coordinate")
             return {"investigation": state, "route": "report"}
 
     @staticmethod
@@ -484,17 +538,21 @@ class InvestigationRun:
         except Exception as exc:
             state.tool_calls_used = self.registry.call_count
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "RUNTIME_ERROR", message=state.stop_reason)
+            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="dispatch")
             return {"investigation": state, "route": "report", "local_results": []}
 
     async def execute_task(self, state, task):
         while True:
             self.stop_controller.guard()
-            self.task_manager.start(task.task_id)
+            attempt = self.task_manager.start(task.task_id)
+            token = self.call_context.set(
+                {"task_id": task.task_id, "attempt_id": attempt.attempt_id, "stage": "diagnosis"}
+            )
             try:
                 result = await self.investigate(state, task)
                 self.stop_controller.guard()
-                self.task_manager.complete(task.task_id)
+                completed = self.task_manager.complete(task.task_id)
+                self.record_recovery(completed, "diagnosis")
                 return result
             except asyncio.CancelledError:
                 self.task_manager.cancel(task.task_id)
@@ -511,6 +569,26 @@ class InvestigationRun:
                 ):
                     raise
                 self.task_manager.assign(task.task_id, task.role)
+            finally:
+                self.call_context.reset(token)
+
+    def record_recovery(self, record, stage):
+        call_ids = [
+            e.details["call_id"]
+            for e in self.state.events
+            if e.event_type == "MODEL_FAILURE"
+            and e.details.get("task_id") == record.task_id
+            and not e.details.get("cancelled")
+        ]
+        if call_ids:
+            self.event(
+                self.state,
+                "MODEL_RECOVERED",
+                stage=stage,
+                task_id=record.task_id,
+                attempt_id=record.attempt_id,
+                call_ids=call_ids,
+            )
 
     def merge(self, value):
         state = value["investigation"]
@@ -646,6 +724,21 @@ class InvestigationRun:
                 rejected_hypotheses=[h for h in state.hypotheses if h.status == "REJECTED"],
                 stop_reason=state.decisions[-1].stop_reason or "Evidence sufficient",
             )
+            failed_tasks = {r.task_id for r in self.task_manager.records if r.status == "FAILED"}
+            self.event(
+                state,
+                "DIAGNOSIS_ACCEPTED",
+                root_cause=supported.model_dump(mode="json"),
+                supporting_evidence_ids=supported.support_ids,
+                degraded_call_ids=[
+                    e.details["call_id"]
+                    for e in state.events
+                    if e.event_type == "MODEL_FAILURE"
+                    and e.details.get("task_id") in failed_tasks
+                    and e.details.get("stage") == "diagnosis"
+                    and not e.details.get("cancelled")
+                ],
+            )
         return {
             "investigation": state,
             "route": "remediate"
@@ -669,7 +762,10 @@ class InvestigationRun:
         self.task_manager.assign(task_id, "remediation")
         try:
             while True:
-                self.task_manager.start(task_id)
+                attempt = self.task_manager.start(task_id)
+                token = self.call_context.set(
+                    {"task_id": task_id, "attempt_id": attempt.attempt_id, "stage": "remediation"}
+                )
                 try:
                     plan = await self.stage_call(
                         "remediation", remediate, self.provider, report, state.evidence_index
@@ -683,7 +779,8 @@ class InvestigationRun:
                     )
                     state.report = report
                     self.remediation_versions.add(version)
-                    self.task_manager.complete(task_id)
+                    completed = self.task_manager.complete(task_id)
+                    self.record_recovery(completed, "remediation")
                     self.event(
                         state,
                         "REMEDIATION_PLAN",
@@ -692,12 +789,30 @@ class InvestigationRun:
                     )
                     break
                 except Exception as exc:
+                    if self.stop_controller.stopped:
+                        raise
                     self.task_manager.fail(task_id, self.safe_error(exc))
                     if not self.task_manager.can_retry(task_id) or self.exhausted(state):
                         raise
                     self.task_manager.assign(task_id, "remediation")
+                finally:
+                    self.call_context.reset(token)
         except Exception as exc:
+            if self.stop_controller.stopped:
+                return {"investigation": state, "route": "stop"}
             report.remediation_status = "PLAN_FAILED"
+            self.remediation_error = self.safe_error(exc)
+            if isinstance(exc, TimeoutError) or getattr(exc, "code", None) in {
+                "PROVIDER_TIMEOUT",
+                "PROVIDER_TRANSPORT_ERROR",
+                "PROVIDER_HTTP_ERROR",
+                "PROVIDER_CONFIGURATION_REQUIRED",
+                "PROVIDER_CANCELLED",
+            }:
+                state.stop_reason = self.remediation_error
+                self.event(
+                    state, "RUNTIME_ERROR", stage="remediation", message=self.remediation_error
+                )
             self.event(
                 state, "REMEDIATION_FAILED", role="remediation", message=self.safe_error(exc)
             )
@@ -706,14 +821,30 @@ class InvestigationRun:
     async def stop(self, value):
         state = value["investigation"]
         self.state = state
+        if state.termination is not None:
+            return {"investigation": state, "route": "report"}
         state.workflow_status = "STOPPING"
         if state.report is not None:
             state.report.workflow_status = "STOPPING"
         reason = state.stop_reason or "INCONCLUSIVE"
-        if state.report is not None and state.report.remediation_status == "PLAN_READY":
+        errors = [e for e in state.events if e.event_type == "RUNTIME_ERROR"]
+        stage = errors[-1].details.get("stage", "runtime") if errors else "runtime"
+        if errors:
+            reason = "BUDGET_EXHAUSTED" if "budget" in reason.lower() else "UNRECOVERABLE_ERROR"
+        elif state.report is not None and state.report.remediation_status == "PLAN_READY":
             reason = "PLAN_READY"
         elif state.report is not None and state.report.remediation_status == "PLAN_FAILED":
-            reason = "PLAN_FAILED"
+            reason = (
+                "BUDGET_EXHAUSTED"
+                if (
+                    self.exhausted(state)
+                    or "budget" in getattr(self, "remediation_error", "").lower()
+                )
+                else "PLAN_FAILED"
+            )
+            stage = "remediation"
+        elif state.report is not None and state.report.status == "RESOLVED":
+            reason = "DIAGNOSIS_READY"
         elif "budget" in reason.lower():
             reason = "BUDGET_EXHAUSTED"
         elif reason != "NO_ALERT":
@@ -723,8 +854,7 @@ class InvestigationRun:
             ) and not any(e.event_type == "RUNTIME_ERROR" for e in state.events)
             reason = (
                 "INCONCLUSIVE"
-                if not self.call_budget.failures
-                and (
+                if (
                     normal_abstention
                     or rejected_finalization
                     or reason
@@ -732,8 +862,12 @@ class InvestigationRun:
                 )
                 else "UNRECOVERABLE_ERROR"
             )
-            if state.report and state.report.status == "RESOLVED":
-                reason = "PLAN_READY" if state.report.remediation_plan else "INCONCLUSIVE"
+            if reason == "INCONCLUSIVE" and self.call_budget.failures:
+                from incident_lens.evaluation.termination import recovered_call_ids
+
+                recovered = recovered_call_ids([e.model_dump(mode="json") for e in state.events])
+                if any(f.get("call_id") not in recovered for f in self.call_budget.failures):
+                    reason = "UNRECOVERABLE_ERROR"
         self.task_manager.stop()
         self.registry.freeze()
         callbacks = {}
@@ -751,25 +885,36 @@ class InvestigationRun:
                 await asyncio.gather(*workers, return_exceptions=True)
 
             callbacks[role] = cancel_workers
+        # Assigned tasks without a running worker also need a terminal cancellation record.
+        for record in self.task_manager.records:
+            if (
+                record.status in {"ASSIGNED", "RUNNING"}
+                and record.task_id not in self.active_workers
+            ):
+                self.task_manager.cancel(record.task_id)
         await self.stop_controller.stop(reason, callbacks)
+        if not self.stop_controller.completed:
+            reason, stage = "STOP_TIMEOUT", "stop"
         state.task_records = list(self.task_manager.records)
-        state.workflow_status = "FAILED" if reason == "UNRECOVERABLE_ERROR" else "FINISHED"
+        state.termination = termination_result(
+            reason, failure_stage=stage, stop_completed=self.stop_controller.completed
+        )
+        state.workflow_status = "FAILED" if state.termination.outcome == "FAILED" else "FINISHED"
         if state.report:
             state.report.workflow_status = state.workflow_status
             state.report.diagnosis_status = (
                 "RESOLVED" if state.report.status == "RESOLVED" else "INCONCLUSIVE"
             )
+            state.report.termination = state.termination.model_copy(deep=True)
+        self.event(
+            state,
+            "RUNTIME_FAILURE" if state.termination.runtime_failure else "NORMAL_TERMINATION",
+            **state.termination.model_dump(mode="json"),
+        )
         return {"investigation": state, "route": "report"}
 
     def report(self, value):
         state = value["investigation"]
-        for usage in self.call_budget.failures:
-            self.event(
-                state,
-                "MODEL_FAILURE",
-                source=usage.get("source", "model"),
-                **{key: item for key, item in usage.items() if key != "source"},
-            )
         if state.report is None:
             state.report = RCAReport(
                 run_id=state.run_id,
@@ -781,6 +926,7 @@ class InvestigationRun:
                 diagnosis_status="INCONCLUSIVE" if self.response_profile else None,
                 remediation_status="SKIPPED" if self.response_profile else "NOT_STARTED",
                 workflow_status=state.workflow_status,
+                termination=state.termination,
             )
         state.tool_calls_used = self.registry.call_count
         state.llm_calls_used = self.call_budget.calls

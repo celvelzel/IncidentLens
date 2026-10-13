@@ -126,6 +126,13 @@ def render_state(trace, state):
         statuses[1].write(state.report.remediation_status)
         statuses[2].caption("Workflow status")
         statuses[2].write(state.report.workflow_status)
+        if state.termination:
+            result = state.termination
+            if result.outcome == "FAILED":
+                st.error(f"Workflow failed: {result.reason} · stage: {result.failure_stage}")
+            else:
+                st.info(f"Workflow ended: {result.reason} · {result.outcome}")
+            st.caption("Stop confirmation: " + ("completed" if result.stop_completed else "incomplete"))
         if state.incident_alert:
             with st.expander("Monitoring alert", expanded=True):
                 st.json(state.incident_alert.model_dump(mode="json"))

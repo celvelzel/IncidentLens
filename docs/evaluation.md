@@ -58,14 +58,42 @@ with oracle-labelled misleading evidence. Execution failures remain incorrect in
 their applicable denominator when the oracle is available; unreadable oracles are
 explicit evaluation errors and cannot be scored.
 
-`runtime_failure` is recomputed from a `STOP` or `MODEL_FAILURE` event in the completed state. The
-graph emits STOP for runtime exceptions, failures and execution limits. Such runs
-keep their report status (normally INCONCLUSIVE) and applicable denominators, but
-receive no root-cause, misleading-accuracy or correct-abstention credit. A budget
-stop is therefore not credited as evidence-based abstention. Normal explicit
-ABSTAIN without a failure event can earn correct-abstention credit. Aggregate
-`runtime_failure_runs` counts these traces separately from outer `error_runs`;
-it does not count normal semantic abstention.
+Scoring version `2` reads the complete trace through one termination classifier.
+New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` events, then exactly one
+`NORMAL_TERMINATION` or terminal `RUNTIME_FAILURE`. State and report carry the same
+strict `termination` result (protocol version `2`). Normal termination describes
+orderly shutdown, including a business failure such as `PLAN_FAILED`.
+
+`MODEL_FAILURE` is a failed call, not an automatic run failure. Explicit recovery
+links failed call IDs to the completed task attempt; accepted diagnoses can also
+record failed specialist calls safely bypassed by sufficient peer evidence. All
+failed calls, requests and measured tokens remain in cost/accounting statistics.
+A matching `DIAGNOSIS_ACCEPTED` checkpoint is required for new resolved traces.
+
+`root_cause_correct` credits accepted matching diagnoses without an unrecovered
+fatal diagnosis-stage error. `diagnosis_match` reports raw matching independently.
+`remediation_success` is applicable only when a plan was attempted; `PLAN_FAILED`
+keeps diagnosis credit but fails remediation and `workflow_success`. Shutdown
+failure after accepted diagnosis likewise keeps diagnosis credit but fails
+`stop_completion` and workflow success. Budgets and unrecoverable errors are
+runtime failures, never evidence-based abstentions.
+
+`NO_ALERT` is excluded from RCA and correct-abstention denominators. Monitoring
+requires an explicit evaluator-only `monitoring_expected_alert` (ALERT/NO_ALERT);
+without it monitoring accuracy and no-alert workflow success remain unknown.
+Normal `INCONCLUSIVE` succeeds only for an unidentifiable oracle. Unreadable
+oracles are evaluation errors with unknown answer quality; known execution failures
+remain recorded. Each layered aggregate exports successes, failures, applicable
+denominator, unknown count and rate. Mixed scoring versions are rejected.
+
+Historical non-structured STOP and unexplained MODEL_FAILURE remain conservative
+failures. Structured historical STOP accepts only known reasons and consistent
+reports. Unknown/missing/conflicting terminal data cannot earn shutdown, workflow
+or abstention credit. Raw events are never removed or rewritten. Recompute into a
+new directory using `scripts/rescore_eval.py --input <raw-runs.jsonl-or-trace.json>
+--out <new-directory>`; outputs record scoring version and input SHA-256. Saved
+oracle fields are preferred; dataset truth is read only after a completed report
+exists. Original score rows are retained as `historical_metrics`.
 
 Citation Existence Validity counts unique report citations present in the current
 incident's shared evidence index and in actual tool-result records from that run.

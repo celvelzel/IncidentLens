@@ -1,0 +1,194 @@
+{
+  "schema_version": "v1",
+  "provider": "mock",
+  "variant": "full",
+  "cache_mode": "off",
+  "elapsed_ms": 23.283899994567037,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_001",
+    "run_id": "run-e209272f943b47b39a3afce6277ea884",
+    "public_summary": {
+      "incident_id": "incident_001",
+      "title": "Service incident 001",
+      "started_at": "2026-10-01T14:03:00Z",
+      "observed_symptoms": [
+        "API 500 responses increased",
+        "Backend request latency elevated"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 4,
+      "max_tool_calls": 24,
+      "max_llm_calls": 0,
+      "max_wall_seconds": 600.0,
+      "max_tokens": null
+    },
+    "round_index": 0,
+    "findings": [],
+    "evidence_index": {},
+    "hypotheses": [],
+    "tasks": [],
+    "reviews": [],
+    "decisions": [],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-e209272f943b47b39a3afce6277ea884",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:09:27.215391Z",
+        "event_type": "RUNTIME_ERROR",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "LLM call budget exhausted",
+        "details": {
+          "stage": "coordinate"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-e209272f943b47b39a3afce6277ea884",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:09:27.216263Z",
+        "event_type": "WORKFLOW_STOP_REQUESTED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_001",
+          "run_id": "run-e209272f943b47b39a3afce6277ea884",
+          "stop_reason": "BUDGET_EXHAUSTED",
+          "message_type": "WORKFLOW_STOP_REQUESTED",
+          "protocol_version": "2",
+          "required_roles": [],
+          "stage": "coordinate"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-e209272f943b47b39a3afce6277ea884",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:09:27.216342Z",
+        "event_type": "RUNTIME_FAILURE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "protocol_version": "2",
+          "reason": "BUDGET_EXHAUSTED",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-e209272f943b47b39a3afce6277ea884",
+        "incident_id": "incident_001",
+        "timestamp": "2026-10-13T04:09:27.216865Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-e209272f943b47b39a3afce6277ea884",
+            "incident_id": "incident_001",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "LLM call budget exhausted",
+            "diagnosis_status": "INCONCLUSIVE",
+            "remediation_status": "SKIPPED",
+            "workflow_status": "FAILED",
+            "remediation_plan": null,
+            "termination": {
+              "protocol_version": "2",
+              "reason": "BUDGET_EXHAUSTED",
+              "outcome": "FAILED",
+              "failure_stage": "coordinate",
+              "stop_completed": true,
+              "runtime_failure": true
+            }
+          },
+          "variant": "full",
+          "tokens_complete": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-e209272f943b47b39a3afce6277ea884",
+      "incident_id": "incident_001",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "LLM call budget exhausted",
+      "diagnosis_status": "INCONCLUSIVE",
+      "remediation_status": "SKIPPED",
+      "workflow_status": "FAILED",
+      "remediation_plan": null,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "BUDGET_EXHAUSTED",
+        "outcome": "FAILED",
+        "failure_stage": "coordinate",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    "stop_reason": "LLM call budget exhausted",
+    "open_questions": [],
+    "requested_checks": [],
+    "completed_task_ids": [],
+    "tool_calls_used": 0,
+    "llm_calls_used": 0,
+    "tokens_used": 0,
+    "incident_alert": null,
+    "task_records": [],
+    "workflow_status": "FAILED",
+    "termination": {
+      "protocol_version": "2",
+      "reason": "BUDGET_EXHAUSTED",
+      "outcome": "FAILED",
+      "failure_stage": "coordinate",
+      "stop_completed": true,
+      "runtime_failure": true
+    }
+  },
+  "model_id": null,
+  "prompt_version": null
+}

@@ -171,7 +171,7 @@ class CoordinatorDecision(StrictModel):
         return self
 
 
-from .workflow import IncidentAlert, RemediationPlan, TaskRecord  # noqa: E402
+from .workflow import IncidentAlert, RemediationPlan, TaskRecord, TerminationResult  # noqa: E402
 
 
 class RCAReport(StrictModel):
@@ -190,6 +190,7 @@ class RCAReport(StrictModel):
     )
     workflow_status: Literal["RUNNING", "STOPPING", "FINISHED", "FAILED"] = "FINISHED"
     remediation_plan: RemediationPlan | None = None
+    termination: TerminationResult | None = None
 
     @model_validator(mode="after")
     def resolution_semantics(self):
@@ -275,6 +276,7 @@ class InvestigationState(StrictModel):
     incident_alert: IncidentAlert | None = None
     task_records: list[TaskRecord] = Field(default_factory=list)
     workflow_status: Literal["RUNNING", "STOPPING", "FINISHED", "FAILED"] = "RUNNING"
+    termination: TerminationResult | None = None
 
     @model_validator(mode="after")
     def consistent_provenance(self):

@@ -85,7 +85,7 @@ flowchart TD
     V["Verifier / Skeptic"]
     G["FinalizeGate"]
     R["Remediation：仅生成方案"]
-    S["统一 STOP"]
+    S["统一停止协议"]
     O["报告与轨迹"]
     I --> C
     P --> N
@@ -115,7 +115,7 @@ flowchart TD
 `incident_response` 可从公开快照或离线回放进入监控，无告警时直接收尾。
 监控默认关闭，事件响应模式也可直接由事件 ID 启动。`full` 使用验证反馈回路，
 `dynamic_no_verifier` 跳过验证器，`fixed` 保留一次原有三专家批次，`single` 使用单智能体基线。
-只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径统一经过 STOP。
+只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径统一经过停止协议。
 
 ### Agent 职责
 
@@ -301,3 +301,7 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 不能证明生产泛化能力;测试集归属只是留出约定,并非盲测证明。Mock 结果证明的
 是流水线的正确性,而不是真实模型精度或架构优越性。每项声明的完整边界详见
 上文章节与所链接的文档。
+
+### 终止协议与计分
+
+新运行发送 `WORKFLOW_STOP_REQUESTED`、实际停止后的 `STOP_ACK`，以及最终 `NORMAL_TERMINATION` 或 `RUNTIME_FAILURE`；state 与 report 保存一致的结构化终止结果。正常停止与恢复后的模型调用失败保留已确认诊断的分数；方案生成失败、停止确认失败分别计分，并使完整工作流失败。`PLAN_ONLY` 不表示服务已经恢复。历史 STOP trace 通过保守兼容分类继续读取；分母与离线重算规则见[评测说明](docs/evaluation.md)。
