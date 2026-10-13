@@ -15,7 +15,9 @@ def validate_family_split(cases) -> None:
         if row["split"] not in {"seed", "dev", "test"}:
             raise ValueError("unknown split")
         for key in (
-            "scenario_family_id", "source_blueprint_id", "near_duplicate_cluster_id",
+            "scenario_family_id",
+            "source_blueprint_id",
+            "near_duplicate_cluster_id",
             "counterfactual_pair_id",
         ):
             if row.get(key):

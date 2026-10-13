@@ -17,7 +17,11 @@ def cli(script, *args, success=True):
     env["PYTHONPATH"] = str(ROOT / "src")
     result = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / script), *map(str, args)],
-        cwd=ROOT, env=env, capture_output=True, text=True, timeout=120,
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=120,
     )
     if success:
         assert result.returncode == 0, result.stdout + result.stderr
@@ -27,8 +31,7 @@ def cli(script, *args, success=True):
 
 
 def snapshot(root):
-    return {p.relative_to(root).as_posix(): p.read_bytes()
-            for p in root.rglob("*") if p.is_file()}
+    return {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
 
 
 def test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite(tmp_path):
@@ -53,9 +56,24 @@ def test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite(tmp_path):
     assert snapshot(dataset) == before
 
     runs = tmp_path / "runs"
-    run_args = ("--dataset", dataset, "--split", "seed", "--variant", "all",
-                "--provider", "mock", "--cache-mode", "off", "--jobs", "1",
-                "--oracle-root", labels, "--out", runs)
+    run_args = (
+        "--dataset",
+        dataset,
+        "--split",
+        "seed",
+        "--variant",
+        "all",
+        "--provider",
+        "mock",
+        "--cache-mode",
+        "off",
+        "--jobs",
+        "1",
+        "--oracle-root",
+        labels,
+        "--out",
+        runs,
+    )
     assert json.loads(cli("run_incidentbench.py", *run_args).stdout)["runs"] == 8
     raw = [json.loads(line) for line in (runs / "raw-runs.jsonl").read_text().splitlines()]
     scores = [json.loads(line) for line in (runs / "scores.jsonl").read_text().splitlines()]
@@ -73,8 +91,7 @@ def test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite(tmp_path):
     assert snapshot(runs) == saved
 
     analysis = tmp_path / "analysis"
-    analyze_args = ("--input", runs / "raw-runs.jsonl", "--oracle-root", labels,
-                    "--out", analysis)
+    analyze_args = ("--input", runs / "raw-runs.jsonl", "--oracle-root", labels, "--out", analysis)
     assert json.loads(cli("analyze_incidentbench.py", *analyze_args).stdout)["recomputed_runs"] == 8
     with (runs / "case-level.csv").open(newline="", encoding="utf-8") as handle:
         original = list(csv.DictReader(handle))

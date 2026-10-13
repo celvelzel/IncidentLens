@@ -21,23 +21,42 @@ def development_config():
     ]
     families = []
     for i, (base, intervention) in enumerate(mechanisms):
-        families.append(dict(id=f"fam_{i:03d}", source_blueprint_id=f"blueprint_{i:03d}",
-            # All share development-only encoders. Never assert unseen-template Test.
-            near_duplicate_cluster_id="cluster_development", split="seed",
-            started_at="2026-10-01T12:00:00+00:00", mechanism=base,
-            trigger_seconds=10 + i * 13, propagation_seconds=4 + i * 2,
-            demand=120 + i * 10, capacity=100,
-            variants=[dict(id=f"var_{i}_{kind}", kind=kind)
-                      for kind in ("ordinary", "misleading", "missing")]
-                + [dict(id=f"var_{i}_a", kind="counterfactual", pair_id=f"pair_{i}"),
-                   dict(id=f"var_{i}_b", kind="counterfactual", pair_id=f"pair_{i}",
-                        mechanism=intervention)]))
+        families.append(
+            dict(
+                id=f"fam_{i:03d}",
+                source_blueprint_id=f"blueprint_{i:03d}",
+                # All share development-only encoders. Never assert unseen-template Test.
+                near_duplicate_cluster_id="cluster_development",
+                split="seed",
+                started_at="2026-10-01T12:00:00+00:00",
+                mechanism=base,
+                trigger_seconds=10 + i * 13,
+                propagation_seconds=4 + i * 2,
+                demand=120 + i * 10,
+                capacity=100,
+                variants=[
+                    dict(id=f"var_{i}_{kind}", kind=kind)
+                    for kind in ("ordinary", "misleading", "missing")
+                ]
+                + [
+                    dict(id=f"var_{i}_a", kind="counterfactual", pair_id=f"pair_{i}"),
+                    dict(
+                        id=f"var_{i}_b",
+                        kind="counterfactual",
+                        pair_id=f"pair_{i}",
+                        mechanism=intervention,
+                    ),
+                ],
+            )
+        )
     return {"families": families}
 
 
 def read_oracles(root):
-    return [BenchmarkOracle.model_validate_json(p.read_text())
-            for p in sorted(root.rglob("benchmark_oracle.json"))]
+    return [
+        BenchmarkOracle.model_validate_json(p.read_text())
+        for p in sorted(root.rglob("benchmark_oracle.json"))
+    ]
 
 
 def tree_bytes(root):
@@ -59,8 +78,11 @@ def test_deterministic_causal_generation_and_compatibility(tmp_path):
     for oracle in read_oracles(a):
         assert oracle.annotator_status == "pending" and not oracle.reviewer_ids
         case = provider.load_case(oracle.incident_id)
-        records = [r for source in ("logs", "metrics", "changes", "configs", "database")
-                   for r in provider._records(case.incident_id, source)]
+        records = [
+            r
+            for source in ("logs", "metrics", "changes", "configs", "database")
+            for r in provider._records(case.incident_id, source)
+        ]
         index = {r.evidence_id: r for r in records}
         if oracle.is_identifiable:
             supporting = oracle.acceptable_support_sets[0].evidence_ids
@@ -89,17 +111,22 @@ def test_counterfactuals_change_public_discriminator_not_only_labels(tmp_path):
         assert a.true_primary_root != b.true_primary_root
         observations = []
         for label in (a, b):
-            observations.append([(r.source_type, r.service, r.excerpt, r.metadata)
-                                 for source in ("logs", "metrics", "configs", "database")
-                                 for r in provider._records(label.incident_id, source)])
+            observations.append(
+                [
+                    (r.source_type, r.service, r.excerpt, r.metadata)
+                    for source in ("logs", "metrics", "configs", "database")
+                    for r in provider._records(label.incident_id, source)
+                ]
+            )
         assert observations[0] != observations[1]
 
 
 @pytest.mark.parametrize("overlap", ["same", "inside", "ancestor"])
 def test_public_oracle_overlap_refused_before_writing(tmp_path, overlap):
     public = tmp_path / "dataset"
-    oracle = public if overlap == "same" else (
-        public / "private" if overlap == "inside" else tmp_path)
+    oracle = (
+        public if overlap == "same" else (public / "private" if overlap == "inside" else tmp_path)
+    )
     with pytest.raises((ValueError, FileExistsError)):
         build_dataset(development_config(), public, oracle)
     assert not public.exists()
@@ -132,10 +159,18 @@ def test_renaming_family_ids_cannot_turn_shared_encoders_into_holdout(tmp_path):
 def test_monitoring_ood_separate_counts(tmp_path):
     config = development_config()
     for i, (mode, cohort) in enumerate((("healthy", "monitoring"), ("clock_skew", "ood"))):
-        config["families"].append(dict(id=f"fam_extra_{i}", source_blueprint_id=f"bp_extra_{i}",
-            near_duplicate_cluster_id=f"dup_extra_{i}", split="dev", cohort=cohort,
-            mechanism=mode, started_at="2026-10-01T12:00:00+00:00",
-            variants=[dict(id=f"extra_{i}", kind="ordinary")]))
+        config["families"].append(
+            dict(
+                id=f"fam_extra_{i}",
+                source_blueprint_id=f"bp_extra_{i}",
+                near_duplicate_cluster_id=f"dup_extra_{i}",
+                split="dev",
+                cohort=cohort,
+                mechanism=mode,
+                started_at="2026-10-01T12:00:00+00:00",
+                variants=[dict(id=f"extra_{i}", kind="ordinary")],
+            )
+        )
     result = build_dataset(config, tmp_path / "data", tmp_path / "labels")
     assert result["cohorts"] == {"core": 20, "monitoring": 1, "ood": 1}
     assert result["core_splits"]["dev"] == 0
@@ -144,11 +179,13 @@ def test_monitoring_ood_separate_counts(tmp_path):
 @pytest.mark.asyncio
 async def test_actual_mock_observations_support_rca_and_missing_abstention(tmp_path):
     build_dataset(development_config(), tmp_path / "data", tmp_path / "labels")
-    complete = await run_investigation("incident_1016", MockProvider(),
-                                       data_root=tmp_path / "data" / "rca", cache=None)
+    complete = await run_investigation(
+        "incident_1016", MockProvider(), data_root=tmp_path / "data" / "rca", cache=None
+    )
     assert complete.report is not None
     assert complete.report.status == "RESOLVED"
     assert complete.report.root_cause.failure_mode == "backend_resource_saturation"
-    missing = await run_investigation("incident_1013", MockProvider(),
-                                      data_root=tmp_path / "data" / "rca", cache=None)
+    missing = await run_investigation(
+        "incident_1013", MockProvider(), data_root=tmp_path / "data" / "rca", cache=None
+    )
     assert missing.report is not None and missing.report.status == "INCONCLUSIVE"
