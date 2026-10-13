@@ -3,7 +3,7 @@ benchmark_version: incidentbench-v1
 provider_id: mock
 model_id: mock
 temperature: 0.0
-cache_mode: off
+cache_mode: "off"
 jobs: 1
 run_order_seed: 14100
 repeats: 1
