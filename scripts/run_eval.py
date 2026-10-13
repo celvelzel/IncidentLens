@@ -24,7 +24,7 @@ def main(argv=None):
     parser.add_argument("--max-rounds", type=int, default=4)
     parser.add_argument("--max-tool-calls", type=int, default=12)
     parser.add_argument("--max-llm-calls", type=int, default=16)
-    parser.add_argument("--max-wall-seconds", type=float, default=90)
+    parser.add_argument("--max-wall-seconds", type=float, default=600)
     parser.add_argument("--max-tokens", type=int)
     parser.add_argument("--response-format", choices=("json_schema", "json_object"))
     parser.add_argument("--thinking", choices=("enabled", "disabled"))

@@ -10,6 +10,21 @@ def valid():
 
 
 @pytest.mark.asyncio
+async def test_cancelled_request_is_not_reported_as_provider_timeout():
+    import asyncio
+
+    async def cancelled(request):
+        raise asyncio.CancelledError()
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(cancelled)) as client:
+        provider = RealChatProvider("https://example.invalid", "SECRET", "m", client=client)
+        with pytest.raises(ProviderError, match="^PROVIDER_CANCELLED$") as error:
+            await provider.structured_call("coordinator", "", {}, CoordinatorDecision)
+    assert error.value.usage["llm_calls"] == 1
+    assert error.value.usage["total_tokens"] is None
+
+
+@pytest.mark.asyncio
 async def test_one_repair_measured_usage_and_json_schema():
     requests = []
     guard = []

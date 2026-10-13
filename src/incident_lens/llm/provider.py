@@ -47,7 +47,7 @@ class RealChatProvider(LLMProvider):
         api_key,
         model,
         temperature=0.0,
-        timeout=30.0,
+        timeout=180.0,
         client=None,
         structured_repair_retries=1,
         response_format_mode="json_schema",
@@ -145,7 +145,7 @@ class RealChatProvider(LLMProvider):
                 except httpx.TimeoutException:
                     raise ProviderError("PROVIDER_TIMEOUT", usage) from None
                 except asyncio.CancelledError:
-                    raise ProviderError("PROVIDER_TIMEOUT", usage) from None
+                    raise ProviderError("PROVIDER_CANCELLED", usage) from None
                 except httpx.HTTPError:
                     raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage) from None
                 if response.status_code in (400, 404, 422):

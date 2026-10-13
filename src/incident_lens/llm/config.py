@@ -10,5 +10,5 @@ def provider_options(response_format=None, thinking=None, request_timeout=None):
         thinking=thinking or os.getenv("INCIDENT_LENS_THINKING") or None,
         timeout=request_timeout
         if request_timeout is not None
-        else float(os.getenv("INCIDENT_LENS_REQUEST_TIMEOUT", "30")),
+        else float(os.getenv("INCIDENT_LENS_REQUEST_TIMEOUT", "180")),
     )
