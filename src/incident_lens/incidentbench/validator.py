@@ -33,10 +33,15 @@ def validate_dataset(dataset, oracle_root=None):
         }:
             errors.append("case index coverage mismatch")
         for split in ("seed", "dev", "test"):
-            actual = json.loads(safe_path(rca / "splits" / f"{split}.json").read_bytes())
+            actual = json.loads(safe_path(rca / "splits" / f"{split}_ids.json").read_bytes())
             expected = [row.incident_id for row in metadata if row.split == split]
             if len(actual) != len(set(actual)) or set(actual) != set(expected):
                 errors.append("split index mismatch")
+        manifest = json.loads(safe_path(dataset / "manifest.json").read_bytes())
+        if manifest.get("rca_public_sha256") != digest_tree(rca):
+            errors.append("manifest public bundle hash mismatch")
+        if manifest.get("benchmark_version") != "incidentbench-v1":
+            errors.append("manifest version mismatch")
         groups = {}
         texts = {}
         oracles = {}

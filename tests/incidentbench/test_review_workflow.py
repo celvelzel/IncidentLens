@@ -79,3 +79,30 @@ def test_truth_reviewer_ids_alone_not_acceptance():
         validate_truth_reviews(
             {"incident_id": "incident_100", "reviewer_ids": ["a", "b"]}, {"reviews": []}
         )
+
+
+def test_forged_index_not_exported_without_matching_tool_event():
+    evidence = {
+        "evidence_id": "e1",
+        "incident_id": "incident_100",
+        "excerpt": "must not expose forged text",
+    }
+    state = {
+        "run_id": "run_1",
+        "incident_id": "incident_100",
+        "evidence_index": {"e1": evidence},
+        "report": {"root_cause": {"culprit_service": "backend"}, "supporting_evidence_ids": ["e1"]},
+    }
+    row = prepare_review_bundle([state])[0]
+    assert row["evidence"] == [] and row["unobserved_citation_ids"] == ["e1"]
+    state["events"] = [
+        {
+            "event_type": "TOOL_CALL",
+            "run_id": "run_1",
+            "incident_id": "incident_100",
+            "details": {"result": {"ok": True, "records": [evidence]}},
+        }
+    ]
+    assert prepare_review_bundle([state])[0]["evidence"] == [evidence]
+    state["events"][0]["run_id"] = "foreign"
+    assert prepare_review_bundle([state])[0]["evidence"] == []

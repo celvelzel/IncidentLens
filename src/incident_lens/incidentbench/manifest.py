@@ -3,7 +3,9 @@
 import hashlib
 import json
 import os
+import platform
 import subprocess
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from .oracle_store import canonical, safe_path
@@ -28,7 +30,22 @@ def digest_tree(root, *, source_only=False):
 def create_lock(dataset, protocol):
     base = Path(__file__).resolve().parents[3]
     settings = protocol.model_dump(mode="json") if hasattr(protocol, "model_dump") else protocol
+    dependencies = {}
+    for package in ("pydantic", "langgraph", "httpx", "PyYAML", "numpy"):
+        try:
+            dependencies[package] = version(package)
+        except PackageNotFoundError:
+            dependencies[package] = None
+    dependency_digest = hashlib.sha256()
+    for filename in ("pyproject.toml", "requirements.lock"):
+        path = base / filename
+        dependency_digest.update(filename.encode() + b"\0")
+        dependency_digest.update(safe_path(path).read_bytes() if path.exists() else b"ABSENT")
     return {
+        "scripts_sha256": digest_tree(base / "scripts", source_only=True),
+        "dependency_lock_sha256": dependency_digest.hexdigest(),
+        "python_version": platform.python_version(),
+        "installed_dependencies": dependencies,
         "version": 1,
         "sealed": False,
         "public_sha256": digest_tree(dataset),
