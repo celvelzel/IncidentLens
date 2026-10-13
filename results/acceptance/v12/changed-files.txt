@@ -1,0 +1,75 @@
+ M .env.example
+ M README.md
+ M README.zh-CN.md
+ M configs/agents.yaml
+ M configs/system.yaml
+ M docs/contracts/AgentContext.json
+ M docs/contracts/Budget.json
+ M docs/contracts/CacheNamespace.json
+ M docs/contracts/CachePolicy.json
+ M docs/contracts/CoordinatorDecision.json
+ M docs/contracts/EvidenceRecord.json
+ M docs/contracts/Finding.json
+ M docs/contracts/InvestigationState.json
+ M docs/contracts/InvestigationTask.json
+ M docs/contracts/RCAReport.json
+ M docs/contracts/Review.json
+ M docs/contracts/ToolResult.json
+ M docs/contracts/TraceEvent.json
+ M scripts/run_eval.py
+ M scripts/validate_dataset.py
+ M src/incident_lens/agents/service.py
+ M src/incident_lens/cache/policy.py
+ M src/incident_lens/cache/semantic.py
+ M src/incident_lens/cli.py
+ M src/incident_lens/evaluation/metrics.py
+ M src/incident_lens/llm/config.py
+ M src/incident_lens/llm/mock.py
+ M src/incident_lens/llm/provider.py
+ M src/incident_lens/orchestration/graph.py
+ M src/incident_lens/orchestration/guards.py
+ M src/incident_lens/orchestration/merge.py
+ M src/incident_lens/orchestration/report.py
+ M src/incident_lens/schemas/contracts.py
+ M src/incident_lens/security/authorization.py
+ M src/incident_lens/security/context.py
+ M src/incident_lens/tools/arguments.py
+ M src/incident_lens/tools/provider.py
+ M src/incident_lens/tools/registry.py
+ M src/incident_lens/ui/app.py
+ M src/incident_lens/web/server.py
+ M src/incident_lens/web/static/css/app.css
+ M src/incident_lens/web/static/js/components.js
+ M src/incident_lens/web/static/js/views.js
+ M tests/unit/test_agents.py
+ M tests/unit/test_provider.py
+?? configs/incident-response.yaml
+?? data/incidents/incident_037/
+?? data/incidents/incident_038/
+?? data/incidents/incident_039/
+?? data/incidents/incident_040/
+?? data/monitoring/
+?? data/splits/database_ids.json
+?? docs/acceptance/V1.2.md
+?? docs/contracts/IncidentAlert.json
+?? docs/contracts/RemediationPlan.json
+?? docs/contracts/StopMessage.json
+?? docs/contracts/TaskRecord.json
+?? docs/contracts/WorkflowOptions.json
+?? docs/v12-interface-freeze.md
+?? results/acceptance/v12/
+?? scripts/generate_database_cases.py
+?? scripts/run_v12_eval.py
+?? src/incident_lens/agents/database.py
+?? src/incident_lens/agents/monitoring.py
+?? src/incident_lens/agents/remediation.py
+?? src/incident_lens/orchestration/config.py
+?? src/incident_lens/orchestration/runtime.py
+?? src/incident_lens/schemas/workflow.py
+?? src/incident_lens/tools/database.py
+?? tests/integration/test_v12_ui.py
+?? tests/integration/test_workflow_v12.py
+?? tests/unit/test_database.py
+?? tests/unit/test_monitoring.py
+?? tests/unit/test_remediation.py
+?? tests/unit/test_runtime.py

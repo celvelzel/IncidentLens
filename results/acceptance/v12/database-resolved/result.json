@@ -1,0 +1,70 @@
+{
+  "run_id": "run-33e11999fe924776ada425a948e0e577",
+  "incident_id": "incident_037",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+    "culprit_service": "postgres",
+    "failure_mode": "postgres_connection_exhaustion",
+    "support_ids": [
+      "incident_037-DB001",
+      "incident_037-L002",
+      "incident_037-M004",
+      "incident_037-M009"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Database sessions reach server connection capacity",
+      "New database sessions are rejected and backend requests fail"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "Database sessions reach server connection capacity",
+    "New database sessions are rejected and backend requests fail"
+  ],
+  "supporting_evidence_ids": [
+    "incident_037-DB001",
+    "incident_037-L002",
+    "incident_037-M004",
+    "incident_037-M009"
+  ],
+  "rejected_hypotheses": [],
+  "unresolved": [],
+  "stop_reason": "Evidence sufficient",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "PLAN_READY",
+  "workflow_status": "FINISHED",
+  "remediation_plan": {
+    "incident_id": "incident_037",
+    "run_id": "run-33e11999fe924776ada425a948e0e577",
+    "root_cause_version": "d8800c99a0148285b16677c28a4bd1f81ff6c4e054aaf12112dfda8dc182b221",
+    "execution_mode": "PLAN_ONLY",
+    "objective": "Mitigate postgres_connection_exhaustion in postgres after operator approval.",
+    "affected_services": [
+      "postgres"
+    ],
+    "actions": [
+      "If active sessions and connection limits confirm exhaustion, reduce incoming concurrency on a canary and review idle sessions with the database owner before any termination."
+    ],
+    "preconditions": [
+      "Operator approval, current causal measurements, approved baseline, and a tested rollback are required."
+    ],
+    "risks": [
+      "Configuration changes can shift load to dependencies or interrupt requests; assess capacity and consistency first."
+    ],
+    "verification_steps": [
+      "Compare the cited causal signal, service error rate, latency and downstream health against the pre-change baseline during the canary window."
+    ],
+    "rollback": [
+      "If health deteriorates or the causal signal fails to recover, stop rollout and restore the captured approved configuration or routing state."
+    ],
+    "evidence_ids": [
+      "incident_037-DB001",
+      "incident_037-L002",
+      "incident_037-M004",
+      "incident_037-M009"
+    ]
+  }
+}

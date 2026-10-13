@@ -1,0 +1,40 @@
+........................................................................ [ 31%]
+..............F......................................................... [ 62%]
+................s....................................................... [ 93%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+____________________ test_installed_cli_and_schema_export _____________________
+
+tmp_path = WindowsPath('C:/Users/RickyMa/AppData/Local/Temp/pytest-of-RickyMa/pytest-388/test_installed_cli_and_schema_0')
+
+    def test_installed_cli_and_schema_export(tmp_path):
+        version = subprocess.run(
+            [sys.executable, "-m", "incident_lens.cli", "--version"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert version.stdout.strip() == "IncidentLens 0.1.0"
+        subprocess.run(
+            [sys.executable, "-m", "incident_lens.cli", "export-schemas", "--out", str(tmp_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert len(list(tmp_path.glob("*.json"))) == len(CONTRACTS)
+        for model in CONTRACTS:
+>           assert (
+                json.loads((tmp_path / f"{model.__name__}.json").read_text())
+                == model.model_json_schema()
+            )
+E           AssertionError: assert {'additionalP...eRecord', ...} == {'additionalP...eRecord', ...}
+E
+E             Omitting 4 identical items, use -vv to show
+E             Differing items:
+E             {'properties': {'evidence_id': {'maxLength': 128, 'minLength': 1, 'pattern': '^[A-Za-z0-9][A-Za-z0-9_.-]*$', 'title': ...service': {'maxLength': 128, 'minLength': 1, 'pattern': '^[A-Za-z0-9][A-Za-z0-9_.-]*$', 'title': 'Service', ...}, ...}} != {'properties': {'evidence_id': {'maxLength': 128, 'minLength': 1, 'pattern': '^[A-Za-z0-9][A-Za-z0-9_.-]*$', 'title': ...service': {'maxLength': 128, 'minLength': 1, 'pattern': '^[A-Za-z0-9][A-Za-z0-9_.-]*$', 'title': 'Service', ...}, ...}}
+E             Use -v to get more diff
+
+tests\integration\test_cli.py:26: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/integration/test_cli.py::test_installed_cli_and_schema_export - ...
+1 failed, 228 passed, 1 skipped in 83.11s (0:01:23)

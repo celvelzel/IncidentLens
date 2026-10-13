@@ -1,0 +1,11 @@
+# V1.2 public interface freeze
+
+Legacy defaults remain `legacy_rca`; the existing LangGraph, variants, guards and merge remain authoritative. Additive contracts live in schemas/workflow.py. Lead owns contracts.py, workflow.py, graph.py, CLI, config and UI integration. Existing dirty work is retained.
+
+- Database module uses existing AgentContext, plan_tools/analyze, AnalysisOutput and registry ledger. Database tools query only optional public/database.jsonl, returning EvidenceRecord(source_type=database), with category metadata and timestamps. Old evidence packs may omit this file. Metrics keeps its existing ACL; equivalent database tools may be enabled for comparison through explicit runtime configuration.
+- Monitoring: `async monitor(provider, incident_id, records, mode) -> (IncidentAlert, usage)`; modes manual_snapshot/offline_replay. No ground truth, no root cause. Mock implementation is observation driven. Lead wraps with CallBudget and independent stage limit.
+- Remediation: `async remediate(provider, report, evidence_index) -> (RemediationPlan, usage)` plus `validate_plan(plan, report, evidence_index)`. PLAN_ONLY. Lead handles idempotence and stage budgets. Identity/version/evidence are validated.
+- Runtime: `TaskManager(max_attempts, emit)` supports assign(task_id, role), start(task_id), complete(task_id), fail(task_id,error_code), cancel(task_id), can_retry(task_id), records. Every transition emits callback(event_type, **details). `StopController(incident_id,run_id,emit,ack_timeout_seconds)` exposes stopped/frozen, async stop(reason, active callbacks), guard(). Stop handlers acknowledge only completed cancellation; missing acknowledgements time out.
+- Lead routes Monitoring before coordinate, Remediation after accepted FinalizeGate, StopController before report. Retries call existing investigation so tool and model budgets are charged again. Results merge only before stop freeze.
+
+Ownership: A tools/security/database tests + database agent/cache extension; B agents/monitoring.py + agents/remediation.py and their tests; D orchestration/runtime.py and runtime tests. Lead handles common provider Mock routing, taxonomy/guards, fixtures/evaluation/QA and UI after modules pass unit tests. No worker edits shared schemas or graph.

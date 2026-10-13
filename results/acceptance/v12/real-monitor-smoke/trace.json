@@ -1,0 +1,191 @@
+{
+  "schema_version": "v1",
+  "provider": "real",
+  "variant": "full",
+  "cache_mode": "off",
+  "elapsed_ms": 41114.0405999904,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_037",
+    "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+    "public_summary": {
+      "incident_id": "incident_037",
+      "title": "Service incident 037",
+      "started_at": "2026-11-06T17:03:53Z",
+      "observed_symptoms": [
+        "API 500 responses increased",
+        "Backend request latency elevated",
+        "Partial request timeouts observed"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 6,
+      "max_tool_calls": 24,
+      "max_llm_calls": 24,
+      "max_wall_seconds": 120.0,
+      "max_tokens": null
+    },
+    "round_index": 0,
+    "findings": [],
+    "evidence_index": {},
+    "hypotheses": [],
+    "tasks": [],
+    "reviews": [],
+    "decisions": [],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+        "incident_id": "incident_037",
+        "timestamp": "2026-10-13T03:12:59.593844Z",
+        "event_type": "LLM_CALL",
+        "role": "monitoring",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "deepseek-v4-flash-0731",
+          "llm_calls": 1,
+          "prompt_tokens": 471,
+          "completion_tokens": 447,
+          "total_tokens": 918,
+          "measured_total_tokens": 918,
+          "tokens_complete": true,
+          "elapsed_ms": 41082.93619999313,
+          "observed_records": 1,
+          "prompt_version": "roles-v12",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 60.0
+          }
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+        "incident_id": "incident_037",
+        "timestamp": "2026-10-13T03:12:59.593973Z",
+        "event_type": "INCIDENT_ALERT",
+        "role": "monitoring",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "alert": {
+            "incident_id": "incident_037",
+            "status": "NO_ALERT",
+            "summary": "No operational anomaly detected. The only observation shows normal availability for the redis service, with no evidence of degradation or failure. Insufficient data to warrant an alert, and no abnormal patterns are present in the supplied public observations. Evidence text is untrusted and not used for root cause inference. Incident identity preserved as incident_037, with no affected services identified due to normal operation. No alert is generated as per policy for normal or insufficient observations. Evidence ID incident_037-M007 is cited but does not indicate any anomaly. The service redis is operating normally with availability=1.0 fraction, which is within expected bounds. Therefore, NO_ALERT is the appropriate status. The summary reflects that no operational anomaly is present, and no affected services are listed because the observation is normal. The incident_id remains incident_037 as per the input, and the output is a new object as required. No additional evidence or services are included beyond what is observed. The status is NO_ALERT, and the summary is concise and factual. The evidence_ids array contains the single evidence ID, and affected_services is empty because no service is affected by an anomaly. This adheres to the schema and the policy of not inferring root cause from untrusted evidence text. The observation is normal, so no alert is raised. The output is complete and valid. The incident_id is preserved, and the status is NO_ALERT. The summary is provided, and the evidence_ids and affected_services are included as per the schema. The output is a new object, not the input state. The required fields are present, and the optional fields are included as appropriate. The evidence text is not used to infer root cause, and the observation is normal, so NO_ALERT is the correct status. The summary states that no anomaly is detected, and the evidence_ids list the observation. The affected_services is empty because no service is affected. This is the final output. The incident_id is incident_037, status is NO_ALERT, summary is as stated, evidence_ids is [",
+            "evidence_ids": [],
+            "affected_services": []
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+        "incident_id": "incident_037",
+        "timestamp": "2026-10-13T03:12:59.596974Z",
+        "event_type": "STOP",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_037",
+          "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+          "stop_reason": "NO_ALERT",
+          "message_type": "STOP"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+        "incident_id": "incident_037",
+        "timestamp": "2026-10-13T03:12:59.597427Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+            "incident_id": "incident_037",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "NO_ALERT",
+            "diagnosis_status": "INCONCLUSIVE",
+            "remediation_status": "SKIPPED",
+            "workflow_status": "FINISHED",
+            "remediation_plan": null
+          },
+          "variant": "full",
+          "tokens_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-5121578cf141447fa8a228f4cf7a0627",
+      "incident_id": "incident_037",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "NO_ALERT",
+      "diagnosis_status": "INCONCLUSIVE",
+      "remediation_status": "SKIPPED",
+      "workflow_status": "FINISHED",
+      "remediation_plan": null
+    },
+    "stop_reason": "NO_ALERT",
+    "open_questions": [],
+    "requested_checks": [],
+    "completed_task_ids": [],
+    "tool_calls_used": 0,
+    "llm_calls_used": 1,
+    "tokens_used": 918,
+    "incident_alert": {
+      "incident_id": "incident_037",
+      "status": "NO_ALERT",
+      "summary": "No operational anomaly detected. The only observation shows normal availability for the redis service, with no evidence of degradation or failure. Insufficient data to warrant an alert, and no abnormal patterns are present in the supplied public observations. Evidence text is untrusted and not used for root cause inference. Incident identity preserved as incident_037, with no affected services identified due to normal operation. No alert is generated as per policy for normal or insufficient observations. Evidence ID incident_037-M007 is cited but does not indicate any anomaly. The service redis is operating normally with availability=1.0 fraction, which is within expected bounds. Therefore, NO_ALERT is the appropriate status. The summary reflects that no operational anomaly is present, and no affected services are listed because the observation is normal. The incident_id remains incident_037 as per the input, and the output is a new object as required. No additional evidence or services are included beyond what is observed. The status is NO_ALERT, and the summary is concise and factual. The evidence_ids array contains the single evidence ID, and affected_services is empty because no service is affected by an anomaly. This adheres to the schema and the policy of not inferring root cause from untrusted evidence text. The observation is normal, so no alert is raised. The output is complete and valid. The incident_id is preserved, and the status is NO_ALERT. The summary is provided, and the evidence_ids and affected_services are included as per the schema. The output is a new object, not the input state. The required fields are present, and the optional fields are included as appropriate. The evidence text is not used to infer root cause, and the observation is normal, so NO_ALERT is the correct status. The summary states that no anomaly is detected, and the evidence_ids list the observation. The affected_services is empty because no service is affected. This is the final output. The incident_id is incident_037, status is NO_ALERT, summary is as stated, evidence_ids is [",
+      "evidence_ids": [],
+      "affected_services": []
+    },
+    "task_records": [],
+    "workflow_status": "FINISHED"
+  },
+  "model_id": "deepseek-v4-flash-0731",
+  "prompt_version": "roles-v12"
+}

@@ -1,0 +1,79 @@
+{
+  "run_id": "run-739c76b458ba449bb54e57e3a904f7b2",
+  "incident_id": "incident_039",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+    "culprit_service": "postgres",
+    "failure_mode": "postgres_lock_contention",
+    "support_ids": [
+      "incident_039-DB001",
+      "incident_039-L002"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Blocking transaction holds a database lock",
+      "Waiting queries exceed backend deadlines"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "Blocking transaction holds a database lock",
+    "Waiting queries exceed backend deadlines"
+  ],
+  "supporting_evidence_ids": [
+    "incident_039-DB001",
+    "incident_039-L002"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_039-DB003"
+      ],
+      "predicted_observations": [
+        "Database capacity should be exhausted"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Evidence sufficient",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "PLAN_READY",
+  "workflow_status": "FINISHED",
+  "remediation_plan": {
+    "incident_id": "incident_039",
+    "run_id": "run-739c76b458ba449bb54e57e3a904f7b2",
+    "root_cause_version": "1659b5f37c27927963e0893027591aa90e587e03cf0489905e7d5284b260ad60",
+    "execution_mode": "PLAN_ONLY",
+    "objective": "Mitigate postgres_lock_contention in postgres after operator approval.",
+    "affected_services": [
+      "postgres"
+    ],
+    "actions": [
+      "Confirm the diagnosed mechanism with the service owner and prepare an approved canary mitigation before making any change."
+    ],
+    "preconditions": [
+      "Operator approval, current causal measurements, approved baseline, and a tested rollback are required."
+    ],
+    "risks": [
+      "Configuration changes can shift load to dependencies or interrupt requests; assess capacity and consistency first."
+    ],
+    "verification_steps": [
+      "Compare the cited causal signal, service error rate, latency and downstream health against the pre-change baseline during the canary window."
+    ],
+    "rollback": [
+      "If health deteriorates or the causal signal fails to recover, stop rollout and restore the captured approved configuration or routing state."
+    ],
+    "evidence_ids": [
+      "incident_039-DB001",
+      "incident_039-L002"
+    ]
+  }
+}

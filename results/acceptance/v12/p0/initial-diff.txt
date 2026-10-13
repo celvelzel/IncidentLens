@@ -1,0 +1,18 @@
+ .env.example                             |   2 +-
+ README.md                                |   2 +-
+ README.zh-CN.md                          |   2 +-
+ configs/system.yaml                      |   2 +-
+ docs/contracts/Budget.json               |   2 +-
+ docs/contracts/InvestigationState.json   |   2 +-
+ scripts/run_eval.py                      |   2 +-
+ src/incident_lens/agents/service.py      |  70 +++++++++++--
+ src/incident_lens/cli.py                 |   2 +-
+ src/incident_lens/llm/config.py          |   2 +-
+ src/incident_lens/llm/provider.py        |   4 +-
+ src/incident_lens/orchestration/graph.py |   3 +
+ src/incident_lens/schemas/contracts.py   |   2 +-
+ src/incident_lens/ui/app.py              |   2 +-
+ src/incident_lens/web/server.py          |   2 +-
+ tests/unit/test_agents.py                | 165 ++++++++++++++++++++++++++++++-
+ tests/unit/test_provider.py              |  15 +++
+ 17 files changed, 260 insertions(+), 21 deletions(-)

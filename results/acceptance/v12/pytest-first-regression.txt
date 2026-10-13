@@ -1,0 +1,112 @@
+........................................................................ [ 23%]
+........................F............................................... [ 47%]
+........................................s............................... [ 70%]
+...........s............................................................ [ 94%]
+..................                                                       [100%]
+================================== FAILURES ===================================
+_________ test_merge_batch_rejection_cannot_publish_partial_evidence __________
+
+    def test_merge_batch_rejection_cannot_publish_partial_evidence():
+        provider = EvidenceProvider("data")
+        registry = ToolRegistry(provider, "w", "incident_001", "r")
+        context = registry.create_context("logs")
+        case = provider.load_case("incident_001")
+        result = registry.execute(
+            context,
+            "query_logs",
+            {
+                "service": "backend",
+                "start_ts": case.started_at.isoformat(),
+                "end_ts": "2099-01-01T00:00:00Z",
+            },
+        )
+        tasks = [
+            InvestigationTask(
+                task_id=f"t{n}",
+                role="logs",
+                question="Inspect errors",
+                allowed_tools=["query_logs"],
+                reason="test",
+                expected_discriminator="error onset",
+            )
+            for n in (1, 2)
+        ]
+        state = InvestigationState(
+            workspace_id="w", incident_id="incident_001", run_id="r", public_summary=case, tasks=tasks
+        )
+        first = Finding(
+            finding_id="f1",
+            task_id="t1",
+            run_id="r",
+            incident_id="incident_001",
+            role="logs",
+            claim="Observed timeout",
+            evidence_ids=[result.records[0].evidence_id],
+            relation="supports",
+            confidence_qualifier="weak",
+        )
+        wrong = first.model_copy(update={"finding_id": "f2", "task_id": "t2", "run_id": "foreign"})
+        with pytest.raises(ValueError):
+>           merge_results(
+                state,
+                [
+                    (context, tasks[0], SimpleNamespace(finding=first, hypotheses=[])),
+                    (context, tasks[1], SimpleNamespace(finding=wrong, hypotheses=[])),
+                ],
+                registry,
+            )
+
+tests\integration\test_failure_accounting.py:124:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = InvestigationState(workspace_id='w', incident_id='incident_001', run_id='r', public_summary=CasePublicInput(incident_i...], tool_calls_used=0, llm_calls_used=0, tokens_used=0, incident_alert=None, task_records=[], workflow_status='RUNNING')
+results = [(AgentContext(workspace_id='w', incident_id='incident_001', run_id='r', role='logs', allowed_tools=('query_logs',), a..._ids=['incident_001-L001'], relation='supports', confidence_qualifier='weak', followup_question=None), hypotheses=[]))]
+registry = <incident_lens.tools.registry.ToolRegistry object at 0x000001CD8F87F490>
+
+    def merge_results(state: InvestigationState, results: list, registry) -> InvestigationState:
+        payload = state.model_dump(mode="json")
+        tasks = {t.task_id: t for t in state.tasks}
+        known = {f.finding_id: f.model_dump(mode="json") for f in state.findings}
+        hypotheses = {h.hypothesis_id: h.model_dump(mode="json") for h in state.hypotheses}
+        concept_ids = {(h.culprit_service, h.failure_mode): h.hypothesis_id for h in state.hypotheses}
+        assessments = {}
+        publications = []
+        for context, task, analysis in results:
+            finding = analysis.finding
+            if (finding.run_id, finding.incident_id, finding.task_id, finding.role) != (
+                state.run_id,
+                state.incident_id,
+                task.task_id,
+                task.role,
+            ) or task.task_id not in tasks:
+                raise ValueError("Rejected worker identity/task mismatch")
+            authorized = registry.observed_ids(context)
+            all_refs = set(finding.evidence_ids)
+            for h in analysis.hypotheses:
+                all_refs.update(h.support_ids + h.against_ids)
+            # Workers may combine already published observations, but cannot introduce
+            # another role's unshared evidence or unqueried IDs.
+            if not set(finding.evidence_ids).issubset(authorized):
+                raise ValueError("Finding cites evidence not observed by this worker")
+            if not all_refs.issubset(authorized | set(state.evidence_index)):
+                raise ValueError("Hypothesis cites unpublished or unobserved evidence")
+            publication_ids = all_refs & authorized
+            publications.append((context, sorted(publication_ids)))
+            for record in registry.get_observed_records(context):
+                if record.evidence_id in publication_ids:
+                    payload["evidence_index"][record.evidence_id] = record.model_dump(mode="json")
+            if finding.finding_id not in known:
+                payload["findings"].append(finding.model_dump(mode="json"))
+                known[finding.finding_id] = finding.model_dump(mode="json")
+            elif known[finding.finding_id] != finding.model_dump(mode="json"):
+                raise ValueError("Finding ID reused for a different observation/task")
+            if task.task_id not in payload["completed_task_ids"]:
+                payload["completed_task_ids"].append(task.task_id)
+>           for check in analysis.requested_checks:
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'types.SimpleNamespace' object has no attribute 'requested_checks'
+
+src\incident_lens\orchestration\merge.py:45: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/integration/test_failure_accounting.py::test_merge_batch_rejection_cannot_publish_partial_evidence
+1 failed, 303 passed, 2 skipped in 64.65s (0:01:04)
