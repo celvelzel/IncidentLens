@@ -56,6 +56,8 @@ class InvestigationRun:
         self.limits = limits or Budget()
         self.variant = variant
         self.workflow = workflow or WorkflowOptions()
+        if self.workflow.benchmark_fixed_four and variant != "fixed":
+            raise ValueError("fixed-four option requires fixed variant")
         self.response_profile = self.workflow.profile == "incident_response"
         self.stage_calls = {"monitoring": 0, "remediation": 0}
         self.remediation_versions = set()
@@ -262,7 +264,9 @@ class InvestigationRun:
         from incident_lens.security.context import ROLE_TOOL_ACL
 
         value["workflow_profile"] = self.workflow.profile
-        value["database_enabled"] = self.response_profile and self.workflow.database_enabled
+        value["database_enabled"] = (
+            self.response_profile or self.workflow.benchmark_rca
+        ) and self.workflow.database_enabled
         value["role_tool_acl"] = {
             role: list(tools)
             for role, tools in ROLE_TOOL_ACL.items()
@@ -351,7 +355,11 @@ class InvestigationRun:
                         reason="Fixed once-only baseline",
                         expected_discriminator="distinguish service failure from downstream symptom",
                     )
-                    for role in ("logs", "metrics", "changes")
+                    for role in (
+                        ("logs", "metrics", "database", "changes")
+                        if self.workflow.benchmark_fixed_four
+                        else ("logs", "metrics", "changes")
+                    )
                 ]
                 decision = CoordinatorDecision(
                     action="INVESTIGATE", reason="Fixed schedule", assignments=tasks

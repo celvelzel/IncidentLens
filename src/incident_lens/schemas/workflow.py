@@ -132,6 +132,8 @@ class WorkflowOptions(StrictModel):
     monitor_mode: Literal["legacy", "manual_snapshot", "offline_replay"] = "legacy"
     database_enabled: bool = True
     database_equivalent_tools: bool = False
+    benchmark_rca: bool = False
+    benchmark_fixed_four: bool = False
     remediation_enabled: bool = True
     execution_mode: Literal["plan_only"] = "plan_only"
     max_attempts: int = Field(default=2, ge=1, le=10)
@@ -143,6 +145,14 @@ class WorkflowOptions(StrictModel):
 
     @model_validator(mode="after")
     def profile_semantics(self):
+        if self.benchmark_fixed_four and not self.benchmark_rca:
+            raise ValueError("fixed-four requires benchmark RCA opt-in")
+        if self.benchmark_rca and (
+            self.profile != "legacy_rca"
+            or not self.database_enabled
+            or not self.database_equivalent_tools
+        ):
+            raise ValueError("benchmark RCA requires legacy profile and equivalent database tools")
         if self.profile == "legacy_rca" and self.monitor_mode != "legacy":
             raise ValueError("monitoring requires incident_response profile")
         return self
