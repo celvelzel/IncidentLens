@@ -31,3 +31,15 @@ READY FOR LEAD MERGE: YES | NO
 ```
 
 Current research gates remain explicit: zero accepted labels, zero human reviewers, zero audited independent families, no Dev/Test data, no formal freeze, and pending real-provider evaluation. Offline implementation acceptance and scientific effectiveness acceptance must be reported separately.
+
+## Integrated handoff evidence
+
+| WP | Original owned commit(s) | Final integration status |
+|---|---|---|
+| A | c5e2cd7 | Builder/group split integrated;20pendingSeed fixtures;0audited independentfamilies |
+| B | 1a25696,9ce8940 | Security/validation/review/locks integrated;human acceptance unavailable |
+| C | 203f66f,1923e7e | Initial runner/scorer/stats and preserved interruption-resume increment integrated |
+| D | 146e002 | Cards/reproduction/CLI E2E integrated |
+| E | read-only | Leakage/denominator/receipt/statistical/resume findings corrected;80artifact audit passed |
+
+Coordinator final source freeze072cea5; data Git-byte correctionf5e64ef; finalserial723passed3skipped.80Mock runs independently rescored,0realHTTP,75pendingclaims. Freshwheel7legacychecks andfresh editableCLI8runE2E passed. See release-report.md andqa-review.md for exact limits, prior failures andunmetresearch gates. No original history was overwritten andno remote publication occurred.
