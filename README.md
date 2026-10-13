@@ -387,3 +387,9 @@ full boundary of every claim.
 ### Termination and scoring
 
 New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a final `NORMAL_TERMINATION` or `RUNTIME_FAILURE`. State and report share a structured termination result. Normal shutdown and recovered model-call failures preserve accepted diagnosis credit; plan generation failure and shutdown failure are reported separately and fail the complete workflow. `PLAN_ONLY` never implies service recovery. Historical STOP traces remain readable through conservative normalization. See [evaluation semantics](docs/evaluation.md) for applicable denominators and offline rescoring.
+
+### IncidentBench
+
+IncidentBench adds a separate versioned evidence dataset and evaluator-only oracle store. Public validation checks evidence contracts, hashes and source-family leakage before investigations start. Its paired runner uses the existing Graph with equivalent database tools, an explicit fixed-four schedule, independent per-run budgets and cache disabled. Durable raw traces support rescoring, anonymous citation-review exports and source-clustered statistical analysis; technical failures remain in denominators and unknown usage stays null.
+
+The included Seed fixtures are pending development candidates from a shared encoder. Frozen Test sealing requires independent reviewed labels and provider readiness; formal execution is currently gated. See the [IncidentBench guide](docs/incidentbench/README.md) for actual commands, data/evaluation/model cards and research limitations. Legacy datasets and evaluators remain available.

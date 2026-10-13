@@ -340,3 +340,9 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 ### 终止协议与计分
 
 新运行发送 `WORKFLOW_STOP_REQUESTED`、实际停止后的 `STOP_ACK`，以及最终 `NORMAL_TERMINATION` 或 `RUNTIME_FAILURE`；state 与 report 保存一致的结构化终止结果。正常停止与恢复后的模型调用失败保留已确认诊断的分数；方案生成失败、停止确认失败分别计分，并使完整工作流失败。`PLAN_ONLY` 不表示服务已经恢复。历史 STOP trace 通过保守兼容分类继续读取；分母与离线重算规则见[评测说明](docs/evaluation.md)。
+
+### IncidentBench
+
+IncidentBench 使用独立版本化证据数据和仅供评测器读取的 Oracle。调查启动前校验证据契约、哈希与同源家族泄漏；配对 Runner 复用现有 Graph，提供等价数据库工具、显式固定四专家调度、每次独立预算，并关闭缓存。持久化原始轨迹支持重新计分、匿名引用审查和按来源聚类的统计分析；技术失败保留在分母中，未知用量保持 null。
+
+随附 Seed 数据是共享编码器生成的待审开发候选。正式 Frozen Test 封存需要独立复核标签与 Provider 就绪证据，正式执行目前受 Gate 限制。实际命令、数据卡、评测卡、模型卡和研究局限见 [IncidentBench 使用说明](docs/incidentbench/README.md)。原有数据与评测入口继续保留。
