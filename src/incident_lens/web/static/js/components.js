@@ -167,3 +167,27 @@ export function evidenceChips(ids, evidenceIndex, { emptyText = "无" } = {}) {
 export function updatedSince(epoch) {
   return formatDateTime(epoch);
 }
+
+
+export function workflowReportHtml(state, evidenceIndex = {}) {
+  const report = state.report || {};
+  const alert = state.incident_alert;
+  const plan = report.remediation_plan;
+  const taskRecords = state.task_records || [];
+  const list = (title, values) => values?.length ? `<section class="workflow-plan-section"><h4>${escapeHtml(title)}</h4><ul class="symptom-list">${values.map(value => `<li>${escapeHtml(value)}</li>`).join("")}</ul></section>` : "";
+  if (!alert && !plan && !taskRecords.length && !report.diagnosis_status) return "";
+  return `<section class="report-section workflow-result" aria-label="事件响应工作流">
+    <h3>事件响应工作流</h3>
+    <dl class="workflow-status-grid">
+      <div><dt>诊断状态</dt><dd>${badge(report.diagnosis_status || report.status, "neutral")}</dd></div>
+      <div><dt>方案状态</dt><dd>${badge(report.remediation_status || "NOT_STARTED", "neutral")}</dd></div>
+      <div><dt>工作流状态</dt><dd>${badge(report.workflow_status || state.workflow_status || "FINISHED", "neutral")}</dd></div>
+    </dl>
+    ${alert ? `<section class="workflow-plan-section"><h4>监控告警 · ${escapeHtml(alert.status)}</h4><p>${escapeHtml(alert.summary)}</p><div class="chip-row">${(alert.affected_services || []).map(service => badge(service)).join("")}</div><div class="cite-wrap">${evidenceChips(alert.evidence_ids, evidenceIndex)}</div></section>` : ""}
+    ${plan ? `<div class="plan-only-note" role="note"><strong>PLAN_ONLY · 仅生成建议方案</strong><p>方案尚未执行；诊断完成和方案就绪不表示服务已恢复。变更前需操作人员确认。</p></div>
+      <p>${escapeHtml(plan.objective)}</p><div class="chip-row">${plan.affected_services.map(service => badge(service)).join("")}</div>
+      <div class="workflow-plan-grid">${list("建议动作", plan.actions)}${list("执行前提", plan.preconditions)}${list("风险", plan.risks)}${list("验证步骤", plan.verification_steps)}${list("回滚", plan.rollback)}</div>
+      <div class="workflow-plan-section"><h4>方案引用证据</h4><div class="cite-wrap">${evidenceChips(plan.evidence_ids, evidenceIndex)}</div><p class="text-muted mono workflow-version">根因版本 ${escapeHtml(plan.root_cause_version)}</p></div>` : ""}
+    ${taskRecords.length ? `<details class="workflow-plan-section"><summary>任务与重试记录 · ${taskRecords.length}</summary><div class="table-wrap"><table class="data"><thead><tr><th scope="col">任务 / 尝试</th><th scope="col">角色</th><th scope="col">状态</th><th scope="col">错误</th></tr></thead><tbody>${taskRecords.map(task => `<tr><td class="mono">${escapeHtml(task.task_id)}<div class="cell-sub">${escapeHtml(task.attempt_id)} · 第 ${escapeHtml(task.attempt)} 次</div></td><td>${escapeHtml(task.role)}</td><td>${badge(task.status)}</td><td>${escapeHtml(task.error_code || "—")}</td></tr>`).join("")}</tbody></table></div></details>` : ""}
+  </section>`;
+}

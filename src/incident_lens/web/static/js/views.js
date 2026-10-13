@@ -27,7 +27,17 @@ import {
   loadingBlock,
   skeletonRows,
   toast,
+  workflowReportHtml,
 } from "./components.js";
+
+Object.assign(ROLE_LABEL, { database: "数据库代理", monitoring: "监控代理", remediation: "修复方案代理" });
+Object.assign(SOURCE_TYPE_META, { database: { label: "数据库", tone: "info" } });
+Object.assign(EVENT_KIND, {
+  INCIDENT_ALERT: { kind: "other", label: "监控判断", tone: "info" },
+  PLAN_READY: { kind: "other", label: "建议方案就绪", tone: "info" },
+  STOP: { kind: "other", label: "停止请求", tone: "warning" },
+  STOP_ACK: { kind: "other", label: "停止确认", tone: "neutral" },
+});
 
 /* ============================================================
    Overview
@@ -246,7 +256,7 @@ export async function renderInvestigate(root) {
     return;
   }
 
-  const state = { selected: cases[0]?.incident_id ?? null, keyword: "", provider: "mock", cacheMode: "off" };
+  const state = { selected: cases[0]?.incident_id ?? null, keyword: "", provider: "mock", cacheMode: "off", profile: "legacy_rca", monitorMode: "legacy", snapshot: "[]" };
   const listEl = document.getElementById("case-list");
   const searchEl = document.getElementById("case-search");
 
@@ -319,7 +329,7 @@ export async function renderInvestigate(root) {
     const box = document.getElementById("run-config");
     const defaults = meta.provider_defaults;
     const settingsError = meta.provider_settings_error;
-    const b = meta.budget;
+    const b = state.profile === "incident_response" ? { ...meta.budget, max_rounds: 6, max_tool_calls: 24, max_llm_calls: 24 } : meta.budget;
     box.innerHTML = `
       <div class="card-title">运行配置</div>
       <div class="field">
@@ -338,9 +348,17 @@ export async function renderInvestigate(root) {
           <option value="semantic" ${state.cacheMode === "semantic" ? "selected" : ""}>semantic · 语义复用</option>
         </select>
       </div>
+      <div class="field">
+        <label class="field-label" for="workflow-profile">工作流</label>
+        <select class="select" id="workflow-profile"><option value="legacy_rca" ${state.profile === "legacy_rca" ? "selected" : ""}>legacy_rca · 根因调查</option><option value="incident_response" ${state.profile === "incident_response" ? "selected" : ""}>incident_response · 监控、诊断与建议方案</option></select>
+      </div>
+      ${state.profile === "incident_response" ? `<div class="field"><label class="field-label" for="monitor-mode">监控模式</label><select class="select" id="monitor-mode">${[["legacy", "legacy · 沿用事件摘要"], ["manual_snapshot", "manual_snapshot · 公开观测快照"], ["offline_replay", "offline_replay · 按时间回放公开观测"]].map(([value, label]) => `<option value="${value}" ${state.monitorMode === value ? "selected" : ""}>${label}</option>`).join("")}</select></div>
+      <div class="field" id="snapshot-field" ${state.monitorMode === "legacy" ? "hidden" : ""}><label class="field-label" for="monitor-snapshot">公开 EvidenceRecord 快照（JSON 数组）</label><textarea class="input workflow-snapshot" id="monitor-snapshot" rows="7" aria-describedby="snapshot-hint snapshot-error" spellcheck="false">${escapeHtml(state.snapshot)}</textarea><span class="field-hint" id="snapshot-hint">仅粘贴所选事件的公开观测记录。空数组不会触发告警。</span><p id="snapshot-error" class="workflow-input-error" role="alert" hidden></p></div>
+      <p class="field-hint">PLAN_ONLY：仅生成建议方案，不执行修复，也不表示服务已恢复。</p>` : ""}
       <div id="real-options"></div>
       <div class="field">
         <span class="field-label">预算上限</span>
+        ${state.profile === "incident_response" ? `<span class="field-hint">事件响应采用较高预算，为数据库调查、监控和建议方案预留调用。</span>` : ""}
         <div class="budget-note">
           ${badge(`${b.max_rounds} 轮`, "neutral")}
           ${badge(`${b.max_tool_calls} 次工具`, "neutral")}
@@ -362,6 +380,21 @@ export async function renderInvestigate(root) {
     });
     box.querySelector("#cache-mode").addEventListener("change", (e) => {
       state.cacheMode = e.target.value;
+    });
+
+    box.querySelector("#workflow-profile").addEventListener("change", (event) => {
+      state.profile = event.target.value;
+      if (state.profile === "legacy_rca") state.monitorMode = "legacy";
+      renderRunConfig();
+    });
+    box.querySelector("#monitor-mode")?.addEventListener("change", (event) => {
+      state.monitorMode = event.target.value;
+      box.querySelector("#snapshot-field").hidden = state.monitorMode === "legacy";
+    });
+    box.querySelector("#monitor-snapshot")?.addEventListener("input", (event) => {
+      state.snapshot = event.target.value;
+      event.target.removeAttribute("aria-invalid");
+      box.querySelector("#snapshot-error").hidden = true;
     });
 
     if (state.provider === "real") {
@@ -408,13 +441,29 @@ export async function renderInvestigate(root) {
       return;
     }
     if (st.provider === "real" && !document.getElementById("req-timeout").reportValidity()) return;
+    let snapshot = [];
+    if (st.profile === "incident_response" && st.monitorMode !== "legacy") {
+      try {
+        snapshot = JSON.parse(st.snapshot);
+        if (!Array.isArray(snapshot) || snapshot.some(record => !record || typeof record !== "object" || Array.isArray(record))) throw new Error("invalid snapshot");
+      } catch {
+        const input = document.getElementById("monitor-snapshot");
+        const error = document.getElementById("snapshot-error");
+        error.textContent = "请输入有效的公开 EvidenceRecord JSON 数组。";
+        error.hidden = false;
+        input.setAttribute("aria-invalid", "true");
+        input.focus();
+        return;
+      }
+    }
     st.running = true;
     const config = root.querySelector("#run-config");
     config.inert = true;
     const btn = document.getElementById("run-btn");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> 正在调查公开证据…';
-    const payload = { incident_id: st.selected, provider: st.provider, cache_mode: st.cacheMode };
+    const payload = { incident_id: st.selected, provider: st.provider, cache_mode: st.cacheMode,
+      workflow: { profile: st.profile, monitor_mode: st.profile === "legacy_rca" ? "legacy" : st.monitorMode, snapshot } };
     if (st.provider === "real") {
       payload.response_format = document.getElementById("resp-format")?.value || null;
       payload.thinking = document.getElementById("thinking-mode")?.value || null;
@@ -905,6 +954,8 @@ function renderReport(panel, state, reportMd) {
         }</div>
       </div>
     </div>
+
+    ${workflowReportHtml(state, evidenceIndex)}
 
     ${report.causal_chain?.length ? `<div class="report-section"><h3>因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 

@@ -15,6 +15,8 @@ from incident_lens.llm.mock import MockProvider
 from incident_lens.llm.provider import ProviderError, RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.orchestration.report import render_report
+from incident_lens.schemas import Budget
+from incident_lens.schemas.workflow import WorkflowOptions
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools import EvidenceProvider
 
@@ -116,6 +118,41 @@ def render_state(trace, state):
             )
     st.divider()
     st.subheader("Root cause report")
+    if state.report.diagnosis_status or state.incident_alert or state.task_records:
+        statuses = st.columns(3)
+        statuses[0].caption("Diagnosis status")
+        statuses[0].write(state.report.diagnosis_status or state.report.status)
+        statuses[1].caption("Remediation status")
+        statuses[1].write(state.report.remediation_status)
+        statuses[2].caption("Workflow status")
+        statuses[2].write(state.report.workflow_status)
+        if state.incident_alert:
+            with st.expander("Monitoring alert", expanded=True):
+                st.json(state.incident_alert.model_dump(mode="json"))
+        if state.task_records:
+            with st.expander("Task attempts and states"):
+                st.dataframe(
+                    [record.model_dump(mode="json") for record in state.task_records],
+                    hide_index=True,
+                )
+    if state.report.remediation_plan:
+        plan = state.report.remediation_plan
+        st.info(
+            "PLAN_ONLY · Proposal only. No remediation was executed; plan readiness does not mean service recovery."
+        )
+        st.write(plan.objective)
+        for label, values in [
+            ("Proposed actions", plan.actions),
+            ("Preconditions", plan.preconditions),
+            ("Risks", plan.risks),
+            ("Verification", plan.verification_steps),
+            ("Rollback", plan.rollback),
+        ]:
+            with st.expander(label, expanded=label == "Proposed actions"):
+                for value in values:
+                    st.write(value)
+        st.caption("Plan evidence: " + ", ".join(plan.evidence_ids))
+        st.caption("Root cause version: " + plan.root_cause_version)
     st.markdown(render_report(state.report))
     st.download_button(
         "Download trace",
@@ -142,6 +179,22 @@ def main():
             incident = st.selectbox("Incident", [c.incident_id for c in cases])
             llm = st.selectbox("Provider", ["mock", "real"])
             cache_mode = st.selectbox("Local explanation cache", ["off", "semantic", "exact"])
+            profile = st.selectbox("Workflow profile", ["legacy_rca", "incident_response"])
+            monitor_mode = "legacy"
+            snapshot_text = "[]"
+            if profile == "incident_response":
+                monitor_mode = st.selectbox(
+                    "Monitoring mode", ["legacy", "manual_snapshot", "offline_replay"]
+                )
+                if monitor_mode != "legacy":
+                    snapshot_text = st.text_area(
+                        "Public EvidenceRecord snapshot (JSON array)",
+                        value="[]",
+                        help="Only public observations for the selected incident. An empty snapshot produces no alert.",
+                    )
+                st.caption(
+                    "PLAN_ONLY · Proposals require operator review; no actions are executed."
+                )
             live_options = None
             if llm == "real":
                 try:
@@ -179,9 +232,32 @@ def main():
                         timeout,
                     )
                     live_options["thinking"] = None if thinking == "provider default" else thinking
-            st.caption("Limits: 4 rounds · 12 tools · 16 model requests · 90 seconds")
+            budget = (
+                Budget(max_rounds=6, max_tool_calls=24, max_llm_calls=24)
+                if profile == "incident_response"
+                else Budget()
+            )
+            st.caption(
+                f"Limits: {budget.max_rounds} rounds · {budget.max_tool_calls} tools · {budget.max_llm_calls} model requests · {budget.max_wall_seconds:g} seconds"
+            )
+            if profile == "incident_response":
+                st.caption(
+                    "Incident response reserves a higher budget for database investigation, monitoring and remediation."
+                )
             if st.button("Run investigation", type="primary"):
                 try:
+                    snapshot = json.loads(snapshot_text)
+                    if not isinstance(snapshot, list):
+                        raise ValueError("snapshot must be an array")
+                    workflow = WorkflowOptions.model_validate_json(
+                        json.dumps(
+                            {
+                                "profile": profile,
+                                "monitor_mode": monitor_mode,
+                                "snapshot": snapshot,
+                            }
+                        )
+                    )
                     model = (
                         MockProvider()
                         if llm == "mock"
@@ -205,7 +281,14 @@ def main():
                     with st.spinner("Investigating public evidence..."):
                         started = time.monotonic()
                         state = asyncio.run(
-                            run_investigation(incident, model, ROOT / "data", cache=cache)
+                            run_investigation(
+                                incident,
+                                model,
+                                ROOT / "data",
+                                cache=cache,
+                                workflow=workflow,
+                                budget=budget,
+                            )
                         )
                         trace = save_run(
                             state,

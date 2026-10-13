@@ -18,6 +18,7 @@ from starlette.staticfiles import StaticFiles
 from incident_lens.artifacts import load_replay, save_run
 from incident_lens.llm.config import provider_options
 from incident_lens.orchestration.report import render_report
+from incident_lens.schemas.workflow import WorkflowOptions
 from incident_lens.security.context import ROLE_TOOL_ACL
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -108,6 +109,7 @@ class RunRequest(BaseModel):
     response_format: Literal["json_schema", "json_object"] | None = None
     thinking: Literal["enabled", "disabled"] | None = None
     timeout: float | None = Field(default=None, ge=1.0)
+    workflow: WorkflowOptions = Field(default_factory=WorkflowOptions)
 
 
 class ReplayRequest(BaseModel):
@@ -132,7 +134,7 @@ async def api_meta(request):
         "max_rounds": config.get("max_rounds", 4),
         "max_tool_calls": config.get("tool_calls_limit", 12),
         "max_llm_calls": config.get("llm_calls_limit", 16),
-        "max_wall_seconds": config.get("time_limit_seconds", 90),
+        "max_wall_seconds": config.get("time_limit_seconds", 600),
     }
     provider_defaults = None
     provider_settings_error = None
@@ -198,7 +200,21 @@ async def api_run(request):
                 _evidence_provider().dataset_revision,
             )
         started = time.monotonic()
-        state = await run_investigation(payload.incident_id, model, ROOT / "data", cache=cache)
+        from incident_lens.schemas import Budget
+
+        limits = (
+            Budget(max_llm_calls=24, max_tool_calls=24, max_rounds=6)
+            if payload.workflow.profile == "incident_response"
+            else None
+        )
+        state = await run_investigation(
+            payload.incident_id,
+            model,
+            ROOT / "data",
+            budget=limits,
+            cache=cache,
+            workflow=payload.workflow,
+        )
         output_dir = RESULTS_ROOT / "ui" / state.run_id
         trace = save_run(
             state,
