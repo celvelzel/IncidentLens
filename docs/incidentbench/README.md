@@ -26,6 +26,12 @@ Diagnostic service and mechanism must both match. Technical failure stays in att
 
 From a fresh checkout with Python 3.11 or newer, install the project and development dependencies:
 
+Benchmark scripts currently require an **editable source checkout**: the manifest
+locks repository scripts, prompts and configuration alongside the executing code.
+Standalone wheel-only Benchmark execution is unsupported. The separate wheel
+verification covers legacy CLI/install/replay behavior; it does not establish
+wheel-only IncidentBench execution.
+
 ```powershell
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -e '.[dev]'
