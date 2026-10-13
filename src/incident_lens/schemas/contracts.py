@@ -16,8 +16,19 @@ Identifier = Annotated[
     str, StringConstraints(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 ]
 Text = Annotated[str, StringConstraints(min_length=1)]
-Role = Literal["coordinator", "logs", "metrics", "changes", "verifier", "reporter", "single"]
-SpecialistRole = Literal["logs", "metrics", "changes"]
+Role = Literal[
+    "coordinator",
+    "logs",
+    "metrics",
+    "database",
+    "changes",
+    "verifier",
+    "reporter",
+    "single",
+    "monitoring",
+    "remediation",
+]
+SpecialistRole = Literal["logs", "metrics", "database", "changes"]
 
 
 class StrictModel(BaseModel):
@@ -42,7 +53,7 @@ class CasePublicInput(StrictModel):
 class EvidenceRecord(StrictModel):
     evidence_id: Identifier
     incident_id: Identifier
-    source_type: Literal["logs", "metrics", "changes", "configs", "topology"]
+    source_type: Literal["logs", "metrics", "changes", "configs", "topology", "database"]
     service: Identifier
     observed_at: datetime
     source_path: Text
@@ -160,6 +171,9 @@ class CoordinatorDecision(StrictModel):
         return self
 
 
+from .workflow import IncidentAlert, RemediationPlan, TaskRecord  # noqa: E402
+
+
 class RCAReport(StrictModel):
     run_id: Identifier
     incident_id: Identifier
@@ -170,9 +184,30 @@ class RCAReport(StrictModel):
     rejected_hypotheses: list[Hypothesis] = Field(default_factory=list)
     unresolved: list[Text] = Field(default_factory=list)
     stop_reason: Text
+    diagnosis_status: Literal["RESOLVED", "INCONCLUSIVE"] | None = None
+    remediation_status: Literal["NOT_STARTED", "PLAN_READY", "PLAN_FAILED", "SKIPPED"] = (
+        "NOT_STARTED"
+    )
+    workflow_status: Literal["RUNNING", "STOPPING", "FINISHED", "FAILED"] = "FINISHED"
+    remediation_plan: RemediationPlan | None = None
 
     @model_validator(mode="after")
     def resolution_semantics(self):
+        if self.diagnosis_status is not None and self.diagnosis_status != (
+            "RESOLVED" if self.status == "RESOLVED" else "INCONCLUSIVE"
+        ):
+            raise ValueError("diagnosis_status must match RCA status")
+        if (self.remediation_status == "PLAN_READY") != (self.remediation_plan is not None):
+            raise ValueError("PLAN_READY requires a remediation plan")
+        if self.remediation_plan is not None:
+            if (
+                self.status != "RESOLVED"
+                or self.remediation_plan.run_id != self.run_id
+                or self.remediation_plan.incident_id != self.incident_id
+            ):
+                raise ValueError("remediation requires resolved matching RCA")
+            if not set(self.remediation_plan.evidence_ids).issubset(self.supporting_evidence_ids):
+                raise ValueError("remediation must cite accepted RCA evidence")
         if self.status == "RESOLVED":
             if (
                 self.root_cause is None
@@ -194,7 +229,7 @@ class Budget(StrictModel):
     max_rounds: int = Field(default=4, ge=1)
     max_tool_calls: int = Field(default=12, ge=0)
     max_llm_calls: int = Field(default=16, ge=0)
-    max_wall_seconds: float = Field(default=90.0, gt=0)
+    max_wall_seconds: float = Field(default=600.0, gt=0)
     max_tokens: int | None = Field(default=None, ge=1)
 
 
@@ -237,6 +272,9 @@ class InvestigationState(StrictModel):
     tool_calls_used: int = Field(default=0, ge=0)
     llm_calls_used: int = Field(default=0, ge=0)
     tokens_used: int = Field(default=0, ge=0)
+    incident_alert: IncidentAlert | None = None
+    task_records: list[TaskRecord] = Field(default_factory=list)
+    workflow_status: Literal["RUNNING", "STOPPING", "FINISHED", "FAILED"] = "RUNNING"
 
     @model_validator(mode="after")
     def consistent_provenance(self):
@@ -269,6 +307,8 @@ class InvestigationState(StrictModel):
         cited_ids += [eid for r in self.reviews for eid in r.cited_evidence_ids]
         if self.report is not None:
             cited_ids += self.report.supporting_evidence_ids
+            if self.report.remediation_plan:
+                cited_ids += self.report.remediation_plan.evidence_ids
             cited_ids += [
                 eid
                 for h in self.report.rejected_hypotheses

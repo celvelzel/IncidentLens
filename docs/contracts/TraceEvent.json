@@ -41,10 +41,13 @@
             "coordinator",
             "logs",
             "metrics",
+            "database",
             "changes",
             "verifier",
             "reporter",
-            "single"
+            "single",
+            "monitoring",
+            "remediation"
           ],
           "type": "string"
         },

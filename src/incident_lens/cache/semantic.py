@@ -8,12 +8,13 @@ from time import perf_counter, time
 from incident_lens.agents.service import PROMPT_VERSION, AnalysisOutput
 from incident_lens.cache.policy import CacheNamespace, CachePolicy
 from incident_lens.schemas import EvidenceRecord
-from incident_lens.security.context import ROLE_TOOL_ACL
+from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL
 
 from .embeddings import FakeEmbedder, cosine, safe_equivalent
 from .store import SQLiteCacheStore
 
 ROLE_TASK_TYPES = {
+    "database": "interpret_database_window",
     "logs": "summarize_log_slice",
     "metrics": "interpret_metric_window",
     "changes": "summarize_change_diff",
@@ -82,9 +83,10 @@ class SemanticCacheAdapter:
         observed = registry.observed_ids(context)  # validates server-issued object identity first
         if context.role not in (task.role, "single") or task.role not in ROLE_TASK_TYPES:
             raise PermissionError("task is outside context role")
+        role_ceiling = ROLE_TOOL_ACL[task.role] + (DATABASE_TOOLS if task.role == "metrics" else ())
         if not set(task.allowed_tools).issubset(context.allowed_tools) or not set(
             task.allowed_tools
-        ).issubset(ROLE_TOOL_ACL[task.role]):
+        ).issubset(role_ceiling):
             raise PermissionError("task tool ACL cannot elevate context")
         actual = {record.evidence_id: record for record in registry.get_observed_records(context)}
         ids = set()
@@ -93,7 +95,10 @@ class SemanticCacheAdapter:
                 raise PermissionError("cache input contains unobserved evidence")
             allowed_sources = {
                 "logs": {"logs"},
-                "metrics": {"metrics", "topology"},
+                "metrics": {"metrics", "topology", "database"}
+                if set(context.allowed_tools).intersection(DATABASE_TOOLS)
+                else {"metrics", "topology"},
+                "database": {"database"},
                 "changes": {"changes", "configs"},
             }[task.role]
             if record.source_type not in allowed_sources:

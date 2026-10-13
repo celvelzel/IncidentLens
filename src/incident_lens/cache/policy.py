@@ -4,8 +4,18 @@ from pydantic import Field, StringConstraints
 
 from incident_lens.schemas import Identifier, Role, StrictModel
 
-CacheTaskType = Literal["summarize_log_slice", "interpret_metric_window", "summarize_change_diff"]
-CACHE_TASK_ALLOWLIST = ("summarize_log_slice", "interpret_metric_window", "summarize_change_diff")
+CacheTaskType = Literal[
+    "summarize_log_slice",
+    "interpret_metric_window",
+    "summarize_change_diff",
+    "interpret_database_window",
+]
+CACHE_TASK_ALLOWLIST = (
+    "summarize_log_slice",
+    "interpret_metric_window",
+    "summarize_change_diff",
+    "interpret_database_window",
+)
 Sha256 = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]
 
 

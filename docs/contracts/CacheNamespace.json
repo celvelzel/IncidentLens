@@ -20,10 +20,13 @@
         "coordinator",
         "logs",
         "metrics",
+        "database",
         "changes",
         "verifier",
         "reporter",
-        "single"
+        "single",
+        "monitoring",
+        "remediation"
       ],
       "title": "Agent Role",
       "type": "string"
@@ -32,7 +35,8 @@
       "enum": [
         "summarize_log_slice",
         "interpret_metric_window",
-        "summarize_change_diff"
+        "summarize_change_diff",
+        "interpret_database_window"
       ],
       "title": "Task Type",
       "type": "string"

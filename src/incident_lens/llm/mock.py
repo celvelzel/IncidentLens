@@ -15,6 +15,26 @@ def classify(record):
     """Classify observations, never incident identifiers or filesystem names."""
     s = text(record)
     service = record.get("service", "")
+    m = record.get("metadata", {})
+    if record.get("source_type") == "database":
+        if (
+            m.get("category") == "connections"
+            and m.get("connection_limit", 0) > 0
+            and m.get("connection_count", 0) >= m["connection_limit"]
+        ):
+            return "postgres", "postgres_connection_exhaustion", True
+        if m.get("blocked_by") and m.get("duration_ms", 0) >= 1000:
+            return "postgres", "postgres_lock_contention", True
+        if m.get("category") == "slow_queries" and m.get("duration_ms", 0) >= 3000:
+            return (
+                "postgres",
+                "postgres_lock_contention"
+                if "lock" in m.get("wait_event", "")
+                else "postgres_slow_query",
+                True,
+            )
+    if "transaction lock" in s and any(w in s for w in ("wait", "blocked", "contention")):
+        return "postgres", "postgres_lock_contention", False
     metric = record.get("metadata", {}).get("metric_name")
     value = record.get("metadata", {}).get("value")
     try:
@@ -94,6 +114,13 @@ def task(role, index, question, filters=None):
         "logs": ["query_logs"],
         "metrics": ["query_metrics", "get_dependencies"],
         "changes": ["query_changes", "get_config_diff"],
+        "database": [
+            "get_db_connections",
+            "get_db_lock_waits",
+            "get_db_active_sessions",
+            "get_db_slow_queries",
+            "get_db_health_metrics",
+        ],
     }
     return dict(
         task_id=f"check-{role}-{index}",
@@ -112,6 +139,13 @@ def records_from(state):
 
 
 def normal_database(records):
+    if any(
+        r.get("source_type") == "database"
+        and r.get("metadata", {}).get("category") == "connections"
+        and r["metadata"].get("connection_limit", 0) > r["metadata"].get("connection_count", 0)
+        for r in records
+    ):
+        return True
     return any(
         r["service"] == "postgres"
         and r["source_type"] == "metrics"
@@ -282,6 +316,37 @@ class MockProvider(LLMProvider):
         completed = set(p.get("completed_task_ids", []))
         checks = [c for c in checks if c["task_id"] not in completed]
         latest = p.get("reviews", [])
+        db_signal = any(
+            h.get("culprit_service") == "postgres" for h in p.get("hypotheses", [])
+        ) or any(
+            "database" in s.lower() or "db " in s.lower()
+            for s in p.get("public_summary", {}).get("observed_symptoms", [])
+        )
+        available_role = (
+            "database"
+            if p.get("database_enabled")
+            else "metrics"
+            if "get_db_connections" in p.get("role_tool_acl", {}).get("metrics", [])
+            else None
+        )
+        if (
+            tasks
+            and db_signal
+            and available_role
+            and not any(t.get("filters", {}).get("database_internal") for t in tasks)
+        ):
+            assignment = task(
+                available_role,
+                len(tasks),
+                "Distinguish database internal fault from upstream pool symptoms",
+                {"database_internal": True, "service": "postgres"},
+            )
+            assignment["allowed_tools"] = p["role_tool_acl"][available_role]
+            return dict(
+                action="INVESTIGATE",
+                reason="Database hypothesis requires internal checks",
+                assignments=[assignment],
+            )
         if p.get("variant") in ("single", "dynamic_no_verifier", "no_verifier"):
             latest = [review(p)]
             if not checks:
@@ -356,6 +421,11 @@ class MockProvider(LLMProvider):
                         limit=50,
                     ),
                 )
+            ]
+        elif role == "database" or filters.get("database_internal"):
+            calls = [
+                dict(tool_name=name, args=dict(service="postgres", start_ts=start, end_ts=end))
+                for name in ("get_db_connections", "get_db_lock_waits")
             ]
         elif role == "metrics":
             calls = [
@@ -444,6 +514,14 @@ class MockProvider(LLMProvider):
                 and r.get("metadata", {}).get("change_id") in pool_changes
             )
         mechanisms = {
+            "postgres_lock_contention": [
+                "Blocking transaction holds a database lock",
+                "Waiting queries exceed backend deadlines",
+            ],
+            "postgres_slow_query": [
+                "Slow database execution delays queries",
+                "Backend requests exceed deadlines",
+            ],
             "backend_pool_config_regression": [
                 "Reduced backend pool capacity causes local acquisition contention",
                 "Acquisition deadlines fail while database capacity remains available",

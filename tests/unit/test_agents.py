@@ -81,7 +81,9 @@ async def test_role_and_citation_checks():
     class Bad(MockProvider):
         async def structured_call(self, *args):
             output, usage = await super().structured_call(*args)
-            output.finding.evidence_ids = ["invented"]
+            output = output.model_copy(
+                update={"finding": output.finding.model_copy(update={"evidence_ids": ["invented"]})}
+            )
             return output, usage
 
     with pytest.raises(ProviderError, match="UNOBSERVED_CITATION"):
@@ -93,3 +95,164 @@ async def test_missing_observations_abstain():
     state = dict(tasks=[dict(role="changes")], hypotheses=[], evidence_index={})
     d, _ = await decide(MockProvider(), state)
     assert d.action == "ABSTAIN"
+
+
+@pytest.mark.asyncio
+async def test_real_citation_schema_repairs_once_and_counts_requests():
+    import json
+
+    import httpx
+
+    from incident_lens.llm import RealChatProvider
+
+    task = (await decide(MockProvider(), {}))[0].assignments[0]
+    records = [record("observed", "logs", "DB connection acquire timeout")]
+    output, _ = await analyze(MockProvider(), context("logs"), task, records)
+    good = output.model_dump(mode="json")
+    bad = json.loads(json.dumps(good))
+    bad["finding"]["evidence_ids"] = ["unqueried"]
+    requests = []
+
+    async def handler(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {"message": {"content": json.dumps(bad if len(requests) == 1 else good)}}
+                ],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 2, "total_tokens": 12},
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        provider = RealChatProvider("https://example.invalid", "secret", "test", client=client)
+        result, usage = await analyze(provider, context("logs"), task, records)
+    assert result.finding.evidence_ids == ["observed"]
+    assert usage["llm_calls"] == 2 and usage["total_tokens"] == 24
+    assert (
+        requests[0]["response_format"]["json_schema"]["schema"]["$defs"]["ObservedFinding"][
+            "properties"
+        ]["evidence_ids"]["items"]["const"]
+        == "observed"
+    )
+
+
+def test_citation_schema_rejects_unobserved_hypothesis_and_empty_records():
+    from pydantic import ValidationError
+
+    from incident_lens.agents.service import analysis_schema
+
+    schema = analysis_schema([record("observed", "logs", "timeout")])
+    hypothesis = schema.model_fields["hypotheses"].annotation.__args__[0]
+    with pytest.raises(ValidationError):
+        hypothesis.model_validate_json(
+            '{"hypothesis_id":"h","culprit_service":"backend","failure_mode":"backend_pool_config_regression","support_ids":["unqueried"]}'
+        )
+    empty_finding = analysis_schema([]).model_fields["finding"].annotation
+    assert empty_finding.model_json_schema()["properties"]["evidence_ids"]["maxItems"] == 0
+
+
+@pytest.mark.asyncio
+async def test_hypothesis_ids_follow_cause_not_model_local_ids():
+    task = (await decide(MockProvider(), {}))[0].assignments[0]
+
+    class LocalIDs(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            for h in output.hypotheses:
+                h.hypothesis_id = "hyp-1"
+            return output, usage
+
+    first, _ = await analyze(
+        LocalIDs(),
+        context("logs"),
+        task,
+        [record("a", "logs", "Redis connection refused", "redis")],
+    )
+    second, _ = await analyze(
+        LocalIDs(), context("logs"), task, [record("b", "logs", "payment timed out", "payment")]
+    )
+    repeat, _ = await analyze(
+        LocalIDs(), context("logs"), task, [record("c", "logs", "Redis unavailable", "redis")]
+    )
+    assert first.hypotheses and second.hypotheses and repeat.hypotheses
+    assert first.hypotheses[0].hypothesis_id != second.hypotheses[0].hypothesis_id
+    assert first.hypotheses[0].hypothesis_id == repeat.hypotheses[0].hypothesis_id
+
+
+@pytest.mark.asyncio
+async def test_reused_coordinator_task_ids_are_allocated_fresh():
+    from incident_lens.agents.service import DynamicDecision
+
+    initial, _ = await decide(MockProvider(), {})
+    payload = initial.model_dump(mode="json")
+    payload["assignments"] = [dict(payload["assignments"][0]), dict(payload["assignments"][0])]
+
+    class Reused(MockProvider):
+        async def structured_call(self, *args):
+            return DynamicDecision.model_validate_json(__import__("json").dumps(payload)), {}
+
+    old = [initial.assignments[0].model_dump(mode="json")]
+    result, _ = await decide(Reused(), {"tasks": old})
+    ids = [t.task_id for t in result.assignments]
+    assert len(ids) == len(set(ids))
+    assert old[0]["task_id"] not in ids
+
+
+@pytest.mark.asyncio
+async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metrics():
+    from incident_lens.agents.service import InvestigatorPlan
+
+    class Planned(MockProvider):
+        def __init__(self, calls):
+            self.calls = calls
+
+        async def structured_call(self, *args):
+            return InvestigatorPlan.model_validate_json(
+                __import__("json").dumps({"calls": self.calls})
+            ), {}
+
+    initial, _ = await decide(MockProvider(), {})
+    change_task = initial.assignments[0].model_copy(
+        update={"role": "changes", "allowed_tools": ["get_config_diff"]}
+    )
+    facts = {
+        "evidence_index": {
+            "change-evidence": record(
+                "change-evidence", "changes", "deployed", metadata={"change_id": "actual-change"}
+            )
+        }
+    }
+    plan, _ = await plan_tools(
+        Planned([{"tool_name": "get_config_diff", "args": {"change_id": "change-evidence"}}]),
+        context("changes"),
+        change_task,
+        {},
+        facts,
+    )
+    assert plan.calls[0].args["change_id"] == "actual-change"
+    metrics_task = initial.assignments[0].model_copy(
+        update={"role": "metrics", "allowed_tools": ["query_metrics"]}
+    )
+    plan, _ = await plan_tools(
+        Planned(
+            [
+                {
+                    "tool_name": "query_metrics",
+                    "args": {
+                        "service": "backend",
+                        "metric_names": ["invented_metric"],
+                        "start_ts": "2026-01-01T00:00:00Z",
+                        "end_ts": "2026-01-01T01:00:00Z",
+                    },
+                }
+            ]
+        ),
+        context("metrics"),
+        metrics_task,
+        {},
+        facts,
+    )
+    assert plan.calls[0].args["metric_names"] == []
+    assert plan.calls[0].args["service"] == "backend"

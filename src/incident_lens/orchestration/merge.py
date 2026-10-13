@@ -42,6 +42,9 @@ def merge_results(state: InvestigationState, results: list, registry) -> Investi
             raise ValueError("Finding ID reused for a different observation/task")
         if task.task_id not in payload["completed_task_ids"]:
             payload["completed_task_ids"].append(task.task_id)
+        for check in getattr(analysis, "requested_checks", []):
+            if check.task_id not in {t["task_id"] for t in payload["requested_checks"]}:
+                payload["requested_checks"].append(check.model_dump(mode="json"))
         for h in analysis.hypotheses:
             updated = h.model_dump(mode="json")
             concept = (h.culprit_service, h.failure_mode)

@@ -22,7 +22,7 @@
           "type": "integer"
         },
         "max_wall_seconds": {
-          "default": 90.0,
+          "default": 600.0,
           "exclusiveMinimum": 0,
           "title": "Max Wall Seconds",
           "type": "number"
@@ -175,7 +175,8 @@
             "metrics",
             "changes",
             "configs",
-            "topology"
+            "topology",
+            "database"
           ],
           "title": "Source Type",
           "type": "string"
@@ -254,6 +255,7 @@
           "enum": [
             "logs",
             "metrics",
+            "database",
             "changes"
           ],
           "title": "Role",
@@ -396,6 +398,58 @@
       "title": "Hypothesis",
       "type": "object"
     },
+    "IncidentAlert": {
+      "additionalProperties": false,
+      "properties": {
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ALERT",
+            "NO_ALERT"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "affected_services": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "title": "Affected Services",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incident_id",
+        "status",
+        "summary"
+      ],
+      "title": "IncidentAlert",
+      "type": "object"
+    },
     "InvestigationTask": {
       "additionalProperties": false,
       "properties": {
@@ -410,6 +464,7 @@
           "enum": [
             "logs",
             "metrics",
+            "database",
             "changes"
           ],
           "title": "Role",
@@ -529,6 +584,55 @@
           "minLength": 1,
           "title": "Stop Reason",
           "type": "string"
+        },
+        "diagnosis_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "RESOLVED",
+                "INCONCLUSIVE"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Diagnosis Status"
+        },
+        "remediation_status": {
+          "default": "NOT_STARTED",
+          "enum": [
+            "NOT_STARTED",
+            "PLAN_READY",
+            "PLAN_FAILED",
+            "SKIPPED"
+          ],
+          "title": "Remediation Status",
+          "type": "string"
+        },
+        "workflow_status": {
+          "default": "FINISHED",
+          "enum": [
+            "RUNNING",
+            "STOPPING",
+            "FINISHED",
+            "FAILED"
+          ],
+          "title": "Workflow Status",
+          "type": "string"
+        },
+        "remediation_plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RemediationPlan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -538,6 +642,125 @@
         "stop_reason"
       ],
       "title": "RCAReport",
+      "type": "object"
+    },
+    "RemediationPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "root_cause_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Root Cause Version",
+          "type": "string"
+        },
+        "execution_mode": {
+          "const": "PLAN_ONLY",
+          "default": "PLAN_ONLY",
+          "title": "Execution Mode",
+          "type": "string"
+        },
+        "objective": {
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "affected_services": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Affected Services",
+          "type": "array"
+        },
+        "actions": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Actions",
+          "type": "array"
+        },
+        "preconditions": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Preconditions",
+          "type": "array"
+        },
+        "risks": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Risks",
+          "type": "array"
+        },
+        "verification_steps": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Verification Steps",
+          "type": "array"
+        },
+        "rollback": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Rollback",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incident_id",
+        "run_id",
+        "root_cause_version",
+        "objective",
+        "affected_services",
+        "actions",
+        "preconditions",
+        "risks",
+        "verification_steps",
+        "rollback",
+        "evidence_ids"
+      ],
+      "title": "RemediationPlan",
       "type": "object"
     },
     "Review": {
@@ -598,6 +821,66 @@
       "title": "Review",
       "type": "object"
     },
+    "TaskRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "attempt": {
+          "minimum": 1,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "ASSIGNED",
+            "RUNNING",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        }
+      },
+      "required": [
+        "task_id",
+        "attempt_id",
+        "role",
+        "attempt",
+        "status"
+      ],
+      "title": "TaskRecord",
+      "type": "object"
+    },
     "TraceEvent": {
       "additionalProperties": false,
       "properties": {
@@ -641,10 +924,13 @@
                 "coordinator",
                 "logs",
                 "metrics",
+                "database",
                 "changes",
                 "verifier",
                 "reporter",
-                "single"
+                "single",
+                "monitoring",
+                "remediation"
               ],
               "type": "string"
             },
@@ -897,6 +1183,35 @@
       "minimum": 0,
       "title": "Tokens Used",
       "type": "integer"
+    },
+    "incident_alert": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/IncidentAlert"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "task_records": {
+      "items": {
+        "$ref": "#/$defs/TaskRecord"
+      },
+      "title": "Task Records",
+      "type": "array"
+    },
+    "workflow_status": {
+      "default": "RUNNING",
+      "enum": [
+        "RUNNING",
+        "STOPPING",
+        "FINISHED",
+        "FAILED"
+      ],
+      "title": "Workflow Status",
+      "type": "string"
     }
   },
   "required": [

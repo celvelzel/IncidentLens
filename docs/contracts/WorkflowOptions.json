@@ -1,0 +1,160 @@
+{
+  "$defs": {
+    "EvidenceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "logs",
+            "metrics",
+            "changes",
+            "configs",
+            "topology",
+            "database"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "service": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "title": "Service",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "source_path": {
+          "minLength": 1,
+          "title": "Source Path",
+          "type": "string"
+        },
+        "excerpt": {
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "incident_id",
+        "source_type",
+        "service",
+        "observed_at",
+        "source_path",
+        "excerpt"
+      ],
+      "title": "EvidenceRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "profile": {
+      "default": "legacy_rca",
+      "enum": [
+        "legacy_rca",
+        "incident_response"
+      ],
+      "title": "Profile",
+      "type": "string"
+    },
+    "communication_mode": {
+      "const": "centralized",
+      "default": "centralized",
+      "title": "Communication Mode",
+      "type": "string"
+    },
+    "monitor_mode": {
+      "default": "legacy",
+      "enum": [
+        "legacy",
+        "manual_snapshot",
+        "offline_replay"
+      ],
+      "title": "Monitor Mode",
+      "type": "string"
+    },
+    "database_enabled": {
+      "default": true,
+      "title": "Database Enabled",
+      "type": "boolean"
+    },
+    "database_equivalent_tools": {
+      "default": false,
+      "title": "Database Equivalent Tools",
+      "type": "boolean"
+    },
+    "remediation_enabled": {
+      "default": true,
+      "title": "Remediation Enabled",
+      "type": "boolean"
+    },
+    "execution_mode": {
+      "const": "plan_only",
+      "default": "plan_only",
+      "title": "Execution Mode",
+      "type": "string"
+    },
+    "max_attempts": {
+      "default": 2,
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "continue_on_partial_failure": {
+      "default": true,
+      "title": "Continue On Partial Failure",
+      "type": "boolean"
+    },
+    "ack_timeout_seconds": {
+      "default": 5.0,
+      "exclusiveMinimum": 0,
+      "title": "Ack Timeout Seconds",
+      "type": "number"
+    },
+    "monitoring_max_calls": {
+      "default": 1,
+      "minimum": 0,
+      "title": "Monitoring Max Calls",
+      "type": "integer"
+    },
+    "remediation_max_calls": {
+      "default": 2,
+      "minimum": 0,
+      "title": "Remediation Max Calls",
+      "type": "integer"
+    },
+    "snapshot": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRecord"
+      },
+      "title": "Snapshot",
+      "type": "array"
+    }
+  },
+  "title": "WorkflowOptions",
+  "type": "object"
+}

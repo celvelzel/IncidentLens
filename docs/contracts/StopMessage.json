@@ -1,0 +1,52 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "incident_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "stop_reason": {
+      "enum": [
+        "PLAN_READY",
+        "INCONCLUSIVE",
+        "BUDGET_EXHAUSTED",
+        "PLAN_FAILED",
+        "UNRECOVERABLE_ERROR",
+        "NO_ALERT"
+      ],
+      "title": "Stop Reason",
+      "type": "string"
+    },
+    "message_type": {
+      "default": "STOP",
+      "enum": [
+        "STOP",
+        "STOP_ACK"
+      ],
+      "title": "Message Type",
+      "type": "string"
+    },
+    "role": {
+      "default": "coordinator",
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "run_id",
+    "stop_reason"
+  ],
+  "title": "StopMessage",
+  "type": "object"
+}

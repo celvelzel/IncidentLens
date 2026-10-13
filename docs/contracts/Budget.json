@@ -20,7 +20,7 @@
       "type": "integer"
     },
     "max_wall_seconds": {
-      "default": 90.0,
+      "default": 600.0,
       "exclusiveMinimum": 0,
       "title": "Max Wall Seconds",
       "type": "number"

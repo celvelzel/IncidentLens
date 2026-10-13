@@ -1,0 +1,26 @@
+max_rounds: 6
+tool_calls_limit: 24
+llm_calls_limit: 24
+time_limit_seconds: 600
+structured_repair_retries: 1
+cache_mode: "off"
+workflow:
+  profile: incident_response
+communication:
+  mode: centralized
+monitor:
+  enabled: false
+  mode: legacy
+  max_calls: 8
+database_agent:
+  enabled: true
+remediation:
+  enabled: true
+  execution_mode: plan_only
+  max_calls: 2
+task_runtime:
+  max_attempts: 2
+  continue_on_partial_failure: true
+stop:
+  enabled: true
+  ack_timeout_seconds: 5.0

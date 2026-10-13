@@ -28,13 +28,15 @@
       "default": [
         "summarize_log_slice",
         "interpret_metric_window",
-        "summarize_change_diff"
+        "summarize_change_diff",
+        "interpret_database_window"
       ],
       "items": {
         "enum": [
           "summarize_log_slice",
           "interpret_metric_window",
-          "summarize_change_diff"
+          "summarize_change_diff",
+          "interpret_database_window"
         ],
         "type": "string"
       },

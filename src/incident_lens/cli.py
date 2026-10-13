@@ -25,6 +25,13 @@ from incident_lens.schemas import (
     ToolResult,
     TraceEvent,
 )
+from incident_lens.schemas.workflow import (
+    IncidentAlert,
+    RemediationPlan,
+    StopMessage,
+    TaskRecord,
+    WorkflowOptions,
+)
 from incident_lens.security.context import AgentContext
 
 CONTRACTS = [
@@ -43,6 +50,11 @@ CONTRACTS = [
     AgentContext,
     CachePolicy,
     CacheNamespace,
+    IncidentAlert,
+    RemediationPlan,
+    StopMessage,
+    TaskRecord,
+    WorkflowOptions,
 ]
 
 
@@ -74,6 +86,11 @@ def main(argv=None):
     run.add_argument("--response-format", choices=["json_schema", "json_object"])
     run.add_argument("--thinking", choices=["enabled", "disabled"])
     run.add_argument("--request-timeout", type=float)
+    run.add_argument("--profile", choices=["legacy_rca", "incident_response"])
+    run.add_argument("--monitor-mode", choices=["legacy", "manual_snapshot", "offline_replay"])
+    run.add_argument(
+        "--snapshot", type=Path, help="JSON list of public EvidenceRecord observations"
+    )
     replay = sub.add_parser("replay")
     replay.add_argument("--trace", type=Path, required=True)
     web = sub.add_parser("web")
@@ -157,7 +174,7 @@ def main(argv=None):
                 else config.get("llm_calls_limit", 16),
                 max_wall_seconds=args.max_seconds
                 if args.max_seconds is not None
-                else float(config.get("time_limit_seconds", 90)),
+                else float(config.get("time_limit_seconds", 600)),
                 max_tokens=args.max_tokens
                 if args.max_tokens is not None
                 else config.get("max_tokens"),
@@ -193,9 +210,24 @@ def main(argv=None):
                     else SentenceTransformerBackend(os.getenv("CACHE_EMBEDDING_MODEL")),
                 )
             started = time.monotonic()
+            from incident_lens.orchestration.config import workflow_options
+
+            snapshot = None
+            if args.snapshot:
+                raw = json.loads(args.snapshot.read_text(encoding="utf-8-sig"))
+                snapshot = [EvidenceRecord.model_validate_json(json.dumps(r)) for r in raw]
+            workflow = workflow_options(
+                config, profile=args.profile, monitor_mode=args.monitor_mode, snapshot=snapshot
+            )
             state = asyncio.run(
                 run_investigation(
-                    args.case, provider, args.data_root, budget, args.variant, cache=cache
+                    args.case,
+                    provider,
+                    args.data_root,
+                    budget,
+                    args.variant,
+                    cache=cache,
+                    workflow=workflow,
                 )
             )
             save_run(

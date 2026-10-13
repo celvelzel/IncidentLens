@@ -67,7 +67,22 @@ class FetchArgs(StrictModel):
     ids: list[Identifier] = Field(min_length=1, max_length=50)
 
 
+class DatabaseArgs(TimeWindow):
+    service: Identifier = "postgres"
+    limit: int = Field(default=50, ge=1, le=50)
+
+
 ARGUMENT_MODELS = {
+    **{
+        name: DatabaseArgs
+        for name in (
+            "get_db_connections",
+            "get_db_active_sessions",
+            "get_db_lock_waits",
+            "get_db_slow_queries",
+            "get_db_health_metrics",
+        )
+    },
     "query_logs": LogsArgs,
     "query_metrics": MetricsArgs,
     "get_dependencies": DependenciesArgs,

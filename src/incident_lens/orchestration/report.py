@@ -17,4 +17,29 @@ def render_report(report: RCAReport) -> str:
         "## Unresolved\n" + "\n".join(f"- {s}" for s in report.unresolved),
         f"## Stop reason\n{report.stop_reason}",
     ]
+    if report.diagnosis_status is not None:
+        sections.append(
+            f"## Workflow\nDiagnosis: {report.diagnosis_status}\nRemediation: {report.remediation_status}\nWorkflow: {report.workflow_status}"
+        )
+    if report.remediation_plan:
+        plan = report.remediation_plan
+        sections.append(
+            "## Remediation — PLAN_ONLY\nProposal only; no actions executed and no service recovery confirmed.\n"
+            + plan.objective
+        )
+        for name in (
+            "affected_services",
+            "actions",
+            "preconditions",
+            "risks",
+            "verification_steps",
+            "rollback",
+            "evidence_ids",
+        ):
+            sections.append(
+                "### "
+                + name.replace("_", " ").title()
+                + "\n"
+                + "\n".join("- " + v for v in getattr(plan, name))
+            )
     return "\n\n".join(sections) + "\n"

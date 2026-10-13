@@ -11,15 +11,17 @@ from pydantic import ValidationError
 
 from incident_lens.schemas import ToolResult
 from incident_lens.security.authorization import ContextAuthority
-from incident_lens.security.context import AgentContext
+from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL, AgentContext
 
 from .arguments import ARGUMENT_MODELS
 from .changes import get_config_diff, query_changes
+from .database import DATABASE_HANDLERS
 from .logs import query_logs
 from .metrics import get_dependencies, query_metrics
 from .provider import EvidenceProvider
 
 HANDLERS = {
+    **DATABASE_HANDLERS,
     "query_logs": query_logs,
     "query_metrics": query_metrics,
     "get_dependencies": get_dependencies,
@@ -50,6 +52,7 @@ class ToolRegistry:
         run_id: str,
         max_tool_calls: int = 12,
         timeout_seconds: float = 5.0,
+        database_equivalent_tools: bool = False,
     ):
         if (
             isinstance(max_tool_calls, bool)
@@ -64,6 +67,9 @@ class ToolRegistry:
             or timeout_seconds <= 0
         ):
             raise ValueError("timeout_seconds must be finite and positive")
+        if not isinstance(database_equivalent_tools, bool):
+            raise ValueError("database_equivalent_tools must be boolean")
+        self._database_equivalent_tools = database_equivalent_tools
         self._provider = provider
         self._case = provider.load_case(incident_id)
         self._authority = ContextAuthority(workspace_id, incident_id, run_id)
@@ -74,10 +80,23 @@ class ToolRegistry:
         self._shared: dict = {}
         self._events: list[dict] = []
         self._lock = RLock()
+        self._frozen = False
+
+    def freeze(self) -> None:
+        """Close all authority mutations, including completion of in-flight reads."""
+        with self._lock:
+            self._frozen = True
 
     def create_context(self, role: str) -> AgentContext:
         with self._lock:
-            context = self._authority.issue(role, max(0, self._max_tool_calls - self._call_count))
+            if self._frozen:
+                raise PermissionError("registry is stopped")
+            tools = ROLE_TOOL_ACL[role]
+            if self._database_equivalent_tools and role in ("metrics", "single"):
+                tools += DATABASE_TOOLS
+            context = self._authority.issue(
+                role, max(0, self._max_tool_calls - self._call_count), tools
+            )
             self._observed[id(context)] = {}
             return context
 
@@ -107,6 +126,8 @@ class ToolRegistry:
 
     def publish(self, context: AgentContext, ids: list[str]) -> None:
         with self._lock:
+            if self._frozen:
+                raise PermissionError("registry is stopped")
             self._authority.validate(context)
             ledger = self._observed[id(context)]
             if not set(ids).issubset(ledger):
@@ -124,6 +145,9 @@ class ToolRegistry:
         error = None
         cursor = None
         try:
+            with self._lock:
+                if self._frozen:
+                    raise PermissionError("registry is stopped")
             if not isinstance(tool_name, str):
                 raise PermissionError("tool_name must be a known string")
             self._authority.validate(context, tool_name)
@@ -138,6 +162,8 @@ class ToolRegistry:
             ):
                 raise FileNotFoundError("service does not exist")
             with self._lock:
+                if self._frozen:
+                    raise PermissionError("registry is stopped")
                 if self._call_count >= self._max_tool_calls:
                     error = "BUDGET_EXCEEDED"
                 else:
@@ -166,6 +192,8 @@ class ToolRegistry:
                     cursor = str(limit)
                 records = records[:limit]
                 with self._lock:
+                    if self._frozen:
+                        raise PermissionError("registry is stopped")
                     self._observed[id(context)].update(
                         {record.evidence_id: deepcopy(record) for record in records}
                     )

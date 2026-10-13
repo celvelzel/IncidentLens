@@ -12,16 +12,43 @@ import yaml
 from incident_lens.schemas import CasePublicInput, EvidenceRecord
 
 PUBLIC_FILES = frozenset(
-    {"incident.json", "logs.jsonl", "metrics.csv", "changes.jsonl", "configs.jsonl"}
+    {
+        "incident.json",
+        "logs.jsonl",
+        "metrics.csv",
+        "changes.jsonl",
+        "configs.jsonl",
+        "database.jsonl",
+    }
 )
 SOURCE_FILES = {
     "logs": "logs.jsonl",
     "metrics": "metrics.csv",
     "changes": "changes.jsonl",
     "configs": "configs.jsonl",
+    "database": "database.jsonl",
 }
 CASE_ID = re.compile(r"^incident_[0-9]{3,}$")
 METADATA_FIELDS = {
+    "database": frozenset(
+        {
+            "category",
+            "metric_name",
+            "value",
+            "unit",
+            "connection_count",
+            "connection_limit",
+            "pool_in_use",
+            "pool_limit",
+            "session_id",
+            "state",
+            "wait_event",
+            "blocked_by",
+            "duration_ms",
+            "query_fingerprint",
+            "health_status",
+        }
+    ),
     "logs": frozenset({"severity", "request_id", "origin"}),
     "changes": frozenset({"change_id", "change_type"}),
     "configs": frozenset({"change_id"}),
@@ -108,8 +135,7 @@ class EvidenceProvider:
                     errors.append(f"{case.incident_id}: duplicate evidence IDs")
                 seen.update(ids)
                 public_text = "\n".join(
-                    self._public_path(case.incident_id, name).read_text(encoding="utf-8")
-                    for name in PUBLIC_FILES
+                    self._public_text(case.incident_id, name) for name in PUBLIC_FILES
                 )
                 if any(marker in public_text for marker in ANSWER_FIELDS):
                     errors.append(f"{case.incident_id}: public answer metadata found")
@@ -123,9 +149,17 @@ class EvidenceProvider:
         for case in self.list_cases():
             for filename in sorted(PUBLIC_FILES):
                 digest.update(f"{case.incident_id}/{filename}\0".encode())
-                digest.update(self._public_path(case.incident_id, filename).read_bytes())
+                digest.update(self._public_text(case.incident_id, filename).encode())
         digest.update(self._safe_path("topology", "services.yaml").read_bytes())
         return digest.hexdigest()
+
+    def _public_text(self, incident_id: str, filename: str) -> str:
+        try:
+            return self._public_path(incident_id, filename).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            if filename == "database.jsonl":
+                return ""
+            raise
 
     def _records(self, incident_id: str, source_type: str) -> list[EvidenceRecord]:
         case = self.load_case(incident_id)
@@ -152,8 +186,8 @@ class EvidenceProvider:
         if source_type not in SOURCE_FILES:
             raise PermissionError("unknown evidence source")
         filename = SOURCE_FILES[source_type]
-        path = self._public_path(incident_id, filename)
         if source_type == "metrics":
+            path = self._public_path(incident_id, filename)
             with path.open(encoding="utf-8", newline="") as stream:
                 rows = list(csv.DictReader(stream))
             records = []
@@ -176,7 +210,7 @@ class EvidenceProvider:
         else:
             records = [
                 EvidenceRecord.model_validate_json(line)
-                for line in path.read_text(encoding="utf-8").splitlines()
+                for line in self._public_text(incident_id, filename).splitlines()
                 if line.strip()
             ]
         if any(
@@ -193,4 +227,16 @@ class EvidenceProvider:
             not set(record.metadata).issubset(METADATA_FIELDS[source_type]) for record in records
         ):
             raise ValueError("metadata must contain only raw observation fields")
+        if source_type == "database" and any(
+            record.metadata.get("category")
+            not in {
+                "connections",
+                "active_sessions",
+                "lock_waits",
+                "slow_queries",
+                "health_metrics",
+            }
+            for record in records
+        ):
+            raise ValueError("database evidence requires a known observation category")
         return records

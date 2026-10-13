@@ -27,10 +27,13 @@
         "coordinator",
         "logs",
         "metrics",
+        "database",
         "changes",
         "verifier",
         "reporter",
-        "single"
+        "single",
+        "monitoring",
+        "remediation"
       ],
       "title": "Role",
       "type": "string"

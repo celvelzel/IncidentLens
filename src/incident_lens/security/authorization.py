@@ -13,7 +13,7 @@ class ContextAuthority:
         self._issued: dict[int, tuple[AgentContext, str]] = {}
         self._lock = RLock()
 
-    def issue(self, role: str, remaining_tool_calls: int) -> AgentContext:
+    def issue(self, role: str, remaining_tool_calls: int, allowed_tools=None) -> AgentContext:
         if role not in ROLE_TOOL_ACL:
             raise ValueError("unknown role")
         context = AgentContext(
@@ -21,7 +21,7 @@ class ContextAuthority:
             incident_id=self.incident_id,
             run_id=self.run_id,
             role=role,
-            allowed_tools=ROLE_TOOL_ACL[role],
+            allowed_tools=ROLE_TOOL_ACL[role] if allowed_tools is None else allowed_tools,
             allowed_evidence_scope=(self.incident_id,),
             remaining_tool_calls=remaining_tool_calls,
         )

@@ -41,11 +41,29 @@ def cause_discriminator(hypothesis, record):
             and "concurrency" in text
         )
     if mode == "postgres_connection_exhaustion":
+        if record.source_type == "database":
+            return (
+                record.metadata.get("category") == "connections"
+                and record.metadata.get("connection_limit", 0) > 0
+                and record.metadata.get("connection_count", 0)
+                >= record.metadata["connection_limit"]
+            )
         return (
             record.source_type == "metrics"
             and name in {"connections_active", "active_connections"}
             and isinstance(value, (int, float))
             and value >= 100
+        )
+    if mode in ("postgres_lock_contention", "postgres_slow_query"):
+        return (
+            record.source_type == "database"
+            and isinstance(record.metadata.get("duration_ms"), (int, float))
+            and record.metadata["duration_ms"] >= 3000
+            and (
+                bool(record.metadata.get("blocked_by"))
+                if mode == "postgres_lock_contention"
+                else record.metadata.get("category") == "slow_queries"
+            )
         )
     if mode == "redis_unavailable":
         return record.source_type == "metrics" and name == "availability" and value == 0
