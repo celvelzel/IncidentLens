@@ -10,7 +10,9 @@ from incident_lens.web import server
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    shutil.copytree(server.ROOT / "data", tmp_path / "data", ignore=shutil.ignore_patterns("private"))
+    shutil.copytree(
+        server.ROOT / "data", tmp_path / "data", ignore=shutil.ignore_patterns("private")
+    )
     monkeypatch.setattr(server, "ROOT", tmp_path)
     monkeypatch.setattr(server, "RESULTS_ROOT", tmp_path / "results")
     monkeypatch.setattr(server, "_trace_cache", {})
@@ -58,5 +60,8 @@ def test_web_rejects_outside_paths_and_non_trace_files(client, path):
 
 def test_web_validates_requests_before_running(client):
     assert client.post("/api/run", json={"incident_id": "../private"}).status_code == 400
-    assert client.post("/api/run", json={"incident_id": "incident_001", "timeout": 0}).status_code == 400
+    assert (
+        client.post("/api/run", json={"incident_id": "incident_001", "timeout": 0}).status_code
+        == 400
+    )
     assert client.post("/api/run", content="{").status_code == 400

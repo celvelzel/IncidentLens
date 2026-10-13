@@ -46,9 +46,12 @@ def test_task_freeze_allows_cancellation_only():
     manager.start("logs")
     manager.stop()
     assert not manager.can_retry("logs")
-    for mutation in (lambda: manager.assign("metrics", "metrics"),
-                     lambda: manager.start("logs"), lambda: manager.complete("logs"),
-                     lambda: manager.fail("logs", "ERROR")):
+    for mutation in (
+        lambda: manager.assign("metrics", "metrics"),
+        lambda: manager.start("logs"),
+        lambda: manager.complete("logs"),
+        lambda: manager.fail("logs", "ERROR"),
+    ):
         with pytest.raises(RuntimeStoppedError):
             mutation()
     assert manager.cancel("logs").status == "CANCELLED"
@@ -72,8 +75,12 @@ async def test_stop_ack_and_idempotence():
 
 async def test_hung_and_failed_callbacks_timeout_without_false_ack():
     events = []
-    stop = StopController("incident", "run", lambda event, **data: events.append((event, data)),
-                          ack_timeout_seconds=0.01)
+    stop = StopController(
+        "incident",
+        "run",
+        lambda event, **data: events.append((event, data)),
+        ack_timeout_seconds=0.01,
+    )
     released = asyncio.Event()
 
     async def hung():
@@ -88,9 +95,17 @@ async def test_hung_and_failed_callbacks_timeout_without_false_ack():
     async def declined():
         return False
 
-    await asyncio.wait_for(stop.stop("BUDGET_EXHAUSTED", {
-        "logs": hung, "metrics": failed, "changes": declined,
-    }), timeout=0.2)
+    await asyncio.wait_for(
+        stop.stop(
+            "BUDGET_EXHAUSTED",
+            {
+                "logs": hung,
+                "metrics": failed,
+                "changes": declined,
+            },
+        ),
+        timeout=0.2,
+    )
     assert [event for event, _ in events] == ["WORKFLOW_STOP_REQUESTED", "STOP_TIMEOUT"]
     assert events[-1][1]["missing_roles"] == ["changes", "logs", "metrics"]
     released.set()

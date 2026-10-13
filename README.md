@@ -36,6 +36,8 @@ deterministic grounding gates are all inspectable end to end.
   insufficient evidence produces `INCONCLUSIVE`.
 - **Evidence-first permissions** — role-scoped read-only tools, immutable contexts,
   actual-query ledgers and public file allowlists.
+- **Bounded provider recovery** — classified transport failures, atomic request permits,
+  task-local stage budgets and one targeted structured repair, enabled explicitly.
 - **Offline Mock provider** — deterministic over supplied public evidence, without API keys or model weights.
 - **Reproducible evaluation** — four original ablation variants, paired database ablations and task recovery experiments.
 - **Replay and UI** — Web and retained Streamlit dashboards expose evidence, hypotheses,
@@ -218,6 +220,45 @@ Mock. HTTP fixture tests validate adapter behavior, not live endpoint compatibil
 Mock is deterministic over supplied public evidence and never reads private
 labels or looks up answers by incident ID. Its results demonstrate correctness,
 not real-model accuracy or architecture superiority.
+
+### Provider reliability and recovery
+
+`provider_recovery.enabled` defaults to `false`, retaining the legacy single structured repair.
+Enable it explicitly in YAML to classify provider failures, retry transient HTTP/transport faults
+within request, wall and stage budgets, and perform at most one targeted syntax/schema repair.
+Every physical dispatch, including a repair or retry, consumes a permit. STOP interrupts backoff;
+concurrent stage guards use task-local context. Domain/citation guards remain authoritative.
+
+```yaml
+provider_recovery:
+  enabled: true
+  format_capability: json_object
+  max_transport_retries: 2
+  max_structured_repairs: 1
+  max_physical_attempts_per_call: 4
+  min_request_time_seconds: 5.0
+```
+
+CLI `--response-format` overrides the environment, then the enabled capability setting.
+There is no automatic format/model/provider fallback. Missing usage stays unknown; token
+limits are best effort without a validated provider output cap. Diagnostic trace events contain
+safe categories and attempt IDs, and old trace envelopes remain readable. Identity proposal
+binding is deferred; existing prompts and evidence schemas remain unchanged.
+
+Run deterministic fault injection, or a separately recorded compatibility probe and paired
+Seed/Dev pilot, from the repository root:
+
+```powershell
+.venv\Scripts\python.exe scripts/run_reliability_eval.py --out results/v13-eval/NEW-ID
+.venv\Scripts\python.exe scripts/run_v13_pilot.py --out results/v13-eval/NEW-PILOT --response-format json_schema
+.venv\Scripts\python.exe scripts/analyze_v13_pilot.py --source results/v13-eval/NEW-PILOT --out results/v13-eval/NEW-ANALYSIS
+```
+
+The real pilot requires local API configuration and can incur provider charges. Choose the
+response format accepted by that endpoint. Output directories must be new; analysis reads
+saved traces without model calls or private oracle access. See [runtime contracts](docs/v1.3/contracts.md) and
+[evaluation protocol](docs/v1.3/evaluation_protocol.md). Offline technical recovery does not
+establish live RCA accuracy or targeted-repair quality.
 
 ## Evidence and permissions
 

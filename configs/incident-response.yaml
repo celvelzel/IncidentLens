@@ -24,3 +24,6 @@ task_runtime:
 stop:
   enabled: true
   ack_timeout_seconds: 5.0
+
+provider_recovery:
+  enabled: false

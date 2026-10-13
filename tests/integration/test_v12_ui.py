@@ -64,7 +64,9 @@ def test_web_plan_component_escapes_untrusted_text_and_keeps_legacy_empty():
             "remediation_status": "PLAN_READY",
             "workflow_status": "FINISHED",
             "termination": {
-                "reason": "PLAN_READY", "outcome": "SUCCESS", "stop_completed": True,
+                "reason": "PLAN_READY",
+                "outcome": "SUCCESS",
+                "stop_completed": True,
                 "failure_stage": None,
             },
             "remediation_plan": {

@@ -1,4 +1,5 @@
 """Cache-off paired V1.2 evaluation, with unchanged four legacy schedules."""
+
 import argparse
 import asyncio
 import json
@@ -41,9 +42,14 @@ class TransientFailureMock(MockProvider):
         self._injection = {"injected": False}
 
     async def structured_call(self, role, system_prompt, user_payload, output_model):
-        result, usage = await super().structured_call(role, system_prompt, user_payload, output_model)
-        if (role == "logs" and output_model.__name__ == "AnalysisOutput"
-                and not self._injection["injected"]):
+        result, usage = await super().structured_call(
+            role, system_prompt, user_payload, output_model
+        )
+        if (
+            role == "logs"
+            and output_model.__name__ == "AnalysisOutput"
+            and not self._injection["injected"]
+        ):
             self._injection["injected"] = True
             raise ProviderError("INJECTED_TRANSIENT_ANALYSIS_FAILURE", usage)
         return result, usage
@@ -100,15 +106,22 @@ async def evaluate(args, factory):
     public = EvidenceProvider(data_root)
     revision = public.dataset_revision
     package_root = Path(__file__).resolve().parents[1] / "src" / "incident_lens"
-    source_sha256 = digest({str(p.relative_to(package_root)): digest(p.read_text(encoding="utf-8"))
-                            for p in sorted(package_root.rglob("*.py"))})
+    source_sha256 = digest(
+        {
+            str(p.relative_to(package_root)): digest(p.read_text(encoding="utf-8"))
+            for p in sorted(package_root.rglob("*.py"))
+        }
+    )
     ids = args.incidents or load_split(data_root, args.split)
     if len(ids) != len(set(ids)):
         raise ValueError("incident IDs must be unique")
-    budget = Budget(max_rounds=args.max_rounds, max_tool_calls=args.max_tool_calls,
-                    max_llm_calls=args.max_llm_calls, max_wall_seconds=args.max_wall_seconds)
-    modes = [("v12_database_enabled", "full", True),
-             ("v12_database_disabled", "full", False)]
+    budget = Budget(
+        max_rounds=args.max_rounds,
+        max_tool_calls=args.max_tool_calls,
+        max_llm_calls=args.max_llm_calls,
+        max_wall_seconds=args.max_wall_seconds,
+    )
+    modes = [("v12_database_enabled", "full", True), ("v12_database_disabled", "full", False)]
     if not args.skip_legacy:
         modes += [("legacy_" + variant, variant, None) for variant in VARIANTS]
     out.mkdir(parents=True, exist_ok=True)
@@ -123,19 +136,31 @@ async def evaluate(args, factory):
             provider = MeasuredProvider(delegate)
             if (args.provider == "mock") != (provider.source == "mock"):
                 raise ValueError("requested provider does not match actual provider")
-            workflow = WorkflowOptions() if enabled is None else WorkflowOptions(
-                profile="incident_response", monitor_mode="manual_snapshot", snapshot=snapshot,
-                database_enabled=enabled, database_equivalent_tools=True,
+            workflow = (
+                WorkflowOptions()
+                if enabled is None
+                else WorkflowOptions(
+                    profile="incident_response",
+                    monitor_mode="manual_snapshot",
+                    snapshot=snapshot,
+                    database_enabled=enabled,
+                    database_equivalent_tools=True,
+                )
             )
             config = {
                 "scenario": "transient_failure" if args.inject_transient_failure else "normal",
-                "provider": args.provider, "source": provider.source,
-                "model_id": provider.model_id, "temperature": provider.temperature,
+                "provider": args.provider,
+                "source": provider.source,
+                "model_id": provider.model_id,
+                "temperature": provider.temperature,
                 "model_parameters": provider.model_parameters,
-                "prompt_version": PROMPT_VERSION, "schema_version": "v1.2",
+                "prompt_version": PROMPT_VERSION,
+                "schema_version": "v1.2",
                 "source_sha256": source_sha256,
-                "budget": budget.model_dump(mode="json"), "cache_mode": "off",
-                "dataset_revision": revision, "communication_mode": "centralized",
+                "budget": budget.model_dump(mode="json"),
+                "cache_mode": "off",
+                "dataset_revision": revision,
+                "communication_mode": "centralized",
                 "database_tools_available_to_metrics": enabled is not None,
                 "workflow": workflow.model_dump(mode="json", exclude={"snapshot"}),
             }
@@ -143,18 +168,33 @@ async def evaluate(args, factory):
             execution_error = evaluation_error = None
             try:
                 completed = await run_investigation(
-                    incident_id, provider, data_root=data_root, budget=budget.model_copy(deep=True),
-                    variant=variant, cache=None, workflow=workflow,
+                    incident_id,
+                    provider,
+                    data_root=data_root,
+                    budget=budget.model_copy(deep=True),
+                    variant=variant,
+                    cache=None,
+                    workflow=workflow,
                 )
                 extra = workflow_metrics(completed, snapshot)
                 state = extra.pop("serialized_state")
             except Exception as exc:
                 execution_error = type(exc).__name__
-                state = {"incident_id": incident_id, "events": [], "evidence_index": {},
-                         "report": {"status": "ERROR", "root_cause": None,
-                                    "stop_reason": execution_error}}
-                extra = {"stop_contract_valid": False, "stop_completion": False,
-                         "monitoring_accuracy": None}
+                state = {
+                    "incident_id": incident_id,
+                    "events": [],
+                    "evidence_index": {},
+                    "report": {
+                        "status": "ERROR",
+                        "root_cause": None,
+                        "stop_reason": execution_error,
+                    },
+                }
+                extra = {
+                    "stop_contract_valid": False,
+                    "stop_completion": False,
+                    "monitoring_accuracy": None,
+                }
             elapsed = (time.monotonic() - started) * 1000
             if public.dataset_revision != revision:
                 raise ValueError("public dataset changed during evaluation")
@@ -168,23 +208,42 @@ async def evaluate(args, factory):
                 evaluation_error = type(exc).__name__
                 scores = score_without_oracle(state)
             row = {
-                "incident_id": incident_id, "variant": label,
+                "incident_id": incident_id,
+                "variant": label,
                 "split": "explicit_incidents" if args.incidents else args.split,
                 "oracle_split": oracle_split,
                 "scenario": config["scenario"],
-                "provider": args.provider, "source": provider.source, "model_id": provider.model_id,
-                "cache_mode": "off", "config_sha256": digest(config),
-                "initial_public_sha256": digest(initial), "dataset_revision": revision,
-                "status": state["report"]["status"], "latency_ms": elapsed,
+                "provider": args.provider,
+                "source": provider.source,
+                "model_id": provider.model_id,
+                "cache_mode": "off",
+                "config_sha256": digest(config),
+                "initial_public_sha256": digest(initial),
+                "dataset_revision": revision,
+                "status": state["report"]["status"],
+                "latency_ms": elapsed,
                 "tool_calls": state.get("tool_calls_used"),
-                "execution_error": execution_error, "evaluation_error": evaluation_error,
-                **extra, **scores, **usage_metrics(provider, state),
+                "execution_error": execution_error,
+                "evaluation_error": evaluation_error,
+                **extra,
+                **scores,
+                **usage_metrics(provider, state),
             }
             rows.append(row)
             with (out / "raw-runs.jsonl").open("a", encoding="utf-8") as stream:
-                stream.write(json.dumps({"metrics": row, "fairness": config, "state": state,
-                                         "oracle_scoring_fields": oracle,
-                                         "measured_calls": provider.calls}, ensure_ascii=False) + "\n")
+                stream.write(
+                    json.dumps(
+                        {
+                            "metrics": row,
+                            "fairness": config,
+                            "state": state,
+                            "oracle_scoring_fields": oracle,
+                            "measured_calls": provider.calls,
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
             write_csv(out / "case-level.csv", rows)
     totals = []
     for label, _, _ in modes:
@@ -192,8 +251,13 @@ async def evaluate(args, factory):
         normalized = [dict(r, variant="full") for r in group]
         summary = aggregate(normalized)[0]
         summary["variant"] = label
-        for field in ("remediation_contract_valid", "stop_contract_valid", "task_recovery_rate",
-                      "diagnosis_match", "stop_completion"):
+        for field in (
+            "remediation_contract_valid",
+            "stop_contract_valid",
+            "task_recovery_rate",
+            "diagnosis_match",
+            "stop_completion",
+        ):
             values = [r[field] for r in group if r.get(field) is not None]
             summary[field] = sum(values) / len(values) if values else None
             summary[field + "_denominator"] = len(values)
@@ -230,8 +294,11 @@ def main(argv=None):
     parser.add_argument("--incidents", nargs="+")
     parser.add_argument("--provider", choices=("mock", "real"), default="mock")
     parser.add_argument("--skip-legacy", action="store_true")
-    parser.add_argument("--inject-transient-failure", action="store_true",
-                        help="Mock-only charged analysis failure to measure actual retry recovery")
+    parser.add_argument(
+        "--inject-transient-failure",
+        action="store_true",
+        help="Mock-only charged analysis failure to measure actual retry recovery",
+    )
     parser.add_argument("--max-rounds", type=int, default=6)
     parser.add_argument("--max-tool-calls", type=int, default=24)
     parser.add_argument("--max-llm-calls", type=int, default=32)
@@ -256,8 +323,11 @@ def main(argv=None):
             factory = TransientFailureMock if args.inject_transient_failure else MockProvider
         rows = asyncio.run(evaluate(args, factory))
     except (ProviderError, OSError, ValueError) as exc:
-        print(json.dumps({"error": exc.code if isinstance(exc, ProviderError)
-                          else type(exc).__name__}))
+        print(
+            json.dumps(
+                {"error": exc.code if isinstance(exc, ProviderError) else type(exc).__name__}
+            )
+        )
         return 2
     print(json.dumps({"provider": args.provider, "runs": len(rows), "cache_mode": "off"}))
     return int(any(r["execution_error"] or r["evaluation_error"] for r in rows))

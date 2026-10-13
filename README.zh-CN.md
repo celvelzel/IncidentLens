@@ -28,6 +28,7 @@ IncidentLens 是一个从零构建的个人研究项目,旨在探索智能体驱
 - **动态调查与事件响应** —— 单一 LangGraph 工作流连接监控、协调、四类调查者、验证、定稿、修复建议和统一停止。
 - **有据可依，否则弃权** —— 确定性门控检查候选、引用与评审版本，证据不足时输出 `INCONCLUSIVE`。
 - **证据优先的权限体系** —— 按角色授权的只读工具、不可变上下文、实际查询账本与公共文件白名单。
+- **有界 Provider 恢复** — 显式启用故障分类、原子请求 permit、任务局部阶段预算和至多一次定向结构化修复。
 - **离线 Mock 提供方** —— 在给定公共证据上确定性运行，无需 API 密钥或模型权重。
 - **可复现评估** —— 四个原有消融变体、数据库配对消融与任务失败恢复实验。
 - **回放与 UI** —— Web 控制台和保留的 Streamlit 页面展示证据、假设、告警、修复方案、任务与停止事件。
@@ -193,6 +194,40 @@ CLI 参数可覆盖配置；`--max-tokens` 在已计量用量耗尽后阻止进�
 HTTP fixture 测试验证的是适配器行为,而非在线端点兼容性。Mock 在给定公共证据上
 是确定性的,从不读取私有标签,也不会按事故 ID 查答案。其结果证明的是正确性,
 而不是真实模型精度或架构优越性。
+
+### Provider 可靠性与恢复
+
+`provider_recovery.enabled` 默认 `false`，保留旧版至多一次结构化修复。显式启用后，
+按安全分类处理 Provider 故障，在请求、墙钟和阶段预算内恢复瞬态 HTTP/网络故障，
+至多执行一次定向 Syntax/Schema 修复。每次实际发送（含重试和修复）均消耗独立 permit；
+STOP 会取消退避，阶段 guard 使用任务局部上下文。Domain 与引用门禁仍由原运行时校验。
+
+```yaml
+provider_recovery:
+  enabled: true
+  format_capability: json_object
+  max_transport_retries: 2
+  max_structured_repairs: 1
+  max_physical_attempts_per_call: 4
+  min_request_time_seconds: 5.0
+```
+
+格式优先级为 CLI `--response-format`、环境变量、启用后的能力配置；不会自动切换格式、
+模型或 Provider。缺失 usage 保持未知；没有已验证的服务端 output cap 时，token 上限仅为
+best effort。Trace 增加安全分类与尝试标识，旧记录仍可 Replay。身份 proposal 绑定延期，
+现有 Prompt、证据 Schema 和事实门禁保持原语义。
+
+在仓库根目录运行确定性故障注入，或独立记录真实预检与 Seed/Dev 配对：
+
+```powershell
+.venv\Scripts\python.exe scripts/run_reliability_eval.py --out results/v13-eval/NEW-ID
+.venv\Scripts\python.exe scripts/run_v13_pilot.py --out results/v13-eval/NEW-PILOT --response-format json_schema
+.venv\Scripts\python.exe scripts/analyze_v13_pilot.py --source results/v13-eval/NEW-PILOT --out results/v13-eval/NEW-ANALYSIS
+```
+
+真实 Pilot 需要本地 API 配置，可能产生 Provider 费用；请选择端点支持的响应格式。
+输出目录必须不存在，分析脚本仅读取已保存 trace，不调用模型或读取私有真值。参见[运行时契约](docs/v1.3/contracts.md)与
+[评测协议](docs/v1.3/evaluation_protocol.md)。离线恢复结果不代表真实 RCA 精度或定向修复质量提升。
 
 ## 证据与权限
 

@@ -1,0 +1,109 @@
+........................................................................ [ 14%]
+....................................................F................... [ 28%]
+...........................F............................................ [ 43%]
+.....................s..........................................s....... [ 57%]
+........................................................................ [ 71%]
+........................................................................ [ 86%]
+.....................................................................    [100%]
+================================== FAILURES ===================================
+____ test_partial_or_cancelled_request_usage_is_not_invented[token_budget] ____
+
+failure = 'token_budget'
+
+    @pytest.mark.parametrize(
+        "failure", ["retry_budget", "token_budget", "http_error", "wall_timeout", "bad_envelope"]
+    )
+    async def test_partial_or_cancelled_request_usage_is_not_invented(failure):
+        calls = 0
+    
+        async def response(request):
+            nonlocal calls
+            calls += 1
+            if failure == "wall_timeout":
+                await asyncio.sleep(0.2)
+            if calls == 2:
+                if failure == "bad_envelope":
+                    return httpx.Response(200, json=[])
+                return httpx.Response(500)
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [{"message": {"content": "invalid json"}}],
+                    "usage": {"prompt_tokens": 5, "completion_tokens": 2, "total_tokens": 7},
+                },
+            )
+    
+        budget = Budget(max_llm_calls=1) if failure == "retry_budget" else Budget()
+        if failure == "wall_timeout":
+            budget = Budget(max_wall_seconds=0.05)
+        if failure == "token_budget":
+            budget = Budget(max_tokens=5)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(response)) as client:
+            state = await run_investigation(
+                "incident_001",
+                RealChatProvider(
+                    "https://fixture.invalid/v1", "fixture-secret", "fixture", client=client
+                ),
+                budget=budget,
+            )
+        assert state.report.status == "INCONCLUSIVE"
+>       assert state.llm_calls_used == calls == (2 if failure in ("http_error", "bad_envelope") else 1)
+E       assert 2 == 1
+
+tests\integration\test_failure_accounting.py:73: AssertionError
+_________________ test_streamlit_mock_run_and_labeled_replay __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020361BD06E0>
+
+    def test_streamlit_mock_run_and_labeled_replay(monkeypatch):
+        app = AppTest.from_file(Path("src/incident_lens/ui/app.py").resolve(), default_timeout=30).run()
+        assert not app.exception
+        app.button[0].click().run()
+        assert not app.exception
+        state = app.session_state["investigation"]
+        assert state.report.status == "RESOLVED"
+        before = state.model_dump_json()
+        trace_before = json.dumps(app.session_state["trace"], sort_keys=True)
+        assert any("MOCK" in message.value for message in app.info)
+        for button in app.get("download_button"):
+            button.click().run()
+            assert not app.exception
+            assert app.session_state["investigation"].model_dump_json() == before
+            assert json.dumps(app.session_state["trace"], sort_keys=True) == trace_before
+    
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Replay must not execute graph or provider")
+    
+        import incident_lens.orchestration.graph as graph
+        from incident_lens.llm.mock import MockProvider
+        from incident_lens.llm.provider import RealChatProvider
+    
+        monkeypatch.setattr(MockProvider, "structured_call", forbidden)
+        monkeypatch.setattr(RealChatProvider, "structured_call", forbidden)
+        monkeypatch.setattr(graph, "run_investigation", forbidden)
+        app.radio[0].set_value("Recorded Replay").run()
+        saved = Path("results/ui") / state.run_id / "trace.json"
+        next(box for box in app.selectbox if box.label == "Saved trace").set_value(
+            saved.resolve()
+        ).run()
+        app.button[0].click().run()
+        assert not app.exception
+        assert app.session_state["recorded"] is True
+        assert any("Recorded Replay" in caption.value for caption in app.caption)
+>       assert app.session_state["investigation"].model_dump_json() == before
+E       assert '{"workspace_...nation":null}' == '{"workspace_...lure":false}}'
+E         
+E         Skipping 65 identical leading characters in diff, use -v to show
+E         - _id":"run-02c2dbf5e48045b49831ea610a8b7a4d","public_summary":{"incident_id":"incident_001","title":"Service incident 001","started_at":"2026-10-01T14:03:00Z","observed_symptoms":["API 500 responses increased","Backend request latency elevated"],"services":["gateway","backend","postgres","redis","payment"]},"budgets":{"max_rounds":4,"max_tool_calls":12,"max_llm_calls":16,"max_wall_seconds":600.0,"max_tokens":null},"round_index":3,"findings":[{"finding_id":"finding-check-logs-0","task_id":"check-logs-0","ru...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests\integration\test_ui.py:42: AssertionError
+---------------------------- Captured stderr call -----------------------------
+2026-10-13 12:10:09.203 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:483 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+SKIPPED [1] tests\isolation\test_tool_acl.py:195: host does not permit creating symlinks
+SKIPPED [1] tests\unit\test_database.py:122: host does not permit symlink creation
+2 failed, 497 passed, 2 skipped in 122.20s (0:02:02)

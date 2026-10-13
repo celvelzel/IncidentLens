@@ -26,10 +26,18 @@ def citation_metrics(state):
         for record in event.get("details", {}).get("result", {}).get("records", [])
         if record.get("incident_id") == state["incident_id"]
     }
-    valid = [eid for eid in citations if eid in index and eid in observed
-             and index[eid].get("incident_id") == state["incident_id"]]
-    return dict(citation_count=len(citations), valid_citation_count=len(valid),
-                citation_existence_validity=len(valid) / len(citations) if citations else None)
+    valid = [
+        eid
+        for eid in citations
+        if eid in index
+        and eid in observed
+        and index[eid].get("incident_id") == state["incident_id"]
+    ]
+    return dict(
+        citation_count=len(citations),
+        valid_citation_count=len(valid),
+        citation_existence_validity=len(valid) / len(citations) if citations else None,
+    )
 
 
 def score_completed(state, oracle):
@@ -44,37 +52,53 @@ def score_completed(state, oracle):
     terminal = normalize_termination(state)
     runtime_failure = terminal["runtime_failure"] or report.get("status") == "ERROR"
     diagnosis_match = bool(
-        report["status"] == "RESOLVED" and root
+        report["status"] == "RESOLVED"
+        and root
         and root["culprit_service"] == oracle["culprit_service"]
         and root["failure_mode"] == oracle["failure_mode"]
     )
-    correct = bool(
-        not terminal["diagnosis_failure"] and diagnosis_match
-    )
+    correct = bool(not terminal["diagnosis_failure"] and diagnosis_match)
     alert = (state.get("incident_alert") or {}).get("status")
     no_alert = terminal["termination_reason"] == "NO_ALERT" or alert == "NO_ALERT"
     expected_alert = oracle.get("monitoring_expected_alert")
-    monitoring_accuracy = alert == expected_alert if alert and expected_alert in {
-        "ALERT", "NO_ALERT"
-    } else None
-    abstained = (not runtime_failure and terminal["protocol_valid"] is not False
-                and not no_alert and report["status"] == "INCONCLUSIVE" and root is None)
+    monitoring_accuracy = (
+        alert == expected_alert if alert and expected_alert in {"ALERT", "NO_ALERT"} else None
+    )
+    abstained = (
+        not runtime_failure
+        and terminal["protocol_valid"] is not False
+        and not no_alert
+        and report["status"] == "INCONCLUSIVE"
+        and root is None
+    )
     remediation = report.get("remediation_status")
     remediation_success = (
         remediation == "PLAN_READY" and terminal["protocol_valid"] is True
-        if remediation in {"PLAN_READY", "PLAN_FAILED"} else None
+        if remediation in {"PLAN_READY", "PLAN_FAILED"}
+        else None
     )
     workflow_success = False if runtime_failure else None
     if terminal["termination_source"] != "legacy":
         outcome = terminal["termination_outcome"]
-        achieved = (correct if outcome == "SUCCESS" else (abstained and not identifiable)
-                    if outcome == "ABSTAINED" else False)
+        achieved = (
+            correct
+            if outcome == "SUCCESS"
+            else (abstained and not identifiable)
+            if outcome == "ABSTAINED"
+            else False
+        )
         if outcome == "NO_ACTION":
             # Monitoring has its own ground truth; RCA identifiability is not an alert oracle.
             achieved = monitoring_accuracy
-        workflow_success = (False if not terminal["stop_completion"] or runtime_failure
-                            or terminal["protocol_valid"] is False
-                            else achieved if remediation_success is not False else False)
+        workflow_success = (
+            False
+            if not terminal["stop_completion"]
+            or runtime_failure
+            or terminal["protocol_valid"] is False
+            else achieved
+            if remediation_success is not False
+            else False
+        )
     index = state.get("evidence_index", {})
     misleading = bool(oracle.get("misleading_evidence_ids"))
     return dict(
@@ -103,18 +127,29 @@ def score_without_oracle(state):
     if (state.get("report") or {}).get("status") == "ERROR":
         result["runtime_failure"] = True
     remediation = (state.get("report") or {}).get("remediation_status")
-    result.update(dict(
-        identifiable=None, diagnosis_match=None, root_cause_correct=None,
-        correct_abstention=None, misleading_case=None, misleading_correct=None,
-        misleading_decoy_observed=None,
-        remediation_success=(remediation == "PLAN_READY" and terminal["protocol_valid"] is True)
-        if remediation in {"PLAN_READY", "PLAN_FAILED"} else None,
-        monitoring_accuracy=None,
-        workflow_success=False if result["runtime_failure"]
-        or result["protocol_valid"] is False or result["termination_outcome"] == "FAILED" else None,
-        **citation_metrics(state),
-        unsupported_claim_rate=None, semantic_review_status="unreviewed",
-    ))
+    result.update(
+        dict(
+            identifiable=None,
+            diagnosis_match=None,
+            root_cause_correct=None,
+            correct_abstention=None,
+            misleading_case=None,
+            misleading_correct=None,
+            misleading_decoy_observed=None,
+            remediation_success=(remediation == "PLAN_READY" and terminal["protocol_valid"] is True)
+            if remediation in {"PLAN_READY", "PLAN_FAILED"}
+            else None,
+            monitoring_accuracy=None,
+            workflow_success=False
+            if result["runtime_failure"]
+            or result["protocol_valid"] is False
+            or result["termination_outcome"] == "FAILED"
+            else None,
+            **citation_metrics(state),
+            unsupported_claim_rate=None,
+            semantic_review_status="unreviewed",
+        )
+    )
     return result
 
 
@@ -176,17 +211,29 @@ def aggregate(rows):
                 cache_mode="off",
             )
         )
-        for metric in ("diagnosis_match", "remediation_success", "stop_completion",
-                       "workflow_success", "protocol_valid", "monitoring_accuracy",
-                       "root_cause_correct", "correct_abstention", "misleading_correct"):
+        for metric in (
+            "diagnosis_match",
+            "remediation_success",
+            "stop_completion",
+            "workflow_success",
+            "protocol_valid",
+            "monitoring_accuracy",
+            "root_cause_correct",
+            "correct_abstention",
+            "misleading_correct",
+        ):
             values = [r.get(metric) for r in group if r.get(metric) is not None]
-            result[-1].update({
-                metric + "_successes": sum(v is True for v in values),
-                metric + "_failures": sum(v is False for v in values),
-                metric + "_denominator": len(values),
-                metric + "_unknown": len(group) - len(values),
-                metric + "_rate": sum(v is True for v in values) / len(values) if values else None,
-            })
+            result[-1].update(
+                {
+                    metric + "_successes": sum(v is True for v in values),
+                    metric + "_failures": sum(v is False for v in values),
+                    metric + "_denominator": len(values),
+                    metric + "_unknown": len(group) - len(values),
+                    metric + "_rate": sum(v is True for v in values) / len(values)
+                    if values
+                    else None,
+                }
+            )
         result[-1]["runtime_failure_unknown"] = sum(r.get("runtime_failure") is None for r in group)
         for field in ("recovered_model_failure_count", "unrecovered_model_failure_count"):
             result[-1][field] = measured_sum(field)

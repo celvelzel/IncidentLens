@@ -92,7 +92,10 @@ async def test_verifier_timeout_emits_stop_and_is_not_correct_abstention():
             return output, usage
 
     state = await run_investigation("incident_006", FailedReview())
-    assert any(e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stage") == "verify" for e in state.events)
+    assert any(
+        e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stage") == "verify"
+        for e in state.events
+    )
     assert (
         score_completed(state.model_dump(mode="json"), oracle(False))["correct_abstention"] is False
     )

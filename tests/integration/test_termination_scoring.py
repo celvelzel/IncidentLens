@@ -1,4 +1,5 @@
 """End-to-end scoring of completed, recovered and failed workflows."""
+
 import copy
 import json
 from pathlib import Path
@@ -25,8 +26,10 @@ class FlakyModel(MockProvider):
         if self.role == "remediation" and args[0] == self.role:
             raise ProviderError("INJECTED_PLAN_FAILURE", {"llm_calls": 1, "total_tokens": None})
         output, usage = await super().structured_call(*args)
-        if args[0] == self.role and (self.permanent or not self.failed) and (
-            self.role == "remediation" or args[-1].__name__ == "AnalysisOutput"
+        if (
+            args[0] == self.role
+            and (self.permanent or not self.failed)
+            and (self.role == "remediation" or args[-1].__name__ == "AnalysisOutput")
         ):
             self.failed = True
             raise ProviderError("INJECTED_CALL_FAILURE", usage)
@@ -38,9 +41,12 @@ def truth(case="incident_001"):
 
 
 async def run(provider=None, case="incident_001", **options):
-    return await run_investigation(case, provider or MockProvider(),
-                                  budget=Budget(max_llm_calls=40, max_tool_calls=24),
-                                  workflow=WorkflowOptions(profile="incident_response", **options))
+    return await run_investigation(
+        case,
+        provider or MockProvider(),
+        budget=Budget(max_llm_calls=40, max_tool_calls=24),
+        workflow=WorkflowOptions(profile="incident_response", **options),
+    )
 
 
 @pytest.mark.parametrize("remediation", [True, False])
@@ -84,8 +90,10 @@ async def test_exhausted_specialist_can_be_bypassed_by_accepted_peer_evidence():
 @pytest.mark.parametrize("provider_failure", [False, True])
 async def test_failed_plan_keeps_diagnosis_credit_and_fails_workflow(monkeypatch, provider_failure):
     if not provider_failure:
+
         async def broken(*args):
             raise RuntimeError("PLAN_GENERATION_FAILED")
+
         monkeypatch.setattr("incident_lens.agents.remediation.remediate", broken)
     state = await run(FlakyModel("remediation", permanent=True) if provider_failure else None)
     score = score_completed(state.model_dump(mode="json"), truth())
@@ -99,6 +107,7 @@ async def test_failed_plan_keeps_diagnosis_credit_and_fails_workflow(monkeypatch
 async def test_remediation_transport_failure_is_runtime_failure_but_keeps_diagnosis(monkeypatch):
     async def broken(*args):
         raise ProviderError("PROVIDER_TRANSPORT_ERROR", {"llm_calls": 1, "total_tokens": None})
+
     monkeypatch.setattr("incident_lens.agents.remediation.remediate", broken)
     state = await run()
     score = score_completed(state.model_dump(mode="json"), truth())
@@ -123,25 +132,39 @@ async def test_no_alert_uses_monitoring_oracle_not_rca_abstention():
     score = score_completed(state.model_dump(mode="json"), oracle)
     assert score["root_cause_correct"] is score["correct_abstention"] is None
     assert score["workflow_success"] is None
-    assert score_completed(state.model_dump(mode="json"), dict(
-        oracle, monitoring_expected_alert="NO_ALERT"))["workflow_success"] is True
-    assert score_completed(state.model_dump(mode="json"), dict(
-        oracle, monitoring_expected_alert="ALERT"))["workflow_success"] is False
+    assert (
+        score_completed(
+            state.model_dump(mode="json"), dict(oracle, monitoring_expected_alert="NO_ALERT")
+        )["workflow_success"]
+        is True
+    )
+    assert (
+        score_completed(
+            state.model_dump(mode="json"), dict(oracle, monitoring_expected_alert="ALERT")
+        )["workflow_success"]
+        is False
+    )
 
 
 async def test_stop_timeout_keeps_accepted_diagnosis(monkeypatch):
-    investigation = InvestigationRun(MockProvider(), EvidenceProvider(), "incident_001",
-                                    limits=Budget(max_llm_calls=40, max_tool_calls=24),
-                                    workflow=WorkflowOptions(profile="incident_response"))
+    investigation = InvestigationRun(
+        MockProvider(),
+        EvidenceProvider(),
+        "incident_001",
+        limits=Budget(max_llm_calls=40, max_tool_calls=24),
+        workflow=WorkflowOptions(profile="incident_response"),
+    )
     original = investigation.stop_controller.stop
 
     async def timeout(reason, active=None):
         await original(reason, active)
-        request = next(e for e in investigation.state.events
-                       if e.event_type == "WORKFLOW_STOP_REQUESTED")
+        request = next(
+            e for e in investigation.state.events if e.event_type == "WORKFLOW_STOP_REQUESTED"
+        )
         request.details["required_roles"] = ["logs"]
         investigation.stop_controller.completed = False
         investigation.runtime_event("STOP_TIMEOUT", missing_roles=["logs"], stop_reason=reason)
+
     monkeypatch.setattr(investigation.stop_controller, "stop", timeout)
     state = await investigation.run()
     score = score_completed(state.model_dump(mode="json"), truth())
@@ -165,11 +188,21 @@ async def test_unknown_reason_and_conflicts_only_keep_raw_match():
 
 
 def test_aggregation_does_not_mix_scoring_versions_or_drop_unknowns():
-    base = dict(variant="full", source="mock", split="dev", status="RESOLVED",
-                root_cause_correct=True, correct_abstention=None, misleading_correct=None,
-                scoring_version="2")
-    rows = [dict(base, workflow_success=True), dict(base, workflow_success=False),
-            dict(base, workflow_success=None)]
+    base = dict(
+        variant="full",
+        source="mock",
+        split="dev",
+        status="RESOLVED",
+        root_cause_correct=True,
+        correct_abstention=None,
+        misleading_correct=None,
+        scoring_version="2",
+    )
+    rows = [
+        dict(base, workflow_success=True),
+        dict(base, workflow_success=False),
+        dict(base, workflow_success=None),
+    ]
     total = aggregate(rows)[0]
     assert total["workflow_success_denominator"] == 2
     assert total["workflow_success_failures"] == total["workflow_success_unknown"] == 1

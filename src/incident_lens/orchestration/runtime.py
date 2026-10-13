@@ -1,4 +1,5 @@
 """Deterministic task attempts and bounded centralized STOP coordination."""
+
 import asyncio
 from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
@@ -40,8 +41,13 @@ class TaskManager:
             raise ValueError("retry cannot change task role")
         attempt = previous.attempt + 1 if previous else 1
         # Sequence suffix keeps identifiers bounded even for 128-character task IDs.
-        record = TaskRecord(task_id=task_id, role=role, attempt=attempt,
-                            attempt_id=f"attempt-{len(self._records) + 1}", status="ASSIGNED")
+        record = TaskRecord(
+            task_id=task_id,
+            role=role,
+            attempt=attempt,
+            attempt_id=f"attempt-{len(self._records) + 1}",
+            status="ASSIGNED",
+        )
         self._records.append(record)
         self._latest[task_id] = record
         self.emit("TASK_ASSIGNED", **record.model_dump())
@@ -49,11 +55,16 @@ class TaskManager:
 
     def can_retry(self, task_id: str) -> bool:
         record = self._latest.get(task_id)
-        return bool(not self.stopped and record and record.status == "FAILED"
-                    and record.attempt < self.max_attempts)
+        return bool(
+            not self.stopped
+            and record
+            and record.status == "FAILED"
+            and record.attempt < self.max_attempts
+        )
 
-    def _transition(self, task_id: str, status: str, allowed: set[str],
-                    error_code: str | None = None) -> TaskRecord:
+    def _transition(
+        self, task_id: str, status: str, allowed: set[str], error_code: str | None = None
+    ) -> TaskRecord:
         if status != "CANCELLED":
             self._guard()
         record = self._latest[task_id]
@@ -78,8 +89,13 @@ class TaskManager:
 
 
 class StopController:
-    def __init__(self, incident_id: str, run_id: str, emit: Callable[..., Any] | None = None,
-                 ack_timeout_seconds: float = 5.0):
+    def __init__(
+        self,
+        incident_id: str,
+        run_id: str,
+        emit: Callable[..., Any] | None = None,
+        ack_timeout_seconds: float = 5.0,
+    ):
         if not 0 < ack_timeout_seconds < float("inf"):
             raise ValueError("ack_timeout_seconds must be positive and finite")
         self.incident_id = incident_id
@@ -96,16 +112,18 @@ class StopController:
         if self.frozen:
             raise RuntimeStoppedError("runtime is frozen after STOP")
 
-    async def stop(self, reason: StopReason,
-                   active: Mapping[str, Callable[[], Awaitable[Any]]] | None = None) -> None:
+    async def stop(
+        self, reason: StopReason, active: Mapping[str, Callable[[], Awaitable[Any]]] | None = None
+    ) -> None:
         if self.stopped:
             return
         message = StopMessage(incident_id=self.incident_id, run_id=self.run_id, stop_reason=reason)
         self.stopped = self.frozen = True
         self.reason = reason
         callbacks = dict(active or {})
-        self.emit("WORKFLOW_STOP_REQUESTED", **message.model_dump(),
-                  required_roles=sorted(callbacks))
+        self.emit(
+            "WORKFLOW_STOP_REQUESTED", **message.model_dump(), required_roles=sorted(callbacks)
+        )
         acknowledged: set[str] = set()
         accepting = True
 
@@ -119,8 +137,9 @@ class StopController:
                 ack = message.model_copy(update={"message_type": "STOP_ACK", "role": role})
                 self.emit("STOP_ACK", **ack.model_dump())
 
-        tasks = [asyncio.create_task(acknowledge(role, callback))
-                 for role, callback in callbacks.items()]
+        tasks = [
+            asyncio.create_task(acknowledge(role, callback)) for role, callback in callbacks.items()
+        ]
         try:
             if tasks:
                 await asyncio.wait(tasks, timeout=self.ack_timeout_seconds)
@@ -133,5 +152,10 @@ class StopController:
         self.missing_roles = missing
         self.completed = not missing
         if missing:
-            self.emit("STOP_TIMEOUT", incident_id=self.incident_id, run_id=self.run_id,
-                      stop_reason=reason, missing_roles=missing)
+            self.emit(
+                "STOP_TIMEOUT",
+                incident_id=self.incident_id,
+                run_id=self.run_id,
+                stop_reason=reason,
+                missing_roles=missing,
+            )

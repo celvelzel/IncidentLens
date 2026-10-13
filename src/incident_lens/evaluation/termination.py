@@ -10,9 +10,18 @@ SCORING_VERSION = "2"
 REQUEST = "WORKFLOW_STOP_REQUESTED"
 TERMINALS = {"NORMAL_TERMINATION", "RUNTIME_FAILURE"}
 FROZEN_MUTATIONS = {
-    "TASK_ASSIGNED", "TASK_RUNNING", "TASK_COMPLETED", "MERGE", "REMEDIATION_PLAN",
-    "TOOL_CALL", "LLM_CALL", "DECISION", "REVIEW", "DIAGNOSIS_ACCEPTED",
-    "MODEL_RECOVERED", "STAGE_COMPLETED",
+    "TASK_ASSIGNED",
+    "TASK_RUNNING",
+    "TASK_COMPLETED",
+    "MERGE",
+    "REMEDIATION_PLAN",
+    "TOOL_CALL",
+    "LLM_CALL",
+    "DECISION",
+    "REVIEW",
+    "DIAGNOSIS_ACCEPTED",
+    "MODEL_RECOVERED",
+    "STAGE_COMPLETED",
 }
 
 
@@ -23,12 +32,16 @@ def details(event):
 
 def accepted_diagnosis(state):
     report = state.get("report") or {}
-    return any(
-        e.get("event_type") == "DIAGNOSIS_ACCEPTED"
-        and details(e).get("root_cause") == report.get("root_cause")
-        and details(e).get("supporting_evidence_ids") == report.get("supporting_evidence_ids")
-        for e in state.get("events", [])
-    ) and report.get("status") == "RESOLVED" and report.get("root_cause") is not None
+    return (
+        any(
+            e.get("event_type") == "DIAGNOSIS_ACCEPTED"
+            and details(e).get("root_cause") == report.get("root_cause")
+            and details(e).get("supporting_evidence_ids") == report.get("supporting_evidence_ids")
+            for e in state.get("events", [])
+        )
+        and report.get("status") == "RESOLVED"
+        and report.get("root_cause") is not None
+    )
 
 
 def recovered_call_ids(events):
@@ -80,8 +93,10 @@ def _semantic_errors(state, result, new):
 
             try:
                 parsed = RCAReport.model_validate(report)
-                index = {key: EvidenceRecord.model_validate_json(json.dumps(value))
-                         for key, value in state.get("evidence_index", {}).items()}
+                index = {
+                    key: EvidenceRecord.model_validate_json(json.dumps(value))
+                    for key, value in state.get("evidence_index", {}).items()
+                }
                 validate_plan(parsed.remediation_plan, parsed, index)
             except (ValueError, TypeError, KeyError, RuntimeError):
                 errors.append("remediation contract invalid")
@@ -90,7 +105,8 @@ def _semantic_errors(state, result, new):
     ):
         errors.append("PLAN_FAILED conflicts with remediation result")
     if reason == "DIAGNOSIS_READY" and report.get("remediation_status") not in {
-        "SKIPPED", "NOT_STARTED"
+        "SKIPPED",
+        "NOT_STARTED",
     }:
         errors.append("DIAGNOSIS_READY conflicts with remediation result")
     if reason in {"INCONCLUSIVE", "NO_ALERT"} and (
@@ -112,7 +128,11 @@ def _semantic_errors(state, result, new):
             observed = {}
             for event in state.get("events", []):
                 if event.get("event_type") in {
-                    "TASK_ASSIGNED", "TASK_RUNNING", "TASK_COMPLETED", "TASK_FAILED", "TASK_CANCELLED"
+                    "TASK_ASSIGNED",
+                    "TASK_RUNNING",
+                    "TASK_COMPLETED",
+                    "TASK_FAILED",
+                    "TASK_CANCELLED",
                 }:
                     record = TaskRecord.model_validate(dict(details(event), role=event.get("role")))
                     observed[record.attempt_id] = record.model_dump()
@@ -134,13 +154,25 @@ def normalize_termination(state):
     events = state.get("events", [])
     report = state.get("report") or {}
     recovered = recovered_call_ids(events)
-    failures = [e for e in events if e.get("event_type") == "MODEL_FAILURE"
-                and not details(e).get("cancelled")]
-    unrecovered = [e for e in failures if not details(e).get("call_id")
-                   or details(e)["call_id"] not in recovered]
-    new = (state.get("termination") is not None or report.get("termination") is not None
-           or any(e.get("event_type") in {REQUEST, *TERMINALS}
-                  or details(e).get("protocol_version") == "2" for e in events))
+    failures = [
+        e
+        for e in events
+        if e.get("event_type") == "MODEL_FAILURE" and not details(e).get("cancelled")
+    ]
+    unrecovered = [
+        e
+        for e in failures
+        if not details(e).get("call_id") or details(e)["call_id"] not in recovered
+    ]
+    new = (
+        state.get("termination") is not None
+        or report.get("termination") is not None
+        or any(
+            e.get("event_type") in {REQUEST, *TERMINALS}
+            or details(e).get("protocol_version") == "2"
+            for e in events
+        )
+    )
     stops = [(i, e) for i, e in enumerate(events) if e.get("event_type") == "STOP"]
     result = None
     errors = []
@@ -171,18 +203,30 @@ def normalize_termination(state):
             if rd.get("protocol_version") != "2" or rd.get("message_type") != REQUEST:
                 errors.append("invalid request protocol")
             if rd.get("stop_reason") not in (
-                {result.reason} if result.reason != "STOP_TIMEOUT"
-                else {"PLAN_READY", "DIAGNOSIS_READY", "INCONCLUSIVE", "NO_ALERT",
-                      "PLAN_FAILED", "BUDGET_EXHAUSTED", "UNRECOVERABLE_ERROR"}
+                {result.reason}
+                if result.reason != "STOP_TIMEOUT"
+                else {
+                    "PLAN_READY",
+                    "DIAGNOSIS_READY",
+                    "INCONCLUSIVE",
+                    "NO_ALERT",
+                    "PLAN_FAILED",
+                    "BUDGET_EXHAUSTED",
+                    "UNRECOVERABLE_ERROR",
+                }
             ):
                 errors.append("request reason conflicts with termination")
             roles = rd.get("required_roles")
-            if (not isinstance(roles, list) or any(not isinstance(r, str) for r in roles)
-                    or len(set(roles)) != len(roles)):
+            if (
+                not isinstance(roles, list)
+                or any(not isinstance(r, str) for r in roles)
+                or len(set(roles)) != len(roles)
+            ):
                 errors.append("invalid required ACK roles")
                 roles = []
-            acknowledgments = [(i, e) for i, e in enumerate(events)
-                               if e.get("event_type") == "STOP_ACK"]
+            acknowledgments = [
+                (i, e) for i, e in enumerate(events) if e.get("event_type") == "STOP_ACK"
+            ]
             ack_roles = [e.get("role", details(e).get("role")) for _, e in acknowledgments]
             if any(not isinstance(role, str) for role in ack_roles):
                 errors.append("invalid ACK role")
@@ -191,26 +235,41 @@ def normalize_termination(state):
                 errors.append("unexpected or duplicate ACK")
             for i, ack in acknowledgments:
                 ad = details(ack)
-                if not ri < i < ti or ad.get("message_type") != "STOP_ACK" or any(
-                    ad.get(k) != rd.get(k) for k in ("run_id", "incident_id", "stop_reason",
-                                                     "protocol_version")
+                if (
+                    not ri < i < ti
+                    or ad.get("message_type") != "STOP_ACK"
+                    or any(
+                        ad.get(k) != rd.get(k)
+                        for k in ("run_id", "incident_id", "stop_reason", "protocol_version")
+                    )
                 ):
                     errors.append("ACK identity or order mismatch")
             timeout = any(e.get("event_type") == "STOP_TIMEOUT" for e in events)
             if timeout != (result.reason == "STOP_TIMEOUT"):
                 errors.append("timeout conflicts with termination")
             if timeout:
-                timeouts = [(i, e) for i, e in enumerate(events)
-                            if e.get("event_type") == "STOP_TIMEOUT"]
-                if len(timeouts) != 1 or not ri < timeouts[0][0] < ti or (
-                    details(timeouts[0][1]).get("missing_roles") != sorted(set(roles) - set(ack_roles))
-                ) or not set(roles) - set(ack_roles):
+                timeouts = [
+                    (i, e) for i, e in enumerate(events) if e.get("event_type") == "STOP_TIMEOUT"
+                ]
+                if (
+                    len(timeouts) != 1
+                    or not ri < timeouts[0][0] < ti
+                    or (
+                        details(timeouts[0][1]).get("missing_roles")
+                        != sorted(set(roles) - set(ack_roles))
+                    )
+                    or not set(roles) - set(ack_roles)
+                ):
                     errors.append("invalid timeout roles or order")
-            if result.stop_completed and (set(ack_roles) != set(roles) or any(
-                r.get("status") in {"ASSIGNED", "RUNNING"} for r in state.get("task_records", [])
-            )):
+            if result.stop_completed and (
+                set(ack_roles) != set(roles)
+                or any(
+                    r.get("status") in {"ASSIGNED", "RUNNING"}
+                    for r in state.get("task_records", [])
+                )
+            ):
                 errors.append("stop completed with unacknowledged or active tasks")
-            if any(e.get("event_type") in FROZEN_MUTATIONS for e in events[ri + 1:]):
+            if any(e.get("event_type") in FROZEN_MUTATIONS for e in events[ri + 1 :]):
                 errors.append("publication or execution after stop request")
             for _, e in requests + terminals + acknowledgments:
                 for key in ("run_id", "incident_id"):
@@ -226,18 +285,21 @@ def normalize_termination(state):
         reason = details(stops[-1][1]).get("stop_reason")
         try:
             result = termination_result(
-                "STOP_TIMEOUT" if any(e.get("event_type") == "STOP_TIMEOUT" for e in events)
+                "STOP_TIMEOUT"
+                if any(e.get("event_type") == "STOP_TIMEOUT" for e in events)
                 else reason,
-                failure_stage="stop" if any(e.get("event_type") == "STOP_TIMEOUT" for e in events)
-                else "remediation" if reason == "PLAN_FAILED" else "runtime",
+                failure_stage="stop"
+                if any(e.get("event_type") == "STOP_TIMEOUT" for e in events)
+                else "remediation"
+                if reason == "PLAN_FAILED"
+                else "runtime",
                 stop_completed=not any(e.get("event_type") == "STOP_TIMEOUT" for e in events),
             )
         except (ValidationError, TypeError):
             errors.append("unknown historical stop reason")
-        if any(e.get("event_type") in FROZEN_MUTATIONS for e in events[stops[0][0] + 1:]):
+        if any(e.get("event_type") in FROZEN_MUTATIONS for e in events[stops[0][0] + 1 :]):
             errors.append("historical mutation after stop")
-        if any(r.get("status") in {"ASSIGNED", "RUNNING"}
-               for r in state.get("task_records", [])):
+        if any(r.get("status") in {"ASSIGNED", "RUNNING"} for r in state.get("task_records", [])):
             errors.append("historical active tasks after stop")
     if result:
         errors.extend(_semantic_errors(state, result, new))
@@ -253,45 +315,64 @@ def normalize_termination(state):
             data = details(event)
             if result.reason == "PLAN_FAILED" and data.get("stage") == "remediation":
                 continue
-            if data.get("call_id") in degraded and data.get("task_id") and any(
-                r.get("task_id") == data["task_id"] and r.get("status") == "FAILED"
-                for r in state.get("task_records", [])
+            if (
+                data.get("call_id") in degraded
+                and data.get("task_id")
+                and any(
+                    r.get("task_id") == data["task_id"] and r.get("status") == "FAILED"
+                    for r in state.get("task_records", [])
+                )
             ):
                 continue
             errors.append("unrecovered model failure contradicts normal termination")
     if source != "legacy":
         protocol_valid = bool(result) and not errors
-    historical_failure = bool(stops) or bool(unrecovered) or any(
-        e.get("event_type") in {"RUNTIME_ERROR", "STOP_TIMEOUT"} for e in events
+    historical_failure = (
+        bool(stops)
+        or bool(unrecovered)
+        or any(e.get("event_type") in {"RUNTIME_ERROR", "STOP_TIMEOUT"} for e in events)
     )
     runtime_failure = (
-        result.runtime_failure if protocol_valid else True if source != "legacy"
+        result.runtime_failure
+        if protocol_valid
+        else True
+        if source != "legacy"
         else historical_failure
     )
     # Older structured traces do not prove which failed calls were safely bypassed.
-    if source == "v1.2" and (unrecovered or any(
-        e.get("event_type") == "RUNTIME_ERROR" for e in events
-    )):
+    if source == "v1.2" and (
+        unrecovered or any(e.get("event_type") == "RUNTIME_ERROR" for e in events)
+    ):
         runtime_failure = True
     diagnosis_failure = runtime_failure
     if new and protocol_valid and accepted_diagnosis(state):
-        diagnosis_failure = bool(result.runtime_failure and result.failure_stage not in {
-            "remediation", "stop"
-        })
-        accepted = next(i for i, e in enumerate(events) if e.get("event_type") == "DIAGNOSIS_ACCEPTED")
-        if any(e.get("event_type") == "RUNTIME_ERROR" and details(e).get("stage") not in {
-            "remediation", "stop"
-        } for e in events[:accepted]):
+        diagnosis_failure = bool(
+            result.runtime_failure and result.failure_stage not in {"remediation", "stop"}
+        )
+        accepted = next(
+            i for i, e in enumerate(events) if e.get("event_type") == "DIAGNOSIS_ACCEPTED"
+        )
+        if any(
+            e.get("event_type") == "RUNTIME_ERROR"
+            and details(e).get("stage") not in {"remediation", "stop"}
+            for e in events[:accepted]
+        ):
             diagnosis_failure = True
     return {
-        "scoring_version": SCORING_VERSION, "termination_source": source,
+        "scoring_version": SCORING_VERSION,
+        "termination_source": source,
         "termination": result.model_dump() if result else None,
         "termination_reason": result.reason if result else None,
         "termination_outcome": result.outcome if result else None,
-        "protocol_valid": protocol_valid, "protocol_errors": sorted(set(errors)),
-        "runtime_failure": runtime_failure, "diagnosis_failure": diagnosis_failure,
+        "protocol_valid": protocol_valid,
+        "protocol_errors": sorted(set(errors)),
+        "runtime_failure": runtime_failure,
+        "diagnosis_failure": diagnosis_failure,
         "stop_completion": bool(protocol_valid and result.stop_completed)
-        if source != "legacy" else None,
-        "recovered_model_failure_count": sum(details(e).get("call_id") in recovered for e in failures),
+        if source != "legacy"
+        else None,
+        "recovered_model_failure_count": sum(
+            details(e).get("call_id") in recovered for e in failures
+        ),
         "unrecovered_model_failure_count": len(unrecovered),
     }

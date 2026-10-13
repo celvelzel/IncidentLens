@@ -60,6 +60,12 @@ async def test_paired_faults(scenario, variant, baseline):
                 if event["event_type"] == "PROVIDER_FAILURE_CLASSIFIED"
             ]
             assert classified[0] == first_fault
+    if scenario.case_id in {"F31", "F32"}:
+        assert row["repair_requests"] == 1
+        assert row["total_tokens"] is None
+        if variant != "R0":
+            assert row["transport_retries"] == (1 if scenario.case_id == "F31" else 2)
+            assert sum(event["event_type"] == "STRUCTURED_REPAIR" for event in events) == 1
     safe = str(events)
     assert "Authorization" not in safe and "synthetic" not in safe
 

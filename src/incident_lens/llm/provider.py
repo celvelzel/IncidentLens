@@ -63,8 +63,14 @@ class RealChatProvider(LLMProvider):
         rng=None,
         targeted_structured_repair=True,
     ):
-        if not endpoint or not api_key or not model:
+        if not all(isinstance(value, str) and value for value in (endpoint, api_key, model)):
             raise ProviderError("PROVIDER_CONFIGURATION_REQUIRED")
+        try:
+            url = httpx.URL(endpoint)
+        except httpx.InvalidURL:
+            raise ValueError("Endpoint must be an absolute HTTP(S) URL") from None
+        if url.scheme not in ("http", "https") or not url.host:
+            raise ValueError("Endpoint must be an absolute HTTP(S) URL")
         if type(structured_repair_retries) is not int or structured_repair_retries not in (0, 1):
             raise ValueError("structured_repair_retries must be zero or one")
         from incident_lens.orchestration.recovery import RecoveryConfig
@@ -74,9 +80,10 @@ class RealChatProvider(LLMProvider):
             if isinstance(recovery, RecoveryConfig)
             else RecoveryConfig.model_validate(recovery or {})
         )
-        response_format_mode = response_format_mode or (
-            self.recovery.format_capability if self.recovery.enabled else "json_schema"
-        )
+        if response_format_mode is None:
+            response_format_mode = (
+                self.recovery.format_capability if self.recovery.enabled else "json_schema"
+            )
         if response_format_mode not in ("json_schema", "json_object"):
             raise ValueError("Unsupported response format")
         if thinking not in (None, "enabled", "disabled"):
@@ -457,6 +464,7 @@ class RealChatProvider(LLMProvider):
                     exc.usage = usage
                     raise
                 except httpx.HTTPError as exc:
+                    context["elapsed_ms"] = (self.clock() - started) * 1000
                     info = classify_transport(exc, **context)
                 if info is None and response.status_code >= 400:
                     code = None
@@ -466,6 +474,7 @@ class RealChatProvider(LLMProvider):
                         code = error.get("code") if isinstance(error, dict) else None
                     except ValueError:
                         pass
+                    context["elapsed_ms"] = (self.clock() - started) * 1000
                     info = classify_http(response.status_code, response.headers, code, **context)
                 if info is not None:
                     mark_unknown()
@@ -545,7 +554,13 @@ class RealChatProvider(LLMProvider):
                         elapsed_ms=(self.clock() - started) * 1000,
                         usage_complete=usage["tokens_complete"],
                     )
-                    event("PROVIDER_FAILURE_CLASSIFIED", category=info.category, phase=phase)
+                    event(
+                        "PROVIDER_FAILURE_CLASSIFIED",
+                        category=info.category,
+                        phase=phase,
+                        validation_summary=exc.summary,
+                        output_model=output_model.__name__,
+                    )
                     current = budget_snapshot()
                     if (
                         not exc.repairable

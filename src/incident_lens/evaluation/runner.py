@@ -157,7 +157,16 @@ def usage_metrics(provider, state):
             for e in state.get("events", [])
         ),
         transport_retries=sum(c["usage"].get("transport_retries", 0) for c in provider.calls),
-        repair_requests=sum(c["usage"].get("repair_requests", 0) for c in provider.calls),
+        repair_requests=sum(
+            c["usage"].get(
+                "repair_requests",
+                max(0, c["usage"].get("llm_calls", 0) - 1)
+                if type(provider.delegate).__name__ == "RealChatProvider"
+                and hasattr(provider.delegate, "structured_repair_retries")
+                else 0,
+            )
+            for c in provider.calls
+        ),
         prompt_tokens=token_sum("prompt_tokens"),
         completion_tokens=token_sum("completion_tokens"),
         total_tokens=token_sum("total_tokens"),

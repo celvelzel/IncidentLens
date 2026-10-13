@@ -1,4 +1,5 @@
 """Rescore saved traces into a new directory, without running a provider."""
+
 import argparse
 import hashlib
 import json
@@ -17,7 +18,9 @@ def rescore(source, out, data_root=Path("data")):
         raise ValueError("use a new output directory; historical results are preserved")
     contents = source.read_bytes()
     if source.suffix == ".jsonl":
-        records = [json.loads(line) for line in contents.decode("utf-8").splitlines() if line.strip()]
+        records = [
+            json.loads(line) for line in contents.decode("utf-8").splitlines() if line.strip()
+        ]
     else:
         records = [json.loads(contents)]
     if not records:
@@ -37,27 +40,38 @@ def rescore(source, out, data_root=Path("data")):
         except (OSError, ValueError, TypeError, KeyError) as exc:
             error = type(exc).__name__
             score = score_without_oracle(state)
-        row = dict(old, incident_id=state["incident_id"],
-                   variant=old.get("variant", record.get("variant", "full")),
-                   source=old.get("source", record.get("provider", "saved")),
-                   split=old.get("split", "saved"), status=state["report"]["status"],
-                   evaluation_error=error, **score)
+        row = dict(
+            old,
+            incident_id=state["incident_id"],
+            variant=old.get("variant", record.get("variant", "full")),
+            source=old.get("source", record.get("provider", "saved")),
+            split=old.get("split", "saved"),
+            status=state["report"]["status"],
+            evaluation_error=error,
+            **score,
+        )
         rows.append(row)
-        rescored.append(dict(record, metrics=row, historical_metrics=old,
-                             oracle_scoring_fields=oracle))
+        rescored.append(
+            dict(record, metrics=row, historical_metrics=old, oracle_scoring_fields=oracle)
+        )
     out.mkdir(parents=True, exist_ok=False)
     (out / "raw-runs.jsonl").write_text(
-        "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rescored), encoding="utf-8")
+        "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rescored), encoding="utf-8"
+    )
     write_csv(out / "case-level.csv", rows)
     summaries = []
     for variant in sorted({r["variant"] for r in rows}):
         group = [dict(r, variant="full") for r in rows if r["variant"] == variant]
         summaries.append(dict(aggregate(group)[0], variant=variant))
     write_csv(out / "aggregate.csv", summaries)
-    manifest = dict(scoring_version=SCORING_VERSION, input_path=str(source),
-                    input_sha256=hashlib.sha256(contents).hexdigest(), runs=len(rows),
-                    evaluation_errors=sum(bool(r["evaluation_error"]) for r in rows),
-                    provider_executed=False)
+    manifest = dict(
+        scoring_version=SCORING_VERSION,
+        input_path=str(source),
+        input_sha256=hashlib.sha256(contents).hexdigest(),
+        runs=len(rows),
+        evaluation_errors=sum(bool(r["evaluation_error"]) for r in rows),
+        provider_executed=False,
+    )
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
 

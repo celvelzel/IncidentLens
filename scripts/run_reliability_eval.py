@@ -245,6 +245,8 @@ def expected_outcome(case_id, variant):
         "F28": (True, 2),
         "F29": (new, 4 if new else 1),
         "F30": (False, 4 if new else 1),
+        "F31": (new, 3 if new else 2),
+        "F32": (False, 4 if new else 2),
     }
     return table[case_id]
 

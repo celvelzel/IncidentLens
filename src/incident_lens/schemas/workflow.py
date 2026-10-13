@@ -25,18 +25,31 @@ class TerminationResult(StrictModel):
     protocol_version: Literal["2"]
     reason: StopReason
     outcome: Literal["SUCCESS", "ABSTAINED", "NO_ACTION", "FAILED"]
-    failure_stage: Literal[
-        "monitoring", "coordinate", "dispatch", "merge", "verify", "finalize",
-        "diagnosis", "remediation", "stop", "runtime",
-    ] | None
+    failure_stage: (
+        Literal[
+            "monitoring",
+            "coordinate",
+            "dispatch",
+            "merge",
+            "verify",
+            "finalize",
+            "diagnosis",
+            "remediation",
+            "stop",
+            "runtime",
+        ]
+        | None
+    )
     stop_completed: bool
     runtime_failure: bool
 
     @model_validator(mode="after")
     def consistent_termination(self):
         expected = {
-            "PLAN_READY": "SUCCESS", "DIAGNOSIS_READY": "SUCCESS",
-            "INCONCLUSIVE": "ABSTAINED", "NO_ALERT": "NO_ACTION",
+            "PLAN_READY": "SUCCESS",
+            "DIAGNOSIS_READY": "SUCCESS",
+            "INCONCLUSIVE": "ABSTAINED",
+            "NO_ALERT": "NO_ACTION",
         }.get(self.reason, "FAILED")
         if self.outcome != expected:
             raise ValueError("termination outcome must match reason")
@@ -57,13 +70,18 @@ class TerminationResult(StrictModel):
 def termination_result(reason: StopReason, failure_stage=None, stop_completed=True):
     """One terminal reason table shared by producers and historical normalization."""
     outcome = {
-        "PLAN_READY": "SUCCESS", "DIAGNOSIS_READY": "SUCCESS",
-        "INCONCLUSIVE": "ABSTAINED", "NO_ALERT": "NO_ACTION",
+        "PLAN_READY": "SUCCESS",
+        "DIAGNOSIS_READY": "SUCCESS",
+        "INCONCLUSIVE": "ABSTAINED",
+        "NO_ALERT": "NO_ACTION",
     }.get(reason, "FAILED")
     return TerminationResult(
-        protocol_version=PROTOCOL_VERSION, reason=reason, outcome=outcome,
+        protocol_version=PROTOCOL_VERSION,
+        reason=reason,
+        outcome=outcome,
         failure_stage=(failure_stage or "runtime") if outcome == "FAILED" else None,
-        stop_completed=stop_completed, runtime_failure=reason not in NORMAL_REASONS,
+        stop_completed=stop_completed,
+        runtime_failure=reason not in NORMAL_REASONS,
     )
 
 

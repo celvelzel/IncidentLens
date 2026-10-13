@@ -1,4 +1,5 @@
 """Saved trace scoring and all evaluator entrypoints share one classification."""
+
 import hashlib
 import importlib.util
 import json
@@ -23,15 +24,26 @@ def script(name):
 
 async def test_rescore_preserves_input_and_all_scores(tmp_path):
     module = script("rescore_eval")
-    state = await run_investigation("incident_001", MockProvider(),
-                                   budget=Budget(max_llm_calls=32, max_tool_calls=24),
-                                   workflow=WorkflowOptions(profile="incident_response"))
+    state = await run_investigation(
+        "incident_001",
+        MockProvider(),
+        budget=Budget(max_llm_calls=32, max_tool_calls=24),
+        workflow=WorkflowOptions(profile="incident_response"),
+    )
     state = state.model_dump(mode="json")
     oracle = json.loads(Path("data/incidents/incident_001/private/ground_truth.json").read_text())
     source = tmp_path / "input" / "raw-runs.jsonl"
     source.parent.mkdir()
-    source.write_text(json.dumps(dict(state=state, oracle_scoring_fields=oracle,
-                                     metrics={"variant": "full", "runtime_failure": True})) + "\n")
+    source.write_text(
+        json.dumps(
+            dict(
+                state=state,
+                oracle_scoring_fields=oracle,
+                metrics={"variant": "full", "runtime_failure": True},
+            )
+        )
+        + "\n"
+    )
     original = source.read_bytes()
     out = tmp_path / "rescored"
     manifest = module.rescore(source, out)
@@ -50,10 +62,19 @@ async def test_rescore_preserves_input_and_all_scores(tmp_path):
 
 async def test_v12_saved_scores_equal_direct_scores_and_rescore(tmp_path):
     module = script("run_v12_eval")
-    args = Namespace(data_root=Path("data"), out=tmp_path / "runs", split="seed",
-                     incidents=["incident_001"], skip_legacy=True,
-                     inject_transient_failure=True, provider="mock", max_rounds=6,
-                     max_tool_calls=24, max_llm_calls=32, max_wall_seconds=600)
+    args = Namespace(
+        data_root=Path("data"),
+        out=tmp_path / "runs",
+        split="seed",
+        incidents=["incident_001"],
+        skip_legacy=True,
+        inject_transient_failure=True,
+        provider="mock",
+        max_rounds=6,
+        max_tool_calls=24,
+        max_llm_calls=32,
+        max_wall_seconds=600,
+    )
     rows = await module.evaluate(args, module.TransientFailureMock)
     saved = [json.loads(line) for line in (args.out / "raw-runs.jsonl").read_text().splitlines()]
     assert len(rows) == 2
@@ -64,7 +85,9 @@ async def test_v12_saved_scores_equal_direct_scores_and_rescore(tmp_path):
         assert row["failed_calls"] == row["recovered_model_failure_count"] == 1
         assert row["root_cause_correct"] and row["workflow_success"]
     script("rescore_eval").rescore(args.out / "raw-runs.jsonl", tmp_path / "rescored")
-    rescored = [json.loads(line) for line in (tmp_path / "rescored/raw-runs.jsonl").read_text().splitlines()]
+    rescored = [
+        json.loads(line) for line in (tmp_path / "rescored/raw-runs.jsonl").read_text().splitlines()
+    ]
     assert [r["metrics"] for r in rescored] == rows
 
 
@@ -81,8 +104,11 @@ def test_execution_error_with_oracle_keeps_failure_denominator():
 
 def test_unreadable_oracle_keeps_unknown_quality_and_execution_facts(tmp_path):
     source = tmp_path / "trace.json"
-    state = {"incident_id": "incident_999", "events": [],
-             "report": {"status": "ERROR", "root_cause": None}}
+    state = {
+        "incident_id": "incident_999",
+        "events": [],
+        "report": {"status": "ERROR", "root_cause": None},
+    }
     source.write_text(json.dumps({"state": state}))
     out = tmp_path / "rescored"
     manifest = script("rescore_eval").rescore(source, out, tmp_path / "missing-data")

@@ -189,7 +189,18 @@ def main(argv=None):
                     os.getenv("INCIDENT_LENS_API_KEY"),
                     os.getenv("INCIDENT_LENS_MODEL"),
                     structured_repair_retries=config.get("structured_repair_retries", 1),
-                    **provider_options(args.response_format, args.thinking, args.request_timeout),
+                    recovery=config.get("provider_recovery", {}),
+                    **provider_options(
+                        args.response_format
+                        or os.getenv("INCIDENT_LENS_RESPONSE_FORMAT")
+                        or (
+                            config.get("provider_recovery", {}).get("format_capability")
+                            if config.get("provider_recovery", {}).get("enabled", False)
+                            else None
+                        ),
+                        args.thinking,
+                        args.request_timeout,
+                    ),
                 )
             )
             cache = None

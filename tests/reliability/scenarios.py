@@ -13,7 +13,7 @@ from incident_lens.llm.provider import RealChatProvider
 from incident_lens.orchestration.permits import RequestPermitIssuer
 from incident_lens.schemas import CoordinatorDecision
 
-BASELINE = "9e209218a9d0ce128d955897b1abfb3070afb4d9"
+BASELINE = "3629b0695ed1b78d1bd31121363166558a850940"
 VALID = '{"action":"ABSTAIN","reason":"missing","stop_reason":"missing"}'
 MODEL = "fixture-model"
 PROMPT = "Return the required coordinator decision."
@@ -56,6 +56,8 @@ SCENARIOS = [
     Scenario("F28", ("invalid", 200), requests=2),
     Scenario("F29", (503, 503, "invalid", 200)),
     Scenario("F30", (503, 503, "invalid", "invalid")),
+    Scenario("F31", ("invalid", 503, 200)),
+    Scenario("F32", ("invalid", 503, 503, 503)),
 ]
 
 
@@ -177,7 +179,12 @@ async def run_case(scenario, variant, baseline_class):
     # A dispatched failed request cannot have a known aggregate bill.
     if not completed and (not usage or not usage.get("tokens_complete", False)):
         total = None
-    repairs = sum(len(body["messages"]) > 2 for body in bodies)
+    # A transport retry reuses the same repair message; count only its introduction.
+    repairs = sum(
+        len(body["messages"]) > len(bodies[index - 1]["messages"])
+        for index, body in enumerate(bodies)
+        if index > 0
+    )
     if variant != "R0":
         assert usage.get("repair_requests", 0) == repairs
         retry_dispatches = sum(
