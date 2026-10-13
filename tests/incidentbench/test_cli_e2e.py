@@ -103,3 +103,19 @@ def test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite(tmp_path):
     saved_analysis = snapshot(analysis)
     cli("analyze_incidentbench.py", *analyze_args, success=False)
     assert snapshot(analysis) == saved_analysis
+
+    # Selecting successful rows beside an intact ledger must never shrink denominators.
+    selected = runs / "selected.jsonl"
+    selected.write_bytes((runs / "raw-runs.jsonl").read_bytes().splitlines(keepends=True)[0])
+    rejected = cli(
+        "analyze_incidentbench.py",
+        "--input",
+        selected,
+        "--oracle-root",
+        labels,
+        "--out",
+        tmp_path / "selected-analysis",
+        success=False,
+    )
+    assert "complete hashed raw ledger" in rejected.stderr
+    assert not (tmp_path / "selected-analysis").exists()

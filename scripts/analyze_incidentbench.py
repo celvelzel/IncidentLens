@@ -28,19 +28,28 @@ def main():
     )
     lock = json.loads((args.input.parent / "protocol.lock.json").read_text(encoding="utf-8"))
     from incident_lens.incidentbench.manifest import verify_lock
-    from incident_lens.incidentbench.oracle_store import OracleStore
+    from incident_lens.incidentbench.oracle_store import OracleStore, safe_path
 
     dataset = json.loads(
         (args.input.parent / "experiment-context.json").read_text(encoding="utf-8")
     )["dataset_root"]
     verify_lock(lock, dataset, protocol)
     digests = json.loads((args.input.parent / "artifact-digests.json").read_text(encoding="utf-8"))
+    expected_files = {"raw-runs.jsonl", "scores.jsonl", "protocol.json", "experiment-context.json"}
+    if set(digests) != expected_files:
+        raise ValueError("saved artifact digest contract mismatch")
+    if hashlib.sha256(safe_path(args.input).read_bytes()).hexdigest() != digests["raw-runs.jsonl"]:
+        raise ValueError("analysis input must match the complete hashed raw ledger")
     for name, digest in digests.items():
-        if hashlib.sha256((args.input.parent / name).read_bytes()).hexdigest() != digest:
+        if hashlib.sha256(safe_path(args.input.parent / name).read_bytes()).hexdigest() != digest:
             raise ValueError("saved artifact digest mismatch")
     raw = [json.loads(line) for line in args.input.read_text(encoding="utf-8").splitlines()]
     if len({r["run_key"] for r in raw}) != len(raw):
         raise ValueError("duplicate saved run key")
+    order = json.loads(safe_path(args.input.parent / "run-order.json").read_bytes())
+    expected_keys = [f"{incident}.{variant}.repeat-{repeat}" for incident, repeat, variant in order]
+    if [run["run_key"] for run in raw] != expected_keys:
+        raise ValueError("analysis requires every attempted key in the locked run order")
     rows = []
     original = {
         r["run_key"]: r
@@ -54,6 +63,8 @@ def main():
     context = json.loads(
         (args.input.parent / "experiment-context.json").read_text(encoding="utf-8")
     )
+    if set(original) != set(expected_keys):
+        raise ValueError("saved score keys must match the complete raw ledger")
     _, _, cases = load_cases(dataset, context["split"])
     metadata_index = {c.incident_id: c.model_dump(mode="json") for c in cases}
     for run in raw:
@@ -75,7 +86,10 @@ def main():
             OracleStore(args.oracle_root, public_root=dataset).load_after_completion(
                 run["incident_id"], state
             )
-            if args.oracle_root and metadata["split"] != "test" and state.get("report")
+            if args.oracle_root
+            and metadata["split"] != "test"
+            and state.get("report")
+            and (state.get("execution_error") or {}).get("code") != "PROTOCOL_MISMATCH"
             else None
         )
         row = {
@@ -103,6 +117,15 @@ def main():
         if oracle and row.get("oracle_sha256") != original[run["run_key"]].get("oracle_sha256"):
             raise ValueError("oracle label digest mismatch")
         row["score_error"] = original[run["run_key"]].get("score_error")
+        row["failure_category"] = (
+            (
+                (state.get("execution_error") or {}).get("code")
+                or row.get("termination_reason")
+                or "UNKNOWN"
+            )
+            if not row["technical_completion"]
+            else None
+        )
         rows.append(row)
     args.out.mkdir(parents=True, exist_ok=False)
     write_csv(args.out / "case-level.csv", rows)
