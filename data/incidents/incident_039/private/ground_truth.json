@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "database_transaction_lock_contention",
+  "culprit_service": "postgres",
+  "failure_mode": "postgres_lock_contention",
+  "decisive_evidence_ids": [
+    "incident_039-L001",
+    "incident_039-DB001",
+    "incident_039-DB002"
+  ],
+  "misleading_evidence_ids": [
+    "incident_039-C002",
+    "incident_039-L004"
+  ],
+  "causal_chain": [
+    "Long transaction blocks sessions",
+    "Queries wait on lock",
+    "Backend requests time out"
+  ],
+  "valid_alternatives": [],
+  "is_identifiable": true,
+  "split": "database",
+  "generator_seed": 17039
+}

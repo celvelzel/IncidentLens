@@ -1,0 +1,30 @@
+[
+  {
+    "evidence_id": "incident_037-M007",
+    "incident_id": "incident_037",
+    "source_type": "metrics",
+    "service": "redis",
+    "observed_at": "2026-11-06T17:04:53Z",
+    "source_path": "public/metrics.csv",
+    "excerpt": "availability=1 fraction",
+    "metadata": {
+      "metric_name": "availability",
+      "value": 1.0,
+      "unit": "fraction"
+    }
+  },
+  {
+    "evidence_id": "incident_037-M004",
+    "incident_id": "incident_037",
+    "source_type": "metrics",
+    "service": "postgres",
+    "observed_at": "2026-11-06T17:04:53Z",
+    "source_path": "public/metrics.csv",
+    "excerpt": "connections_active=100 connections",
+    "metadata": {
+      "metric_name": "connections_active",
+      "value": 100.0,
+      "unit": "connections"
+    }
+  }
+]

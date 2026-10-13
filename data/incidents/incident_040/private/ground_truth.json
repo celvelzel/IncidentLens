@@ -1,0 +1,23 @@
+{
+  "root_cause_code": "connection_pool_configuration_regression",
+  "culprit_service": "backend",
+  "failure_mode": "backend_pool_config_regression",
+  "decisive_evidence_ids": [
+    "incident_040-L001"
+  ],
+  "misleading_evidence_ids": [
+    "incident_040-C002",
+    "incident_040-L004"
+  ],
+  "causal_chain": [
+    "Backend local connection pool reduced below request concurrency",
+    "Acquisition queue exceeds deadline while database remains healthy",
+    "Backend errors propagate to gateway"
+  ],
+  "valid_alternatives": [
+    "postgres_connection_exhaustion"
+  ],
+  "is_identifiable": false,
+  "split": "database",
+  "generator_seed": 17040
+}

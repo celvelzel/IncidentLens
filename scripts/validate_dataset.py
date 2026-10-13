@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 
-from incident_lens.tools.provider import PUBLIC_FILES, EvidenceProvider
+from incident_lens.tools.provider import PUBLIC_FILES, SOURCE_FILES, EvidenceProvider
 
 FORBIDDEN_MARKERS = (
     "root_cause_code",
@@ -28,7 +28,12 @@ def validate_dataset(root: str | Path = "data") -> list[str]:
     except Exception as error:
         return [f"dataset cannot be loaded: {type(error).__name__}"]
     split_ids = {}
-    for split in ("seed", "dev", "test"):
+    for split in (
+        "seed",
+        "dev",
+        "test",
+        *(["database"] if (root / "splits/database_ids.json").exists() else []),
+    ):
         try:
             ids = json.loads((root / "splits" / f"{split}_ids.json").read_text(encoding="utf-8"))
             if (
@@ -51,7 +56,7 @@ def validate_dataset(root: str | Path = "data") -> list[str]:
         try:
             records = [
                 record
-                for source in ("logs", "metrics", "changes", "configs", "topology")
+                for source in (*SOURCE_FILES, "topology")
                 for record in provider._records(incident_id, source)
             ]
             ids = {record.evidence_id for record in records}
@@ -87,6 +92,8 @@ def validate_dataset(root: str | Path = "data") -> list[str]:
             public_text = "\n".join(
                 provider._public_path(incident_id, filename).read_text(encoding="utf-8")
                 for filename in PUBLIC_FILES
+                if filename != "database.jsonl"
+                or (root / "incidents" / incident_id / "public" / filename).exists()
             )
             for marker in FORBIDDEN_MARKERS + tuple(
                 truth.get(key, "") for key in ("root_cause_code", "failure_mode")
