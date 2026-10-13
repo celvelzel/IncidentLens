@@ -1,0 +1,30 @@
+{
+  "accepted_labels": 0,
+  "blindness_level": "development_visible",
+  "challenges": {
+    "counterfactual": 8,
+    "misleading": 4,
+    "missing": 4,
+    "ordinary": 4
+  },
+  "cohorts": {
+    "core": 20,
+    "monitoring": 0,
+    "ood": 0
+  },
+  "core_splits": {
+    "dev": 0,
+    "seed": 20,
+    "test": 0
+  },
+  "families": 4,
+  "identifiable": 16,
+  "independence_status": "unreviewed",
+  "independent_audited_families": 0,
+  "splits": {
+    "dev": 0,
+    "seed": 20,
+    "test": 0
+  },
+  "total_cases": 20
+}
