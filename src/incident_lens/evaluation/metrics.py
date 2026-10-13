@@ -24,7 +24,16 @@ def score_completed(state, oracle):
         raise ValueError("oracle identifiability must be boolean")
     root = report.get("root_cause")
     runtime_failure = any(
-        event.get("event_type") in {"STOP", "MODEL_FAILURE"} for event in state.get("events", [])
+        event.get("event_type") in {"MODEL_FAILURE", "RUNTIME_ERROR"}
+        or (
+            event.get("event_type") == "STOP"
+            and (
+                event.get("details", {}).get("message_type") != "STOP"
+                or event.get("details", {}).get("stop_reason")
+                in {"BUDGET_EXHAUSTED", "UNRECOVERABLE_ERROR"}
+            )
+        )
+        for event in state.get("events", [])
     )
     correct = bool(
         not runtime_failure
