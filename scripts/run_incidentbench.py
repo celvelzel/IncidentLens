@@ -17,8 +17,10 @@ from incident_lens.llm.provider import RealChatProvider
 
 
 async def run(args):
-    if args.out.exists():
+    if args.out.exists() and not args.resume:
         raise FileExistsError("experiment output already exists")
+    if args.resume and not args.out.exists():
+        raise FileNotFoundError("resume requires an existing experiment output")
     _, _, cases = load_cases(args.dataset, args.split)
     if not cases:
         raise ValueError("empty split")
@@ -76,7 +78,14 @@ async def run(args):
         json.loads(args.protocol_lock.read_text(encoding="utf-8")) if args.protocol_lock else None
     )
     rows = await run_experiment(
-        args.dataset, args.split, factory, args.out, protocol, args.oracle_root, protocol_lock=lock
+        args.dataset,
+        args.split,
+        factory,
+        args.out,
+        protocol,
+        args.oracle_root,
+        protocol_lock=lock,
+        resume=args.resume,
     )
     print(json.dumps({"runs": len(rows), "source": protocol.provider_id, "out": str(args.out)}))
 
@@ -94,6 +103,7 @@ def main():
     parser.add_argument("--cache-mode", choices=("off",), default="off")
     parser.add_argument("--jobs", type=int, choices=(1,), default=1)
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--resume", action="store_true")
     asyncio.run(run(parser.parse_args()))
 
 
