@@ -1,0 +1,21 @@
+# Optional heuristic selection; existing system.yaml keeps current_dynamic.
+max_rounds: 4
+max_tool_calls: 12
+max_llm_calls: 24
+max_wall_seconds: 600
+cache_mode: off
+investigation:
+  selection_policy: active_evidence
+  shadow_enabled: false
+  active_evidence:
+    policy_version: caes-v1
+    candidate_pool_limit: 6
+    max_selected_tasks: 2
+    discrimination_weight: 0.4
+    gap_weight: 0.3
+    gate_weight: 0.3
+    redundancy_weight: 0.3
+    request_weight: 1.0
+    tool_weight: 0.25
+    reserve_verifier_requests: 1
+    reserve_verifier_tools: 1

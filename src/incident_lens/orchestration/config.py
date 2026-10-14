@@ -4,6 +4,15 @@ from incident_lens.schemas.workflow import WorkflowOptions
 
 
 def workflow_options(config, *, profile=None, monitor_mode=None, snapshot=None):
+    from incident_lens.orchestration.active_investigation.contracts import PolicyConfig
+
+    investigation = config.get("investigation", {})
+    if not isinstance(investigation, dict) or set(investigation) - {
+        "selection_policy",
+        "shadow_enabled",
+        "active_evidence",
+    }:
+        raise ValueError("invalid investigation configuration")
     workflow = config.get("workflow", {})
     monitor = config.get("monitor", {})
     remediation = config.get("remediation", {})
@@ -12,6 +21,11 @@ def workflow_options(config, *, profile=None, monitor_mode=None, snapshot=None):
     communication = config.get("communication", {})
     database = config.get("database_agent", {})
     return WorkflowOptions(
+        selection_policy=investigation.get("selection_policy", "current_dynamic"),
+        shadow_caes=investigation.get("shadow_enabled", False),
+        active_evidence_config=PolicyConfig.model_validate(
+            investigation.get("active_evidence", {})
+        ),
         profile=profile or workflow.get("profile", "legacy_rca"),
         communication_mode=communication.get("mode", "centralized"),
         monitor_mode=monitor_mode

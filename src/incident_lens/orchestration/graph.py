@@ -56,6 +56,10 @@ class InvestigationRun:
         self.limits = limits or Budget()
         self.variant = variant
         self.workflow = workflow or WorkflowOptions()
+        if (
+            self.workflow.selection_policy != "current_dynamic" or self.workflow.shadow_caes
+        ) and variant != "full":
+            raise ValueError("CAES requires full dynamic variant")
         if self.workflow.benchmark_fixed_four and variant != "fixed":
             raise ValueError("fixed-four option requires fixed variant")
         self.response_profile = self.workflow.profile == "incident_response"
@@ -384,6 +388,22 @@ class InvestigationRun:
                 )
                 if decision.action == "INVESTIGATE" and len(decision.assignments) > 2:
                     raise RuntimeError("Coordinator may assign at most two tasks per round")
+            if decision.action == "INVESTIGATE" and (
+                self.workflow.selection_policy != "current_dynamic" or self.workflow.shadow_caes
+            ):
+                from incident_lens.orchestration.active_investigation.policy import apply_policy
+
+                try:
+                    decision = apply_policy(self, state, decision)
+                except Exception as exc:
+                    if not self.workflow.shadow_caes:
+                        raise
+                    # An observational failure cannot replace the original route.
+                    self.stop_controller.guard()
+                    if self.exhausted(state):
+                        raise
+                    self.event(state, "ACTION_POLICY_FALLBACK", shadow=True,
+                               reason=type(exc).__name__, executed_original_proposal=True)
             state.decisions.append(decision)
             self.event(
                 state,
