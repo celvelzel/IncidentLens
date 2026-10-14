@@ -125,10 +125,9 @@ def check_eligibility(
         < (2 + config.reserve_verifier_requests) * budget.physical_request_multiplier
     ):
         return "INSUFFICIENT_LLM_BUDGET"
-    if (
-        budget.remaining_tools
-        < min(2, len(candidate.allowed_tools)) + config.reserve_verifier_tools
-    ):
+    # One allowed tool schema can be invoked twice by the Investigator plan.
+    # Reserve the fixed conservative plan cap, not the number of tool names.
+    if budget.remaining_tools < 2 + config.reserve_verifier_tools:
         return "INSUFFICIENT_TOOL_BUDGET"
     if budget.remaining_seconds <= 0:
         return "INSUFFICIENT_WALL_BUDGET"

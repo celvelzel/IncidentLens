@@ -115,3 +115,19 @@ def test_deterministic_service_order_and_no_mutation():
     generate_candidates(state, (task(),), ACL, PolicyConfig())
     assert state.model_dump_json() == original
     assert generate_candidates(state, (), {}, PolicyConfig()) == ()
+
+
+def test_multi_service_cap_preserves_role_diversity():
+    state = visible()
+    summary = state.public_summary.model_copy(
+        update={"services": ["backend", "frontend", "postgres", "worker"]}
+    )
+    state = state.model_copy(update={"public_summary": summary})
+    acl = ACL | {"database": ("get_db_connections",)}
+    proposals = (task(), task(task_id="second", question="Check timeout onset"))
+    result = generate_candidates(state, proposals, acl, PolicyConfig())
+    assert len(result) == 6
+    assert [item.existing_task_id for item in result[:2]] == ["t", "second"]
+    assert len({item.proposed_role for item in result}) == 4
+    assert [item.proposed_role for item in result[2:]] == ["logs", "metrics", "database", "changes"]
+    assert result == generate_candidates(state, proposals, acl, PolicyConfig())

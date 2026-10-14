@@ -100,10 +100,12 @@ def generate_candidates(
             "Change timing distinguishes recent changes from unchanged configuration",
         ),
     )
-    for role, tool, question, discriminator in templates:
-        if tool not in role_acl.get(role, ()):
-            continue
-        for service in sorted(set(visible.public_summary.services)):
+    # Round-robin roles before advancing services, so the pool cap cannot let
+    # one role's service expansion crowd out other legal investigations.
+    for service in sorted(set(visible.public_summary.services)):
+        for role, tool, question, discriminator in templates:
+            if tool not in role_acl.get(role, ()):
+                continue
             filters = {"service": service}
             if tool != "get_dependencies":
                 filters.update(start_ts=start, end_ts=end)

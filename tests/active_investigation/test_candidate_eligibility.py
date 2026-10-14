@@ -109,3 +109,14 @@ def test_known_evidence_and_no_mutation():
 def test_nested_json_ids_rejected_without_crash():
     assert check(candidate(filters={"ids": [{"secret": "value"}]})) == "UNOBSERVED_EVIDENCE_ID"
     assert check(candidate(filters={"change_id": {"secret": "value"}})) == "UNOBSERVED_EVIDENCE_ID"
+
+
+def test_single_schema_reserves_two_planned_calls():
+    assert (
+        check(budget=BudgetView(remaining_requests=10, remaining_tools=2, remaining_seconds=100))
+        == "INSUFFICIENT_TOOL_BUDGET"
+    )
+    assert (
+        check(budget=BudgetView(remaining_requests=10, remaining_tools=3, remaining_seconds=100))
+        is None
+    )
