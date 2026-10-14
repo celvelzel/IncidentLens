@@ -3,20 +3,28 @@
 Recorded 2026-10-14 during the first real-model evaluation of V1.4 on the COMP
 On-Premises GenAI Platform (`DeepSeek-V4-Flash`, endpoint
 `https://genai.comp.polyu.edu.hk/api/v1`). These issues are runtime error-handling
-defects in the dispatch layer, exposed only by real-model runs; the offline mock
-acceptance suite (723 passed) does not reproduce them. **PENDING FIX — not yet fixed.**
+defects in the dispatch layer, first exposed by real-model runs; the original offline mock
+acceptance suite (723 passed) did not cover them. **Fix implemented 2026-10-14.**
+Validation and remaining real-provider limits are recorded in
+[the fix acceptance report](live-provider-fix-acceptance.md).
 
-## ISSUE-1: Tool `NOT_FOUND` (empty service data) cascades into whole-investigation `UNRECOVERABLE_ERROR`
+The original trace is retained below as historical evidence. Verification corrected
+three interpretations: `inventory` is outside the case's service list (a valid empty
+query already returns `ok=true`); one worker failure alone triggers the legacy batch
+abort; and the ninth request was cancelled with unknown usage, so this was not a
+9/9 successful-request run. The defect is reproducible with offline fault injection.
+
+## ISSUE-1: Tool `NOT_FOUND` (unknown service) cascades into whole-investigation `UNRECOVERABLE_ERROR`
 
 **Severity: High** — aborts otherwise healthy investigations; blocks reliable
 real-provider evaluation.
 
 ### Symptom
 
-A task whose evidence tool returns `NOT_FOUND` (the queried service simply has no
-data in this case, a normal data gap) fails that task. When a sibling task in the
-same parallel batch also fails (observed: a model call cancelled as
-`PROVIDER_CANCELLED`), the dispatch layer escalates to
+A task whose evidence tool returns `NOT_FOUND` (the queried service does not exist
+in this case) fails that task. This failure cancels a sibling call in the
+same parallel batch (observed: a model call recorded as
+`PROVIDER_CANCELLED`), and the dispatch layer escalates to
 `UNRECOVERABLE_ERROR` and terminates the entire investigation with no RCA report,
 even though rounds and LLM budget remain.
 
@@ -36,13 +44,14 @@ Run `incident_2001.full.repeat-0` (batch budget32), state file:
 - Escalation: `WORKFLOW_STOP_REQUESTED` at stage `dispatch`, reason
   `UNRECOVERABLE_ERROR`; report `INCONCLUSIVE`, `root_cause: null`.
 - Budget spent 9/32 LLM calls — this is NOT budget exhaustion.
-- Provider transport was healthy all run (9/9 requests returned normal structured
-  output; `tokens_complete: true` before the cancellation).
+- The readiness probe succeeded. Eight requests completed; the cancelled ninth
+  request has `tokens_complete: false` and unknown total usage. The trace does not
+  establish its server-side completion or billing status.
 
 Scoring record: `runs/scores.jsonl` ->
 `failure_category: UNRECOVERABLE_ERROR`, `diagnosis_failure: true`, llm_requests 9.
 
-### Root-cause chain (code)
+### Root-cause chain (pre-fix code)
 
 1. `src/incident_lens/tools/registry.py:205,209` — empty/missing service data is
    returned as `error_code: "NOT_FOUND"` with `ok: false`.
@@ -55,8 +64,8 @@ Scoring record: `runs/scores.jsonl` ->
 
 ### Why mock acceptance missed it
 
-The mock provider/tools do not produce the `NOT_FOUND` + concurrent model-cancellation
-combination. This class of defect is only observable in real-model dispatch runs,
+The original mock acceptance cases did not produce the `NOT_FOUND` + concurrent model-cancellation
+combination. Deterministic offline dispatch injection can reproduce this class of defect;
 which `results/acceptance/v14/final/phase-acceptance.json` records as
 `P6: REAL_EVAL_PENDING` / `real_provider_requests: 0`.
 
@@ -98,7 +107,7 @@ call (~12s) is cancelled and recorded as `PROVIDER_CANCELLED` with
 `tokens_complete: false` and `measured_total_tokens: 0`. This is the dispatch
 layer cancelling siblings on batch failure, not a platform/network fault. If
 ISSUE-1 is fixed and sibling cancellation is retained, the cancelled-call usage
-accounting (tokens already streamed server-side are uncounted) should be
+accounting (server-side generation and billing are unknown without usage) should be
 documented in the failure accounting contract. Same fix batch as ISSUE-1.
 
 ## References

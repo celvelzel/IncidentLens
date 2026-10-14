@@ -32,7 +32,7 @@ class FlakyModel(MockProvider):
             and (self.role == "remediation" or args[-1].__name__ == "AnalysisOutput")
         ):
             self.failed = True
-            raise ProviderError("INJECTED_CALL_FAILURE", usage)
+            raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage)
         return output, usage
 
 

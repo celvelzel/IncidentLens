@@ -1,0 +1,44 @@
+{
+  "termination": {
+    "protocol_version": "2",
+    "reason": "BUDGET_EXHAUSTED",
+    "outcome": "FAILED",
+    "failure_stage": "coordinate",
+    "stop_completed": true,
+    "runtime_failure": true
+  },
+  "failure": {
+    "model_id": "fixture",
+    "llm_calls": 2,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "measured_total_tokens": 7,
+    "tokens_complete": false,
+    "elapsed_ms": 97.82909997738898,
+    "error_code": "BudgetExceeded",
+    "failed": true,
+    "stage": "coordinate",
+    "call_id": "model-call-1",
+    "cancelled": true,
+    "cancellation_reason": "wall_budget_exhausted"
+  },
+  "observed_tokens": 7,
+  "metrics": {
+    "llm_requests": 2,
+    "actual_http_requests": 2,
+    "logical_structured_calls": 1,
+    "task_retries": 0,
+    "transport_retries": 0,
+    "repair_requests": 1,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "cost_usd": null,
+    "failed_calls": 0,
+    "provider_failures": 0,
+    "cancelled_model_calls": 1,
+    "failed_model_calls": 0,
+    "failed_tool_calls": 0
+  }
+}

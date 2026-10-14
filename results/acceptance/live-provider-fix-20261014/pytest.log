@@ -1,0 +1,140 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+................................................................F....... [ 24%]
+..........................................F............................. [ 33%]
+..........s............................................................. [ 41%]
+..............................................................FF........ [ 49%]
+..................................................................s..... [ 57%]
+........................................................................ [ 66%]
+.......................................F................................ [ 74%]
+s....................................................................... [ 82%]
+........................................................................ [ 91%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+================================== FAILURES ===================================
+____________ test_v12_saved_scores_equal_direct_scores_and_rescore ____________
+
+tmp_path = WindowsPath('C:/Users/RickyMa/AppData/Local/Temp/pytest-of-RickyMa/pytest-537/test_v12_saved_scores_equal_di0')
+
+    async def test_v12_saved_scores_equal_direct_scores_and_rescore(tmp_path):
+        module = script("run_v12_eval")
+        args = Namespace(
+            data_root=Path("data"),
+            out=tmp_path / "runs",
+            split="seed",
+            incidents=["incident_001"],
+            skip_legacy=True,
+            inject_transient_failure=True,
+            provider="mock",
+            max_rounds=6,
+            max_tool_calls=24,
+            max_llm_calls=32,
+            max_wall_seconds=600,
+        )
+        rows = await module.evaluate(args, module.TransientFailureMock)
+        saved = [json.loads(line) for line in (args.out / "raw-runs.jsonl").read_text().splitlines()]
+        assert len(rows) == 2
+        for record, row in zip(saved, rows):
+            score = score_completed(record["state"], record["oracle_scoring_fields"])
+            for key, value in score.items():
+                assert row[key] == value
+>           assert row["failed_calls"] == row["recovered_model_failure_count"] == 1
+E           assert 1 == 0
+
+tests\evaluation\test_rescore.py:85: AssertionError
+____________ test_graph_exception_keeps_known_failure_denominators ____________
+
+tmp_path = WindowsPath('C:/Users/RickyMa/AppData/Local/Temp/pytest-of-RickyMa/pytest-537/test_graph_exception_keeps_kno0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027257D9E200>
+
+    async def test_graph_exception_keeps_known_failure_denominators(tmp_path, monkeypatch):
+        from incident_lens.incidentbench import experiment
+    
+        dataset, oracle = build_fixture(tmp_path)
+    
+        async def fail(*args, **kwargs):
+            raise RuntimeError("private error not exported")
+    
+        monkeypatch.setattr(experiment, "run_investigation", fail)
+>       rows = await experiment.run_experiment(
+            dataset,
+            "seed",
+            MockProvider,
+            tmp_path / "failed",
+            ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=10),
+            oracle,
+        )
+
+tests\incidentbench\test_experiment_fairness.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\incident_lens\incidentbench\experiment.py:464: in run_experiment
+    return await _run_experiment(
+src\incident_lens\incidentbench\experiment.py:560: in _run_experiment
+    verify_lock(lock, root, protocol)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lock = {'scripts_sha256': 'fc77ff338932ec7ac4e85df604659a58e3a6b33fe9a1bf28feb46bb656061c54', 'dependency_lock_sha256': 'ff3a...installed_dependencies': {'pydantic': '2.14.0', 'langgraph': '1.2.14', 'httpx': '0.28.1', 'PyYAML': '6.0.3', ...}, ...}
+dataset = WindowsPath('C:/Users/RickyMa/AppData/Local/Temp/pytest-of-RickyMa/pytest-537/test_graph_exception_keeps_kno0/dataset')
+protocol = ExperimentProtocol(protocol_id='incidentbench-v1-development', benchmark_version='incidentbench-v1', provider_id='mock...e, analysis_seed=14101, bootstrap_samples=10, analysis_plan='family_clustered_paired_bootstrap_plus_exact_discordance')
+
+    def verify_lock(lock, dataset, protocol):
+        current = create_lock(dataset, protocol)
+        if any(lock.get(key) != value for key, value in current.items() if key != "sealed"):
+>           raise ValueError("benchmark lock drift")
+E           ValueError: benchmark lock drift
+
+src\incident_lens\incidentbench\manifest.py:66: ValueError
+______ test_failed_model_retry_keeps_costs_and_restores_diagnosis_credit ______
+
+    async def test_failed_model_retry_keeps_costs_and_restores_diagnosis_credit():
+        state = await run(FlakyModel())
+        score = score_completed(state.model_dump(mode="json"), truth())
+>       assert score["root_cause_correct"] and score["workflow_success"]
+E       assert (False)
+
+tests\integration\test_termination_scoring.py:70: AssertionError
+_____ test_exhausted_specialist_can_be_bypassed_by_accepted_peer_evidence _____
+
+    async def test_exhausted_specialist_can_be_bypassed_by_accepted_peer_evidence():
+        state = await run(FlakyModel(permanent=True), case="incident_037")
+        score = score_completed(state.model_dump(mode="json"), truth("incident_037"))
+>       assert score["root_cause_correct"] and score["workflow_success"]
+E       assert (False)
+
+tests\integration\test_termination_scoring.py:83: AssertionError
+_______ test_technical_completion_preserves_recovered_and_normal_stops ________
+
+    async def test_technical_completion_preserves_recovered_and_normal_stops():
+        from incident_lens.evaluation.reliability_metrics import technical_completion
+        from incident_lens.llm import MockProvider, ProviderError
+        from incident_lens.orchestration.graph import run_investigation
+        from incident_lens.schemas import Budget
+        from incident_lens.schemas.workflow import WorkflowOptions
+    
+        class Flaky(MockProvider):
+            failed = False
+    
+            async def structured_call(self, *args):
+                output, usage = await super().structured_call(*args)
+                if args[0] == "logs" and args[-1].__name__ == "AnalysisOutput" and not self.failed:
+                    self.failed = True
+                    raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage)
+                return output, usage
+    
+        state = await run_investigation(
+            "incident_001",
+            Flaky(),
+            budget=Budget(max_llm_calls=40, max_tool_calls=24),
+            workflow=WorkflowOptions(profile="incident_response"),
+        )
+        assert any(event.event_type == "MODEL_FAILURE" for event in state.events)
+>       assert any(event.event_type == "MODEL_RECOVERED" for event in state.events)
+E       assert False
+E        +  where False = any(<generator object test_technical_completion_preserves_recovered_and_normal_stops.<locals>.<genexpr> at 0x0000027259601BE0>)
+
+tests\reliability\test_fault_matrix.py:117: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tests\incidentbench\test_oracle_leakage.py:66: OS symlink privilege unavailable
+SKIPPED [1] tests\isolation\test_tool_acl.py:195: host does not permit creating symlinks
+SKIPPED [1] tests\unit\test_database.py:122: host does not permit symlink creation
+5 failed, 861 passed, 3 skipped in 228.97s (0:03:48)

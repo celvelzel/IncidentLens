@@ -104,7 +104,7 @@ async def test_technical_completion_preserves_recovered_and_normal_stops():
             output, usage = await super().structured_call(*args)
             if args[0] == "logs" and args[-1].__name__ == "AnalysisOutput" and not self.failed:
                 self.failed = True
-                raise ProviderError("INJECTED_CALL_FAILURE", usage)
+                raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage)
             return output, usage
 
     state = await run_investigation(

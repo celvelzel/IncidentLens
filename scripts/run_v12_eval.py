@@ -51,7 +51,7 @@ class TransientFailureMock(MockProvider):
             and not self._injection["injected"]
         ):
             self._injection["injected"] = True
-            raise ProviderError("INJECTED_TRANSIENT_ANALYSIS_FAILURE", usage)
+            raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage)
         return result, usage
 
 

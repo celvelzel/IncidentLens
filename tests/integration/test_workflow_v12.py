@@ -90,7 +90,7 @@ async def test_transient_task_failure_retries_and_resolves(monkeypatch):
     async def flaky(self, state, task):
         if task.role == "logs" and task.task_id not in failures:
             failures.add(task.task_id)
-            raise RuntimeError("TRANSIENT_WORKER_FAILURE")
+            raise ProviderError("PROVIDER_TRANSPORT_ERROR")
         return await original(self, state, task)
 
     monkeypatch.setattr(InvestigationRun, "investigate", flaky)
@@ -109,7 +109,7 @@ async def test_exhausted_worker_keeps_successful_peer_result(monkeypatch):
 
     async def broken_logs(self, state, task):
         if task.role == "logs":
-            raise RuntimeError("PERMANENT_WORKER_FAILURE")
+            raise ProviderError("PROVIDER_TRANSPORT_ERROR")
         return await original(self, state, task)
 
     monkeypatch.setattr(InvestigationRun, "investigate", broken_logs)
@@ -140,7 +140,7 @@ async def test_disabled_partial_recovery_discards_batch(monkeypatch):
 
     async def broken_logs(self, state, task):
         if task.role == "logs":
-            raise RuntimeError("PERMANENT_WORKER_FAILURE")
+            raise ProviderError("PROVIDER_TRANSPORT_ERROR")
         return await original(self, state, task)
 
     monkeypatch.setattr(InvestigationRun, "investigate", broken_logs)

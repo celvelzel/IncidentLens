@@ -1,4 +1,5 @@
 from .arguments import ChangesArgs, ConfigDiffArgs
+from .errors import QueryNotFoundError
 from .provider import EvidenceProvider
 
 
@@ -16,7 +17,7 @@ def query_changes(provider: EvidenceProvider, incident_id: str, args: ChangesArg
 def get_config_diff(provider: EvidenceProvider, incident_id: str, args: ConfigDiffArgs):
     changes = provider._records(incident_id, "changes")
     if not any(record.metadata.get("change_id") == args.change_id for record in changes):
-        raise FileNotFoundError("change does not exist")
+        raise QueryNotFoundError("change does not exist")
     return [
         record
         for record in provider._records(incident_id, "configs")

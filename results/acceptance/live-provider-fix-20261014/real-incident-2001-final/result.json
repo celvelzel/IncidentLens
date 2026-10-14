@@ -1,0 +1,78 @@
+{
+  "run_id": "run-ed7476d9ccc74ca6bbd26013e8df1745",
+  "incident_id": "incident_2001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_2001-E-007"
+      ],
+      "predicted_observations": [
+        "application pool exhaustion errors",
+        "connection_count near or at connection_limit"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Could a transient spike have occurred outside the single observed timestamp?"
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_lock_contention",
+      "support_ids": [],
+      "against_ids": [
+        "incident_2001-E-007"
+      ],
+      "predicted_observations": [
+        "blocking sessions",
+        "lock wait events in get_db_lock_waits"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Were there any lock waits in the 30-minute window that are not shown in the supplied evidence?"
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_slow_query",
+      "support_ids": [],
+      "against_ids": [
+        "incident_2001-E-007"
+      ],
+      "predicted_observations": [
+        "queries exceeding duration threshold in get_db_slow_queries"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Were any slow queries present in the 30-minute window that are not captured in the single evidence record?"
+      ]
+    }
+  ],
+  "unresolved": [
+    "Candidate has unresolved questions or contradictory evidence",
+    "Unresolved shared questions prevent finalization",
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Candidate has unresolved questions or contradictory evidence; Unresolved shared questions prevent finalization; Competing hypothesis remains unresolved",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

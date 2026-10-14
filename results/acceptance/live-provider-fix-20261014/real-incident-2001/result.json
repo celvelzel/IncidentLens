@@ -1,0 +1,29 @@
+{
+  "run_id": "run-6e23f66185104fecaee7adb8d64ea45f",
+  "incident_id": "incident_2001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need at least two supporting records from different sources",
+    "No observed cause-specific discriminator for the candidate",
+    "Candidate has unresolved questions or contradictory evidence",
+    "Competing hypothesis remains unresolved",
+    "Independent verifier has not accepted the candidate"
+  ],
+  "stop_reason": "TIMEOUT",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "coordinate",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

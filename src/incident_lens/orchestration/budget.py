@@ -66,6 +66,12 @@ class CallBudget:
                 function(*args), timeout=self.remaining_seconds()
             )
         except BaseException as exc:
+            deadline_expired = isinstance(exc, TimeoutError) and not self.remaining_seconds()
+            if deadline_expired:
+                cancelled = exc.__cause__
+                exc = BudgetExceeded("Wall-clock budget exhausted")
+                exc.usage = getattr(cancelled, "usage", None)
+                exc.cancellation_reason = "wall_budget_exhausted"
             usage = getattr(exc, "usage", None)
             if usage:
                 self.usage.append(dict(usage))
@@ -90,6 +96,8 @@ class CallBudget:
                 }
                 self.usage.append(unknown)
                 self.failures.append(unknown)
+            if deadline_expired:
+                raise exc from None
             raise
         attempts = usage.get("llm_calls", usage.get("request_count", 1))
         if not self.guarded_provider:

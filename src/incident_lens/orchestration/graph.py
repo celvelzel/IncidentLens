@@ -2,6 +2,7 @@
 
 import asyncio
 import copy
+import hashlib
 import json
 from contextvars import ContextVar
 from datetime import datetime, timezone
@@ -192,7 +193,7 @@ class InvestigationRun:
             result = await pending
             self.stop_controller.guard()
             return result
-        except BaseException:
+        except BaseException as exc:
             for failure in self.call_budget.failures:
                 if failure.get("call_id") == metadata["call_id"]:
                     self.event(
@@ -201,7 +202,17 @@ class InvestigationRun:
                         role=role,
                         source=failure.get("source", "model"),
                         **{k: v for k, v in failure.items() if k != "source"},
-                        cancelled=self.stop_controller.stopped,
+                        cancelled=isinstance(exc, asyncio.CancelledError)
+                        or getattr(exc, "code", "") == "PROVIDER_CANCELLED"
+                        or bool(getattr(exc, "cancellation_reason", None)),
+                        cancellation_reason=(
+                            getattr(exc, "cancellation_reason", None)
+                            or ("workflow_stop" if self.stop_controller.stopped else "parent_cancelled")
+                        )
+                        if isinstance(exc, asyncio.CancelledError)
+                        or getattr(exc, "code", "") == "PROVIDER_CANCELLED"
+                        or getattr(exc, "cancellation_reason", None)
+                        else None,
                     )
             raise
         finally:
@@ -432,7 +443,9 @@ class InvestigationRun:
             # Repeated task against an unchanged board is a loop, not progress.
             signature += json.dumps(sorted(state.evidence_index))
             if signature in self.signatures:
-                raise RuntimeError("Repeated investigation with unchanged evidence")
+                state.stop_reason = "INCONCLUSIVE"
+                self.event(state, "INVESTIGATION_NO_PROGRESS", reason="Repeated check without new evidence")
+                return {"investigation": state, "route": "report"}
             self.signatures.add(signature)
             existing = {t.task_id for t in state.tasks}
             if any(t.task_id in existing for t in decision.assignments):
@@ -472,7 +485,8 @@ class InvestigationRun:
         return type(exc).__name__
 
     async def investigate(self, state, task):
-        from incident_lens.agents.service import analyze, plan_tools
+        from incident_lens.agents.service import AnalysisOutput, analyze, plan_tools
+        from incident_lens.schemas import Finding
 
         context = self.single_context or self.registry.create_context(task.role)
         role = "single" if self.variant == "single" else task.role
@@ -488,6 +502,7 @@ class InvestigationRun:
         )
         self.update_usage(state, usage, role)
         records = []
+        gaps = []
         for call in plan.calls:
             if not self.call_budget.remaining_seconds():
                 raise RuntimeError("Wall-clock budget exhausted")
@@ -504,10 +519,37 @@ class InvestigationRun:
                 result=result.model_dump(mode="json"),
                 task_id=task.task_id,
             )
-            if not result.ok:
+            if not result.ok and result.error_code != "NOT_FOUND":
                 raise RuntimeError("Tool failed: " + str(result.error_code))
+            if not result.records:
+                gap = dict(
+                    call_id=result.call_id,
+                    tool_name=call.tool_name,
+                    args=call.args,
+                    outcome="QUERY_NOT_FOUND" if not result.ok else "NO_DATA",
+                )
+                gaps.append(gap)
+                self.event(state, "TOOL_DATA_GAP", role=role, task_id=task.task_id, **gap)
             records.extend(result.records)
         unique = {r.evidence_id: r for r in records}
+        if not unique:
+            analysis = AnalysisOutput(
+                finding=Finding(
+                    finding_id="gap-" + hashlib.sha256(task.task_id.encode()).hexdigest(),
+                    task_id=task.task_id,
+                    run_id=state.run_id,
+                    incident_id=state.incident_id,
+                    role=task.role,
+                    claim="No evidence for this query; this is not proof of healthy behavior. "
+                    + json.dumps(gaps, ensure_ascii=False),
+                    evidence_ids=[],
+                    relation="neutral",
+                    confidence_qualifier="unknown",
+                    followup_question="Choose an available service, window or evidence source.",
+                ),
+                hypotheses=[],
+            )
+            return context, task, analysis
         if self.cache is None:
             analysis, usage = await self.model_call(
                 role, analyze, self.provider, context, task, list(unique.values())
@@ -531,6 +573,9 @@ class InvestigationRun:
                 execute_model,
                 lambda kind, **data: self.event(state, kind, role=role, source="cache", **data),
             )
+        if gaps:
+            # A query miss is an observation, never additional causal support.
+            analysis.finding.claim += " Data gaps (not evidence of health): " + json.dumps(gaps)
         return context, task, analysis
 
     async def dispatch(self, value):
@@ -541,24 +586,18 @@ class InvestigationRun:
             # after all local outputs return. Provider/usage calls are observable.
             tasks = state.decisions[-1].assignments
             if self.variant == "single":
-                results = []
+                outcomes = []
                 for task in tasks:
-                    results.append(await self.execute_task(state, task))
+                    try:
+                        outcomes.append(await self.execute_task(state, task))
+                    except Exception as exc:
+                        outcomes.append(exc)
             else:
                 pending = [asyncio.create_task(self.execute_task(state, t)) for t in tasks]
                 self.active_workers.update({t.task_id: p for t, p in zip(tasks, pending)})
                 try:
-                    if self.response_profile:
-                        outcomes = await asyncio.gather(*pending, return_exceptions=True)
-                        results = [r for r in outcomes if not isinstance(r, BaseException)]
-                        failures = [r for r in outcomes if isinstance(r, BaseException)]
-                        if failures and (
-                            not results or not self.workflow.continue_on_partial_failure
-                        ):
-                            raise failures[0]
-                    else:
-                        results = await asyncio.gather(*pending)
-                except Exception:
+                    outcomes = await asyncio.gather(*pending, return_exceptions=True)
+                except BaseException:
                     for worker in pending:
                         if not worker.done():
                             worker.cancel()
@@ -566,6 +605,26 @@ class InvestigationRun:
                     raise
                 finally:
                     self.active_workers.clear()
+            results = [r for r in outcomes if not isinstance(r, BaseException)]
+            failures = [r for r in outcomes if isinstance(r, BaseException)]
+            fatal = [
+                f for f in failures
+                if not isinstance(f, asyncio.CancelledError) and not self.recoverable_task_error(f)
+            ]
+            if failures and all(isinstance(f, asyncio.CancelledError) for f in failures) and (
+                not results or not self.workflow.continue_on_partial_failure
+            ):
+                state.stop_reason = "INCONCLUSIVE"
+                self.event(state, "BATCH_CANCELLED", task_ids=[t.task_id for t in tasks])
+                state.tool_calls_used = self.registry.call_count
+                return {"investigation": state, "route": "report", "local_results": []}
+            if fatal or (failures and (not results or not self.workflow.continue_on_partial_failure)):
+                raise (fatal or failures)[0]
+            if failures:
+                self.event(state, "BATCH_PARTIAL_FAILURE", failed_tasks=[
+                    t.task_id for t, outcome in zip(tasks, outcomes)
+                    if isinstance(outcome, BaseException)
+                ])
             state.tool_calls_used = self.registry.call_count
             return {"investigation": state, "local_results": results, "route": "merge"}
         except Exception as exc:
@@ -591,12 +650,16 @@ class InvestigationRun:
                 self.task_manager.cancel(task.task_id)
                 raise
             except Exception as exc:
-                if self.stop_controller.stopped:
+                if self.stop_controller.stopped or getattr(exc, "code", "") == "PROVIDER_CANCELLED":
                     self.task_manager.cancel(task.task_id)
+                    if not self.stop_controller.stopped:
+                        cancellation = asyncio.CancelledError()
+                        cancellation.usage = getattr(exc, "usage", None)
+                        raise cancellation from None
                     raise
                 self.task_manager.fail(task.task_id, self.safe_error(exc))
                 if (
-                    not self.response_profile
+                    not self.recoverable_task_error(exc)
                     or not self.task_manager.can_retry(task.task_id)
                     or self.exhausted(state)
                 ):
@@ -604,6 +667,20 @@ class InvestigationRun:
                 self.task_manager.assign(task.task_id, task.role)
             finally:
                 self.call_context.reset(token)
+
+    @staticmethod
+    def recoverable_task_error(exc):
+        """Retry bounded provider faults, never authority/protocol/source violations."""
+        from incident_lens.llm.provider import ProviderError
+
+        if isinstance(exc, ProviderError):
+            if getattr(exc, "failure", None) is not None:
+                return exc.failure.retryable
+            return exc.code in {
+                "PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR", "PROVIDER_HTTP_ERROR",
+                "STRUCTURED_OUTPUT_INVALID",
+            }
+        return False
 
     def record_recovery(self, record, stage):
         call_ids = [
@@ -899,7 +976,11 @@ class InvestigationRun:
                 from incident_lens.evaluation.termination import recovered_call_ids
 
                 recovered = recovered_call_ids([e.model_dump(mode="json") for e in state.events])
-                if any(f.get("call_id") not in recovered for f in self.call_budget.failures):
+                if any(
+                    f.get("call_id") not in recovered
+                    and f.get("error_code") not in {"CancelledError", "PROVIDER_CANCELLED"}
+                    for f in self.call_budget.failures
+                ):
                     reason = "UNRECOVERABLE_ERROR"
         self.task_manager.stop()
         self.registry.freeze()

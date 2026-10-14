@@ -200,14 +200,20 @@ class RealChatProvider(LLMProvider):
                     )
                 except httpx.TimeoutException:
                     raise ProviderError("PROVIDER_TIMEOUT", usage) from None
-                except asyncio.CancelledError:
-                    raise ProviderError("PROVIDER_CANCELLED", usage) from None
+                except asyncio.CancelledError as exc:
+                    exc.usage = usage
+                    raise
                 except httpx.HTTPError:
                     raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage) from None
                 if response.status_code in (400, 404, 422):
                     raise ProviderError("STRUCTURED_OUTPUT_COMPATIBILITY_ERROR", usage)
                 if response.status_code >= 400:
-                    raise ProviderError("PROVIDER_HTTP_ERROR", usage)
+                    from incident_lens.llm.errors import classify_http
+
+                    raise ProviderError(
+                        "PROVIDER_HTTP_ERROR", usage,
+                        failure=classify_http(response.status_code, response.headers),
+                    )
                 try:
                     data = response.json()
                     if not isinstance(data, dict):

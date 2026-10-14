@@ -18,7 +18,7 @@ async def test_cancelled_request_is_not_reported_as_provider_timeout():
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(cancelled)) as client:
         provider = RealChatProvider("https://example.invalid", "SECRET", "m", client=client)
-        with pytest.raises(ProviderError, match="^PROVIDER_CANCELLED$") as error:
+        with pytest.raises(asyncio.CancelledError) as error:
             await provider.structured_call("coordinator", "", {}, CoordinatorDecision)
     assert error.value.usage["llm_calls"] == 1
     assert error.value.usage["total_tokens"] is None

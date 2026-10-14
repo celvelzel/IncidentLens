@@ -128,7 +128,11 @@ class MeasuredProvider(LLMProvider):
         except BaseException as exc:
             usage = dict(getattr(exc, "usage", {}))
             usage.setdefault("llm_calls", self._call_requests.get())
-            self.calls.append(dict(usage=usage, failed=True))
+            self.calls.append(dict(
+                usage=usage, failed=True,
+                cancelled=isinstance(exc, asyncio.CancelledError)
+                or getattr(exc, "code", "") == "PROVIDER_CANCELLED",
+            ))
             raise
         finally:
             self._call_requests.reset(token)
@@ -145,8 +149,11 @@ def usage_metrics(provider, state):
         e["event_type"] == "TOOL_CALL" and e.get("details", {}).get("result", {}).get("ok") is False
         for e in state.get("events", [])
     )
-    provider_failures = sum(c["failed"] for c in provider.calls)
-    model_failures = sum(e["event_type"] == "MODEL_FAILURE" for e in state.get("events", []))
+    provider_failures = sum(c["failed"] and not c.get("cancelled") for c in provider.calls)
+    model_failures = sum(
+        e["event_type"] == "MODEL_FAILURE" and not e.get("details", {}).get("cancelled")
+        for e in state.get("events", [])
+    )
     failed_model_calls = max(provider_failures, model_failures)
     return dict(
         llm_requests=provider.actual_requests,
@@ -173,6 +180,7 @@ def usage_metrics(provider, state):
         cost_usd=None,
         failed_calls=failed_model_calls + failed_tools,
         provider_failures=provider_failures,
+        cancelled_model_calls=sum(bool(c.get("cancelled")) for c in provider.calls),
         failed_model_calls=failed_model_calls,
         failed_tool_calls=failed_tools,
     )

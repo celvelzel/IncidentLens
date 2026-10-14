@@ -16,6 +16,7 @@ from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL, AgentC
 from .arguments import ARGUMENT_MODELS
 from .changes import get_config_diff, query_changes
 from .database import DATABASE_HANDLERS
+from .errors import InvalidSourceError, QueryNotFoundError
 from .logs import query_logs
 from .metrics import get_dependencies, query_metrics
 from .provider import EvidenceProvider
@@ -160,7 +161,7 @@ class ToolRegistry:
                 getattr(parsed, "service", None) is not None
                 and parsed.service not in self._case.services
             ):
-                raise FileNotFoundError("service does not exist")
+                raise QueryNotFoundError("service does not exist")
             with self._lock:
                 if self._frozen:
                     raise PermissionError("registry is stopped")
@@ -184,7 +185,10 @@ class ToolRegistry:
                         HANDLERS[tool_name], self._provider, self._case.incident_id, parsed
                     )
                     try:
-                        records = future.result(timeout=self._timeout_seconds)
+                        try:
+                            records = future.result(timeout=self._timeout_seconds)
+                        except (ValidationError, ValueError, TypeError, KeyError) as exc:
+                            raise InvalidSourceError from exc
                     finally:
                         executor.shutdown(wait=False, cancel_futures=True)
                 limit = getattr(parsed, "limit", 50)
@@ -201,12 +205,14 @@ class ToolRegistry:
             error = "FORBIDDEN"
         except (ValidationError, ValueError, TypeError):
             error = "BAD_ARGS"
-        except (FileNotFoundError, KeyError):
+        except QueryNotFoundError:
             error = "NOT_FOUND"
+        except InvalidSourceError:
+            error = "SOURCE_INVALID"
         except TimeoutError:
             error = "TIMEOUT"
         except OSError:
-            error = "NOT_FOUND"
+            error = "SOURCE_UNAVAILABLE"
         elapsed_ms = (perf_counter() - started) * 1000
         result = ToolResult(
             call_id=call_id,

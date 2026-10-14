@@ -1,0 +1,13 @@
+{
+  "runs": 4,
+  "compared_fields": [
+    "root_cause_correct",
+    "runtime_failure",
+    "protocol_valid",
+    "termination_reason",
+    "recovered_model_failure_count",
+    "workflow_success"
+  ],
+  "equal": true,
+  "one_recovered_failure_each": true
+}
