@@ -362,7 +362,7 @@ STOP 协议、校验合并、Verifier 和 FinalizeGate。
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --selection-policy active_evidence --out results/caes-active
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --out results/caes-config
 # 使用启用 CAES 的配置时，可显式恢复原策略。
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy current_dynamic --out results/caes-original
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --selection-policy current_dynamic --out results/caes-original
 # 仅重放已保存的选择，不调用模型或工具。
 .venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/caes-active/trace.json
 # 公开 Seed 工程诊断与离线分析；使用新的输出目录。

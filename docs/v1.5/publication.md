@@ -24,5 +24,12 @@ requires the corresponding locally retained raw batch.
 
 Formal P4/P5/Frozen Test/real-provider evidence remains BLOCKED_BY_UPSTREAM. No public
 source release is represented as a successful research release or efficacy result.
-No private Oracle, credentials, `.env`, unrelated PDF scratch directory, or unrelated
-V1.4 acceptance artifacts are added in this publication.
+No private Oracle, credentials, `.env` or unrelated PDF scratch directory are added.
+The branch also contains separately committed public V1.4 acceptance snapshots in
+17c1a67. These existing commits are preserved; the README update does not rewrite
+their evidence or stage the unrelated live-provider issue document.
+
+Publication checks:131 targeted CAES/CLI tests passed, Ruff lint/format passed,
+both README local links resolved, and scoped file screening found no credential
+patterns or files over5MB. The unchanged authoritative specification retains its
+intentional Markdown hard-break spaces; whitespace checks pass for edited files.

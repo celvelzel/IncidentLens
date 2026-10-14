@@ -415,7 +415,7 @@ original proposal while STOP/deadline guards remain authoritative. CAES options 
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --selection-policy active_evidence --out results/caes-active
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --out results/caes-config
 # Restore the original policy when using a configuration that enables CAES.
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy current_dynamic --out results/caes-original
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --selection-policy current_dynamic --out results/caes-original
 # Replay saved selections without executing a model or tool.
 .venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/caes-active/trace.json
 # Public Seed engineering diagnostics and offline analysis; use new output directories.
