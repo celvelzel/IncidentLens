@@ -104,12 +104,16 @@ def check_eligibility(
     # Task filters are partial planning hints. Validate every supplied field against
     # at least one allowed existing tool schema, without inventing required args.
     valid = False
+    tool_filters = dict(candidate.filters)
+    if "database_internal" in tool_filters:
+        if not isinstance(tool_filters.pop("database_internal"), bool):
+            return "INVALID_TOOL_SCHEMA"
     for tool in candidate.allowed_tools:
         fields = ARGUMENT_MODELS[tool].model_fields
-        if not set(candidate.filters).issubset(fields):
+        if not set(tool_filters).issubset(fields):
             continue
         try:
-            for name, value in candidate.filters.items():
+            for name, value in tool_filters.items():
                 field = fields[name]
                 adapter = TypeAdapter(field.rebuild_annotation())
                 adapter.validate_python(times.get(name, value), strict=True)

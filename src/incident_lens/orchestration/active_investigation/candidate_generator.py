@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from incident_lens.schemas import InvestigationTask
 
-from .contracts import CandidateAction, PolicyConfig, VisibleState, digest
+from .contracts import BudgetView, CandidateAction, PolicyConfig, VisibleState, digest
 
 
 def candidate_signature(candidate: CandidateAction) -> str:
@@ -115,7 +115,7 @@ def generate_candidates(
                 f"{question} for {service}",
                 discriminator,
                 filters,
-                (tool,),
+                role_acl[role],
             )
     unique = {}
     priorities = {
@@ -130,6 +130,22 @@ def generate_candidates(
             or priorities[item.origin] < priorities[unique[signature].origin]
         ):
             unique[signature] = item
-    # Protect requested checks when truncating, preserve Coordinator preference otherwise.
-    ordered = sorted(unique.values(), key=lambda item: priorities[item.origin])
+    # Invalid requests must not crowd executable work out of the bounded pool.
+    # Local import avoids a module cycle: eligibility uses the public signature.
+    from .eligibility import check_eligibility
+
+    validation_budget = BudgetView(
+        remaining_requests=10**9, remaining_tools=10**9, remaining_seconds=10**9
+    )
+
+    def priority(item):
+        invalid = check_eligibility(item, visible, validation_budget, role_acl, config) is not None
+        legal_priority = {
+            "coordinator_proposal": 0,
+            "verifier_requested_check": 1,
+            "public_task_template": 2,
+        }
+        return (invalid, legal_priority[item.origin])
+
+    ordered = sorted(unique.values(), key=priority)
     return tuple(ordered[: config.candidate_pool_limit])

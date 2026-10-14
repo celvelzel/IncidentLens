@@ -131,3 +131,33 @@ def test_multi_service_cap_preserves_role_diversity():
     assert len({item.proposed_role for item in result}) == 4
     assert [item.proposed_role for item in result[2:]] == ["logs", "metrics", "database", "changes"]
     assert result == generate_candidates(state, proposals, acl, PolicyConfig())
+
+
+def test_templates_use_full_explicit_runtime_acl():
+    acl = ACL | {
+        "metrics": ("query_metrics", "get_dependencies"),
+        "database": ("get_db_connections", "get_db_lock_waits"),
+    }
+    result = generate_candidates(visible(), (), acl, PolicyConfig())
+    assert all(item.allowed_tools == acl[item.proposed_role] for item in result)
+    assert next(item for item in result if item.proposed_role == "metrics").filters == {
+        "service": "backend"
+    }
+
+
+def test_invalid_requested_checks_cannot_starve_proposal():
+    checks = tuple(
+        task(
+            task_id=f"db{i}",
+            role="database",
+            allowed_tools=["get_db_connections"],
+            question=f"Check database {i}",
+        )
+        for i in range(6)
+    )
+    result = generate_candidates(visible(requested_checks=checks), (task(),), ACL, PolicyConfig())
+    assert len(result) == 6
+    assert result[0].origin == "coordinator_proposal"
+    assert result[0].existing_task_id == "t"
+    assert len([item for item in result if item.origin == "public_task_template"]) == 3
+    assert len([item for item in result if item.origin == "verifier_requested_check"]) == 2

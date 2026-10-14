@@ -120,3 +120,11 @@ def test_single_schema_reserves_two_planned_calls():
         check(budget=BudgetView(remaining_requests=10, remaining_tools=3, remaining_seconds=100))
         is None
     )
+
+
+def test_legacy_database_hint_is_typed_not_arbitrary():
+    assert check(candidate(filters={"database_internal": True, "service": "backend"})) is None
+    assert check(candidate(filters={"database_internal": False})) is None
+    assert check(candidate(filters={"database_internal": "true"})) == "INVALID_TOOL_SCHEMA"
+    assert check(candidate(filters={"database_internal": 1})) == "INVALID_TOOL_SCHEMA"
+    assert check(candidate(filters={"arbitrary_hint": True})) == "INVALID_TOOL_SCHEMA"
