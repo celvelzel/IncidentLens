@@ -48,3 +48,28 @@ def test_invalid_replay_does_not_import_selector(monkeypatch):
     )
     with pytest.raises(ValueError):
         replay_selection({"visible": {"private_oracle": "forbidden"}})
+
+
+@pytest.mark.parametrize("envelope", ["list", "state", "artifact"])
+def test_replay_cli_normal_envelopes(tmp_path, monkeypatch, capsys, envelope):
+    import importlib.util
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[2] / "scripts" / "replay_v15_selection.py"
+    spec = importlib.util.spec_from_file_location("replay_cli", path)
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    events = [
+        {"event_type": "ACTION_SELECTED", "details": {"decision": "one"}},
+        {"event_type": "STOP", "details": {}},
+    ]
+    value = events if envelope == "list" else {"events": events}
+    if envelope == "artifact":
+        value = {"state": value, "metadata": {"source": "mock"}}
+    trace = tmp_path / "trace.json"
+    trace.write_text(json.dumps(value))
+    monkeypatch.setattr(cli, "replay_selection", lambda details: {"match": True, **details})
+    monkeypatch.setattr(sys, "argv", ["replay_v15_selection.py", "--trace", str(trace)])
+    cli.main()
+    assert json.loads(capsys.readouterr().out) == [{"match": True, "decision": "one"}]
