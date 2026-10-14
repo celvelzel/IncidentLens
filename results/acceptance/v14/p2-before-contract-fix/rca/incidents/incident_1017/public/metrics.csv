@@ -1,0 +1,5 @@
+evidence_id,service,observed_at,excerpt,metric_name,value,unit
+incident_1017-E-001,backend,2026-10-01T12:00:00+00:00,request_latency_ms=40 ms,request_latency_ms,40,ms
+incident_1017-E-003,backend,2026-10-01T12:00:49+00:00,cpu_percent=98 percent,cpu_percent,98,percent
+incident_1017-E-005,postgres,2026-10-01T12:00:49+00:00,connections_active=30 connections,connections_active,30,connections
+incident_1017-E-007,gateway,2026-10-01T12:00:59+00:00,http_5xx_rate=0.35 ratio,http_5xx_rate,0.35,ratio

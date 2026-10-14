@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "errors": [
+    "manifest public bundle hash mismatch"
+  ],
+  "coverage": {
+    "seed/core": 20,
+    "seed/monitoring": 0,
+    "seed/ood": 0,
+    "dev/core": 0,
+    "dev/monitoring": 0,
+    "dev/ood": 0,
+    "test/core": 0,
+    "test/monitoring": 0,
+    "test/ood": 0
+  }
+}

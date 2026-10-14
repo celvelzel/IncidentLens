@@ -1,0 +1,50 @@
+unformatted: File would be reformatted
+  --> tests\incidentbench\test_cli_e2e.py:20:18
+   |
+19 |         [sys.executable, str(ROOT / "scripts" / script), *map(str, args)],
+   -         cwd=ROOT, env=env, capture_output=True, text=True, timeout=120,
+20 +         cwd=ROOT,
+21 +         env=env,
+22 +         capture_output=True,
+23 +         text=True,
+24 +         timeout=120,
+25 |     )
+--------------------------------------------------------------------------------
+33 | def snapshot(root):
+   -     return {p.relative_to(root).as_posix(): p.read_bytes()
+   -             for p in root.rglob("*") if p.is_file()}
+34 +     return {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+35 |
+--------------------------------------------------------------------------------
+58 |     runs = tmp_path / "runs"
+   -     run_args = ("--dataset", dataset, "--split", "seed", "--variant", "all",
+   -                 "--provider", "mock", "--cache-mode", "off", "--jobs", "1",
+   -                 "--oracle-root", labels, "--out", runs)
+59 +     run_args = (
+60 +         "--dataset",
+61 +         dataset,
+62 +         "--split",
+63 +         "seed",
+64 +         "--variant",
+65 +         "all",
+66 +         "--provider",
+67 +         "mock",
+68 +         "--cache-mode",
+69 +         "off",
+70 +         "--jobs",
+71 +         "1",
+72 +         "--oracle-root",
+73 +         labels,
+74 +         "--out",
+75 +         runs,
+76 +     )
+77 |     assert json.loads(cli("run_incidentbench.py", *run_args).stdout)["runs"] == 8
+--------------------------------------------------------------------------------
+93 |     analysis = tmp_path / "analysis"
+   -     analyze_args = ("--input", runs / "raw-runs.jsonl", "--oracle-root", labels,
+   -                     "--out", analysis)
+94 +     analyze_args = ("--input", runs / "raw-runs.jsonl", "--oracle-root", labels, "--out", analysis)
+95 |     assert json.loads(cli("analyze_incidentbench.py", *analyze_args).stdout)["recomputed_runs"] == 8
+   |
+
+1 file would be reformatted, 143 files already formatted

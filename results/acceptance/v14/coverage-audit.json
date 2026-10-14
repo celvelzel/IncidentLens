@@ -1,0 +1,28 @@
+{
+  "status": "pending_development_candidates",
+  "case_n": 20,
+  "reviewers": 0,
+  "accepted_cases": 0,
+  "independent_audited_families": 0,
+  "effective_source_clusters": 1,
+  "mechanism_counts": {
+    "backend_pool_config_regression": 4,
+    "postgres_connection_exhaustion": 1,
+    "postgres_lock_contention": 4,
+    "postgres_slow_query": 1,
+    "redis_unavailable": 4,
+    "payment_external_timeout": 2,
+    "backend_resource_saturation": 4
+  },
+  "source_type_counts": {
+    "logs": 20,
+    "metrics": 20,
+    "changes": 6,
+    "configs": 4,
+    "database": 8,
+    "topology": 20
+  },
+  "oracle_review_status": {
+    "pending": 20
+  }
+}

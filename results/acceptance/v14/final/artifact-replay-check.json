@@ -1,0 +1,34 @@
+{
+  "actual_runs": 80,
+  "unique_run_ids": 80,
+  "real_http_attempts": 0,
+  "reanalysis_equality": {
+    "case-level.csv": {
+      "semantic_equal": true,
+      "byte_equal": false
+    },
+    "aggregate.csv": {
+      "semantic_equal": true,
+      "byte_equal": true
+    },
+    "paired-differences.csv": {
+      "semantic_equal": true,
+      "byte_equal": true
+    },
+    "family-summary.csv": {
+      "semantic_equal": true,
+      "byte_equal": true
+    },
+    "aggregate.json": {
+      "semantic_equal": true,
+      "byte_equal": true
+    },
+    "statistical-analysis.json": {
+      "semantic_equal": true,
+      "byte_equal": true
+    }
+  },
+  "case_csv_byte_difference": "column order only; all row field values equal",
+  "raw_sha256": "ca4bfe7d75606e57f567cc010825221e42fe400e4f7e67eca93a76c5806239ba",
+  "score_error_runs": 0
+}

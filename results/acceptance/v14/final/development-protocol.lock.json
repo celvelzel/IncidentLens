@@ -1,0 +1,22 @@
+{
+  "scripts_sha256": "7e314a291ad1397aa7f1c524d6b4d4530c2770dfd7d5a286b65a51f200ffac1f",
+  "dependency_lock_sha256": "ff3a9f1f41dc883a4db392571dc2e18a2bb4b9e9304d50d6629aeed5fbde40c2",
+  "python_version": "3.13.5",
+  "installed_dependencies": {
+    "pydantic": "2.14.0",
+    "langgraph": "1.2.14",
+    "httpx": "0.28.1",
+    "PyYAML": "6.0.3",
+    "numpy": "2.2.6"
+  },
+  "version": 1,
+  "sealed": false,
+  "public_sha256": "5a76e499e8172f9c4e754f789f1b377f9d7a78a59ff262ec271becaab3b80f07",
+  "protocol_sha256": "f041cd492fda139bc286459c1e43a75d98f48fefb50f2553b3833e193cf3ff4b",
+  "source_sha256": "21aa09c11cf29ee8edc512f05740ca98183af411249692c775b2b16c652caedd",
+  "prompt_sha256": "79ee059c2b50b7b77af1b942cbb3e99daea547588badd9fcbe1ef5a48256bdb2",
+  "config_sha256": "5d18e2aba7c6f0e679405a1ccbf0bd905f2015c9458eb2109376a37273d1a9e9",
+  "label_commitment": "6a21cdd3a32223496b6d3ff7a4908bc463c85bb458630c7db2c7eceaa6fbeec0",
+  "commitment_scope": "pending Seed development labels only; zero Frozen Test labels",
+  "blindness_level": "development_visible"
+}

@@ -1,0 +1,39 @@
+{
+  "benchmark_version": "incidentbench-v1",
+  "blindness_level": "development_visible",
+  "builder_version": "causal-world-v1",
+  "coverage": {
+    "accepted_labels": 0,
+    "blindness_level": "development_visible",
+    "challenges": {
+      "counterfactual": 8,
+      "misleading": 4,
+      "missing": 4,
+      "ordinary": 4
+    },
+    "cohorts": {
+      "core": 20,
+      "monitoring": 0,
+      "ood": 0
+    },
+    "core_splits": {
+      "dev": 0,
+      "seed": 20,
+      "test": 0
+    },
+    "families": 4,
+    "identifiable": 16,
+    "independence_status": "unreviewed",
+    "independent_audited_families": 0,
+    "splits": {
+      "dev": 0,
+      "seed": 20,
+      "test": 0
+    },
+    "total_cases": 20
+  },
+  "generated_at": "2026-10-01T12:00:00+00:00",
+  "interface_version": "incidentbench-v1.0",
+  "label_status": "pending",
+  "source_code_sha256": "405367dceb072d478cdf089a6431d82ea6007f21c4acc08a17167f8786496ac4"
+}

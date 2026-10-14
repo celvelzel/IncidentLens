@@ -1,0 +1,37 @@
+{
+  "baseline": "5f2cb2a",
+  "final_head": "554a6eee8fb9da61d2a26c7910f274921d1cf398",
+  "source_freeze": "072cea5",
+  "changed_files_count": 179,
+  "phases": {
+    "P0": "PASS",
+    "P1": "PASS",
+    "P2": "CANDIDATE_ENGINEERING_ONLY; independent family gate pending",
+    "P3": "20_PENDING_SEED; human review and independent Dev/Test pending",
+    "P4": "OFFLINE_TECHNICAL_PASS",
+    "P5": "NOT_SEALED",
+    "P6": "REAL_EVAL_PENDING",
+    "P7": "OFFLINE_REPLAY_QA_DOCS_PASS; human/research release pending"
+  },
+  "case_counts": {
+    "seed": 20,
+    "dev": 0,
+    "test": 0,
+    "identifiable_candidates": 16,
+    "missing_candidates": 4,
+    "independent_audited_families": 0,
+    "effective_source_clusters": 1,
+    "human_reviewers": 0,
+    "accepted_labels": 0
+  },
+  "mock_runs": 80,
+  "real_provider_requests": 0,
+  "pending_citation_claims": 75,
+  "final_tests": {
+    "passed": 723,
+    "failed": 0,
+    "skipped": 3
+  },
+  "no_remote_push": true,
+  "no_v15_algorithm": true
+}

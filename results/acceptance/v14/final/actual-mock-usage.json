@@ -1,0 +1,22 @@
+{
+  "strong_single_equivalent_tools": {
+    "logical_model_calls": 244,
+    "mock_request_admissions": 244,
+    "tool_calls": 142
+  },
+  "dynamic_no_verifier": {
+    "logical_model_calls": 198,
+    "mock_request_admissions": 198,
+    "tool_calls": 96
+  },
+  "fixed_four_equivalent_tools": {
+    "logical_model_calls": 160,
+    "mock_request_admissions": 160,
+    "tool_calls": 120
+  },
+  "full": {
+    "logical_model_calls": 244,
+    "mock_request_admissions": 244,
+    "tool_calls": 142
+  }
+}

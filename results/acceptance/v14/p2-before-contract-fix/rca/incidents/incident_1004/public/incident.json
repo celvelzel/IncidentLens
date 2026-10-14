@@ -1,0 +1,15 @@
+{
+  "incident_id": "incident_1004",
+  "observed_symptoms": [
+    "Request latency and error rate observation window"
+  ],
+  "services": [
+    "gateway",
+    "backend",
+    "postgres",
+    "redis",
+    "payment"
+  ],
+  "started_at": "2026-10-01T12:00:00+00:00",
+  "title": "Service observation window"
+}

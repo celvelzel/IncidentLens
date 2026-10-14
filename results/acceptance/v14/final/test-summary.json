@@ -1,0 +1,32 @@
+{
+  "passed": 723,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 3,
+  "total": 726,
+  "seconds": 156.422,
+  "incidentbench_passed": 86,
+  "incidentbench_skipped": 1,
+  "skip_details": [
+    {
+      "test": "tests.incidentbench.test_oracle_leakage.test_ancestor_symlink",
+      "reason": "OS symlink privilege unavailable"
+    },
+    {
+      "test": "tests.isolation.test_tool_acl.test_public_symlink_is_refused",
+      "reason": "host does not permit creating symlinks"
+    },
+    {
+      "test": "tests.unit.test_database.test_optional_database_symlink_rejected",
+      "reason": "host does not permit symlink creation"
+    }
+  ],
+  "first_contended_full_suite": {
+    "passed": 722,
+    "failed": 1,
+    "skipped": 3,
+    "reason": "legacy UI AppTest Replay 30s timeout"
+  },
+  "isolated_ui_passed": 1,
+  "source_code_commit": "072cea5"
+}

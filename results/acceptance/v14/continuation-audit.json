@@ -1,0 +1,15 @@
+{
+  "status": "continuation_audited",
+  "baseline_commit": "5f2cb2a2bbe1a07469c12e667a3f25ea6a2d1cc1",
+  "resumed_main_commit": "3567435",
+  "background_python_processes": 0,
+  "main_tracked_changes_at_resume": 0,
+  "preserved_user_untracked_plan": true,
+  "p0": {"status":"passed","pytest_passed":637,"pytest_skipped":2,"legacy_mock_runs":24,"db_response":"RESOLVED"},
+  "p1": {"status":"frozen","interface":"incidentbench-v1.0","commit":"bd71a55"},
+  "workstreams": {"A":"integrated","B":"integrated","C_initial":"integrated","C_resume":"preserved_dirty_isolated_worktree_and_reassigned","D":"integrated","E":"read_only_review_reassigned"},
+  "actual_candidate_data": {"seed":20,"dev":0,"test":0,"identified_candidates":16,"missing_candidates":4,"audited_independent_families":0,"human_reviewers":0,"accepted_labels":0},
+  "still_required_offline": ["finish_resume_and_negative_tests","fix_six_formatting_files","freeze_final_source","execute_80_mock_graph_runs","independently_recompute_saved_runs","full_pytest_ruff_install","final_QA_artifact_audit","phase_acceptance_report"],
+  "research_gates_pending": ["independent_causal_families","two_human_reviewers_and_label_owner","frozen_core_labels","formal_runner_readiness","real_provider_experiment","human_semantic_citation_review"],
+  "user_scope": "pending_labels_and_offline_engineering; no fabricated human review or real performance"
+}

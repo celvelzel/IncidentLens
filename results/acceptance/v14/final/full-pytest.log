@@ -1,0 +1,98 @@
+........................................................................ [  9%]
+........................................................................ [ 19%]
+...........................s............................................ [ 29%]
+........................................................................ [ 39%]
+.F.................................................................s.... [ 49%]
+........................................................................ [ 59%]
+........................................................................ [ 69%]
+.s...................................................................... [ 79%]
+........................................................................ [ 89%]
+........................................................................ [ 99%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_________________ test_streamlit_mock_run_and_labeled_replay __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001ED99EAFA10>
+
+    def test_streamlit_mock_run_and_labeled_replay(monkeypatch):
+        app = AppTest.from_file(Path("src/incident_lens/ui/app.py").resolve(), default_timeout=30).run()
+        assert not app.exception
+        app.button[0].click().run()
+        assert not app.exception
+        state = app.session_state["investigation"]
+        assert state.report.status == "RESOLVED"
+        before = state.model_dump_json()
+        trace_before = json.dumps(app.session_state["trace"], sort_keys=True)
+        assert any("MOCK" in message.value for message in app.info)
+        for button in app.get("download_button"):
+            button.click().run()
+            assert not app.exception
+            assert app.session_state["investigation"].model_dump_json() == before
+            assert json.dumps(app.session_state["trace"], sort_keys=True) == trace_before
+    
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Replay must not execute graph or provider")
+    
+        import incident_lens.orchestration.graph as graph
+        from incident_lens.llm.mock import MockProvider
+        from incident_lens.llm.provider import RealChatProvider
+    
+        monkeypatch.setattr(MockProvider, "structured_call", forbidden)
+        monkeypatch.setattr(RealChatProvider, "structured_call", forbidden)
+        monkeypatch.setattr(graph, "run_investigation", forbidden)
+>       app.radio[0].set_value("Recorded Replay").run()
+
+tests\integration\test_ui.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py:263: in run
+    return self.root.run(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\streamlit\testing\v1\element_tree.py:2911: in run
+    result = self._runner._run(widget_states, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\streamlit\testing\v1\app_test.py:530: in _run
+    self._tree = script_runner.run(
+.venv\Lib\site-packages\streamlit\testing\v1\local_script_runner.py:183: in run
+    require_widgets_deltas(self, timeout)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+runner = LocalScriptRunner(forward_msg_queue=<streamlit.runtime.forward_msg_queue.ForwardMsgQueue object at 0x000001ED9C9E3360>... {
+      use_content: true
+    }
+  }
+}
+}, {}, {'client_state': page_script_hash: "e22264e5ca5e760f925443f8dbd9662c"
+}])
+timeout = 30
+
+    def require_widgets_deltas(runner: LocalScriptRunner, timeout: float = 3) -> None:
+        """Wait for the given ScriptRunner to emit a completion event. If the timeout
+        is reached, the runner will be shutdown and an error will be thrown.
+        """
+    
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            time.sleep(0.001)
+            if runner.script_stopped():
+                return
+    
+        # If we get here, the runner hasn't yet completed before our
+        # timeout. Create an error string for debugging.
+        err_string = f"AppTest script run timed out after {timeout}(s)"
+    
+        # Shutdown the runner before throwing an error, so that the script
+        # doesn't hang forever.
+        runner.request_stop()
+        runner.join()
+    
+>       raise RuntimeError(err_string)
+E       RuntimeError: AppTest script run timed out after 30(s)
+
+.venv\Lib\site-packages\streamlit\testing\v1\local_script_runner.py:247: RuntimeError
+---------------------------- Captured stderr call -----------------------------
+2026-10-13 20:03:29.292 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:483 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+FAILED tests/integration/test_ui.py::test_streamlit_mock_run_and_labeled_replay
+1 failed, 722 passed, 3 skipped in 480.99s (0:08:00)

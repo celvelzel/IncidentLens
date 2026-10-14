@@ -1,0 +1,1518 @@
+{
+  "CandidateAction": {
+    "$defs": {
+      "JsonValue": {}
+    },
+    "additionalProperties": false,
+    "properties": {
+      "candidate_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Candidate Id",
+        "type": "string"
+      },
+      "decision_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Decision Id",
+        "type": "string"
+      },
+      "incident_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Incident Id",
+        "type": "string"
+      },
+      "run_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Run Id",
+        "type": "string"
+      },
+      "evidence_snapshot_sha256": {
+        "title": "Evidence Snapshot Sha256",
+        "type": "string"
+      },
+      "origin": {
+        "enum": [
+          "coordinator_proposal",
+          "verifier_requested_check",
+          "public_task_template"
+        ],
+        "title": "Origin",
+        "type": "string"
+      },
+      "proposed_role": {
+        "enum": [
+          "logs",
+          "metrics",
+          "database",
+          "changes"
+        ],
+        "title": "Proposed Role",
+        "type": "string"
+      },
+      "question": {
+        "minLength": 1,
+        "title": "Question",
+        "type": "string"
+      },
+      "expected_discriminator": {
+        "minLength": 1,
+        "title": "Expected Discriminator",
+        "type": "string"
+      },
+      "filters": {
+        "additionalProperties": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "title": "Filters",
+        "type": "object"
+      },
+      "allowed_tools": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Allowed Tools",
+        "type": "array"
+      },
+      "existing_task_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Existing Task Id"
+      },
+      "target_hypothesis_ids": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Target Hypothesis Ids",
+        "type": "array"
+      },
+      "prerequisites": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Prerequisites",
+        "type": "array"
+      }
+    },
+    "required": [
+      "candidate_id",
+      "decision_id",
+      "incident_id",
+      "run_id",
+      "evidence_snapshot_sha256",
+      "origin",
+      "proposed_role",
+      "question",
+      "expected_discriminator",
+      "allowed_tools"
+    ],
+    "title": "CandidateAction",
+    "type": "object"
+  },
+  "CandidateFeatures": {
+    "$defs": {
+      "CostEstimate": {
+        "additionalProperties": false,
+        "properties": {
+          "estimated_model_requests": {
+            "minimum": 1,
+            "title": "Estimated Model Requests",
+            "type": "integer"
+          },
+          "estimated_tool_calls": {
+            "minimum": 1,
+            "title": "Estimated Tool Calls",
+            "type": "integer"
+          },
+          "estimated_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Tokens"
+          },
+          "estimated_latency_ms": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Latency Ms"
+          },
+          "source": {
+            "default": "fixed_fallback",
+            "enum": [
+              "dev_aggregate",
+              "fixed_fallback",
+              "not_calibrated"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "uncertainty_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncertainty Note"
+          }
+        },
+        "required": [
+          "estimated_model_requests",
+          "estimated_tool_calls"
+        ],
+        "title": "CostEstimate",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "discrimination": {
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Discrimination",
+        "type": "number"
+      },
+      "gap_coverage": {
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Gap Coverage",
+        "type": "number"
+      },
+      "gate_contribution": {
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Gate Contribution",
+        "type": "number"
+      },
+      "redundancy": {
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Redundancy",
+        "type": "number"
+      },
+      "cost": {
+        "$ref": "#/$defs/CostEstimate"
+      },
+      "explanations": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Explanations",
+        "type": "array"
+      }
+    },
+    "required": [
+      "discrimination",
+      "gap_coverage",
+      "gate_contribution",
+      "redundancy",
+      "cost"
+    ],
+    "title": "CandidateFeatures",
+    "type": "object"
+  },
+  "CandidateAssessment": {
+    "$defs": {
+      "CandidateFeatures": {
+        "additionalProperties": false,
+        "properties": {
+          "discrimination": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Discrimination",
+            "type": "number"
+          },
+          "gap_coverage": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gap Coverage",
+            "type": "number"
+          },
+          "gate_contribution": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gate Contribution",
+            "type": "number"
+          },
+          "redundancy": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Redundancy",
+            "type": "number"
+          },
+          "cost": {
+            "$ref": "#/$defs/CostEstimate"
+          },
+          "explanations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Explanations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "discrimination",
+          "gap_coverage",
+          "gate_contribution",
+          "redundancy",
+          "cost"
+        ],
+        "title": "CandidateFeatures",
+        "type": "object"
+      },
+      "CostEstimate": {
+        "additionalProperties": false,
+        "properties": {
+          "estimated_model_requests": {
+            "minimum": 1,
+            "title": "Estimated Model Requests",
+            "type": "integer"
+          },
+          "estimated_tool_calls": {
+            "minimum": 1,
+            "title": "Estimated Tool Calls",
+            "type": "integer"
+          },
+          "estimated_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Tokens"
+          },
+          "estimated_latency_ms": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Latency Ms"
+          },
+          "source": {
+            "default": "fixed_fallback",
+            "enum": [
+              "dev_aggregate",
+              "fixed_fallback",
+              "not_calibrated"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "uncertainty_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncertainty Note"
+          }
+        },
+        "required": [
+          "estimated_model_requests",
+          "estimated_tool_calls"
+        ],
+        "title": "CostEstimate",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "candidate_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Candidate Id",
+        "type": "string"
+      },
+      "eligibility": {
+        "enum": [
+          "ELIGIBLE",
+          "REJECTED"
+        ],
+        "title": "Eligibility",
+        "type": "string"
+      },
+      "reject_reason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Reject Reason"
+      },
+      "features": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/CandidateFeatures"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "score": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Score"
+      },
+      "rank": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Rank"
+      }
+    },
+    "required": [
+      "candidate_id",
+      "eligibility"
+    ],
+    "title": "CandidateAssessment",
+    "type": "object"
+  },
+  "SelectionDecision": {
+    "$defs": {
+      "CandidateAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "eligibility": {
+            "enum": [
+              "ELIGIBLE",
+              "REJECTED"
+            ],
+            "title": "Eligibility",
+            "type": "string"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reject Reason"
+          },
+          "features": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/CandidateFeatures"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Score"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rank"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "eligibility"
+        ],
+        "title": "CandidateAssessment",
+        "type": "object"
+      },
+      "CandidateFeatures": {
+        "additionalProperties": false,
+        "properties": {
+          "discrimination": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Discrimination",
+            "type": "number"
+          },
+          "gap_coverage": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gap Coverage",
+            "type": "number"
+          },
+          "gate_contribution": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gate Contribution",
+            "type": "number"
+          },
+          "redundancy": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Redundancy",
+            "type": "number"
+          },
+          "cost": {
+            "$ref": "#/$defs/CostEstimate"
+          },
+          "explanations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Explanations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "discrimination",
+          "gap_coverage",
+          "gate_contribution",
+          "redundancy",
+          "cost"
+        ],
+        "title": "CandidateFeatures",
+        "type": "object"
+      },
+      "CostEstimate": {
+        "additionalProperties": false,
+        "properties": {
+          "estimated_model_requests": {
+            "minimum": 1,
+            "title": "Estimated Model Requests",
+            "type": "integer"
+          },
+          "estimated_tool_calls": {
+            "minimum": 1,
+            "title": "Estimated Tool Calls",
+            "type": "integer"
+          },
+          "estimated_tokens": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Tokens"
+          },
+          "estimated_latency_ms": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Latency Ms"
+          },
+          "source": {
+            "default": "fixed_fallback",
+            "enum": [
+              "dev_aggregate",
+              "fixed_fallback",
+              "not_calibrated"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "uncertainty_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncertainty Note"
+          }
+        },
+        "required": [
+          "estimated_model_requests",
+          "estimated_tool_calls"
+        ],
+        "title": "CostEstimate",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "decision_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Decision Id",
+        "type": "string"
+      },
+      "policy": {
+        "enum": [
+          "current_dynamic",
+          "active_evidence",
+          "active_no_cost",
+          "active_no_discrimination",
+          "first_eligible"
+        ],
+        "title": "Policy",
+        "type": "string"
+      },
+      "policy_version": {
+        "const": "caes-v1",
+        "title": "Policy Version",
+        "type": "string"
+      },
+      "evidence_snapshot_sha256": {
+        "title": "Evidence Snapshot Sha256",
+        "type": "string"
+      },
+      "selected_candidate_ids": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Selected Candidate Ids",
+        "type": "array"
+      },
+      "assessments": {
+        "items": {
+          "$ref": "#/$defs/CandidateAssessment"
+        },
+        "title": "Assessments",
+        "type": "array"
+      },
+      "budget_snapshot_digest": {
+        "title": "Budget Snapshot Digest",
+        "type": "string"
+      },
+      "fallback_reason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Fallback Reason"
+      }
+    },
+    "required": [
+      "decision_id",
+      "policy",
+      "policy_version",
+      "evidence_snapshot_sha256",
+      "selected_candidate_ids",
+      "assessments",
+      "budget_snapshot_digest"
+    ],
+    "title": "SelectionDecision",
+    "type": "object"
+  },
+  "VisibleState": {
+    "$defs": {
+      "CasePublicInput": {
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "observed_symptoms": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Observed Symptoms",
+            "type": "array"
+          },
+          "services": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            "title": "Services",
+            "type": "array"
+          }
+        },
+        "required": [
+          "incident_id",
+          "title",
+          "started_at",
+          "observed_symptoms",
+          "services"
+        ],
+        "title": "CasePublicInput",
+        "type": "object"
+      },
+      "Hypothesis": {
+        "additionalProperties": false,
+        "properties": {
+          "hypothesis_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Hypothesis Id",
+            "type": "string"
+          },
+          "culprit_service": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Culprit Service",
+            "type": "string"
+          },
+          "failure_mode": {
+            "minLength": 1,
+            "title": "Failure Mode",
+            "type": "string"
+          },
+          "support_ids": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            "title": "Support Ids",
+            "type": "array"
+          },
+          "against_ids": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "type": "string"
+            },
+            "title": "Against Ids",
+            "type": "array"
+          },
+          "predicted_observations": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Predicted Observations",
+            "type": "array"
+          },
+          "status": {
+            "default": "OPEN",
+            "enum": [
+              "OPEN",
+              "SUPPORTED",
+              "REJECTED"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "open_questions": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Open Questions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "hypothesis_id",
+          "culprit_service",
+          "failure_mode"
+        ],
+        "title": "Hypothesis",
+        "type": "object"
+      },
+      "InvestigationTask": {
+        "additionalProperties": false,
+        "properties": {
+          "task_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "logs",
+              "metrics",
+              "database",
+              "changes"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "question": {
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          },
+          "allowed_tools": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Allowed Tools",
+            "type": "array"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "reason": {
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "expected_discriminator": {
+            "minLength": 1,
+            "title": "Expected Discriminator",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "role",
+          "question",
+          "allowed_tools",
+          "reason",
+          "expected_discriminator"
+        ],
+        "title": "InvestigationTask",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "run_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Run Id",
+        "type": "string"
+      },
+      "incident_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Incident Id",
+        "type": "string"
+      },
+      "decision_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        "title": "Decision Id",
+        "type": "string"
+      },
+      "evidence_snapshot_sha256": {
+        "title": "Evidence Snapshot Sha256",
+        "type": "string"
+      },
+      "public_summary": {
+        "$ref": "#/$defs/CasePublicInput"
+      },
+      "hypotheses": {
+        "default": [],
+        "items": {
+          "$ref": "#/$defs/Hypothesis"
+        },
+        "title": "Hypotheses",
+        "type": "array"
+      },
+      "requested_checks": {
+        "default": [],
+        "items": {
+          "$ref": "#/$defs/InvestigationTask"
+        },
+        "title": "Requested Checks",
+        "type": "array"
+      },
+      "open_questions": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Open Questions",
+        "type": "array"
+      },
+      "evidence_ids": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Evidence Ids",
+        "type": "array"
+      },
+      "evidence_sources": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Evidence Sources",
+        "type": "array"
+      },
+      "observed_change_ids": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Observed Change Ids",
+        "type": "array"
+      },
+      "completed_signatures": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Completed Signatures",
+        "type": "array"
+      },
+      "grounding_errors": {
+        "default": [],
+        "items": {
+          "type": "string"
+        },
+        "title": "Grounding Errors",
+        "type": "array"
+      },
+      "stopped": {
+        "default": false,
+        "title": "Stopped",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "run_id",
+      "incident_id",
+      "decision_id",
+      "evidence_snapshot_sha256",
+      "public_summary"
+    ],
+    "title": "VisibleState",
+    "type": "object"
+  },
+  "BudgetView": {
+    "additionalProperties": false,
+    "properties": {
+      "remaining_requests": {
+        "minimum": 0,
+        "title": "Remaining Requests",
+        "type": "integer"
+      },
+      "remaining_tools": {
+        "minimum": 0,
+        "title": "Remaining Tools",
+        "type": "integer"
+      },
+      "remaining_seconds": {
+        "minimum": 0,
+        "title": "Remaining Seconds",
+        "type": "number"
+      },
+      "remaining_tokens": {
+        "anyOf": [
+          {
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Remaining Tokens"
+      },
+      "physical_request_multiplier": {
+        "default": 1,
+        "minimum": 1,
+        "title": "Physical Request Multiplier",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "remaining_requests",
+      "remaining_tools",
+      "remaining_seconds"
+    ],
+    "title": "BudgetView",
+    "type": "object"
+  },
+  "CostEstimate": {
+    "additionalProperties": false,
+    "properties": {
+      "estimated_model_requests": {
+        "minimum": 1,
+        "title": "Estimated Model Requests",
+        "type": "integer"
+      },
+      "estimated_tool_calls": {
+        "minimum": 1,
+        "title": "Estimated Tool Calls",
+        "type": "integer"
+      },
+      "estimated_tokens": {
+        "anyOf": [
+          {
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Estimated Tokens"
+      },
+      "estimated_latency_ms": {
+        "anyOf": [
+          {
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Estimated Latency Ms"
+      },
+      "source": {
+        "default": "fixed_fallback",
+        "enum": [
+          "dev_aggregate",
+          "fixed_fallback",
+          "not_calibrated"
+        ],
+        "title": "Source",
+        "type": "string"
+      },
+      "uncertainty_note": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Uncertainty Note"
+      }
+    },
+    "required": [
+      "estimated_model_requests",
+      "estimated_tool_calls"
+    ],
+    "title": "CostEstimate",
+    "type": "object"
+  },
+  "PolicyConfig": {
+    "additionalProperties": false,
+    "properties": {
+      "policy_version": {
+        "const": "caes-v1",
+        "default": "caes-v1",
+        "title": "Policy Version",
+        "type": "string"
+      },
+      "candidate_pool_limit": {
+        "default": 6,
+        "maximum": 20,
+        "minimum": 1,
+        "title": "Candidate Pool Limit",
+        "type": "integer"
+      },
+      "max_selected_tasks": {
+        "default": 2,
+        "maximum": 2,
+        "minimum": 1,
+        "title": "Max Selected Tasks",
+        "type": "integer"
+      },
+      "discrimination_weight": {
+        "default": 0.4,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Discrimination Weight",
+        "type": "number"
+      },
+      "gap_weight": {
+        "default": 0.3,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Gap Weight",
+        "type": "number"
+      },
+      "gate_weight": {
+        "default": 0.3,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Gate Weight",
+        "type": "number"
+      },
+      "redundancy_weight": {
+        "default": 0.3,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Redundancy Weight",
+        "type": "number"
+      },
+      "diversity_penalty": {
+        "default": 0.15,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Diversity Penalty",
+        "type": "number"
+      },
+      "redundancy_hard_limit": {
+        "default": 0.95,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Redundancy Hard Limit",
+        "type": "number"
+      },
+      "request_weight": {
+        "default": 1.0,
+        "exclusiveMinimum": 0,
+        "title": "Request Weight",
+        "type": "number"
+      },
+      "tool_weight": {
+        "default": 0.25,
+        "minimum": 0,
+        "title": "Tool Weight",
+        "type": "number"
+      },
+      "epsilon": {
+        "default": 0.01,
+        "exclusiveMinimum": 0,
+        "title": "Epsilon",
+        "type": "number"
+      },
+      "min_score": {
+        "default": 0.0,
+        "title": "Min Score",
+        "type": "number"
+      },
+      "reserve_verifier_requests": {
+        "default": 1,
+        "minimum": 1,
+        "title": "Reserve Verifier Requests",
+        "type": "integer"
+      },
+      "reserve_verifier_tools": {
+        "default": 1,
+        "minimum": 1,
+        "title": "Reserve Verifier Tools",
+        "type": "integer"
+      }
+    },
+    "title": "PolicyConfig",
+    "type": "object"
+  },
+  "WorkflowOptions": {
+    "$defs": {
+      "EvidenceRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Evidence Id",
+            "type": "string"
+          },
+          "incident_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "source_type": {
+            "enum": [
+              "logs",
+              "metrics",
+              "changes",
+              "configs",
+              "topology",
+              "database"
+            ],
+            "title": "Source Type",
+            "type": "string"
+          },
+          "service": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "title": "Service",
+            "type": "string"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "source_path": {
+            "minLength": 1,
+            "title": "Source Path",
+            "type": "string"
+          },
+          "excerpt": {
+            "title": "Excerpt",
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "incident_id",
+          "source_type",
+          "service",
+          "observed_at",
+          "source_path",
+          "excerpt"
+        ],
+        "title": "EvidenceRecord",
+        "type": "object"
+      },
+      "PolicyConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "policy_version": {
+            "const": "caes-v1",
+            "default": "caes-v1",
+            "title": "Policy Version",
+            "type": "string"
+          },
+          "candidate_pool_limit": {
+            "default": 6,
+            "maximum": 20,
+            "minimum": 1,
+            "title": "Candidate Pool Limit",
+            "type": "integer"
+          },
+          "max_selected_tasks": {
+            "default": 2,
+            "maximum": 2,
+            "minimum": 1,
+            "title": "Max Selected Tasks",
+            "type": "integer"
+          },
+          "discrimination_weight": {
+            "default": 0.4,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Discrimination Weight",
+            "type": "number"
+          },
+          "gap_weight": {
+            "default": 0.3,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gap Weight",
+            "type": "number"
+          },
+          "gate_weight": {
+            "default": 0.3,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Gate Weight",
+            "type": "number"
+          },
+          "redundancy_weight": {
+            "default": 0.3,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Redundancy Weight",
+            "type": "number"
+          },
+          "diversity_penalty": {
+            "default": 0.15,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Diversity Penalty",
+            "type": "number"
+          },
+          "redundancy_hard_limit": {
+            "default": 0.95,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Redundancy Hard Limit",
+            "type": "number"
+          },
+          "request_weight": {
+            "default": 1.0,
+            "exclusiveMinimum": 0,
+            "title": "Request Weight",
+            "type": "number"
+          },
+          "tool_weight": {
+            "default": 0.25,
+            "minimum": 0,
+            "title": "Tool Weight",
+            "type": "number"
+          },
+          "epsilon": {
+            "default": 0.01,
+            "exclusiveMinimum": 0,
+            "title": "Epsilon",
+            "type": "number"
+          },
+          "min_score": {
+            "default": 0.0,
+            "title": "Min Score",
+            "type": "number"
+          },
+          "reserve_verifier_requests": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Reserve Verifier Requests",
+            "type": "integer"
+          },
+          "reserve_verifier_tools": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Reserve Verifier Tools",
+            "type": "integer"
+          }
+        },
+        "title": "PolicyConfig",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "selection_policy": {
+        "default": "current_dynamic",
+        "enum": [
+          "current_dynamic",
+          "active_evidence",
+          "active_no_cost",
+          "active_no_discrimination",
+          "first_eligible"
+        ],
+        "title": "Selection Policy",
+        "type": "string"
+      },
+      "shadow_caes": {
+        "default": false,
+        "title": "Shadow Caes",
+        "type": "boolean"
+      },
+      "active_evidence_config": {
+        "$ref": "#/$defs/PolicyConfig"
+      },
+      "profile": {
+        "default": "legacy_rca",
+        "enum": [
+          "legacy_rca",
+          "incident_response"
+        ],
+        "title": "Profile",
+        "type": "string"
+      },
+      "communication_mode": {
+        "const": "centralized",
+        "default": "centralized",
+        "title": "Communication Mode",
+        "type": "string"
+      },
+      "monitor_mode": {
+        "default": "legacy",
+        "enum": [
+          "legacy",
+          "manual_snapshot",
+          "offline_replay"
+        ],
+        "title": "Monitor Mode",
+        "type": "string"
+      },
+      "database_enabled": {
+        "default": true,
+        "title": "Database Enabled",
+        "type": "boolean"
+      },
+      "database_equivalent_tools": {
+        "default": false,
+        "title": "Database Equivalent Tools",
+        "type": "boolean"
+      },
+      "benchmark_rca": {
+        "default": false,
+        "title": "Benchmark Rca",
+        "type": "boolean"
+      },
+      "benchmark_fixed_four": {
+        "default": false,
+        "title": "Benchmark Fixed Four",
+        "type": "boolean"
+      },
+      "remediation_enabled": {
+        "default": true,
+        "title": "Remediation Enabled",
+        "type": "boolean"
+      },
+      "execution_mode": {
+        "const": "plan_only",
+        "default": "plan_only",
+        "title": "Execution Mode",
+        "type": "string"
+      },
+      "max_attempts": {
+        "default": 2,
+        "maximum": 10,
+        "minimum": 1,
+        "title": "Max Attempts",
+        "type": "integer"
+      },
+      "continue_on_partial_failure": {
+        "default": true,
+        "title": "Continue On Partial Failure",
+        "type": "boolean"
+      },
+      "ack_timeout_seconds": {
+        "default": 5.0,
+        "exclusiveMinimum": 0,
+        "title": "Ack Timeout Seconds",
+        "type": "number"
+      },
+      "monitoring_max_calls": {
+        "default": 1,
+        "minimum": 0,
+        "title": "Monitoring Max Calls",
+        "type": "integer"
+      },
+      "remediation_max_calls": {
+        "default": 2,
+        "minimum": 0,
+        "title": "Remediation Max Calls",
+        "type": "integer"
+      },
+      "snapshot": {
+        "items": {
+          "$ref": "#/$defs/EvidenceRecord"
+        },
+        "title": "Snapshot",
+        "type": "array"
+      }
+    },
+    "title": "WorkflowOptions",
+    "type": "object"
+  }
+}

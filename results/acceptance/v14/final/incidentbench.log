@@ -1,0 +1,68 @@
+.................F........................................s............. [ 83%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+_______ test_actual_four_graph_runs_durable_before_scoring_fresh_output _______
+
+tmp_path = WindowsPath('C:/Users/RickyMa/AppData/Local/Temp/pytest-of-RickyMa/pytest-497/test_actual_four_graph_runs_du0')
+
+    async def test_actual_four_graph_runs_durable_before_scoring_fresh_output(tmp_path):
+        from incident_lens.incidentbench.experiment import run_experiment
+    
+        dataset, oracle = build_fixture(tmp_path)
+        out = tmp_path / "runs"
+        protocol = ExperimentProtocol(model_id=MockProvider.model_id, bootstrap_samples=30)
+        rows = await run_experiment(dataset, "seed", MockProvider, out, protocol, oracle)
+        assert len(rows) == 8
+        assert all(r["score_error"] is None and r["label_status"] == "provisional" for r in rows)
+        assert all(r["total_tokens"] is None for r in rows)
+        raw = [json.loads(line) for line in (out / "raw-runs.jsonl").read_text().splitlines()]
+        assert len({r["run_key"] for r in raw}) == 8
+        fixed = [r for r in raw if r["variant"] == "fixed_four_equivalent_tools"]
+        assert all(
+            [t["role"] for t in r["state"]["tasks"]] == ["logs", "metrics", "database", "changes"]
+            for r in fixed
+        )
+        assert all(r["state"]["events"] for r in raw)
+        # Reanalysis executes a standalone script, with no provider construction.
+        import os
+        import subprocess
+        import sys
+        from pathlib import Path
+    
+        script = Path(__file__).resolve().parents[2] / "scripts" / "analyze_incidentbench.py"
+        command = [
+            sys.executable,
+            str(script),
+            "--input",
+            str(out / "raw-runs.jsonl"),
+            "--oracle-root",
+            str(oracle),
+            "--out",
+            str(tmp_path / "analysis"),
+        ]
+        result = subprocess.run(command, capture_output=True, text=True, env=os.environ.copy())
+        assert result.returncode == 0, result.stderr
+        assert json.loads((tmp_path / "analysis" / "aggregate.json").read_text()) == json.loads(
+            (out / "aggregate.json").read_text()
+        )
+        label_path = next(oracle.rglob("benchmark_oracle.json"))
+        label_bytes = label_path.read_bytes()
+        changed_label = json.loads(label_bytes)
+        changed_label["review_version"] = "changed-after-experiment"
+        label_path.write_text(json.dumps(changed_label))
+        changed = subprocess.run(command, capture_output=True, text=True, env=os.environ.copy())
+        assert changed.returncode != 0 and "oracle label digest mismatch" in changed.stderr
+        label_path.write_bytes(label_bytes)
+        # Changed raw bytes must be rejected even when the completion files still exist.
+        with (out / "raw-runs.jsonl").open("a") as stream:
+            stream.write("\n")
+        rejected = subprocess.run(command, capture_output=True, text=True, env=os.environ.copy())
+>       assert rejected.returncode != 0 and "digest mismatch" in rejected.stderr
+E       assert (1 != 0 and 'digest mismatch' in 'Traceback (most recent call last):\n  File "C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\scripts\\ana...ut must match the complete hashed raw ledger")\nValueError: analysis input must match the complete hashed raw ledger\n')
+E        +  where 1 = CompletedProcess(args=['C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\.venv\\Scripts\\python.exe', 'C:\...t must match the complete hashed raw ledger")\nValueError: analysis input must match the complete hashed raw ledger\n').returncode
+E        +  and   'Traceback (most recent call last):\n  File "C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\scripts\\ana...ut must match the complete hashed raw ledger")\nValueError: analysis input must match the complete hashed raw ledger\n' = CompletedProcess(args=['C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\.venv\\Scripts\\python.exe', 'C:\...t must match the complete hashed raw ledger")\nValueError: analysis input must match the complete hashed raw ledger\n').stderr
+
+tests\incidentbench\test_experiment_fairness.py:131: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/incidentbench/test_experiment_fairness.py::test_actual_four_graph_runs_durable_before_scoring_fresh_output
+1 failed, 84 passed, 1 skipped in 117.18s (0:01:57)

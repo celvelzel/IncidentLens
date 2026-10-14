@@ -1,0 +1,23 @@
+{
+  "wheel": {
+    "commands": 7,
+    "success": true,
+    "scope": "legacy build/install/dependencies/CLI/Replay; standalone wheel Benchmark unsupported"
+  },
+  "fresh_editable_checkout": {
+    "install_exit_code": 0,
+    "pip_check": "No broken requirements found",
+    "public_validation": true,
+    "cli_e2e_passed": 1,
+    "cli_e2e_seconds": 15.51,
+    "actual_mock_graph_runs_in_e2e": 8,
+    "public_sha256": "5a76e499e8172f9c4e754f789f1b377f9d7a78a59ff262ec271becaab3b80f07"
+  },
+  "preserved_initial_failures": [
+    "first full suite UI timeout",
+    "first candidate-only suite error-message assertion",
+    "first fresh clone Git EOL hash mismatch"
+  ],
+  "source_code_frozen_commit": "072cea5",
+  "git_dataset_byte_fix_commit": "f5e64ef"
+}

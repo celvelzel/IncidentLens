@@ -1,0 +1,36 @@
+{
+  "final_commit": "d4f12068dd0bf532a0232c1086841b6ce3693be1",
+  "runtime_commit": "2611182",
+  "engineering_status": "PASS",
+  "research_status": "BLOCKED_BY_UPSTREAM",
+  "changed_file_n": 53,
+  "pytest": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "3",
+    "tests": "853",
+    "time": "327.818",
+    "timestamp": "2026-10-14T15:41:47.441900+08:00",
+    "hostname": "WIN-4H2MCDHM10U"
+  },
+  "artifact_sha256": {
+    "full-pytest-r4.log": "3ed471c20535741aeb5c2fd0cb51e1b8725886df8d342cf17015b594ea81fb9a",
+    "full-pytest-r4.xml": "57c6835f09c39d57f530ec08048061f62b66313f15d08f6fe22d3120981da044",
+    "ruff-check.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+    "ruff-format.log": "b0814c1cf17637553b4edd4069b8cdc6125e8873de3fad2fb08ebea7e9af6cdd",
+    "caes-contracts.json": "c1e2518bb84d26eaa69a94cc1a3055852ddeff1c82a6f135f03018c5f03b0e1f",
+    "engineering-summary.json": "09d0b6a3666493992981d35bc9b70e85805f59570b2456f2791d16cc21aaaeb0",
+    "audit-results-r3.log": "1b9a24a4c8f604f508947d3a2e08c0d6df776b471fe48f9d8e33501db99a4bc6"
+  },
+  "independent_reviewer": "qa_final",
+  "preserved_failures": {
+    "historical_verifier": 4,
+    "final_tight_budget": 63,
+    "prior_full_suite_attempts": [
+      "r1",
+      "r2",
+      "r3"
+    ]
+  }
+}

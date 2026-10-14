@@ -12,6 +12,9 @@ dist/
 results/*
 !results/.gitkeep
 !results/acceptance/
+results/**/environment/
+results/**/wheels/
+results/**/*.sqlite*
 *.sqlite*
 .worktrees/
 

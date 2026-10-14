@@ -1,9 +1,9 @@
 # Optional heuristic selection; existing system.yaml keeps current_dynamic.
 max_rounds: 4
-max_tool_calls: 12
-max_llm_calls: 24
-max_wall_seconds: 600
-cache_mode: off
+tool_calls_limit: 12
+llm_calls_limit: 24
+time_limit_seconds: 600
+cache_mode: "off"
 investigation:
   selection_policy: active_evidence
   shadow_enabled: false
