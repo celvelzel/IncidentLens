@@ -12,20 +12,6 @@ dist/
 results/*
 !results/.gitkeep
 !results/acceptance/
-# Keep only the published V1.5 final evidence in version control.
-!results/v15/
-results/v15/*
-!results/v15/final-20261014/
-results/v15/final-20261014/*
-!results/v15/final-20261014/audit-results-r3.log
-!results/v15/final-20261014/caes-contracts.json
-!results/v15/final-20261014/delivery-manifest.json
-!results/v15/final-20261014/engineering-summary.json
-!results/v15/final-20261014/full-pytest-r4.log
-!results/v15/final-20261014/full-pytest-r4.xml
-!results/v15/final-20261014/intermediate-artifact-hashes.json
-!results/v15/final-20261014/ruff-check.log
-!results/v15/final-20261014/ruff-format.log
 results/**/environment/
 results/**/wheels/
 results/**/*.sqlite*
