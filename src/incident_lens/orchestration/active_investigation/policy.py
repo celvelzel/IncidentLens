@@ -21,7 +21,7 @@ def role_acl(workflow):
 
 
 def visible_projection(run, state):
-    from incident_lens.orchestration.guards import evidence_fingerprint
+    from incident_lens.orchestration.guards import evidence_fingerprint, finalize_errors
 
     completed = []
     mapping = getattr(run, "caes_task_signatures", {})
@@ -54,7 +54,15 @@ def visible_projection(run, state):
         ),
         evidence_sources=tuple(sorted({r.source_type for r in state.evidence_index.values()})),
         completed_signatures=tuple(sorted(set(completed))),
-        grounding_errors=(),
+        grounding_errors=tuple(
+            sorted(
+                {
+                    error
+                    for h in state.hypotheses
+                    for error in finalize_errors(state, h, run.variant)
+                }
+            )
+        ),
         stopped=run.stop_controller.stopped or state.workflow_status != "RUNNING",
     )
     board = evidence_fingerprint(state)

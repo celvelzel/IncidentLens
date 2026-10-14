@@ -393,3 +393,26 @@ New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a
 IncidentBench adds a separate versioned evidence dataset and evaluator-only oracle store. Public validation checks evidence contracts, hashes and source-family leakage before investigations start. Its paired runner uses the existing Graph with equivalent database tools, an explicit fixed-four schedule, independent per-run budgets and cache disabled. Durable raw traces support rescoring, anonymous citation-review exports and source-clustered statistical analysis; technical failures remain in denominators and unknown usage stays null.
 
 The included Seed fixtures are pending development candidates from a shared encoder. Frozen Test sealing requires independent reviewed labels and provider readiness; formal execution is currently gated. See the [IncidentBench guide](docs/incidentbench/README.md) for actual commands, data/evaluation/model cards and research limitations. Legacy datasets and evaluators remain available.
+
+### Optional active evidence selection
+
+CAES ranks bounded investigation candidates using published hypothesis predictions,
+open questions, missing evidence sources, redundancy and conservative request/tool
+costs. It adds no model or tool call to candidate generation. `current_dynamic` remains
+the default; Shadow records recommendations while retaining Coordinator tasks. Enabled
+selection uses the existing role permissions, TaskManager, budgets, Verifier and
+FinalizeGate. Scores are heuristic estimates, not calibrated information gain.
+
+```powershell
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --shadow-caes --out results/v15/NEW-shadow
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy active_evidence --out results/v15/NEW-active
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/v15/NEW-seed
+.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/v15/NEW-active/trace.json
+```
+
+The six groups execute fixed-four, original dynamic, common-candidate first selection,
+without-cost, without-discrimination and full CAES paths. Current uniform cost fallback
+does not establish action-specific cost sensitivity in production. Seed diagnostics
+have no accepted Oracle or semantic review; Dev calibration, formal Frozen Test and
+real performance claims require upstream gates. See [CAES contracts](docs/v1.5/contract-freeze.md)
+and [algorithm](docs/v1.5/algorithm-spec.md).

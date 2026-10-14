@@ -346,3 +346,22 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 IncidentBench 使用独立版本化证据数据和仅供评测器读取的 Oracle。调查启动前校验证据契约、哈希与同源家族泄漏；配对 Runner 复用现有 Graph，提供等价数据库工具、显式固定四专家调度、每次独立预算，并关闭缓存。持久化原始轨迹支持重新计分、匿名引用审查和按来源聚类的统计分析；技术失败保留在分母中，未知用量保持 null。
 
 随附 Seed 数据是共享编码器生成的待审开发候选。正式 Frozen Test 封存需要独立复核标签与 Provider 就绪证据，正式执行目前受 Gate 限制。实际命令、数据卡、评测卡、模型卡和研究局限见 [IncidentBench 使用说明](docs/incidentbench/README.md)。原有数据与评测入口继续保留。
+
+### 可选主动证据选择
+
+CAES 仅依据公开假说预测、问题、缺少的证据来源、重复程度与保守请求/工具成本，
+为有限候选任务排序。候选生成不增加模型或工具调用。默认仍为 `current_dynamic`；
+Shadow 记录建议并执行原 Coordinator 任务；Enabled 经过原权限、TaskManager、预算、
+Verifier 与 FinalizeGate。评分是启发式估计，不是校准后的信息增益。
+
+```powershell
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --shadow-caes --out results/v15/NEW-shadow
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy active_evidence --out results/v15/NEW-active
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/v15/NEW-seed
+.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/v15/NEW-active/trace.json
+```
+
+六组真实路径分别为固定四专家、原动态、相同候选池先选、去成本、去区分性和完整 CAES。
+当前统一成本回退尚不能证明运行中的动作成本敏感性。Seed 诊断没有已接受真值或语义
+人工复核；Dev 校准、Frozen Test 与真实性能结论受上游 Gate 约束。详见
+[合同](docs/v1.5/contract-freeze.md)与[算法说明](docs/v1.5/algorithm-spec.md)。
