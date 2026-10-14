@@ -1,5 +1,7 @@
 """Validate saved public selection snapshots without providers or tools."""
 
+import json
+
 from incident_lens.orchestration.active_investigation.contracts import (
     BudgetView,
     CandidateAction,
@@ -11,11 +13,13 @@ from incident_lens.orchestration.active_investigation.contracts import (
 
 
 def replay_selection(details):
-    visible = VisibleState.model_validate(details["visible"])
-    candidates = tuple(CandidateAction.model_validate(c) for c in details["candidates"])
-    budget = BudgetView.model_validate(details["budget"])
-    config = PolicyConfig.model_validate(details["config"])
-    saved = SelectionDecision.model_validate(details["selection"])
+    visible = VisibleState.model_validate_json(json.dumps(details["visible"]))
+    candidates = tuple(
+        CandidateAction.model_validate_json(json.dumps(c)) for c in details["candidates"]
+    )
+    budget = BudgetView.model_validate_json(json.dumps(details["budget"]))
+    config = PolicyConfig.model_validate_json(json.dumps(details["config"]))
+    saved = SelectionDecision.model_validate_json(json.dumps(details["selection"]))
     from incident_lens.orchestration.active_investigation.selector import select_candidates
 
     computed = select_candidates(

@@ -67,6 +67,7 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
         durable_write(out / name, value)
     metadata = {c.incident_id: c.model_dump(mode="json") for c in cases}
     rows = []
+    actions = []
     providers = []
     frozen_parameters = None
     for incident, repeat, variant in order:
@@ -162,6 +163,22 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
         append(out / "scores.jsonl", row)
         for details in selection_events(state):
             append(out / "selection-decisions.jsonl", dict(run_key=key, details=details))
+            selected = details["selection"]["selected_candidate_ids"]
+            for assessment in details["selection"]["assessments"]:
+                actions.append(
+                    dict(
+                        run_key=key,
+                        decision_id=details["selection"]["decision_id"],
+                        candidate_id=assessment["candidate_id"],
+                        selected=assessment["candidate_id"] in selected,
+                        score=assessment.get("score"),
+                        eligibility=assessment["eligibility"],
+                        reject_reason=assessment.get("reject_reason"),
+                        features=assessment.get("features"),
+                        coordinator_proposed_tasks=details.get("coordinator_proposed_tasks"),
+                        selector_executed_tasks=details.get("selector_executed_tasks"),
+                    )
+                )
         if row.get("failure_category"):
             append(out / "errors.jsonl", dict(run_key=key, code=row["failure_category"]))
         append(out / "progress.jsonl", dict(run_key=key, status="DURABLE", receipt=receipt))
@@ -173,7 +190,76 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
             if cancelled:
                 raise asyncio.CancelledError("durable cancellation retained")
             raise ValueError("protocol drift; failure retained")
+    from incident_lens.incidentbench.scorer import aggregate
+
     write_csv(out / "case-level.csv", rows)
+    summary = aggregate(rows)
+    durable_write(out / "aggregate.json", summary)
+    write_csv(out / "aggregate.csv", summary)
+    write_csv(out / "action-trace.csv", actions)
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+    for row in rows:
+        groups[(row["scenario_family_id"], row["variant"])].append(row)
+    write_csv(
+        out / "family-slices.csv",
+        [
+            dict(scenario_family_id=family, **aggregate(group)[0])
+            for (family, variant), group in groups.items()
+        ],
+    )
+    from statistics import mean
+
+    paired = []
+    for baseline in ("B1", "B1c", "B2", "B3", "B0"):
+        for incident in {r["incident_id"] for r in rows}:
+            for metric in (
+                "root_cause_correct",
+                "total_tokens",
+                "actual_http_requests",
+                "tool_calls",
+                "latency_ms",
+            ):
+                cell = {
+                    v: {
+                        r["repeat_id"]: r.get(metric)
+                        for r in rows
+                        if r["incident_id"] == incident and r["variant"] == v
+                    }
+                    for v in (baseline, "B4")
+                }
+                matched = [
+                    repeat
+                    for repeat in set(cell[baseline]) & set(cell["B4"])
+                    if cell[baseline][repeat] is not None and cell["B4"][repeat] is not None
+                ]
+                if matched:
+                    paired.append(
+                        dict(
+                            incident_id=incident,
+                            baseline=baseline,
+                            metric=metric,
+                            matched_repeats=len(matched),
+                            difference=mean(cell["B4"][r] - cell[baseline][r] for r in matched),
+                        )
+                    )
+    write_csv(out / "paired-differences.csv", paired)
+    durable_write(out / "source-hashes.json", lock)
+    durable_write(
+        out / "calibration-report.json",
+        dict(
+            status="NOT_APPLICABLE",
+            reason="Seed engineering diagnostics; Dev calibration gate BLOCKED",
+        ),
+    )
+    failures = [r for r in rows if r.get("failure_category")]
+    (out / "error-analysis.md").write_text(
+        "# Engineering failures\n\n"
+        + "\n".join(f"- {r['run_key']}: {r['failure_category']}" for r in failures)
+        + "\n\nOracle correctness and semantic review are pending. No empirical improvement claim.\n",
+        encoding="utf-8",
+    )
     durable_write(
         out / "uncertainty.json",
         analyze(rows, seed=protocol.analysis_seed, samples=protocol.bootstrap_samples),
