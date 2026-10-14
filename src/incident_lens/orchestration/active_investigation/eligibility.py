@@ -78,7 +78,7 @@ def check_eligibility(
         return "UNOBSERVED_EVIDENCE_ID"
     if "change_id" in candidate.filters and (
         not isinstance(candidate.filters["change_id"], str)
-        or candidate.filters["change_id"] not in observed
+        or candidate.filters["change_id"] not in visible.observed_change_ids
     ):
         return "UNOBSERVED_EVIDENCE_ID"
     if (

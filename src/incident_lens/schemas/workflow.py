@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import Field, model_validator
 
+from .active_config import PolicyConfig, PolicyName
 from .contracts import EvidenceRecord, Identifier, StrictModel, Text
 
 StopReason = Literal[
@@ -127,6 +128,9 @@ class StopMessage(StrictModel):
 
 
 class WorkflowOptions(StrictModel):
+    selection_policy: PolicyName = "current_dynamic"
+    shadow_caes: bool = False
+    active_evidence_config: PolicyConfig = Field(default_factory=PolicyConfig)
     profile: Literal["legacy_rca", "incident_response"] = "legacy_rca"
     communication_mode: Literal["centralized"] = "centralized"
     monitor_mode: Literal["legacy", "manual_snapshot", "offline_replay"] = "legacy"

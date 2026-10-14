@@ -89,6 +89,17 @@ def main(argv=None):
     run.add_argument("--thinking", choices=["enabled", "disabled"])
     run.add_argument("--request-timeout", type=float)
     run.add_argument("--profile", choices=["legacy_rca", "incident_response"])
+    run.add_argument(
+        "--selection-policy",
+        choices=[
+            "current_dynamic",
+            "active_evidence",
+            "active_no_cost",
+            "active_no_discrimination",
+            "first_eligible",
+        ],
+    )
+    run.add_argument("--shadow-caes", action="store_true")
     run.add_argument("--monitor-mode", choices=["legacy", "manual_snapshot", "offline_replay"])
     run.add_argument(
         "--snapshot", type=Path, help="JSON list of public EvidenceRecord observations"
@@ -232,6 +243,14 @@ def main(argv=None):
             workflow = workflow_options(
                 config, profile=args.profile, monitor_mode=args.monitor_mode, snapshot=snapshot
             )
+            if args.selection_policy is not None or args.shadow_caes:
+                workflow = WorkflowOptions.model_validate(
+                    workflow.model_dump()
+                    | {
+                        "selection_policy": args.selection_policy or workflow.selection_policy,
+                        "shadow_caes": args.shadow_caes or workflow.shadow_caes,
+                    }
+                )
             state = asyncio.run(
                 run_investigation(
                     args.case,
