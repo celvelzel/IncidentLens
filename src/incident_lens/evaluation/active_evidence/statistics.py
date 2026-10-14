@@ -13,6 +13,8 @@ def analyze(rows, *, seed=15101, samples=10000):
             "root_cause_correct",
             "total_tokens",
             "actual_http_requests",
+            "llm_requests",
+            "logical_structured_calls",
             "tool_calls",
             "latency_ms",
         ):

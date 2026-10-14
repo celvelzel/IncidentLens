@@ -2,6 +2,7 @@
 
 import asyncio
 import hashlib
+import json
 import time
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -9,6 +10,7 @@ from uuid import UUID, uuid4
 from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics
 from incident_lens.incidentbench.experiment import (
     append,
+    canonical,
     durable_write,
     execution_lock,
     load_cases,
@@ -60,6 +62,7 @@ async def run_experiment(dataset, split, provider_factory, out, protocol, *, res
 
 
 def action_rows(key, details):
+    details = json.loads(canonical(details))
     selected = details["selection"]["selected_candidate_ids"]
     return [
         dict(
@@ -223,7 +226,7 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock, *, 
         )
         if drift or cancelled:
             durable_write(
-                out / "checkpoint-status.json",
+                out / f"checkpoint-status-{key}.json",
                 dict(status="partial", attempted=len(rows), planned=len(order)),
             )
             if cancelled:
@@ -257,6 +260,8 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock, *, 
                 "root_cause_correct",
                 "total_tokens",
                 "actual_http_requests",
+                "llm_requests",
+                "logical_structured_calls",
                 "tool_calls",
                 "latency_ms",
             ):
