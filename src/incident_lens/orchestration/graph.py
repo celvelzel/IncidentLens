@@ -402,8 +402,13 @@ class InvestigationRun:
                     self.stop_controller.guard()
                     if self.exhausted(state):
                         raise
-                    self.event(state, "ACTION_POLICY_FALLBACK", shadow=True,
-                               reason=type(exc).__name__, executed_original_proposal=True)
+                    self.event(
+                        state,
+                        "ACTION_POLICY_FALLBACK",
+                        shadow=True,
+                        reason=type(exc).__name__,
+                        executed_original_proposal=True,
+                    )
             state.decisions.append(decision)
             self.event(
                 state,
