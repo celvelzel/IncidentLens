@@ -6,7 +6,7 @@ from time import perf_counter
 from incident_lens.schemas.contracts import CoordinatorDecision, InvestigationTask
 from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL
 
-from .contracts import BudgetView, PolicyConfig, VisibleState, digest
+from .contracts import BudgetView, CandidateAction, PolicyConfig, VisibleState, digest
 
 
 def role_acl(workflow):
@@ -42,10 +42,16 @@ def visible_projection(run, state):
         requested_checks=[t.model_dump(mode="json") for t in state.requested_checks],
         open_questions=tuple(state.open_questions),
         evidence_ids=tuple(sorted(state.evidence_index)),
-        observed_change_ids=tuple(sorted({str(r.metadata["change_id"])
-                                          for r in state.evidence_index.values()
-                                          if r.source_type in {"changes", "configs"}
-                                          and isinstance(r.metadata.get("change_id"), str)})),
+        observed_change_ids=tuple(
+            sorted(
+                {
+                    str(r.metadata["change_id"])
+                    for r in state.evidence_index.values()
+                    if r.source_type in {"changes", "configs"}
+                    and isinstance(r.metadata.get("change_id"), str)
+                }
+            )
+        ),
         evidence_sources=tuple(sorted({r.source_type for r in state.evidence_index.values()})),
         completed_signatures=tuple(sorted(set(completed))),
         grounding_errors=(),
@@ -59,16 +65,42 @@ def visible_projection(run, state):
         | {"board": board}
     )
     published["evidence_snapshot_sha256"] = snapshot
+    # Reviewer/hypothesis wording can change while the actual queried board is
+    # unchanged. Rebind completed semantic actions to today's full snapshot.
+    from .candidate_generator import candidate_signature
+
+    boards = getattr(run, "caes_task_boards", {})
+    for task in state.tasks:
+        if task.task_id in terminal and boards.get(task.task_id) == board:
+            completed.append(
+                candidate_signature(
+                    CandidateAction(
+                        candidate_id="completed",
+                        decision_id=published["decision_id"],
+                        incident_id=state.incident_id,
+                        run_id=state.run_id,
+                        evidence_snapshot_sha256=snapshot,
+                        origin="coordinator_proposal",
+                        proposed_role=task.role,
+                        question=task.question,
+                        expected_discriminator=task.expected_discriminator,
+                        filters=deepcopy(task.filters),
+                        allowed_tools=tuple(task.allowed_tools),
+                    )
+                )
+            )
+    published["completed_signatures"] = tuple(sorted(set(completed)))
     return VisibleState.model_validate_json(__import__("json").dumps(published))
 
 
 def budget_projection(run):
     snapshot = run.call_budget.snapshot()
-    recovery = getattr(run.provider, "recovery", None)
+    provider = getattr(run.provider, "delegate", run.provider)
+    recovery = getattr(provider, "recovery", None)
     multiplier = (
         recovery.max_physical_attempts_per_call
         if recovery and recovery.enabled
-        else 1 + int(getattr(run.provider, "structured_repair_retries", 0))
+        else 1 + int(getattr(provider, "structured_repair_retries", 0))
     )
     return BudgetView(
         remaining_requests=snapshot.remaining_request_permits,
@@ -89,7 +121,7 @@ def apply_policy(run, state, proposal):
     budget = budget_projection(run)
     acl = role_acl(run.workflow)
     config = run.workflow.active_evidence_config
-    recovery = getattr(run.provider, "recovery", None)
+    recovery = getattr(getattr(run.provider, "delegate", run.provider), "recovery", None)
     if recovery and recovery.enabled:
         config = PolicyConfig.model_validate(
             config.model_dump()
@@ -188,4 +220,9 @@ def apply_policy(run, state, proposal):
             action="ABSTAIN", reason="NO_USEFUL_ACTION", stop_reason="NO_USEFUL_ACTION"
         )
     run.caes_task_signatures = getattr(run, "caes_task_signatures", {}) | signatures
+    from incident_lens.orchestration.guards import evidence_fingerprint
+
+    run.caes_task_boards = getattr(run, "caes_task_boards", {}) | {
+        task.task_id: evidence_fingerprint(state) for task in tasks
+    }
     return CoordinatorDecision(action="INVESTIGATE", reason=proposal.reason, assignments=tasks)

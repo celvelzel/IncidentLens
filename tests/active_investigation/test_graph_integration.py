@@ -65,7 +65,12 @@ async def test_enabled_really_materializes_selected_tasks():
     selections = [e.details for e in state.events if e.event_type == "ACTION_SELECTED"]
     assert selections
     assert all(t.task_id.startswith("caes-") for t in state.tasks)
-    assert any(d["coordinator_proposed_tasks"] != d["selector_executed_tasks"] for d in selections)
+    fields = ("role", "question", "filters", "allowed_tools", "expected_discriminator")
+    assert any(
+        [{k: t[k] for k in fields} for t in d["coordinator_proposed_tasks"]]
+        != [{k: t[k] for k in fields} for t in d["selector_executed_tasks"]]
+        for d in selections
+    )
     selected_ids = {t["task_id"] for d in selections for t in d["selector_executed_tasks"]}
     assert {t.task_id for t in state.tasks} == selected_ids
     assert {e.task_id for e in state.events if e.event_type == "TASK_ASSIGNED"} == selected_ids
@@ -153,3 +158,87 @@ def test_non_full_policy_rejected():
             variant="single",
             workflow=WorkflowOptions(shadow_caes=True),
         )
+
+
+async def test_shadow_selector_failure_is_observation_only(monkeypatch):
+    from incident_lens.orchestration.active_investigation import selector
+
+    def fail(*args):
+        raise RuntimeError("scorer failure")
+
+    monkeypatch.setattr(selector, "select_candidates", fail)
+    state = await run_investigation(
+        "incident_001", MockProvider(), ROOT / "data", workflow=WorkflowOptions(shadow_caes=True)
+    )
+    assert state.report.status == "RESOLVED"
+    assert (state.llm_calls_used, state.tool_calls_used) == (15, 9)
+    assert any(e.event_type == "ACTION_POLICY_FALLBACK" for e in state.events)
+    assert not any(e.event_type == "RUNTIME_ERROR" for e in state.events)
+
+
+async def test_runtime_never_reads_oracle_or_private_files(monkeypatch):
+    original = Path.open
+
+    def guarded(path, *args, **kwargs):
+        assert not any(part in {"private", "local_oracles"} for part in path.parts)
+        assert "ground_truth" not in path.name
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", guarded)
+    state = await run_investigation(
+        "incident_001",
+        MockProvider(),
+        ROOT / "data",
+        workflow=WorkflowOptions(selection_policy="active_evidence"),
+    )
+    assert any(e.event_type == "ACTION_SELECTED" for e in state.events)
+
+
+def test_snapshot_changes_with_visible_hypothesis():
+    from incident_lens.orchestration.active_investigation.policy import visible_projection
+    from incident_lens.schemas import Hypothesis
+
+    run = InvestigationRun(MockProvider(), EvidenceProvider(ROOT / "data"), "incident_001")
+    first = visible_projection(run, run.state)
+    run.state.hypotheses.append(
+        Hypothesis(hypothesis_id="h", culprit_service="backend", failure_mode="unknown")
+    )
+    assert (
+        visible_projection(run, run.state).evidence_snapshot_sha256
+        != first.evidence_snapshot_sha256
+    )
+
+
+async def test_stop_during_selection_prevents_publication(monkeypatch):
+    from incident_lens.orchestration.active_investigation import selector
+
+    original = selector.select_candidates
+    run = InvestigationRun(
+        MockProvider(),
+        EvidenceProvider(ROOT / "data"),
+        "incident_001",
+        workflow=WorkflowOptions(selection_policy="active_evidence"),
+    )
+
+    def stop(*args):
+        result = original(*args)
+        run.stop_controller.stopped = run.stop_controller.frozen = True
+        return result
+
+    monkeypatch.setattr(selector, "select_candidates", stop)
+    await run.coordinate({"investigation": run.state})
+    assert not run.state.tasks
+    assert not any(e.event_type == "ACTION_SELECTED" for e in run.state.events)
+
+
+def test_measured_provider_cost_adapter_uses_delegate_recovery():
+    from incident_lens.evaluation.runner import MeasuredProvider
+    from incident_lens.orchestration.active_investigation.policy import budget_projection
+    from incident_lens.orchestration.recovery import RecoveryConfig
+
+    provider = MockProvider()
+    provider.recovery = RecoveryConfig(enabled=True, max_physical_attempts_per_call=4)
+    run = InvestigationRun(
+        MeasuredProvider(provider), EvidenceProvider(ROOT / "data"), "incident_001"
+    )
+    assert budget_projection(run).physical_request_multiplier == 4
