@@ -29,8 +29,10 @@ IncidentLens 是一个从零构建的个人研究项目,旨在探索智能体驱
 - **有据可依，否则弃权** —— 确定性门控检查候选、引用与评审版本，证据不足时输出 `INCONCLUSIVE`。
 - **证据优先的权限体系** —— 按角色授权的只读工具、不可变上下文、实际查询账本与公共文件白名单。
 - **有界 Provider 恢复** — 显式启用故障分类、原子请求 permit、任务局部阶段预算和至多一次定向结构化修复。
+- **可选 CAES 选择** —— 确定性候选生成、启发式行动评分与预算约束选择，默认保持原策略，支持观测式 Shadow。
 - **离线 Mock 提供方** —— 在给定公共证据上确定性运行，无需 API 密钥或模型权重。
 - **可复现评估** —— 四个原有消融变体、数据库配对消融与任务失败恢复实验。
+- **IncidentBench** —— 独立证据数据、评测器专用候选标签、等价工具 Graph 对比、离线恢复与保存状态重算。
 - **回放与 UI** —— Web 控制台和保留的 Streamlit 页面展示证据、假设、告警、修复方案、任务与停止事件。
 - **可选解释缓存** —— 精确匹配或保守语义复用，带严格命名空间与引用校验。
 
@@ -77,6 +79,7 @@ flowchart TD
     P["公开快照或离线回放"]
     N["Monitoring"]
     C["Coordinator / Supervisor"]
+    A["调查策略：原策略 / Shadow / CAES"]
     D["分发 1–2 个调查任务"]
     L["Logs"]
     M["Metrics / Dependencies"]
@@ -92,7 +95,8 @@ flowchart TD
     P --> N
     N -->|ALERT| C
     N -->|NO_ALERT| S
-    C --> D
+    C -->|INVESTIGATE| A
+    A --> D
     D --> L
     D --> M
     D --> DB
@@ -117,6 +121,8 @@ flowchart TD
 监控默认关闭，事件响应模式也可直接由事件 ID 启动。`full` 使用验证反馈回路，
 `dynamic_no_verifier` 跳过验证器，`fixed` 保留一次原有三专家批次，`single` 使用单智能体基线。
 只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径统一经过停止协议。
+可选 CAES 模块位于 `full` 变体的任务分发之前，负责调查任务排序；证据接纳和最终
+结论仍由原 Verifier 与 FinalizeGate 决定。
 
 ### Agent 职责
 
@@ -251,6 +257,42 @@ ToolRegistry 强制执行角色权限；公平对比可显式启用 `database_eq
 服务端签发的不可变上下文约束角色、工作区、事件、运行与实际查询账本；公共文件白名单拒绝私有真值、
 路径穿越和符号链接/junction 逃逸。摘录视为不可信数据；这是应用层隔离，不是操作系统级 Python 沙箱。
 
+## IncidentBench
+
+IncidentBench 将版本化公开观测与仅供评测器读取的因果标签分开保存。调查开始前，
+校验证据契约、manifest 哈希与同源家族泄漏。Runner 复用现有 Graph，关闭缓存，
+为每次运行创建独立 Provider 和预算，并开放等价数据库工具：
+
+| 条件 | 调查方式 |
+| --- | --- |
+| `strong_single_equivalent_tools` | 同一运行身份使用全部等价工具并进行自我反思 |
+| `fixed_four_equivalent_tools` | 日志、指标、数据库和变更专家执行一次固定批次 |
+| `dynamic_no_verifier` | 动态选择专家，不执行 Verifier 审核 |
+| `full` | 动态选择专家，并由 Verifier 提供反馈 |
+
+Benchmark 显式启用固定四专家；旧 `fixed` 继续使用三专家。完成或失败的状态先持久化，
+评测器随后才读取标签。保存产物支持候选标签重算、匿名引用审核导出和按来源聚类的配对分析。
+技术失败保留在尝试案例的分母内；正常证据不足弃答与运行失败分开计分。
+未知 token、费用和人工语义支撑保持 null。显式恢复支持离线 Mock 运行，暂不支持真实 Provider 恢复。
+
+IncidentBench 要求 editable 源码安装；独立 wheel 环境暂不支持，因为可复现性锁包含仓库中的
+脚本、提示词和配置。下面的命令校验公开数据，并执行不读取私有标签的离线对比：
+
+```powershell
+.venv\Scripts\python.exe scripts/validate_incidentbench.py --dataset data/incidentbench_v1 --mode public
+.venv\Scripts\python.exe scripts/run_incidentbench.py --dataset data/incidentbench_v1 --split seed --provider mock --cache-mode off --jobs 1 --out results/incidentbench/NEW-seed
+```
+
+输出目录必须不存在。示例没有提供私有 Oracle，因此不产生因果准确率分数。
+数据生成与候选标签计分示例见 [IncidentBench 使用说明](docs/incidentbench/README.md)。
+真实开发运行还需模型一致的协议和实际 Provider 就绪证据，不会自动回退到 Mock。
+重算时需保留原始状态、完成凭据及锁文件的原路径；产物搬迁暂不支持。
+
+公开开发夹具共享编码器来源，不是独立复核真值或盲测 Test。
+生成的标注，包括用户确认的模型审核，均保留真实来源。
+正式 Frozen Test 仍受独立审核、标签保管与封存条件限制。
+数据卡、评测卡和模型卡见使用说明；原有数据与评测入口继续保留。
+
 ## 本地解释缓存
 
 仅日志/指标/数据库/变更的局部解释可被缓存。监控、路由、评审、修复建议、最终定稿、报告与工具查询照常执行。
@@ -292,8 +334,61 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 安装验证会构建 wheel,在全新环境中安装锁定依赖并执行验证/排查/回放。它会
 保留日志,并拒绝覆盖已存在的验证环境。
 
+## 成本感知证据选择（CAES）
+
+CAES 在完整动态调查中增加有界任务选择步骤。CandidateGenerator 合并 Coordinator
+提案、已公开的 Verifier 补查与公共角色模板；ActionScorer 估计公开假说间的区分性、
+问题覆盖、缺少的证据来源、重复程度及请求/工具成本；Selector 最多选择两个可执行
+任务，无有用任务时以 `NO_USEFUL_ACTION` 弃权。候选生成和评分不调用模型或工具，
+不读取私有 Oracle。实际任务继续经过原 TaskManager、角色 ACL、物理请求 permit、
+STOP 协议、校验合并、Verifier 和 FinalizeGate。
+
+| 策略 | 行为 |
+| --- | --- |
+| `current_dynamic` | 默认策略：执行原 Coordinator 任务，绕过 CAES。 |
+| `first_eligible` | 按候选生成顺序选择满足约束的任务。 |
+| `active_no_cost` | 排序时去除成本分母，仍保留硬预算。 |
+| `active_no_discrimination` | 去除区分性权重，仍保留成本和可执行性约束。 |
+| `active_evidence` | 完整 CAES 启发式价值/成本排序及多样性检查。 |
+
+`--shadow-caes` 记录完整 CAES 建议，实际仍执行 Coordinator 任务；观测时使用默认
+策略。观测失败回退至原提案，STOP 与截止时间检查仍有效。CAES 选项要求
+`--variant full`；FINALIZE 与 ABSTAIN 绕过选择步骤。默认参数与权重见
+[配置示例](configs/active-investigation.example.yaml)。
+
+```powershell
+# 观测建议、启用选择，或加载配置示例。
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --shadow-caes --out results/caes-shadow
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --selection-policy active_evidence --out results/caes-active
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --out results/caes-config
+# 使用启用 CAES 的配置时，可显式恢复原策略。
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy current_dynamic --out results/caes-original
+# 仅重放已保存的选择，不调用模型或工具。
+.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/caes-active/trace.json
+# 公开 Seed 工程诊断与离线分析；使用新的输出目录。
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/caes-seed
+.venv\Scripts\python.exe scripts/analyze_v15_active.py --input results/caes-seed --out results/caes-analysis
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --resume --out results/caes-seed
+```
+
+B0 执行 IncidentBench 固定四专家，B1 原动态，B1c 先选可执行候选，B2 去成本，
+B3 去区分性，B4 完整 CAES；各组使用真实不同的控制路径及一致的协议设置。
+保存产物包括公开候选/特征/选择快照、实际执行与用量、原始失败、持久化进度及
+源码/协议哈希。经过校验的 Mock 续跑保留已尝试记录，拒绝不兼容或被修改的账本。
+仓库脚本从 editable checkout 运行；运行时与 CLI 同时包含在 wheel 中。
+
+评分是启发式估计，不是校准后的信息增益；统一成本回退可能使去成本与完整排序一致。
+冷启动采用公开的 Logs/Metrics 优先顺序，区分性保持零；未知 token 与估计延迟保持
+null。紧预算仍可能在后续工作流调用中耗尽。Seed Mock 只验证功能，不能证明准确率或
+效率；已审核的 Dev 校准、真实 Provider 评测和封板 Frozen Test 仍受 Gate 约束，
+尚无 CAES 性能改善结论。详见[算法](docs/v1.5/algorithm-spec.md)与
+[公平实验协议](docs/v1.5/fairness-protocol.md)。
+
 ## 文档
 
+- [IncidentBench 使用说明](docs/incidentbench/README.md) —— 基准安装、数据与评测契约
+- [CAES 算法与契约](docs/v1.5/algorithm-spec.md) —— 特征、选择和权限边界
+- [CAES 实验协议](docs/v1.5/fairness-protocol.md) —— 受控执行、重放和恢复
 - [排查协议](docs/protocol.md) —— 运行生命周期、门控与预算
 - [依赖与归属](docs/phase-plan.md) —— 阶段计划与模块地图
 - [演示脚本](docs/demo.md) —— 录制演示流程
@@ -340,28 +435,3 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 ### 终止协议与计分
 
 新运行发送 `WORKFLOW_STOP_REQUESTED`、实际停止后的 `STOP_ACK`，以及最终 `NORMAL_TERMINATION` 或 `RUNTIME_FAILURE`；state 与 report 保存一致的结构化终止结果。正常停止与恢复后的模型调用失败保留已确认诊断的分数；方案生成失败、停止确认失败分别计分，并使完整工作流失败。`PLAN_ONLY` 不表示服务已经恢复。历史 STOP trace 通过保守兼容分类继续读取；分母与离线重算规则见[评测说明](docs/evaluation.md)。
-
-### IncidentBench
-
-IncidentBench 使用独立版本化证据数据和仅供评测器读取的 Oracle。调查启动前校验证据契约、哈希与同源家族泄漏；配对 Runner 复用现有 Graph，提供等价数据库工具、显式固定四专家调度、每次独立预算，并关闭缓存。持久化原始轨迹支持重新计分、匿名引用审查和按来源聚类的统计分析；技术失败保留在分母中，未知用量保持 null。
-
-随附 Seed 数据是共享编码器生成的待审开发候选。正式 Frozen Test 封存需要独立复核标签与 Provider 就绪证据，正式执行目前受 Gate 限制。实际命令、数据卡、评测卡、模型卡和研究局限见 [IncidentBench 使用说明](docs/incidentbench/README.md)。原有数据与评测入口继续保留。
-
-### 可选主动证据选择
-
-CAES 仅依据公开假说预测、问题、缺少的证据来源、重复程度与保守请求/工具成本，
-为有限候选任务排序。候选生成不增加模型或工具调用。默认仍为 `current_dynamic`；
-Shadow 记录建议并执行原 Coordinator 任务；Enabled 经过原权限、TaskManager、预算、
-Verifier 与 FinalizeGate。评分是启发式估计，不是校准后的信息增益。
-
-```powershell
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --shadow-caes --out results/v15/NEW-shadow
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy active_evidence --out results/v15/NEW-active
-.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/v15/NEW-seed
-.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/v15/NEW-active/trace.json
-```
-
-六组真实路径分别为固定四专家、原动态、相同候选池先选、去成本、去区分性和完整 CAES。
-当前统一成本回退尚不能证明运行中的动作成本敏感性。Seed 诊断没有已接受真值或语义
-人工复核；Dev 校准、Frozen Test 与真实性能结论受上游 Gate 约束。详见
-[合同](docs/v1.5/contract-freeze.md)与[算法说明](docs/v1.5/algorithm-spec.md)。

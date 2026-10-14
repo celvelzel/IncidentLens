@@ -38,8 +38,12 @@ deterministic grounding gates are all inspectable end to end.
   actual-query ledgers and public file allowlists.
 - **Bounded provider recovery** — classified transport failures, atomic request permits,
   task-local stage budgets and one targeted structured repair, enabled explicitly.
+- **Optional CAES selection** — deterministic candidate generation, heuristic action scoring
+  and budget-aware selection, with a default bypass and observational Shadow mode.
 - **Offline Mock provider** — deterministic over supplied public evidence, without API keys or model weights.
 - **Reproducible evaluation** — four original ablation variants, paired database ablations and task recovery experiments.
+- **IncidentBench** — a separate evidence corpus, evaluator-only candidate labels,
+  equivalent-tool Graph comparisons, offline resume and saved-state rescoring.
 - **Replay and UI** — Web and retained Streamlit dashboards expose evidence, hypotheses,
   alerts, proposals, tasks and stop events.
 - **Optional explanation cache** — exact or conservative semantic reuse with strict namespaces and citation validation.
@@ -89,6 +93,7 @@ flowchart TD
     P["Public snapshot or offline replay"]
     N["Monitoring"]
     C["Coordinator / Supervisor"]
+    A["Investigation policy: original / Shadow / CAES"]
     D["Dispatch 1–2 investigation tasks"]
     L["Logs"]
     M["Metrics / Dependencies"]
@@ -104,7 +109,8 @@ flowchart TD
     P --> N
     N -->|ALERT| C
     N -->|NO_ALERT| S
-    C --> D
+    C -->|INVESTIGATE| A
+    A --> D
     D --> L
     D --> M
     D --> DB
@@ -131,6 +137,8 @@ the response profile can also start directly from an incident ID. `full` uses ve
 feedback, `dynamic_no_verifier` skips verification, `fixed` retains one original
 three-expert batch, and `single` uses the single-agent baseline. Proposals run only after
 an accepted RCA; terminal paths from every phase pass through the shutdown protocol.
+The optional CAES module sits before dispatch in the `full` variant. It ranks tasks;
+Verifier and FinalizeGate retain authority over evidence acceptance and conclusions.
 
 ### Agent responsibilities
 
@@ -286,6 +294,50 @@ Server-issued immutable contexts constrain role, workspace, incident, run and ac
 Public file allowlists reject private truth, traversal and symlink/junction escapes. Excerpts are
 untrusted data. This is application isolation, not an OS Python sandbox.
 
+## IncidentBench
+
+IncidentBench keeps versioned public observations separate from evaluator-only causal
+labels. Validation checks evidence contracts, manifest hashes and source-family leakage
+before investigations start. The runner executes the existing Graph with cache off,
+fresh per-run providers and budgets, and equivalent database tools:
+
+| Condition | Investigation behavior |
+| --- | --- |
+| `strong_single_equivalent_tools` | One runtime identity with all equivalent tools and self-reflection |
+| `fixed_four_equivalent_tools` | One fixed batch of logs, metrics, database and changes specialists |
+| `dynamic_no_verifier` | Dynamic specialist selection without the Verifier |
+| `full` | Dynamic specialist selection with Verifier feedback |
+
+The benchmark's fixed-four option is explicit; legacy `fixed` retains three experts.
+Completed and failed states are saved before evaluator access. Saved artifacts support
+candidate rescoring, anonymous citation-review exports and paired source-cluster analysis.
+Technical failures remain in attempted-case denominators; normal evidence-insufficient
+abstention is separate from runtime failure. Unknown tokens, cost and human semantic
+support remain null. Explicit resume is supported for offline Mock runs; real-provider
+resume is unsupported.
+
+Use an editable source checkout; standalone wheel-only IncidentBench execution is
+unsupported because reproducibility locks include repository scripts, prompts and configs.
+The following commands validate public data and run an unscored offline comparison:
+
+```powershell
+.venv\Scripts\python.exe scripts/validate_incidentbench.py --dataset data/incidentbench_v1 --mode public
+.venv\Scripts\python.exe scripts/run_incidentbench.py --dataset data/incidentbench_v1 --split seed --provider mock --cache-mode off --jobs 1 --out results/incidentbench/NEW-seed
+```
+
+Output directories must be new. This example supplies no private Oracle and does not
+produce causal accuracy scores. Build and candidate-scoring examples are in the
+[IncidentBench guide](docs/incidentbench/README.md). Real development runs additionally
+require a model-matching protocol and measured provider-readiness evidence, without
+automatic fallback to Mock. Raw states, receipts and locks must remain available at
+their recorded paths for rescoring; artifact relocation is unsupported.
+
+Public development fixtures share encoder lineage and are not independently reviewed
+ground truth or blind Test data. Generated annotations, including user-confirmed model
+reviews, retain their actual provenance. Formal Frozen Test execution remains gated on
+independent review, label ownership and sealing. See the guide for dataset, evaluation
+and model cards. Legacy datasets and evaluation commands remain available.
+
 ## Local explanation cache
 
 Only local logs/metrics/database/changes explanations are cacheable. Monitoring, routing,
@@ -332,8 +384,66 @@ Installation verification builds a wheel, installs pinned dependencies in a fres
 environment and runs validation/investigation/replay. It preserves logs and
 refuses to overwrite an existing verification environment.
 
+## Cost-Aware Evidence Selection (CAES)
+
+CAES adds a bounded task-selection step to the full dynamic investigation. The
+CandidateGenerator combines Coordinator proposals, published Verifier checks and
+public role templates. ActionScorer estimates discrimination between published hypotheses,
+question coverage, missing evidence sources, redundancy and request/tool costs. The
+Selector chooses at most two feasible tasks, or abstains with `NO_USEFUL_ACTION`.
+Candidate generation and scoring make no model or tool call and read no private Oracle.
+Selected tasks use the existing TaskManager, role ACLs, physical request permits,
+STOP protocol, validated merge, Verifier and FinalizeGate.
+
+| Policy | Behavior |
+| --- | --- |
+| `current_dynamic` | Default: execute original Coordinator assignments; bypass CAES. |
+| `first_eligible` | Choose feasible candidates in generator order. |
+| `active_no_cost` | Rank candidate value without the cost denominator; retain hard budgets. |
+| `active_no_discrimination` | Exclude the discrimination weight; retain cost and feasibility. |
+| `active_evidence` | Full CAES heuristic value/cost ranking with diversity checks. |
+
+`--shadow-caes` records full CAES recommendations while executing Coordinator assignments.
+Use it with the default policy for observation. An observation failure falls back to the
+original proposal while STOP/deadline guards remain authoritative. CAES options require
+`--variant full`; FINALIZE and ABSTAIN bypass selection. Defaults and weights are in
+[the example configuration](configs/active-investigation.example.yaml).
+
+```powershell
+# Observe recommendations, enable selection, or use the example configuration.
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --shadow-caes --out results/caes-shadow
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --selection-policy active_evidence --out results/caes-active
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --out results/caes-config
+# Restore the original policy when using a configuration that enables CAES.
+.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy current_dynamic --out results/caes-original
+# Replay saved selections without executing a model or tool.
+.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/caes-active/trace.json
+# Public Seed engineering diagnostics and offline analysis; use new output directories.
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/caes-seed
+.venv\Scripts\python.exe scripts/analyze_v15_active.py --input results/caes-seed --out results/caes-analysis
+.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --resume --out results/caes-seed
+```
+
+B0 executes IncidentBench fixed-four, B1 original dynamic, B1c first eligible, B2 no cost,
+B3 no discrimination and B4 full CAES. They use actual different control paths and equal
+protocol settings. Saved artifacts include public candidate/feature/selection snapshots,
+actual execution and usage, raw failures, durable progress and source/protocol hashes.
+Verified Mock-only resume preserves attempted records and refuses incompatible or modified
+ledgers. Use repository scripts from an editable checkout; runtime/CLI also ship in the wheel.
+
+Scores are heuristics, not calibrated information gain. Uniform fallback costs can make
+no-cost/full rankings coincide. Cold start uses public Logs/Metrics priorities with zero
+discrimination; unknown tokens and latency estimates stay null. Tight budgets can still
+exhaust later workflow calls. Seed Mock execution establishes functionality, not accuracy
+or efficiency. Reviewed Dev calibration, real-provider evaluation and sealed Frozen Test
+remain gated; no CAES performance improvement is established. See the
+[algorithm](docs/v1.5/algorithm-spec.md) and [fairness protocol](docs/v1.5/fairness-protocol.md).
+
 ## Documentation
 
+- [IncidentBench guide](docs/incidentbench/README.md) — benchmark setup, dataset and evaluation contracts
+- [CAES algorithm and contracts](docs/v1.5/algorithm-spec.md) — features, selection and authority boundaries
+- [CAES experiment protocol](docs/v1.5/fairness-protocol.md) — controlled execution, replay and recovery
 - [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
 - [Dependencies and ownership](docs/phase-plan.md) — phase plan and module map
 - [Demo walkthrough](docs/demo.md) — recorded demo script
@@ -387,32 +497,3 @@ full boundary of every claim.
 ### Termination and scoring
 
 New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a final `NORMAL_TERMINATION` or `RUNTIME_FAILURE`. State and report share a structured termination result. Normal shutdown and recovered model-call failures preserve accepted diagnosis credit; plan generation failure and shutdown failure are reported separately and fail the complete workflow. `PLAN_ONLY` never implies service recovery. Historical STOP traces remain readable through conservative normalization. See [evaluation semantics](docs/evaluation.md) for applicable denominators and offline rescoring.
-
-### IncidentBench
-
-IncidentBench adds a separate versioned evidence dataset and evaluator-only oracle store. Public validation checks evidence contracts, hashes and source-family leakage before investigations start. Its paired runner uses the existing Graph with equivalent database tools, an explicit fixed-four schedule, independent per-run budgets and cache disabled. Durable raw traces support rescoring, anonymous citation-review exports and source-clustered statistical analysis; technical failures remain in denominators and unknown usage stays null.
-
-The included Seed fixtures are pending development candidates from a shared encoder. Frozen Test sealing requires independent reviewed labels and provider readiness; formal execution is currently gated. See the [IncidentBench guide](docs/incidentbench/README.md) for actual commands, data/evaluation/model cards and research limitations. Legacy datasets and evaluators remain available.
-
-### Optional active evidence selection
-
-CAES ranks bounded investigation candidates using published hypothesis predictions,
-open questions, missing evidence sources, redundancy and conservative request/tool
-costs. It adds no model or tool call to candidate generation. `current_dynamic` remains
-the default; Shadow records recommendations while retaining Coordinator tasks. Enabled
-selection uses the existing role permissions, TaskManager, budgets, Verifier and
-FinalizeGate. Scores are heuristic estimates, not calibrated information gain.
-
-```powershell
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --shadow-caes --out results/v15/NEW-shadow
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --selection-policy active_evidence --out results/v15/NEW-active
-.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/v15/NEW-seed
-.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/v15/NEW-active/trace.json
-```
-
-The six groups execute fixed-four, original dynamic, common-candidate first selection,
-without-cost, without-discrimination and full CAES paths. Current uniform cost fallback
-does not establish action-specific cost sensitivity in production. Seed diagnostics
-have no accepted Oracle or semantic review; Dev calibration, formal Frozen Test and
-real performance claims require upstream gates. See [CAES contracts](docs/v1.5/contract-freeze.md)
-and [algorithm](docs/v1.5/algorithm-spec.md).

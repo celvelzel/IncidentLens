@@ -60,4 +60,9 @@ For an offline demonstration, show an ordinary report, missing-evidence INCONCLU
 
 ## Known limits
 
+Recorded DeepSeek and Codex child-model development runs, including failures and
+usage limitations, are summarized in [development-pilot evidence](development-pilots.md).
+The [review and bridge improvement plan](../plans/IncidentLens_V1.4_Review_Bridge_Improvement_Plan.md)
+is a plan-only follow-up; it is not implemented runtime behavior.
+
 No independent held-out data, human truth/citation review, real-model V1.4 comparison, production Monitoring/OOD evaluation or executed remediation is present. Formal freeze remains blocked; all human semantic and remediation-effectiveness metrics remain null. Dataset validation establishes contract consistency and does not establish operational truth or model superiority. No V1.5 implementation is included.
