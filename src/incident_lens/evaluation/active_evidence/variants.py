@@ -20,7 +20,7 @@ VARIANTS = {
 class ActiveProtocol(StrictModel):
     protocol_id: str = "caes-v1-seed-diagnostic"
     provider_id: Literal["mock", "real"] = "mock"
-    model_id: str = "mock"
+    model_id: str = "deterministic-public-policy-v1"
     temperature: float = 0.0
     cache_mode: Literal["off"] = "off"
     jobs: Literal[1] = 1

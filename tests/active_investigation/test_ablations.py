@@ -28,3 +28,9 @@ def test_common_pool_config():
     values = [workflow_values(v, config) for v in ("B1c", "B2", "B3", "B4")]
     assert all(v["active_evidence_config"] is config for v in values)
     assert len({v["selection_policy"] for v in values}) == 4
+
+
+def test_default_provider_model_matches():
+    from incident_lens.llm import MockProvider
+
+    assert ActiveProtocol().model_id == MockProvider.model_id
