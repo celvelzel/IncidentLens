@@ -39,3 +39,7 @@ Formal research criteria are unmet: independent families, reviewed labels, Dev/T
 provider readiness, calibration, preregistration and untouched Test evaluation.
 MERGE READINESS: PASS scoped documentation; pinned-base adjacent runtime failure requires
 Lead's current-source validation. Research BLOCKED.
+Followup: inspected latest main source read-only after Lead integration. Updated
+resume contract for 67fb9a5, D symmetry rule and final smoke's actual saved termination.
+Counts for final smoke are Lead-supplied (7/3 versus 15/9); saved result termination
+was directly verified. D pinned-base test result remains historical and unchanged.

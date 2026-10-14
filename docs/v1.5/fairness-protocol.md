@@ -49,8 +49,12 @@ override corresponding fields. Tight-budget diagnostics use a separate protocol 
 identical reduced limits for every group and a new output directory. Current defaults:
 6 rounds, 24 tools, 32 model requests, 600 seconds, 1 repeat, run-order seed 15100,
 analysis seed 15101, 10000 bootstrap samples. These are executable defaults, not
-registered Frozen Test choices. `--resume` explicitly refuses while retaining partial
-ledgers; do not advertise automatic resume. `--frozen-protocol` is not an implemented flag.
+registered Frozen Test choices. Main 67fb9a5 adds `--resume` for verified Mock-only
+ledgers: source/protocol/receipt/prefix locks must match; completed records are not
+rerun, orphan STARTED records remain unknown failed attempts and are not re-executed.
+Older incompatible checkpoints are refused. Use the original output path and saved
+protocol; this does not authorize real-provider or formal research recovery.
+`--frozen-protocol` is not an implemented flag.
 
 Artifacts include protocol/manifest/run-order, durable raw-runs/errors/progress,
 state receipts, case-level/aggregate/paired/action/family tables, uncertainty,

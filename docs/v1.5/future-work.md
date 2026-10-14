@@ -13,12 +13,13 @@ negation and absent-prediction failure slices before replacing it. Calibrated co
 observation models would be required before making information-gain claims.
 
 Evaluate candidate-cap truncation, whether required Verifier checks lose execution,
-and source-gap bias using common visible snapshots and full saved failures. Durable
-resume requires receipt-bound recovery, source/config lock validation and idempotent
-output derivation; current explicit refusal is the supported behavior. Trace UI can
+and source-gap bias using common visible snapshots and full saved failures. Trace UI can
 later render the same saved public records once CLI replay is sufficient and stable.
 
 Tree communication, new specialist agents, RL/bandits, production monitoring and real
 remediation are outside V1.5. They require separate authorization and evaluation;
 current remediation remains PLAN_ONLY. Coding-agent commits do not prove individual
 student contribution or research novelty.
+Main 67fb9a5 now provides strict verified Mock-only resume; older incompatible
+checkpoints are refused and attempted unknown runs are not re-executed. Extending
+recovery to real-provider or formal runs remains future gated work.

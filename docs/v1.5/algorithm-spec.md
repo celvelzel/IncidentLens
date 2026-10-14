@@ -29,8 +29,8 @@ private Oracle, family, split or answer label enters the visible projection.
 | C | `2 * physical_request_multiplier` requests and 2 planned tool invocations | Conservative fixed fallback; tokens and latency are null |
 
 Tokenization lowercases `[a-z0-9]+` and removes a small generic stop-word set;
-negation tokens remain. D is directional in its pair matching: the first prediction
-must overlap beyond public service names. This lexical heuristic can miss paraphrases
+negation tokens remain. Main's subsequent permutation-symmetry fix requires both
+predictions to overlap beyond public service names. This lexical heuristic can miss paraphrases
 and overvalue superficial differences. It is neither calibrated information gain nor
 a probability of a successful investigation. Lead's subsequent d51fbfc refinement feeds
 existing pure `finalize_errors` into the published grounding gap list used by G; this

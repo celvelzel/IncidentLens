@@ -39,3 +39,10 @@ against saved Coordinator proposals, candidate assessments, executed tasks, budg
 Verifier evidence; never adjust FinalizeGate or remove failures to improve reported scores.
 
 Actual D-owned command checks and results are recorded in `wp-d-handoff.md`.
+Later saved main smoke `results/v15/active-final-smoke-20261014` remains INCONCLUSIVE
+with 7 Mock calls/3 tools (Lead count): result.json inspected directly reports workflow
+FINISHED, ABSTAINED, Missing discriminating evidence, runtime_failure=false. Companion
+`shadow-final-smoke-20261014` is RESOLVED, FINISHED, DIAGNOSIS_READY, 15 calls/9 tools
+(Lead count), runtime_failure=false. Thus the earlier dispatch failure is no longer
+the explanation for this later negative quality outcome. This remains Mock diagnostic
+evidence, not a calibrated cost or formal accuracy effect.
