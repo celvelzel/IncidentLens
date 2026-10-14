@@ -22,12 +22,18 @@ def main():
     p.add_argument("--jobs", type=int, choices=(1,), default=1)
     p.add_argument("--out", required=True, type=Path)
     p.add_argument(
-        "--resume", action="store_true", help="unsupported; preserves partial ledger and refuses"
+        "--resume",
+        action="store_true",
+        help="resume verified Mock-only ledger without rerunning attempted records",
     )
     a = p.parse_args()
-    if a.resume:
-        p.error("resume unsupported: existing partial ledger retained; use a new unique output")
-    values = json.loads(a.protocol.read_bytes()) if a.protocol else {}
+    values = (
+        json.loads(a.protocol.read_bytes())
+        if a.protocol
+        else json.loads((a.out / "protocol.json").read_bytes())
+        if a.resume
+        else {}
+    )
     if a.variants is not None:
         values["variants"] = a.variants
     if a.provider is not None:
@@ -37,7 +43,9 @@ def main():
             v for v in values.get("variants", list(VARIANTS)) if VARIANTS[v] == a.policy
         ]
     protocol = ActiveProtocol.model_validate(values)
-    rows = asyncio.run(run_experiment(a.dataset, a.split, MockProvider, a.out, protocol))
+    rows = asyncio.run(
+        run_experiment(a.dataset, a.split, MockProvider, a.out, protocol, resume=a.resume)
+    )
     print(json.dumps(dict(runs=len(rows), out=str(a.out), status="engineering_only")))
 
 

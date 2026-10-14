@@ -4,17 +4,20 @@ import asyncio
 import hashlib
 import time
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics, write_csv
+from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics
 from incident_lens.incidentbench.experiment import (
     append,
     durable_write,
     execution_lock,
     load_cases,
+    read_json,
     run_identity,
     run_order,
     score_saved_raw,
+    write_csv_preserving,
+    write_json_preserving,
 )
 from incident_lens.incidentbench.manifest import create_lock, verify_lock
 from incident_lens.incidentbench.validator import validate_dataset
@@ -27,7 +30,7 @@ from .statistics import analyze
 from .variants import ActiveProtocol, workflow_values
 
 
-async def run_experiment(dataset, split, provider_factory, out, protocol):
+async def run_experiment(dataset, split, provider_factory, out, protocol, *, resume=False):
     protocol = ActiveProtocol.model_validate(protocol)
     root, public, cases = load_cases(dataset, split)
     if not cases:
@@ -42,14 +45,45 @@ async def run_experiment(dataset, split, provider_factory, out, protocol):
         raise ValueError("public benchmark audit failed")
     lock = create_lock(root, protocol)
     out = Path(out).absolute()
-    out.mkdir(parents=True, exist_ok=False)
+    if resume:
+        from incident_lens.incidentbench.oracle_store import safe_path
+
+        out = safe_path(out)
+        if not out.is_dir():
+            raise ValueError("resume requires existing output")
+    else:
+        out.mkdir(parents=True, exist_ok=False)
     with execution_lock(out):
-        return await _execute(root, public, cases, split, provider_factory, out, protocol, lock)
+        return await _execute(
+            root, public, cases, split, provider_factory, out, protocol, lock, resume=resume
+        )
 
 
-async def _execute(root, public, cases, split, factory, out, protocol, lock):
-    (out / "states").mkdir()
-    experiment_id = str(uuid4())
+def action_rows(key, details):
+    selected = details["selection"]["selected_candidate_ids"]
+    return [
+        dict(
+            run_key=key,
+            decision_id=details["selection"]["decision_id"],
+            candidate_id=a["candidate_id"],
+            selected=a["candidate_id"] in selected,
+            score=a.get("score"),
+            eligibility=a["eligibility"],
+            reject_reason=a.get("reject_reason"),
+            features=a.get("features"),
+            coordinator_proposed_tasks=details.get("coordinator_proposed_tasks"),
+            selector_executed_tasks=details.get("selector_executed_tasks"),
+        )
+        for a in details["selection"]["assessments"]
+    ]
+
+
+async def _execute(root, public, cases, split, factory, out, protocol, lock, *, resume=False):
+    experiment_id = (
+        read_json(out / "experiment-context.json")["experiment_id"] if resume else str(uuid4())
+    )
+    if str(UUID(experiment_id)) != experiment_id:
+        raise ValueError("invalid experiment UUID")
     context = dict(
         experiment_id=experiment_id,
         dataset_root=str(root),
@@ -58,23 +92,37 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
         formal_status="BLOCKED",
     )
     order = run_order([c.incident_id for c in cases], protocol)
-    for name, value in (
-        ("protocol.json", protocol.model_dump(mode="json")),
-        ("manifest.json", lock),
-        ("experiment-context.json", context),
-        ("run-order.json", order),
-    ):
-        durable_write(out / name, value)
     metadata = {c.incident_id: c.model_dump(mode="json") for c in cases}
-    rows = []
-    actions = []
+    if resume:
+        from .recovery import recover_resume
+
+        rows, states, completed, frozen_parameters = recover_resume(
+            out, root, protocol, context, order, metadata, None
+        )
+        actions = [
+            action
+            for row, state in zip(rows, states)
+            for details in selection_events(state)
+            for action in action_rows(row["run_key"], details)
+        ]
+    else:
+        (out / "states").mkdir()
+        for name, value in (
+            ("protocol.json", protocol.model_dump(mode="json")),
+            ("manifest.json", lock),
+            ("experiment-context.json", context),
+            ("run-order.json", order),
+        ):
+            durable_write(out / name, value)
+        rows, actions, completed, frozen_parameters = [], [], set(), None
     providers = []
-    frozen_parameters = None
     for incident, repeat, variant in order:
-        verify_lock(lock, root, protocol)
         key = f"{incident}.{variant}.repeat-{repeat}"
+        if key in completed:
+            continue
+        verify_lock(lock, root, protocol)
         run_id = run_identity(experiment_id, key)
-        append(out / "progress.jsonl", dict(run_key=key, status="STARTED"))
+        append(out / "progress.jsonl", dict(run_key=key, run_id=run_id, status="STARTED"))
         started = time.monotonic()
         measured = None
         cancelled = False
@@ -96,6 +144,9 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
             if frozen_parameters is None:
                 frozen_parameters = parameters
                 durable_write(out / "provider-parameters.json", measured.model_parameters)
+                durable_write(
+                    out / "provider-parameters.sha256.json", hashlib.sha256(parameters).hexdigest()
+                )
             elif parameters != frozen_parameters:
                 raise ValueError("provider config drift")
             workflow = WorkflowOptions(**workflow_values(variant, protocol.active_evidence_config))
@@ -163,28 +214,16 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
         append(out / "scores.jsonl", row)
         for details in selection_events(state):
             append(out / "selection-decisions.jsonl", dict(run_key=key, details=details))
-            selected = details["selection"]["selected_candidate_ids"]
-            for assessment in details["selection"]["assessments"]:
-                actions.append(
-                    dict(
-                        run_key=key,
-                        decision_id=details["selection"]["decision_id"],
-                        candidate_id=assessment["candidate_id"],
-                        selected=assessment["candidate_id"] in selected,
-                        score=assessment.get("score"),
-                        eligibility=assessment["eligibility"],
-                        reject_reason=assessment.get("reject_reason"),
-                        features=assessment.get("features"),
-                        coordinator_proposed_tasks=details.get("coordinator_proposed_tasks"),
-                        selector_executed_tasks=details.get("selector_executed_tasks"),
-                    )
-                )
+            actions.extend(action_rows(key, details))
         if row.get("failure_category"):
             append(out / "errors.jsonl", dict(run_key=key, code=row["failure_category"]))
-        append(out / "progress.jsonl", dict(run_key=key, status="DURABLE", receipt=receipt))
+        append(
+            out / "progress.jsonl",
+            dict(run_key=key, run_id=run_id, status="DURABLE", receipt=receipt),
+        )
         if drift or cancelled:
             durable_write(
-                out / "experiment-status.json",
+                out / "checkpoint-status.json",
                 dict(status="partial", attempted=len(rows), planned=len(order)),
             )
             if cancelled:
@@ -192,17 +231,17 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
             raise ValueError("protocol drift; failure retained")
     from incident_lens.incidentbench.scorer import aggregate
 
-    write_csv(out / "case-level.csv", rows)
+    write_csv_preserving(out / "case-level.csv", rows)
     summary = aggregate(rows)
-    durable_write(out / "aggregate.json", summary)
-    write_csv(out / "aggregate.csv", summary)
-    write_csv(out / "action-trace.csv", actions)
+    write_json_preserving(out / "aggregate.json", summary)
+    write_csv_preserving(out / "aggregate.csv", summary)
+    write_csv_preserving(out / "action-trace.csv", actions)
     from collections import defaultdict
 
     groups = defaultdict(list)
     for row in rows:
         groups[(row["scenario_family_id"], row["variant"])].append(row)
-    write_csv(
+    write_csv_preserving(
         out / "family-slices.csv",
         [
             dict(scenario_family_id=family, **aggregate(group)[0])
@@ -213,7 +252,7 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
 
     paired = []
     for baseline in ("B1", "B1c", "B2", "B3", "B0"):
-        for incident in {r["incident_id"] for r in rows}:
+        for incident in sorted({r["incident_id"] for r in rows}):
             for metric in (
                 "root_cause_correct",
                 "total_tokens",
@@ -231,7 +270,7 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
                 }
                 matched = [
                     repeat
-                    for repeat in set(cell[baseline]) & set(cell["B4"])
+                    for repeat in sorted(set(cell[baseline]) & set(cell["B4"]))
                     if cell[baseline][repeat] is not None and cell["B4"][repeat] is not None
                 ]
                 if matched:
@@ -244,9 +283,9 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
                             difference=mean(cell["B4"][r] - cell[baseline][r] for r in matched),
                         )
                     )
-    write_csv(out / "paired-differences.csv", paired)
-    durable_write(out / "source-hashes.json", lock)
-    durable_write(
+    write_csv_preserving(out / "paired-differences.csv", paired)
+    write_json_preserving(out / "source-hashes.json", lock)
+    write_json_preserving(
         out / "calibration-report.json",
         dict(
             status="NOT_APPLICABLE",
@@ -254,20 +293,26 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
         ),
     )
     failures = [r for r in rows if r.get("failure_category")]
-    (out / "error-analysis.md").write_text(
+    error_text = (
         "# Engineering failures\n\n"
         + "\n".join(f"- {r['run_key']}: {r['failure_category']}" for r in failures)
-        + "\n\nOracle correctness and semantic review are pending. No empirical improvement claim.\n",
-        encoding="utf-8",
+        + "\n\nOracle correctness and semantic review are pending. No empirical improvement claim.\n"
     )
-    durable_write(
+    error_path = out / "error-analysis.md"
+    if error_path.exists():
+        if error_path.read_bytes() != error_text.encode("utf-8"):
+            raise ValueError("existing error analysis mismatch")
+    else:
+        with error_path.open("xb") as stream:
+            stream.write(error_text.encode("utf-8"))
+    write_json_preserving(
         out / "uncertainty.json",
         analyze(rows, seed=protocol.analysis_seed, samples=protocol.bootstrap_samples),
     )
-    durable_write(
+    write_json_preserving(
         out / "semantic-review-status.json", dict(status="pending", human_grounded_success=None)
     )
-    durable_write(
+    write_json_preserving(
         out / "experiment-status.json",
         dict(
             status="completed_engineering_only",
@@ -284,12 +329,12 @@ async def _execute(root, public, cases, split, factory, out, protocol, lock):
     for name in ("errors.jsonl", "selection-decisions.jsonl"):
         if not (out / name).exists():
             (out / name).touch()
-    durable_write(
+    write_json_preserving(
         out / "artifact-digests.json",
         {
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in out.iterdir()
-            if p.is_file() and p.name != ".execution.lock"
+            if p.is_file() and p.name not in {".execution.lock", "artifact-digests.json"}
         },
     )
     return rows
