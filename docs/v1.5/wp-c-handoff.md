@@ -39,3 +39,5 @@ Analysis: python scripts/analyze_v15_active.py --input results/v15/UNIQUE --out 
 Replay: python scripts/replay_v15_selection.py --trace SAVED_TRACE.json
 
 Follow-up: replay validates saved datetime DTOs in JSON mode; added aggregate/paired/action/family/error/calibration/source artifacts. --resume explicitly refuses without modifying partial artifacts. CLI protocol settings are preserved unless an explicit override is supplied. 20 tests and owned Ruff checks pass.
+
+Replay envelope fix: list/events/state.events accepted, unsupported envelope rejects. Eight replay/gate tests pass. Actual main active-smoke-20261014/trace.json replay returns two matching ACTION_SELECTED decisions with selection hashes. Resume still unsupported: safely adding it requires receipt-bound interrupted STARTED reconstruction, prefix validation, provider parameter/source lock validation and idempotent derived-output recovery; explicit refusal retained.
