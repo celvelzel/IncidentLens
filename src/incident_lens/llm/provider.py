@@ -93,6 +93,8 @@ class RealChatProvider(LLMProvider):
         if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
             raise ValueError("Request timeout must be positive and finite")
         self.endpoint = endpoint.rstrip("/")
+        # The campus-only endpoint is unreachable via system proxy env vars; other endpoints keep them.
+        self._trust_env = httpx.URL(endpoint).host != "genai.comp.polyu.edu.hk"
         self._api_key = api_key
         self.model_id = model
         self.temperature = temperature
@@ -173,7 +175,7 @@ class RealChatProvider(LLMProvider):
             body["response_format"] = {"type": "json_object"}
         if self.thinking is not None:
             body["thinking"] = {"type": self.thinking}
-        client = self._client or httpx.AsyncClient(timeout=self.timeout)
+        client = self._client or httpx.AsyncClient(timeout=self.timeout, trust_env=self._trust_env)
         unknown_tokens = set()
         request_pending = False
         permit = None
@@ -323,7 +325,7 @@ class RealChatProvider(LLMProvider):
         )
         if self.thinking is not None:
             body["thinking"] = {"type": self.thinking}
-        client = self._client or httpx.AsyncClient(timeout=self.timeout)
+        client = self._client or httpx.AsyncClient(timeout=self.timeout, trust_env=self._trust_env)
         retries = repairs = 0
         pending = False
         permit = None
