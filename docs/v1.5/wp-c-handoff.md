@@ -37,3 +37,5 @@ Example: python scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 -
 --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/v15/UNIQUE
 Analysis: python scripts/analyze_v15_active.py --input results/v15/UNIQUE --out results/v15/ANALYSIS
 Replay: python scripts/replay_v15_selection.py --trace SAVED_TRACE.json
+
+Follow-up: replay validates saved datetime DTOs in JSON mode; added aggregate/paired/action/family/error/calibration/source artifacts. --resume explicitly refuses without modifying partial artifacts. CLI protocol settings are preserved unless an explicit override is supplied. 20 tests and owned Ruff checks pass.
