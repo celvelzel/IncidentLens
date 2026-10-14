@@ -47,7 +47,7 @@ def extract_features(
             and lp != rp
             and observable & (set().union(*lp) ^ set().union(*rp))
             and any(observable & (set(p) - set(visible.public_summary.services)) for p in lp)
-            and any(observable & set(p) for p in rp)
+            and any(observable & (set(p) - set(visible.public_summary.services)) for p in rp)
         ):
             distinct += 1
     discrimination = distinct / len(pairs) if pairs else 0.0

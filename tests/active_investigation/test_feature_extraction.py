@@ -73,6 +73,20 @@ def hypotheses(predictions=("capacity high", "capacity normal")):
     )
 
 
+@pytest.mark.parametrize(
+    "predictions", [("backend high", "backend normal"), ("capacity high", "capacity normal")]
+)
+def test_discrimination_is_hypothesis_permutation_invariant(predictions):
+    hs = hypotheses(predictions)
+    c = candidate(
+        question="Check backend high load", expected_discriminator="high or normal capacity"
+    )
+    cost = estimate_cost(c, budget())
+    forward = extract_features(c, visible(hypotheses=hs), cost)
+    reverse = extract_features(c, visible(hypotheses=tuple(reversed(hs))), cost)
+    assert forward.discrimination == reverse.discrimination
+
+
 def task(c):
     return InvestigationTask(
         task_id="t",
