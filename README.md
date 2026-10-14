@@ -40,6 +40,8 @@ deterministic grounding gates are all inspectable end to end.
   task-local stage budgets and one targeted structured repair, enabled explicitly.
 - **Offline Mock provider** — deterministic over supplied public evidence, without API keys or model weights.
 - **Reproducible evaluation** — four original ablation variants, paired database ablations and task recovery experiments.
+- **IncidentBench** — a separate evidence corpus, evaluator-only candidate labels,
+  equivalent-tool Graph comparisons, offline resume and saved-state rescoring.
 - **Replay and UI** — Web and retained Streamlit dashboards expose evidence, hypotheses,
   alerts, proposals, tasks and stop events.
 - **Optional explanation cache** — exact or conservative semantic reuse with strict namespaces and citation validation.
@@ -286,6 +288,50 @@ Server-issued immutable contexts constrain role, workspace, incident, run and ac
 Public file allowlists reject private truth, traversal and symlink/junction escapes. Excerpts are
 untrusted data. This is application isolation, not an OS Python sandbox.
 
+## IncidentBench
+
+IncidentBench keeps versioned public observations separate from evaluator-only causal
+labels. Validation checks evidence contracts, manifest hashes and source-family leakage
+before investigations start. The runner executes the existing Graph with cache off,
+fresh per-run providers and budgets, and equivalent database tools:
+
+| Condition | Investigation behavior |
+| --- | --- |
+| `strong_single_equivalent_tools` | One runtime identity with all equivalent tools and self-reflection |
+| `fixed_four_equivalent_tools` | One fixed batch of logs, metrics, database and changes specialists |
+| `dynamic_no_verifier` | Dynamic specialist selection without the Verifier |
+| `full` | Dynamic specialist selection with Verifier feedback |
+
+The benchmark's fixed-four option is explicit; legacy `fixed` retains three experts.
+Completed and failed states are saved before evaluator access. Saved artifacts support
+candidate rescoring, anonymous citation-review exports and paired source-cluster analysis.
+Technical failures remain in attempted-case denominators; normal evidence-insufficient
+abstention is separate from runtime failure. Unknown tokens, cost and human semantic
+support remain null. Explicit resume is supported for offline Mock runs; real-provider
+resume is unsupported.
+
+Use an editable source checkout; standalone wheel-only IncidentBench execution is
+unsupported because reproducibility locks include repository scripts, prompts and configs.
+The following commands validate public data and run an unscored offline comparison:
+
+```powershell
+.venv\Scripts\python.exe scripts/validate_incidentbench.py --dataset data/incidentbench_v1 --mode public
+.venv\Scripts\python.exe scripts/run_incidentbench.py --dataset data/incidentbench_v1 --split seed --provider mock --cache-mode off --jobs 1 --out results/incidentbench/NEW-seed
+```
+
+Output directories must be new. This example supplies no private Oracle and does not
+produce causal accuracy scores. Build and candidate-scoring examples are in the
+[IncidentBench guide](docs/incidentbench/README.md). Real development runs additionally
+require a model-matching protocol and measured provider-readiness evidence, without
+automatic fallback to Mock. Raw states, receipts and locks must remain available at
+their recorded paths for rescoring; artifact relocation is unsupported.
+
+Public development fixtures share encoder lineage and are not independently reviewed
+ground truth or blind Test data. Generated annotations, including user-confirmed model
+reviews, retain their actual provenance. Formal Frozen Test execution remains gated on
+independent review, label ownership and sealing. See the guide for dataset, evaluation
+and model cards. Legacy datasets and evaluation commands remain available.
+
 ## Local explanation cache
 
 Only local logs/metrics/database/changes explanations are cacheable. Monitoring, routing,
@@ -334,6 +380,7 @@ refuses to overwrite an existing verification environment.
 
 ## Documentation
 
+- [IncidentBench guide](docs/incidentbench/README.md) — benchmark setup, dataset and evaluation contracts
 - [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
 - [Dependencies and ownership](docs/phase-plan.md) — phase plan and module map
 - [Demo walkthrough](docs/demo.md) — recorded demo script
@@ -387,9 +434,3 @@ full boundary of every claim.
 ### Termination and scoring
 
 New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a final `NORMAL_TERMINATION` or `RUNTIME_FAILURE`. State and report share a structured termination result. Normal shutdown and recovered model-call failures preserve accepted diagnosis credit; plan generation failure and shutdown failure are reported separately and fail the complete workflow. `PLAN_ONLY` never implies service recovery. Historical STOP traces remain readable through conservative normalization. See [evaluation semantics](docs/evaluation.md) for applicable denominators and offline rescoring.
-
-### IncidentBench
-
-IncidentBench adds a separate versioned evidence dataset and evaluator-only oracle store. Public validation checks evidence contracts, hashes and source-family leakage before investigations start. Its paired runner uses the existing Graph with equivalent database tools, an explicit fixed-four schedule, independent per-run budgets and cache disabled. Durable raw traces support rescoring, anonymous citation-review exports and source-clustered statistical analysis; technical failures remain in denominators and unknown usage stays null.
-
-The included Seed fixtures are pending development candidates from a shared encoder. Frozen Test sealing requires independent reviewed labels and provider readiness; formal execution is currently gated. See the [IncidentBench guide](docs/incidentbench/README.md) for actual commands, data/evaluation/model cards and research limitations. Legacy datasets and evaluators remain available.

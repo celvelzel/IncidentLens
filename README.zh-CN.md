@@ -31,6 +31,7 @@ IncidentLens 是一个从零构建的个人研究项目,旨在探索智能体驱
 - **有界 Provider 恢复** — 显式启用故障分类、原子请求 permit、任务局部阶段预算和至多一次定向结构化修复。
 - **离线 Mock 提供方** —— 在给定公共证据上确定性运行，无需 API 密钥或模型权重。
 - **可复现评估** —— 四个原有消融变体、数据库配对消融与任务失败恢复实验。
+- **IncidentBench** —— 独立证据数据、评测器专用候选标签、等价工具 Graph 对比、离线恢复与保存状态重算。
 - **回放与 UI** —— Web 控制台和保留的 Streamlit 页面展示证据、假设、告警、修复方案、任务与停止事件。
 - **可选解释缓存** —— 精确匹配或保守语义复用，带严格命名空间与引用校验。
 
@@ -251,6 +252,42 @@ ToolRegistry 强制执行角色权限；公平对比可显式启用 `database_eq
 服务端签发的不可变上下文约束角色、工作区、事件、运行与实际查询账本；公共文件白名单拒绝私有真值、
 路径穿越和符号链接/junction 逃逸。摘录视为不可信数据；这是应用层隔离，不是操作系统级 Python 沙箱。
 
+## IncidentBench
+
+IncidentBench 将版本化公开观测与仅供评测器读取的因果标签分开保存。调查开始前，
+校验证据契约、manifest 哈希与同源家族泄漏。Runner 复用现有 Graph，关闭缓存，
+为每次运行创建独立 Provider 和预算，并开放等价数据库工具：
+
+| 条件 | 调查方式 |
+| --- | --- |
+| `strong_single_equivalent_tools` | 同一运行身份使用全部等价工具并进行自我反思 |
+| `fixed_four_equivalent_tools` | 日志、指标、数据库和变更专家执行一次固定批次 |
+| `dynamic_no_verifier` | 动态选择专家，不执行 Verifier 审核 |
+| `full` | 动态选择专家，并由 Verifier 提供反馈 |
+
+Benchmark 显式启用固定四专家；旧 `fixed` 继续使用三专家。完成或失败的状态先持久化，
+评测器随后才读取标签。保存产物支持候选标签重算、匿名引用审核导出和按来源聚类的配对分析。
+技术失败保留在尝试案例的分母内；正常证据不足弃答与运行失败分开计分。
+未知 token、费用和人工语义支撑保持 null。显式恢复支持离线 Mock 运行，暂不支持真实 Provider 恢复。
+
+IncidentBench 要求 editable 源码安装；独立 wheel 环境暂不支持，因为可复现性锁包含仓库中的
+脚本、提示词和配置。下面的命令校验公开数据，并执行不读取私有标签的离线对比：
+
+```powershell
+.venv\Scripts\python.exe scripts/validate_incidentbench.py --dataset data/incidentbench_v1 --mode public
+.venv\Scripts\python.exe scripts/run_incidentbench.py --dataset data/incidentbench_v1 --split seed --provider mock --cache-mode off --jobs 1 --out results/incidentbench/NEW-seed
+```
+
+输出目录必须不存在。示例没有提供私有 Oracle，因此不产生因果准确率分数。
+数据生成与候选标签计分示例见 [IncidentBench 使用说明](docs/incidentbench/README.md)。
+真实开发运行还需模型一致的协议和实际 Provider 就绪证据，不会自动回退到 Mock。
+重算时需保留原始状态、完成凭据及锁文件的原路径；产物搬迁暂不支持。
+
+公开开发夹具共享编码器来源，不是独立复核真值或盲测 Test。
+生成的标注，包括用户确认的模型审核，均保留真实来源。
+正式 Frozen Test 仍受独立审核、标签保管与封存条件限制。
+数据卡、评测卡和模型卡见使用说明；原有数据与评测入口继续保留。
+
 ## 本地解释缓存
 
 仅日志/指标/数据库/变更的局部解释可被缓存。监控、路由、评审、修复建议、最终定稿、报告与工具查询照常执行。
@@ -294,6 +331,7 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 
 ## 文档
 
+- [IncidentBench 使用说明](docs/incidentbench/README.md) —— 基准安装、数据与评测契约
 - [排查协议](docs/protocol.md) —— 运行生命周期、门控与预算
 - [依赖与归属](docs/phase-plan.md) —— 阶段计划与模块地图
 - [演示脚本](docs/demo.md) —— 录制演示流程
@@ -340,9 +378,3 @@ full 共享输入、模型、温度、预算与落地规则。架构对比强制
 ### 终止协议与计分
 
 新运行发送 `WORKFLOW_STOP_REQUESTED`、实际停止后的 `STOP_ACK`，以及最终 `NORMAL_TERMINATION` 或 `RUNTIME_FAILURE`；state 与 report 保存一致的结构化终止结果。正常停止与恢复后的模型调用失败保留已确认诊断的分数；方案生成失败、停止确认失败分别计分，并使完整工作流失败。`PLAN_ONLY` 不表示服务已经恢复。历史 STOP trace 通过保守兼容分类继续读取；分母与离线重算规则见[评测说明](docs/evaluation.md)。
-
-### IncidentBench
-
-IncidentBench 使用独立版本化证据数据和仅供评测器读取的 Oracle。调查启动前校验证据契约、哈希与同源家族泄漏；配对 Runner 复用现有 Graph，提供等价数据库工具、显式固定四专家调度、每次独立预算，并关闭缓存。持久化原始轨迹支持重新计分、匿名引用审查和按来源聚类的统计分析；技术失败保留在分母中，未知用量保持 null。
-
-随附 Seed 数据是共享编码器生成的待审开发候选。正式 Frozen Test 封存需要独立复核标签与 Provider 就绪证据，正式执行目前受 Gate 限制。实际命令、数据卡、评测卡、模型卡和研究局限见 [IncidentBench 使用说明](docs/incidentbench/README.md)。原有数据与评测入口继续保留。
