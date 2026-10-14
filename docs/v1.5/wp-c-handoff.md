@@ -41,3 +41,31 @@ Replay: python scripts/replay_v15_selection.py --trace SAVED_TRACE.json
 Follow-up: replay validates saved datetime DTOs in JSON mode; added aggregate/paired/action/family/error/calibration/source artifacts. --resume explicitly refuses without modifying partial artifacts. CLI protocol settings are preserved unless an explicit override is supplied. 20 tests and owned Ruff checks pass.
 
 Replay envelope fix: list/events/state.events accepted, unsupported envelope rejects. Eight replay/gate tests pass. Actual main active-smoke-20261014/trace.json replay returns two matching ACTION_SELECTED decisions with selection hashes. Resume still unsupported: safely adding it requires receipt-bound interrupted STARTED reconstruction, prefix validation, provider parameter/source lock validation and idempotent derived-output recovery; explicit refusal retained.
+
+
+## Mock-only resume completed
+
+Owned recovery.py adapts existing IncidentBench prefix recovery without Oracle access.
+run_experiment(..., resume=True) and --resume verify exact source/config/prompt/public-data
+manifest, protocol, split/context, canonical experiment UUID, seeded unique run order,
+runtime identities, state bytes/receipts, STARTED/DURABLE serial prefix, score recomputation,
+supplemental selection/error ledgers, and provider parameter digest. Invalid/partial JSONL
+refuses without repair or provider calls. An ambiguous STARTED tail is retained as INTERRUPTED,
+unknown usage, original run_id; it is never invoked again. Saved raw missing evaluator work
+gets scoring/checkpoint completion only. All attempted error/completed/orphan records are
+skipped; only unstarted schedule entries invoke providers. Recovery remains Mock-only.
+
+Completed resume reconstructs exports and verifies existing matching bytes, creating only
+missing outputs. Canonical nested action values ensure identical CSV on recovery. Immutable
+per-attempt checkpoint status preserves interruption history. Real/Frozen research gates stay
+BLOCKED. Existing older progress ledgers without run_id/provider digest may refuse safely.
+
+Genuine validation after Lead dependencies 1c95339 and05c7a2c: owned tests34 passed in60.51s;
+additional saved-raw/missing-score checkpoint recovery1 passed in4.86s (35 total tests).
+Includes actual six-variant Graph runner and completed byte-identical/no-provider resume,
+cancelled durable skip, STARTED orphan unknown skip, five drift/foreign-ledger refusal cases,
+partial JSONL retention, and saved raw scoring-only recovery. Owned Ruff check/format pass.
+Comparisons now include llm_requests/logical_structured_calls because Mock physical HTTP=0.
+
+Integration handoff: cherry-pick23ceb13 plus final owned-fix commit; do not cherry-pick
+validation dependency merge d682437 or Lead dependency cherry-pick c10d115.

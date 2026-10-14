@@ -82,6 +82,10 @@ def recover_resume(out, root, protocol, context, order, metadata, oracle_root):
             durable[key] = event
         else:
             raise ValueError("resume unknown progress status")
+    actual_progress = [(e["run_key"], e["status"]) for e in progress]
+    expected_progress = [(key, status) for key in expected for status in ("STARTED", "DURABLE")]
+    if actual_progress != expected_progress[: len(actual_progress)]:
+        raise ValueError("resume STARTED/DURABLE sequence mismatch")
     if list(started) != list(expected)[: len(started)]:
         raise ValueError("resume progress must be a prefix of locked run order")
     raws, scores = {}, {}
@@ -97,6 +101,8 @@ def recover_resume(out, root, protocol, context, order, metadata, oracle_root):
             run_id,
         ) or raw["metadata"] != metadata[incident]:
             raise ValueError("resume raw identity/metadata mismatch")
+        if raw.get("source") != "mock":
+            raise ValueError("resume raw source mismatch")
         state = raw["state"]
         receipt = state["completion_receipt"]
         path = out / "states" / f"{key}.json"
@@ -243,6 +249,11 @@ def recover_resume(out, root, protocol, context, order, metadata, oracle_root):
         else:
             append(out / "scores.jsonl", recomputed)
             scores[key] = recomputed
+    selection_expected = [
+        dict(run_key=key, details=d)
+        for key, raw in raws.items()
+        for d in selection_events(raw["state"])
+    ]
     for detail in selection_expected[len(selection_saved) :]:
         append(out / "selection-decisions.jsonl", detail)
     for key, row in scores.items():
