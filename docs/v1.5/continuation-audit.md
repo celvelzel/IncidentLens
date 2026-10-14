@@ -39,3 +39,20 @@ wheel smoke, final coverage/changed-files/phase/QA/results reports. None are
 claimed completed by this checkpoint. P4/P5 scientific gates remain BLOCKED:
 Dev/Test empty, no accepted labels/human semantic review, no audited independent
 families, no formal sealing or confirmed real-provider completion.
+
+## Subsequent continuation completed / final evidence
+
+Final runtime2611182 closes the physical/logical recovery reserve defect and duplicate
+pytest module names found during independent QA/full regression. WP-E was reinstated
+as an independent read-only reviewer and verified both fresh v3 experiment ledgers,
+410 selection replays and installed-wheel isolation. v2 artifacts remain source-attributed
+tocee3987. Fresh v3 normal+tight each120 executions, analysis/resume and actual counter
+summaries are in experiment-results.md. All63 tight failures remain visible.
+
+Final source stayed frozen throughout v3 and subsequent clean checks. Full-r1 collection
+failure, full-r2 mid-edit lock drift, full-r3 UI replay mismatch, standalone UI retest,
+and serial full-r4 have distinct saved logs. The final release report records the actual
+last outcome, not the initial pending checkpoint. No earlier Worker output or upstream
+blocked gate was dropped or counted as complete merely because the session continued.
+Final clean full-r4 completed850passed3skipped328.11s, independently checked0errors/
+0failures; engineering QA PASS. All research blocks remain unchanged.

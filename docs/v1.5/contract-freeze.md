@@ -39,8 +39,9 @@ board digest and task completion signatures. IDs remain runtime-owned.
 
 Cost fallback: two Investigator logical requests, <=2 planned tools, conservative physical
 attempt multiplier from configured provider. Token/latency unknown remains null. Reserve
-at least one Verifier request and fetch tool; reserve is max(existing recovery reserve,
-policy reserve), not added twice. Estimate never charges a permit. Zero selection uses
+at least one Verifier request and fetch tool; Recovery physical request reserves first
+round up to logical calls before max(existing recovery reserve, policy reserve), not
+added or multiplied twice. Estimate never charges a permit. Zero selection uses
 explicit ABSTAIN with NO_USEFUL_ACTION, never a loop. All existing dispatch/merge/gates remain.
 
 B1 bypasses CAES. B1c first_eligible, B2 active_no_cost, B3 active_no_discrimination,

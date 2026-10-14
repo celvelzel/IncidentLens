@@ -16,7 +16,8 @@ signatures include the evidence snapshot; changed windows/snapshots permit new c
 Duplicate requests take source precedence. Legal Coordinator proposals, legal requests,
 then templates precede invalid candidates before the default six-candidate cap. Templates
 round-robin legal roles across public services. Overflow is not an assessed candidate:
-inspect recorded proposed/requested counts when auditing truncation. Filters are planning
+inspect saved `coordinator_proposed_tasks` and `visible.requested_checks` when auditing
+truncation. Overflow has no individual assessment/rejection record. Filters are planning
 hints; actual tool arguments still pass existing tool schema validation. No provider handle,
 private Oracle, family, split or answer label enters the visible projection.
 
@@ -39,13 +40,21 @@ with it in real tasks. C is not a measured cost or a charged permit.
 
 `V = .40 D + .30 U + .30 G - .30 R`; B4 score is
 `V / (.01 + 1.0 * estimated_requests + .25 * estimated_tools)`.
-B2 uses denominator 1; B3 sets D weight to zero. Stable score ties use candidate ID.
+B2 uses denominator 1; B3 sets D weight to zero. Stable score ties normally use candidate ID.
+At cold start (no non-rejected published hypotheses), equal scores use the conservative
+Logs, Metrics, Database, Changes role order, then prefer a Coordinator proposal within
+the same role, then candidate ID. This cee3987 correction keeps D at zero and prevents
+an ID hash from preferring an uninformative empty-Board investigation. It is a public
+role prior, not Dev calibration or an Oracle-derived ranking. The earlier batch and
+its four Verifier BAD_ARGS failures remain retained separately.
 B1c preserves generator order. Positive score above `min_score=0` is required for
 scored policies. Selection traverses the fixed ranked order; it does not rerank after
 each selection. Same-role/same-filter token Jaccard overlap applies a .15 penalty;
 overlap >= .95 excludes a second task, with opposite negation sets treated as distinct.
 Each task and their aggregate must fit requests/tools plus Verifier reserve. The
-adapter uses max(existing recovery reserve, policy reserve), avoiding double reservation.
+adapter converts the physical Recovery reserve to logical calls with ceiling division
+before taking max with the policy reserve, avoiding a second retry multiplication.
+This can conservatively reserve up to multiplier-minus-one extra physical permits.
 Unknown latency is not fabricated; runtime deadline remains authoritative.
 
 Uniform fallback costs mean B2 and B4 can coincide. Synthetic tests with injected
