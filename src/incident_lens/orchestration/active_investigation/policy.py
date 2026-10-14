@@ -135,7 +135,11 @@ def apply_policy(run, state, proposal):
             config.model_dump()
             | {
                 "reserve_verifier_requests": max(
-                    config.reserve_verifier_requests, recovery.reserve_verifier_requests
+                    config.reserve_verifier_requests,
+                    # Recovery reserves physical permits; CAES config reserves
+                    # logical calls. Round up before comparing equal units.
+                    (recovery.reserve_verifier_requests + budget.physical_request_multiplier - 1)
+                    // budget.physical_request_multiplier,
                 ),
             }
         )

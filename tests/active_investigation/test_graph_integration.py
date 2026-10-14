@@ -242,3 +242,46 @@ def test_measured_provider_cost_adapter_uses_delegate_recovery():
         MeasuredProvider(provider), EvidenceProvider(ROOT / "data"), "incident_001"
     )
     assert budget_projection(run).physical_request_multiplier == 4
+
+
+@pytest.mark.parametrize("physical_reserve,logical_reserve,selected", [(3, 1, 1), (9, 3, 0)])
+def test_recovery_physical_reserve_normalized_once(physical_reserve, logical_reserve, selected):
+    from incident_lens.orchestration.active_investigation.policy import apply_policy
+    from incident_lens.orchestration.recovery import RecoveryConfig
+    from incident_lens.schemas import InvestigationTask
+
+    provider = MockProvider()
+    provider.recovery = RecoveryConfig(
+        enabled=True,
+        max_physical_attempts_per_call=4,
+        reserve_verifier_requests=physical_reserve,
+    )
+    run = InvestigationRun(
+        provider,
+        EvidenceProvider(ROOT / "data"),
+        "incident_001",
+        limits=Budget(max_llm_calls=18),
+        workflow=WorkflowOptions(selection_policy="active_evidence"),
+    )
+    proposal = CoordinatorDecision(
+        action="INVESTIGATE",
+        reason="check",
+        assignments=[
+            InvestigationTask(
+                task_id="proposal",
+                role="logs",
+                question="Inspect backend errors",
+                reason="budget unit regression",
+                allowed_tools=["query_logs", "fetch_evidence"],
+                filters={"service": "backend"},
+                expected_discriminator="backend errors",
+            )
+        ],
+    )
+    result = apply_policy(run, run.state, proposal)
+    details = next(e.details for e in run.state.events if e.event_type == "ACTION_SELECTED")
+    assert details["config"]["reserve_verifier_requests"] == logical_reserve
+    # Physical 3 is covered by one logical reserve (4), never multiplied to 12.
+    # Physical 9 conservatively rounds to 12: one task 8 + reserve12 exceeds18.
+    assert len(result.assignments) == selected
+    assert run.call_budget.snapshot().remaining_request_permits == 18
