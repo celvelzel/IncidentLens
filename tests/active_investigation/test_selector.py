@@ -18,8 +18,22 @@ def select(allow, candidates, v=None, b=None, policy="active_evidence", **config
 
 def test_deterministic_tie(allow):
     cs = [candidate("z"), candidate("a", proposed_role="metrics")]
-    assert select(allow, cs, max_selected_tasks=1).selected_candidate_ids == ("a",)
+    assert select(
+        allow, cs, v=visible(hypotheses=hypotheses()), max_selected_tasks=1
+    ).selected_candidate_ids == ("a",)
     assert select(allow, cs) == select(allow, cs)
+
+
+def test_cold_start_prioritizes_foundational_sources_without_faking_D(allow):
+    cs = [
+        candidate("a", proposed_role="changes"),
+        candidate("b", proposed_role="database"),
+        candidate("z", proposed_role="logs"),
+        candidate("y", proposed_role="metrics"),
+    ]
+    result = select(allow, cs)
+    assert result.selected_candidate_ids == ("z", "y")
+    assert all(a.features.discrimination == 0 for a in result.assessments)
 
 
 def test_diversity(allow):

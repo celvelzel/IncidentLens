@@ -13,6 +13,7 @@ def selection_metrics(state):
     decisions = selection_events(state)
     assessments = [a for d in decisions for a in d["selection"]["assessments"]]
     return dict(
+        tool_calls=state.get("tool_calls_used"),
         selection_rounds=len(decisions),
         candidate_pool_size=sum(len(d["candidates"]) for d in decisions),
         eligible_candidates=sum(a["eligibility"] == "ELIGIBLE" for a in assessments),

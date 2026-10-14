@@ -81,11 +81,20 @@ def select_candidates(candidates, visible, budget, role_acl, config, policy):
                 score=score,
             )
         )
+    bootstrap = not any(h.status != "REJECTED" for h in visible.hypotheses)
+    role_order = {"logs": 0, "metrics": 1, "database": 2, "changes": 3}
     ordered = sorted(
         entries,
         key=(lambda e: e[3])
         if policy == "first_eligible"
-        else (lambda e: (-e[2], e[0].candidate_id)),
+        else (
+            lambda e: (
+                -e[2],
+                role_order[e[0].proposed_role] if bootstrap else 0,
+                0 if bootstrap and e[0].origin == "coordinator_proposal" else 1,
+                e[0].candidate_id,
+            )
+        ),
     )
     ranks = {e[0].candidate_id: i + 1 for i, e in enumerate(ordered)}
     selected = []

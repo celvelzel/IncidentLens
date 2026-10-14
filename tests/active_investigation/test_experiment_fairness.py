@@ -46,3 +46,10 @@ def test_fairness_rejects(values):
 def test_duplicate_repeat_refused():
     with pytest.raises(ValueError):
         analyze([row("B1"), row("B1"), row("B4"), row("B4")], samples=10)
+
+
+def test_actual_tool_count_and_unknown_failure_count():
+    from incident_lens.evaluation.active_evidence.metrics import selection_metrics
+
+    assert selection_metrics({"tool_calls_used": 7, "events": []})["tool_calls"] == 7
+    assert selection_metrics({"execution_error": {"code": "INTERRUPTED"}})["tool_calls"] is None
