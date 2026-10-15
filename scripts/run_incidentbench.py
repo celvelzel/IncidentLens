@@ -87,6 +87,11 @@ async def run(args):
         protocol_lock=lock,
         resume=args.resume,
     )
+    from incident_lens.evaluation.v16 import write_companion
+
+    # Resume may already have a completed companion; do not overwrite evidence.
+    if not (args.out / "v16-metrics.json").exists():
+        write_companion(args.out, rows)
     print(json.dumps({"runs": len(rows), "source": protocol.provider_id, "out": str(args.out)}))
 
 

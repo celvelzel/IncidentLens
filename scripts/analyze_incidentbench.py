@@ -111,6 +111,14 @@ def main():
         analyze(rows, seed=protocol.analysis_seed, samples=protocol.bootstrap_samples),
     )
     export_paired(args.out, rows, protocol)
+    from incident_lens.evaluation.v16 import write_companion
+
+    write_companion(args.out, rows)
+    durable_write(args.out / "score-recomputation.json", {
+        "attempted_n": len(rows),
+        "exact_scores_equal": rows == list(original.values()),
+        "oracle_supplied": args.oracle_root is not None,
+    })
     print(json.dumps({"recomputed_runs": len(rows), "out": str(args.out)}))
 
 
