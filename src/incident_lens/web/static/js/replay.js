@@ -43,11 +43,19 @@ export function replayReducer(previous, raw) {
   if (e.event_type === 'DECISION') s.round_index++;
   const updates = d.hypotheses || d.hypothesis_updates || d.decision?.hypothesis_updates || [];
   for (const h of updates) {
+    const prior = s.hypotheses.find(old => old.hypothesis_id === h.hypothesis_id);
     s.hypotheses = s.hypotheses.filter(old => old.hypothesis_id !== h.hypothesis_id);
     s.hypotheses.push(clone(h));
-    s.hypothesis_history.push({ event_id: e.event_id, ...clone(h) });
+    if (!equal(prior, h)) s.hypothesis_history.push({ event_id: e.event_id, ...clone(h) });
   }
-  if (Array.isArray(d.findings)) s.findings.push(...clone(d.findings).filter(f => f.run_id === s.run_id && f.incident_id === s.incident_id));
+  if (Array.isArray(d.findings)) {
+    for (const finding of d.findings) {
+      if (finding.run_id !== s.run_id || finding.incident_id !== s.incident_id || !finding.finding_id) continue;
+      const index = s.findings.findIndex(old => old.finding_id === finding.finding_id);
+      if (index < 0) s.findings.push(clone(finding));
+      else s.findings[index] = clone(finding);
+    }
+  }
   if (e.event_type === 'REPORT' && d.report) { s.report = clone(d.report); s.roles.report = 'COMPLETED'; }
   if (['RUNTIME_FAILURE','RUNTIME_ERROR','MODEL_FAILURE','TASK_FAILED','STOP_TIMEOUT'].includes(e.event_type)) s.workflow_status = 'FAILED';
   if (e.event_type === 'NORMAL_TERMINATION') { s.workflow_status = d.outcome === 'FAILED' ? 'FAILED' : 'FINISHED'; s.termination = clone(d); }

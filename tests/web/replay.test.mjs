@@ -66,3 +66,23 @@ test('saved missing and provider-failure fixtures replay without report backfill
     assert.equal(s.report.root_cause,null);
   }
 });
+
+test('actual cumulative multi-MERGE findings remain unique and match saved final findings',()=>{
+  assert.ok(events.filter(e=>e.event_type==='MERGE').length>1);
+  const final=replayPrefix(trace,events.length);
+  assert.equal(final.findings.length,4);
+  assert.equal(new Set(final.findings.map(f=>f.finding_id)).size,4);
+  assert.deepEqual(final.findings,trace.state.findings);
+});
+test('unchanged hypothesis snapshots do not become additional evolution changes',()=>{
+  const merge=events.find(e=>e.event_type==='MERGE');
+  const first=replayReducer(initialReplay(trace),merge);
+  const repeated=replayReducer(first,{...merge,event_id:'duplicate-snapshot'});
+  assert.deepEqual(repeated.hypothesis_history,first.hypothesis_history);
+  const changed=structuredClone(merge);
+  changed.event_id='changed-snapshot';
+  changed.details.hypotheses[0].support_ids.push('changed-support');
+  const next=replayReducer(repeated,changed);
+  assert.equal(next.hypothesis_history.length,first.hypothesis_history.length+1);
+  assert.equal(next.hypothesis_history.at(-1).event_id,'changed-snapshot');
+});
