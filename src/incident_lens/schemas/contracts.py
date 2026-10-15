@@ -142,6 +142,7 @@ class Review(StrictModel):
     verdict: Literal["sufficient", "insufficient", "conflicted"]
     contradictions: list[Text] = Field(default_factory=list)
     requested_checks: list[InvestigationTask] = Field(default_factory=list)
+    optional_checks: list[InvestigationTask] = Field(default_factory=list)
     cited_evidence_ids: list[Identifier] = Field(default_factory=list)
     rationale: Text
 
@@ -150,6 +151,7 @@ class CoordinatorDecision(StrictModel):
     action: Literal["INVESTIGATE", "FINALIZE", "ABSTAIN"]
     reason: Text
     assignments: list[InvestigationTask] = Field(default_factory=list)
+    hypothesis_updates: list[Hypothesis] = Field(default_factory=list)
     selected_hypothesis_id: Identifier | None = None
     stop_reason: str | None = None
 

@@ -73,7 +73,11 @@ async def test_enabled_really_materializes_selected_tasks():
     )
     selected_ids = {t["task_id"] for d in selections for t in d["selector_executed_tasks"]}
     assert {t.task_id for t in state.tasks} == selected_ids
-    assert {e.task_id for e in state.events if e.event_type == "TASK_ASSIGNED"} == selected_ids
+    # Verify reviews are runtime tasks too, so the selected check tasks are a
+    # subset of everything assigned rather than the whole assigned set.
+    assigned_ids = {e.task_id for e in state.events if e.event_type == "TASK_ASSIGNED"}
+    assert selected_ids <= assigned_ids
+    assert {t for t in assigned_ids if t.startswith("caes-")} == selected_ids
     assert state.tool_calls_used <= state.budgets.max_tool_calls
     assert state.llm_calls_used <= state.budgets.max_llm_calls
     assert state.termination.stop_completed

@@ -1,0 +1,90 @@
+{
+  "run_id": "run-0c72d8de98e14b37b49a85f63e4133b3",
+  "incident_id": "incident_2001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_2001-E-003",
+      "incident_2001-E-004",
+      "incident_2001-E-005",
+      "incident_2001-E-008",
+      "incident_2001-E-009"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend pool_waiters elevated (118) at change time",
+      "Backend log reports request processing exceeded deadline after change",
+      "Gateway http_5xx_rate elevated (0.35) after change"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:14+00:00 [incident_2001-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:14+00:00 [incident_2001-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_2001-E-003",
+    "incident_2001-E-004",
+    "incident_2001-E-005",
+    "incident_2001-E-008",
+    "incident_2001-E-009"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_2001-E-007",
+        "incident_2001-E-004"
+      ],
+      "predicted_observations": [
+        "connection_count near connection_limit after 12:00:10Z",
+        "increased connection wait/errors"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-213ab96471de149b738e302ba008816f5472cab43f68377318300f077f546059",
+      "culprit_service": "gateway",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_2001-E-009"
+      ],
+      "against_ids": [
+        "incident_2001-E-003",
+        "incident_2001-E-004",
+        "incident_2001-E-008"
+      ],
+      "predicted_observations": [
+        "Backend service error rate or latency elevated in the same window",
+        "Gateway request_latency elevated after 12:00:10Z"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal chain confirmed: backend config change (db_pool_max 20->2, concurrency=120) at 12:00:10Z -> pool_waiters=118 -> backend request timeout (E-008) -> gateway http_5xx_rate=0.35 (E-009). Postgres connection count 30/100 is consistent with backend pool limiting connections rather than postgres exhaustion. No other change records observed in the window.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

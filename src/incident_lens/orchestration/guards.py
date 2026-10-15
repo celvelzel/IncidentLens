@@ -150,3 +150,18 @@ def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="
             ):
                 errors.append("Verifier review does not match current candidate/evidence snapshot")
     return errors
+
+
+def reviewed_finalization_ready(state: InvestigationState, variant="full") -> bool:
+    """A refreshed review can discharge an existing FINALIZE, never create one."""
+    if (variant != "full" or not state.decisions or not state.reviews
+        or state.report is not None or state.termination is not None
+        or state.workflow_status != "RUNNING"):
+        return False
+    decision, review = state.decisions[-1], state.reviews[-1]
+    if decision.action != "FINALIZE" or review.target_hypothesis_id != decision.selected_hypothesis_id:
+        return False
+    candidate = next(
+        (h for h in state.hypotheses if h.hypothesis_id == decision.selected_hypothesis_id), None
+    )
+    return candidate is not None and not finalize_errors(state, candidate, variant)

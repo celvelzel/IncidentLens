@@ -6,6 +6,20 @@ from typing import TypeVar
 from pydantic import BaseModel, ValidationError
 
 Model = TypeVar("Model", bound=BaseModel)
+
+
+def output_messages(system_prompt, user_payload, schema):
+    """One wire prompt for HTTP and development bridge calls alike."""
+    from incident_lens.llm.provider import json_payload
+
+    return [
+        {"role": "system", "content": system_prompt
+         + "\nReturn a NEW output object, not the input state. The required output JSON Schema is:\n"
+         + json.dumps(schema)},
+        {"role": "user", "content": json.dumps(json_payload(user_payload))},
+    ]
+
+
 _SUMMARIES = {
     "INVALID_RESPONSE_ENVELOPE": "Response envelope is invalid or has no string content.",
     "INVALID_JSON": "Response content is not valid JSON.",
@@ -20,6 +34,43 @@ _SAFE_TYPES = frozenset(
     "less_than less_than_equal datetime_type datetime_parsing datetime_from_date_parsing "
     "date_type date_parsing finite_number value_error assertion_error".split()
 )
+
+
+def strict_schema(output_model: type[Model]) -> dict:
+    """Return the model schema with every declared property marked required.
+
+    Providers that enforce OpenAI-style ``strict`` JSON Schema only emit keys listed in
+    ``required``. Pydantic omits fields that carry defaults, so the model silently drops
+    them and cross-field validators reject the otherwise-valid object. Listing every
+    property keeps optional semantics expressible through explicit ``null``/``[]`` values.
+    """
+    schema = output_model.model_json_schema()
+    _require_all_properties(schema)
+    return schema
+
+
+def _require_all_properties(node):
+    """Recursively require every object property, following Pydantic's schema shapes."""
+    if not isinstance(node, dict):
+        return node
+    properties = node.get("properties")
+    if isinstance(properties, dict) and properties:
+        node["required"] = list(properties)
+    for key in ("properties", "$defs", "definitions"):
+        child = node.get(key)
+        if isinstance(child, dict):
+            for value in child.values():
+                _require_all_properties(value)
+    for key in ("items", "additionalProperties", "not"):
+        child = node.get(key)
+        if isinstance(child, dict):
+            _require_all_properties(child)
+    for key in ("anyOf", "oneOf", "allOf", "prefixItems"):
+        child = node.get(key)
+        if isinstance(child, list):
+            for value in child:
+                _require_all_properties(value)
+    return node
 
 
 class StructuredOutputError(ValueError):

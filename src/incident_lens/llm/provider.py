@@ -1,7 +1,6 @@
 """Structured provider boundary. Exceptions never include request or response data."""
 
 import asyncio
-import json
 import math
 import time
 from abc import ABC, abstractmethod
@@ -138,6 +137,8 @@ class RealChatProvider(LLMProvider):
         return await self._legacy_call(role, system_prompt, user_payload, output_model)
 
     async def _legacy_call(self, role, system_prompt, user_payload, output_model):
+        from incident_lens.llm.structured_output import output_messages, strict_schema
+
         started = time.monotonic()
         usage = dict(
             source="model",
@@ -149,15 +150,8 @@ class RealChatProvider(LLMProvider):
             measured_total_tokens=0,
             tokens_complete=True,
         )
-        messages = [
-            {
-                "role": "system",
-                "content": system_prompt + "\nReturn a NEW output object, not the input state. "
-                "The required output JSON Schema is:\n"
-                + json.dumps(output_model.model_json_schema()),
-            },
-            {"role": "user", "content": json.dumps(json_payload(user_payload))},
-        ]
+        schema = strict_schema(output_model)
+        messages = output_messages(system_prompt, user_payload, schema)
         body = dict(
             model=self.model_id,
             temperature=self.temperature,
@@ -167,7 +161,7 @@ class RealChatProvider(LLMProvider):
                 "json_schema": {
                     "name": output_model.__name__,
                     "strict": True,
-                    "schema": output_model.model_json_schema(),
+                    "schema": schema,
                 },
             },
         )
@@ -190,15 +184,15 @@ class RealChatProvider(LLMProvider):
                 usage["llm_calls"] += 1
                 request_pending = True
                 try:
-                    response = await client.post(
+                    response = await asyncio.wait_for(client.post(
                         self.endpoint
                         if self.endpoint.endswith("/chat/completions")
                         else self.endpoint + "/chat/completions",
                         json=body,
                         headers={"Authorization": "Bearer " + self._api_key},
                         timeout=self.timeout,
-                    )
-                except httpx.TimeoutException:
+                    ), timeout=self.timeout)
+                except (httpx.TimeoutException, TimeoutError):
                     raise ProviderError("PROVIDER_TIMEOUT", usage) from None
                 except asyncio.CancelledError as exc:
                     exc.usage = usage
@@ -276,7 +270,9 @@ class RealChatProvider(LLMProvider):
         from incident_lens.llm.errors import FailureInfo, classify_http, classify_transport
         from incident_lens.llm.structured_output import (
             StructuredOutputError,
+            output_messages,
             repair_message,
+            strict_schema,
             validate_response,
         )
         from incident_lens.llm.transport_retry import compute_backoff
@@ -307,15 +303,8 @@ class RealChatProvider(LLMProvider):
         )
         sums = {key: 0 for key in ("prompt_tokens", "completion_tokens", "total_tokens")}
         unknown = set()
-        messages = [
-            {
-                "role": "system",
-                "content": system_prompt
-                + "\nReturn a NEW output object, not the input state. The required output JSON Schema is:\n"
-                + json.dumps(output_model.model_json_schema()),
-            },
-            {"role": "user", "content": json.dumps(json_payload(user_payload))},
-        ]
+        schema = strict_schema(output_model)
+        messages = output_messages(system_prompt, user_payload, schema)
         body = dict(model=self.model_id, temperature=self.temperature, messages=messages)
         body["response_format"] = (
             {"type": "json_object"}
@@ -325,7 +314,7 @@ class RealChatProvider(LLMProvider):
                 "json_schema": {
                     "name": output_model.__name__,
                     "strict": True,
-                    "schema": output_model.model_json_schema(),
+                    "schema": schema,
                 },
             }
         )
@@ -461,7 +450,11 @@ class RealChatProvider(LLMProvider):
                     usage_complete=False,
                 )
                 try:
-                    response = await client.send(request)
+                    response = await asyncio.wait_for(
+                        client.send(request), timeout=min(
+                            self.timeout, max(0.001, budget_snapshot().remaining_wall_seconds)
+                        ),
+                    )
                 except asyncio.CancelledError as exc:
                     mark_unknown()
                     if reconciler is not None:
@@ -471,7 +464,9 @@ class RealChatProvider(LLMProvider):
                     # Preserve native cancellation, while wrappers/budget can retain usage.
                     exc.usage = usage
                     raise
-                except httpx.HTTPError as exc:
+                except (httpx.HTTPError, TimeoutError) as exc:
+                    if isinstance(exc, TimeoutError):
+                        exc = httpx.ReadTimeout("Request deadline exceeded")
                     context["elapsed_ms"] = (self.clock() - started) * 1000
                     info = classify_transport(exc, **context)
                 if info is None and response.status_code >= 400:

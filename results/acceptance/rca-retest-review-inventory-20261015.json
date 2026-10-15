@@ -1,0 +1,912 @@
+{
+  "scope": "all nonignored uncommitted files at review; inventory excludes itself",
+  "staged_files": [],
+  "deletions": [],
+  "invalid_json_artifacts": [],
+  "files": [
+    {
+      "path": "docs/IncidentBench_20261014_RCA_Fix_Notes.md",
+      "status": "untracked",
+      "bytes": 5872,
+      "sha256": "19f1f464349cce52b88578979614f703bbbbc1982b9296a379e448ea44c22920",
+      "decision": "retain",
+      "purpose": "iteration narrative or historical evidence and scope boundaries"
+    },
+    {
+      "path": "docs/acceptance/bridge-audit-20261015.md",
+      "status": "untracked",
+      "bytes": 11933,
+      "sha256": "655c32caa4a557e494aab74653c46c1c2866fb3593ff63b9e446becb3d2ec613",
+      "decision": "retain",
+      "purpose": "iteration narrative or historical evidence and scope boundaries"
+    },
+    {
+      "path": "docs/acceptance/finalize-resume-20261015.md",
+      "status": "untracked",
+      "bytes": 3686,
+      "sha256": "fae2de320965aff1487eac45e3a5af97a619e747c858a8f74affe0e1253dc250",
+      "decision": "retain",
+      "purpose": "iteration narrative or historical evidence and scope boundaries"
+    },
+    {
+      "path": "docs/acceptance/live-provider-issues.md",
+      "status": "modified",
+      "bytes": 21415,
+      "sha256": "80e320ab964e4e924d15f35a52d23fac78efae55b89b3b2a4dda43e83591a63d",
+      "decision": "retain",
+      "purpose": "iteration narrative or historical evidence and scope boundaries"
+    },
+    {
+      "path": "docs/acceptance/rca-retest-iteration-20261015.md",
+      "status": "untracked",
+      "bytes": 18620,
+      "sha256": "ef60a1952bffcdc12519d715ba54ef04cb307fc7f7a3873a09ec6ee3a647be23",
+      "decision": "retain",
+      "purpose": "iteration narrative or historical evidence and scope boundaries"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/final-source-manifest.json",
+      "status": "untracked",
+      "bytes": 22654,
+      "sha256": "f6204d1e5d6750597496601fb260f2a3841d68303b29f849708c2cad52fdbee8",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/call_log.jsonl",
+      "status": "untracked",
+      "bytes": 11196,
+      "sha256": "fa8e1235699013b9b368cc5faf4cd10cba6e5593edc2c74d805bfad675c9fc40",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0001.md",
+      "status": "untracked",
+      "bytes": 22040,
+      "sha256": "ae87337b3329d483707da740674b11382a173049f10e780252b62efce5518755",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0002.md",
+      "status": "untracked",
+      "bytes": 10405,
+      "sha256": "7078f83318fb6e9ed35222bdb13f3e6544318eed89087aad28ff339aa94c1144",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0003.md",
+      "status": "untracked",
+      "bytes": 7522,
+      "sha256": "e28f5edaaeab6d105db9cb4d296f895482ab3f7d4d3311a7605de03eabe93258",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0004.md",
+      "status": "untracked",
+      "bytes": 19753,
+      "sha256": "56d62f0c8832170862da42d760faccdf564a163efbe652d675f91a316b3bffe0",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0005.md",
+      "status": "untracked",
+      "bytes": 17001,
+      "sha256": "64e0da6f38d16c06c9084f02fdbbdea0011e610934a0f32ab458bea4026f749f",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0006.md",
+      "status": "untracked",
+      "bytes": 35441,
+      "sha256": "1bc9ca3fcc9878d1b741f274b89e1b7dbd06cbf312d783f3355cadb7b5ab8dfa",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0007.md",
+      "status": "untracked",
+      "bytes": 44870,
+      "sha256": "6270de121bc0fa6fc6c929b18f0b7e5957ebee12d5d358245ef04f96d8be6b36",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0008.md",
+      "status": "untracked",
+      "bytes": 14848,
+      "sha256": "52eac4be7fc5de0593a34de9c3cac38966c2b72920ad98f17a0dddf681738243",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0009.md",
+      "status": "untracked",
+      "bytes": 17924,
+      "sha256": "5fa1360165d585232f7899d7d464628c8c89d29dc66df56c204ae6e256d7b47e",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0010.md",
+      "status": "untracked",
+      "bytes": 16874,
+      "sha256": "8e7007e50a28db895adc932b48987ea619a0327b5e34d23e6154dcc4d259c776",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0011.md",
+      "status": "untracked",
+      "bytes": 17583,
+      "sha256": "5ec749181a740a843920063615d2f52d36f3a44f3bcf8ce738019a26429c0e4b",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0012.md",
+      "status": "untracked",
+      "bytes": 52166,
+      "sha256": "a1d1829fff5d9398a20b55581a443e4fdf17c8bd2a1e1e0ddc0d99ffe92a23b5",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0013.md",
+      "status": "untracked",
+      "bytes": 57608,
+      "sha256": "f39c57a3a454d31d977e275e2881c1f5b2f7b55edd24afc53a26d1c9c0c4defc",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0014.md",
+      "status": "untracked",
+      "bytes": 56409,
+      "sha256": "0ecfe4ea984c321dec5e06b94756d5727a6b40b586d54df228d83f231beed37a",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/dispatch/req-0015.md",
+      "status": "untracked",
+      "bytes": 67060,
+      "sha256": "d52d052ad8ddd91cf9f3960ef6f6d2970d21e9a706e6c9aaab5622157d0e1cd5",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0001.json",
+      "status": "untracked",
+      "bytes": 22522,
+      "sha256": "c848c7dd6be4c96fd72c2b683d6509af5637acfdba05990d9cfae255e17de160",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0002.json",
+      "status": "untracked",
+      "bytes": 9777,
+      "sha256": "5103527477858ab7c93a95f6ef536efb3f21ac70588f8fc4ca2b77dc7663b535",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0003.json",
+      "status": "untracked",
+      "bytes": 6917,
+      "sha256": "f7cf2100b55cdc2a52a2f7441c1018eaee7bf737abd8181750c023f9db25feb2",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0004.json",
+      "status": "untracked",
+      "bytes": 20633,
+      "sha256": "b9cc6dd067e31efe531b78a888bd0eee0554710714bb1cd65d078f6d98b8e7fd",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0005.json",
+      "status": "untracked",
+      "bytes": 18136,
+      "sha256": "72ac3d90f7224de370ba143d345e2e5787564ec770b771297186272b7adbdc88",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0006.json",
+      "status": "untracked",
+      "bytes": 39680,
+      "sha256": "a4da4588a149db75ce5796b5113a56ab25949dcd872dc047f850026527d9860c",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0007.json",
+      "status": "untracked",
+      "bytes": 45836,
+      "sha256": "e0d97451fcba0e1b2d1fac61855f642c517db3eb67078763a8b37d166832fd15",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0008.json",
+      "status": "untracked",
+      "bytes": 14056,
+      "sha256": "0c17f3f4279c65f3ada5676ef30b360f647b79babd3e2a69b5ea9c065072b84b",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0009.json",
+      "status": "untracked",
+      "bytes": 17310,
+      "sha256": "37c30e9dc69a84379f88d22e81c0fa18b8768ffab15d5d13690edc6e31465f2a",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0010.json",
+      "status": "untracked",
+      "bytes": 16747,
+      "sha256": "a4204eef68214ace5560a949e31217d29f19202741fde3df8f4adeb102470cff",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0011.json",
+      "status": "untracked",
+      "bytes": 17492,
+      "sha256": "ce3fcc654145ca88de6334b7932b9a0548a32e30ac201efad944dbe53da08a33",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0012.json",
+      "status": "untracked",
+      "bytes": 56676,
+      "sha256": "0c4968ea8f9ed496b3a4110cc1913ce480e907afa042d6a5bafc16056614fa53",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0013.json",
+      "status": "untracked",
+      "bytes": 58662,
+      "sha256": "479c483725b9304cf2ef008a8f87fdeb3db5d47ed7a6f2feaf01e42306cba53e",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0014.json",
+      "status": "untracked",
+      "bytes": 60759,
+      "sha256": "d33608535b6abf222b230b13f34a4f2b7ebceeda6031878278e9892a832abbc6",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/receipts/req-0015.json",
+      "status": "untracked",
+      "bytes": 68105,
+      "sha256": "b46cd28a83157ab478f1cddee84dcaa7ec06ced4132529ea257f870ba8d23ae5",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0001.json",
+      "status": "untracked",
+      "bytes": 18697,
+      "sha256": "dd0c085aa703ec21e8e44ac462cc8c8cc7787ac856ed7e9f376da48cb8b86a61",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0002.json",
+      "status": "untracked",
+      "bytes": 9161,
+      "sha256": "341cda7cdba24621066637ee7d540d130eedffc1df519949ced106ef5353378b",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0003.json",
+      "status": "untracked",
+      "bytes": 6278,
+      "sha256": "4967fdd454e11aa348b76a172b1a8602bc87afaf60a1495254a47fbc201fca82",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0004.json",
+      "status": "untracked",
+      "bytes": 15259,
+      "sha256": "e7d3cf3e6f5bc387495e601e7d2ea257a17df54bad1900bdf3124198778659c4",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0005.json",
+      "status": "untracked",
+      "bytes": 12864,
+      "sha256": "c15bfdfa0068bfffb6cd3f1ed02aaee3dc3b51fc718e2997c3c4f7ab08f2f4d9",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0006.json",
+      "status": "untracked",
+      "bytes": 33205,
+      "sha256": "a47159801b4e9e84db9fba7600e18404c044552a9266e45525f4e055b73bbcf3",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0007.json",
+      "status": "untracked",
+      "bytes": 41301,
+      "sha256": "f25cdc5ccb48622720b5dda248824a36995fdfad3289f559d8ba9f9abd999f42",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0008.json",
+      "status": "untracked",
+      "bytes": 13604,
+      "sha256": "6facc3e083642b47a16aa2d4be2cb824674ee06c3e8f9e1c7bcf911ab67758aa",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0009.json",
+      "status": "untracked",
+      "bytes": 16680,
+      "sha256": "192d11ff22b664c5ea087b5af170524a29b1cfec193a745b22f908c8d5a259ad",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0010.json",
+      "status": "untracked",
+      "bytes": 12737,
+      "sha256": "b74a31ba26de08921f5761ff747b0744073ee951a514ac67f17ee6ae1e76fb64",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0011.json",
+      "status": "untracked",
+      "bytes": 13293,
+      "sha256": "5ffba529a317cef14223b985b778f2699638c38c3c3689919bc9f56bbde96335",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0012.json",
+      "status": "untracked",
+      "bytes": 49930,
+      "sha256": "cb637908c504b2244d656550e7b3c3026e0ea64b0d57a8ede6dfbe5efb28ec10",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0013.json",
+      "status": "untracked",
+      "bytes": 53937,
+      "sha256": "8bf13aa27a1c6b70c87ee7007641d205318cc3d690a290cde0af24ca76eb3b0a",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0014.json",
+      "status": "untracked",
+      "bytes": 54173,
+      "sha256": "eef5087dc89be3075f777a6e19c47e80fa3e6784082239eee43e8a6ee049a4ef",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/requests/req-0015.json",
+      "status": "untracked",
+      "bytes": 63389,
+      "sha256": "a79660fc5bd1bb3aad86ccda9916b288307899582f58243e49ad1276b96591fe",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0001.json",
+      "status": "untracked",
+      "bytes": 3644,
+      "sha256": "9d5d2b3cdaf27e68db8c506c567c967c3b1413c1f06a6c825f00aa9fcd718e65",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0002.json",
+      "status": "untracked",
+      "bytes": 434,
+      "sha256": "18497509fbb60d10d3c5d7110c462de06c58576c21c32c4564922b23aeffdcfa",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0003.json",
+      "status": "untracked",
+      "bytes": 458,
+      "sha256": "5b34e3c2f29f53ff234dd417f3a43e82ca7202098f293f22f7e47c1025df363f",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0004.json",
+      "status": "untracked",
+      "bytes": 5193,
+      "sha256": "43b44a84dceafd78f475835a3507808ba2613059ac123046c5f90db7cdecd113",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0005.json",
+      "status": "untracked",
+      "bytes": 5091,
+      "sha256": "541b6849346c424ba9997ddd532aa5f26a7c16a8fcd9e3ece5b9e03ddd390241",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0006.json",
+      "status": "untracked",
+      "bytes": 6293,
+      "sha256": "0666d3e28ff92881e409ae1f196851e07c9afdcc8e8b90e3df408270805610f1",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0007.json",
+      "status": "untracked",
+      "bytes": 4353,
+      "sha256": "f965f86c8c56cb4a0c89cfd8a784b2a6dfe8ae331d6b1881953d0f6fa73a7f10",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0008.json",
+      "status": "untracked",
+      "bytes": 270,
+      "sha256": "aba9ea2b1bca7e83ab7519ead42c9eb7386718d25a6315fc8f3a2a7fd832cc44",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0009.json",
+      "status": "untracked",
+      "bytes": 448,
+      "sha256": "94a15fab44346854505490db5991885116572492c88067dcfaf628c983bedcd2",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0010.json",
+      "status": "untracked",
+      "bytes": 3828,
+      "sha256": "9c1040b0228aae1042c53b1c187fcb2f93b9afc82086dbe93ebdfc09431ae5a2",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0011.json",
+      "status": "untracked",
+      "bytes": 4017,
+      "sha256": "dcdea5620fc760556c46b64098b1e5e7377eb0eb5206465170fb2bae130a1f59",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0012.json",
+      "status": "untracked",
+      "bytes": 6564,
+      "sha256": "4342a4f8be96b998ae64aa0bfd8f11754e9018337d61355979e218f5aee3078d",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0013.json",
+      "status": "untracked",
+      "bytes": 4543,
+      "sha256": "c295e9f5fb27ab3a2978dbb387df1c24ad0756b98a17d4c9bddd42d77d464509",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0014.json",
+      "status": "untracked",
+      "bytes": 6404,
+      "sha256": "c4bfe5ed734e06d766384e01c2d61fe13b5c8029628d884ca17d23ac528deea9",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/_bridge/responses/req-0015.json",
+      "status": "untracked",
+      "bytes": 4534,
+      "sha256": "e3def12265cb62122e507272ad34e97af14d682ba93ada28b8b12766170bab6e",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/report.md",
+      "status": "untracked",
+      "bytes": 2641,
+      "sha256": "85347389025d95bd8a2b69b9d167470b5034f1fa2d3d8be2408bb9a448325ec0",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/result.json",
+      "status": "untracked",
+      "bytes": 3954,
+      "sha256": "42dc08338511143ab968791772bd2690db203a1afc19bd87ca79c77f02c88ed7",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/trace.json",
+      "status": "untracked",
+      "bytes": 206833,
+      "sha256": "55f9fbdd7be21dfefd13a59972826e75682261528efe2819c75f4045ce20b962",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/fixed-bridge-recorded-output-fixture/verification.json",
+      "status": "untracked",
+      "bytes": 1097,
+      "sha256": "4655cd123487128f8fbbb594155cb09ec3fd13f5716e4d16036015fc1622780d",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/historical-artifact-audit.json",
+      "status": "untracked",
+      "bytes": 6849,
+      "sha256": "dec03799d58c73b11027245a8de707615163eced294abde18b8a5c286abb8504",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/pytest-final-stable.log",
+      "status": "untracked",
+      "bytes": 1445,
+      "sha256": "b7b4bc3815061f7ee4825488d59d303a45ecf774a1e77e8a5c77791388df533a",
+      "decision": "retain",
+      "purpose": "retain successful and failed validation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/pytest-final.log",
+      "status": "untracked",
+      "bytes": 5022,
+      "sha256": "81b3bbd81c338521182f7f57ce5169543d90c3cf7ae74b8bc35466b9a38eb635",
+      "decision": "retain",
+      "purpose": "retain successful and failed validation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/recorded-output-http-fixture/report.md",
+      "status": "untracked",
+      "bytes": 2641,
+      "sha256": "85347389025d95bd8a2b69b9d167470b5034f1fa2d3d8be2408bb9a448325ec0",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/recorded-output-http-fixture/result.json",
+      "status": "untracked",
+      "bytes": 3954,
+      "sha256": "42dc08338511143ab968791772bd2690db203a1afc19bd87ca79c77f02c88ed7",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/recorded-output-http-fixture/trace.json",
+      "status": "untracked",
+      "bytes": 216479,
+      "sha256": "0e30786cede5a60ae035f49d707ae94e01d36ab29223c9d7e59b97ec8efd24ba",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/recorded-output-http-fixture/verification.json",
+      "status": "untracked",
+      "bytes": 1129,
+      "sha256": "741b49dfaec689abed46b133d139240e6a56c044dbd98560c5a6072dc680ae48",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api-verifier-final/req-0012.input.json",
+      "status": "untracked",
+      "bytes": 51102,
+      "sha256": "5b48437879e3dc3006d85b3961be273c8bbff6ee1631514591da7b13e6b34678",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api-verifier-final/summary.json",
+      "status": "untracked",
+      "bytes": 22407,
+      "sha256": "a9a61bf25ce08a74533fe4aa591082ed9da4a7491d090c8370807626729846b5",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api/req-0001.input.json",
+      "status": "untracked",
+      "bytes": 20964,
+      "sha256": "6acd88a9c733520d47ec848a943bf1aee2c3080653dcf72d7448ed02aeb3805c",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api/req-0011.input.json",
+      "status": "untracked",
+      "bytes": 15802,
+      "sha256": "4c9824e1e5d7c664ed4f26c3846c6229a1ed3529ad933c9c709a0e1e98963226",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api/req-0012.input.json",
+      "status": "untracked",
+      "bytes": 51102,
+      "sha256": "5b48437879e3dc3006d85b3961be273c8bbff6ee1631514591da7b13e6b34678",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/bridge-audit-20261015/same-input-api/summary.json",
+      "status": "untracked",
+      "bytes": 37285,
+      "sha256": "e18c531e426a7e0a921bec73bd713de051c0fde90c3db0f87e90939548a37fa1",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/checkpoint-continuation/report.md",
+      "status": "untracked",
+      "bytes": 1923,
+      "sha256": "6f4ba50198f93a4cdcf55867664d89f56eb48a7f3ae98b0801c585c196b17114",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/checkpoint-continuation/result.json",
+      "status": "untracked",
+      "bytes": 3467,
+      "sha256": "f7d1482f5fd148f57609f77e4d1a998f934c67a1ef447f593f2cbd837c86e0a3",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/checkpoint-continuation/trace.json",
+      "status": "untracked",
+      "bytes": 226726,
+      "sha256": "62462029976d142b5bb0878e04f0089695e412d21547832af2555336747a3aba",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/checkpoint-continuation/verification.json",
+      "status": "untracked",
+      "bytes": 15691,
+      "sha256": "b316118b6f567d9587ee46d01b509cf3b10f2798e1ab167e4d3b42f2b988ad74",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/continue_checkpoint.py",
+      "status": "untracked",
+      "bytes": 4425,
+      "sha256": "931684149d255c7e7d54d51be0a43c34ddb6b5715a34c0b549af3be94242f777",
+      "decision": "retain",
+      "purpose": "retain test input, response, trace, provenance or forensic continuation evidence"
+    },
+    {
+      "path": "results/acceptance/finalize-resume-20261015/pytest-final.log",
+      "status": "untracked",
+      "bytes": 1445,
+      "sha256": "485585e994c9b1027570fe70248880f1edc75baa341d56fa0107420d48354a18",
+      "decision": "retain",
+      "purpose": "retain successful and failed validation evidence"
+    },
+    {
+      "path": "results/acceptance/rca-retest-review-20261015.log",
+      "status": "untracked",
+      "bytes": 346,
+      "sha256": "53f6fee28db50af1de209b84a88d03cfe11037caaefb8bdbd973b36d117e06fb",
+      "decision": "retain",
+      "purpose": "retain successful and failed validation evidence"
+    },
+    {
+      "path": "scripts/probe_saved_bridge_requests.py",
+      "status": "untracked",
+      "bytes": 4512,
+      "sha256": "26493d18a5f61b98e858f36ecbc4fbb5db5d9f2ac970913a33db5dfd3d4c8833",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "scripts/retest_live_provider_fix.py",
+      "status": "modified",
+      "bytes": 4849,
+      "sha256": "a45a53081fcf833f58a907ad851faf8c2ee22f9aef0cc88e1a3310ce247e5af6",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "scripts/retest_subagent_bridge.py",
+      "status": "untracked",
+      "bytes": 15669,
+      "sha256": "d3d229aa0a7bcef60b612f8900d3a3d4d4b8ec8a55449631dea9ebb53450c941",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/agents/service.py",
+      "status": "modified",
+      "bytes": 18034,
+      "sha256": "4254e51ce2b52869f3015a947d71fdfe4a43a52156a9e0cb3a93fc81f5b60084",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/evaluation/retest_provenance.py",
+      "status": "untracked",
+      "bytes": 548,
+      "sha256": "4c01b75f7740445de24ed42b246317c10618282f1a38a144889d021a1524fd88",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/evaluation/runner.py",
+      "status": "modified",
+      "bytes": 17570,
+      "sha256": "5d6cb938e4bcebe1593ea6384193fc01e74b32a4d71941d68e5db7a5b1d6906d",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/evaluation/termination.py",
+      "status": "modified",
+      "bytes": 16516,
+      "sha256": "6bec5fd4ff3db5323228cccd7067314cbecb453ba1752d690ee9be1f498aaa8e",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/llm/provider.py",
+      "status": "modified",
+      "bytes": 28164,
+      "sha256": "64f2fbbc2c681e8d0aef2dc1ef932e02a64543d4af5e331ce0a3be0121e9846f",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/llm/structured_output.py",
+      "status": "modified",
+      "bytes": 7281,
+      "sha256": "419e1d1a3e8c8c580f5625cf95b11d1ac2fbb9c6f7e6fa144b22501b14d5c5d8",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/orchestration/graph.py",
+      "status": "modified",
+      "bytes": 60702,
+      "sha256": "140bc301b111f0f3b5f349c7f5749ee0126276a541c1cafedb09b6d100b37cbc",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/orchestration/guards.py",
+      "status": "modified",
+      "bytes": 7023,
+      "sha256": "edaca8922971fe56d15e3e09e5baafaf8b8fed2e6ec28cb8668f131a761a1b19",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/orchestration/report.py",
+      "status": "modified",
+      "bytes": 2781,
+      "sha256": "f5eebc5473baddbd3bc092085374b11541ae903b3d71b1a2a7577174076dae10",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "src/incident_lens/schemas/contracts.py",
+      "status": "modified",
+      "bytes": 13338,
+      "sha256": "4aa084bde7d04f8a5d6ed0ceced80bdcb66bbec813308c32b3a618fd20bbedc3",
+      "decision": "retain",
+      "purpose": "implementation or reproducible development retest driver"
+    },
+    {
+      "path": "tests/active_investigation/test_graph_integration.py",
+      "status": "modified",
+      "bytes": 11313,
+      "sha256": "b4b4d723dfa4d2b91f9a477eda545ea55b32562fec4ba93de5ef910c5376d4b1",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/integration/test_bridge_retest.py",
+      "status": "untracked",
+      "bytes": 6168,
+      "sha256": "5c7635d22b83e0e571db0186c02137937bd3c942740f5d41fc559a731cdea457",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/integration/test_finalize_resume_guards.py",
+      "status": "untracked",
+      "bytes": 3969,
+      "sha256": "15c6a98748dc792a62010d05acc3542bc5a3eda9ff98ea7ec8633a1580aee0e0",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/integration/test_graph.py",
+      "status": "modified",
+      "bytes": 9590,
+      "sha256": "e56c391d043f635eb4d7dcf20b927b6e94119dab02aba6cb6eb76dc0f3694666",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/integration/test_provider_runtime_v13.py",
+      "status": "modified",
+      "bytes": 14624,
+      "sha256": "42c3cf3c3187d0463edca155a63ac762690bc194581cf4163c780aa64cb234bb",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/integration/test_review_boundary.py",
+      "status": "modified",
+      "bytes": 8011,
+      "sha256": "1de1b73d7279f9ff196094f14dfb36e0e95e17abd4b9627911908a18c404bf6b",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/reliability/test_fault_matrix.py",
+      "status": "modified",
+      "bytes": 9260,
+      "sha256": "6a4af60232eab37dd2620c09ea9a07e6a02a08b5844fba3a2e46d782fa3f442b",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/unit/test_agents.py",
+      "status": "modified",
+      "bytes": 13889,
+      "sha256": "cc9cdc000f638c64a4edfb4aef52c5c33c407432a9db2cc0e693c4eb86d14171",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    },
+    {
+      "path": "tests/unit/test_report_grounding.py",
+      "status": "untracked",
+      "bytes": 1539,
+      "sha256": "3a553a572416a07486f01fa1172cd13af334f788200fdfb34e59c1d3fbcb391b",
+      "decision": "retain",
+      "purpose": "regression protection for observed defects and acceptance boundaries"
+    }
+  ]
+}

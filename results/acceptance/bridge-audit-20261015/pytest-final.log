@@ -1,0 +1,71 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+..........s............................................................. [ 40%]
+........................................................................ [ 48%]
+....................F................................................... [ 56%]
+..............s......................................................... [ 64%]
+........................................................................ [ 72%]
+.........................s.............................................. [ 80%]
+........................................................................ [ 88%]
+........................................................................ [ 96%]
+...............................                                          [100%]
+================================== FAILURES ===================================
+_________________ test_streamlit_mock_run_and_labeled_replay __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002973C057C40>
+
+    def test_streamlit_mock_run_and_labeled_replay(monkeypatch):
+        app = AppTest.from_file(Path("src/incident_lens/ui/app.py").resolve(), default_timeout=30).run()
+        assert not app.exception
+        app.button[0].click().run()
+        assert not app.exception
+        state = app.session_state["investigation"]
+        assert state.report.status == "RESOLVED"
+        before = state.model_dump_json()
+        trace_before = json.dumps(app.session_state["trace"], sort_keys=True)
+        assert any("MOCK" in message.value for message in app.info)
+        for button in app.get("download_button"):
+            button.click().run()
+            assert not app.exception
+            assert app.session_state["investigation"].model_dump_json() == before
+            assert json.dumps(app.session_state["trace"], sort_keys=True) == trace_before
+    
+        def forbidden(*args, **kwargs):
+            raise AssertionError("Replay must not execute graph or provider")
+    
+        import incident_lens.orchestration.graph as graph
+        from incident_lens.llm.mock import MockProvider
+        from incident_lens.llm.provider import RealChatProvider
+    
+        monkeypatch.setattr(MockProvider, "structured_call", forbidden)
+        monkeypatch.setattr(RealChatProvider, "structured_call", forbidden)
+        monkeypatch.setattr(graph, "run_investigation", forbidden)
+        app.radio[0].set_value("Recorded Replay").run()
+        saved = Path("results/ui") / state.run_id / "trace.json"
+        next(box for box in app.selectbox if box.label == "Saved trace").set_value(
+            saved.resolve()
+        ).run()
+        app.button[0].click().run()
+        assert not app.exception
+        assert app.session_state["recorded"] is True
+        assert any("Recorded Replay" in caption.value for caption in app.caption)
+>       assert app.session_state["investigation"].model_dump_json() == before
+E       assert '{"workspace_...nation":null}' == '{"workspace_...lure":false}}'
+E         
+E         Skipping 65 identical leading characters in diff, use -v to show
+E         - _id":"run-16a29e489cb545688e72c46abff54bfd","public_summary":{"incident_id":"incident_001","title":"Service incident 001","started_at":"2026-10-01T14:03:00Z","observed_symptoms":["API 500 responses increased","Backend request latency elevated"],"services":["gateway","backend","postgres","redis","payment"]},"budgets":{"max_rounds":4,"max_tool_calls":12,"max_llm_calls":16,"max_wall_seconds":600.0,"max_tokens":null},"round_index":3,"findings":[{"finding_id":"finding-76458bd74d737f254fa5ba4179f459e6fc4a88af9d...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests\integration\test_ui.py:42: AssertionError
+---------------------------- Captured stderr call -----------------------------
+2026-10-15 10:58:37.200 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call ------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:483 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+=========================== short test summary info ===========================
+SKIPPED [1] tests\incidentbench\test_oracle_leakage.py:66: OS symlink privilege unavailable
+SKIPPED [1] tests\isolation\test_tool_acl.py:195: host does not permit creating symlinks
+SKIPPED [1] tests\unit\test_database.py:122: host does not permit symlink creation
+1 failed, 891 passed, 3 skipped in 247.22s (0:04:07)

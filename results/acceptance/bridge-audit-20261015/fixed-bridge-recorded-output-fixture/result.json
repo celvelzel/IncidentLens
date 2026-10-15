@@ -1,0 +1,79 @@
+{
+  "run_id": "run-21c5db5c6b9d4e399345ba8caa1a3f39",
+  "incident_id": "incident_2001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_2001-E-003",
+      "incident_2001-E-004",
+      "incident_2001-E-005",
+      "incident_2001-E-009",
+      "incident_2001-T-backend",
+      "incident_2001-T-gateway"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend error-rate increase correlated with the reduced db_pool_max=2",
+      "Database connection-pool wait or acquisition timeout errors from backend",
+      "Elevated backend request latency beginning at or after 2026-10-01T12:00:10Z",
+      "a backend connection-pool configuration change precedes the pool_waiters rise",
+      "backend pool_waiters stays elevated while request_latency_ms rises after 12:00:10Z"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_2001-T-backend] backend: backend depends on: postgres, redis, payment",
+    "2026-10-01T12:00:00+00:00 [incident_2001-T-gateway] gateway: gateway depends on: backend",
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_2001-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:14+00:00 [incident_2001-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_2001-E-003",
+    "incident_2001-E-004",
+    "incident_2001-E-005",
+    "incident_2001-E-009",
+    "incident_2001-T-backend",
+    "incident_2001-T-gateway"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_2001-E-005",
+        "incident_2001-T-backend",
+        "incident_2001-T-gateway"
+      ],
+      "against_ids": [
+        "incident_2001-E-004"
+      ],
+      "predicted_observations": [
+        "backend pool_waiters remains elevated across 12:00:10Z-12:30:00Z",
+        "backend request_latency_ms exceeds its 40 ms baseline after 12:00:10Z"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "backend_pool_config_regression confirmed with a sufficient review and no contradictions. The retrieved runtime-1 diff (incident_2001-E-004) lowered backend db_pool_max 20->2 with concurrency=120 at 2026-10-01T12:00:10Z; the configured service then shows the matching pool_waiters=118 symptom at 2026-10-01T12:00:10Z (incident_2001-E-005), and the only diverging node, downstream gateway http_5xx_rate=0.35 at 2026-10-01T12:00:14Z (incident_2001-E-009), sits along the observed edges gateway -> backend -> {postgres, redis, payment} (incident_2001-T-gateway, incident_2001-T-backend). Two independent source types (configs/changes and metrics) supply the mechanism, the matching service symptom and the downstream effect in causal order; the pre-change 40 ms latency baseline (incident_2001-E-001) is baseline chronology, not a contradiction, and the competing backend_resource_saturation account is displaced by the observed configuration change.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

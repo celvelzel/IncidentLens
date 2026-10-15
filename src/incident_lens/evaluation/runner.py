@@ -157,7 +157,10 @@ def usage_metrics(provider, state):
     failed_model_calls = max(provider_failures, model_failures)
     return dict(
         llm_requests=provider.actual_requests,
-        actual_http_requests=provider.actual_requests if provider.source != "mock" else 0,
+        actual_http_requests=(provider.actual_requests
+                              if provider.source != "mock"
+                              and getattr(provider.delegate, "transport_kind", "http") == "http"
+                              else 0),
         logical_structured_calls=len(provider.calls),
         task_retries=sum(
             e.get("event_type") == "TASK_ASSIGNED" and e.get("details", {}).get("attempt", 1) > 1

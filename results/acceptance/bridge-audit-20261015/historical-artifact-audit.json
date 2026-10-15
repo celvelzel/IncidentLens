@@ -1,0 +1,173 @@
+{
+  "scope": "historical development bridge artifact audit; no external session transcript available",
+  "requests": 15,
+  "dispatch_templates": 1,
+  "rows": [
+    {
+      "request_id": "req-0001",
+      "role": "coordinator",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "d48ada4ee22e8535d12f1a0c21eb43ef80dd67807d903269a4d6bb81e4c7311c",
+      "response_sha256": "b92c02205f39c8d9b54829845d61653b710826272ee04d1ab949b2a6c89d2603"
+    },
+    {
+      "request_id": "req-0002",
+      "role": "metrics",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "eff433e1a03e8734a7680a7f4219560f0f7afbe2422ff85bc0cb2418f9ff06ed",
+      "response_sha256": "0b511206a45445bcc48d1a66aa06b667a211756f63212b3686d08edb589111af"
+    },
+    {
+      "request_id": "req-0003",
+      "role": "changes",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "772750203b5016a6dbea04c74cd273cf8a58ed6af40e7ed447be1d75c4fb054f",
+      "response_sha256": "7f38b90dba7b459968ceafb0fb1991b9b50206e3bf9268841c0cc35302fc426b"
+    },
+    {
+      "request_id": "req-0004",
+      "role": "metrics",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "7f3614d988b271b0cf8a17e62b49d42e7aeedd14880aafce43e123a3ef8b9875",
+      "response_sha256": "c7619987045197c429da50852629d2c5a381174b6e8a4d6d87cdbb053a58c51d"
+    },
+    {
+      "request_id": "req-0005",
+      "role": "changes",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "97255d2af66cc4427a3801b8fc22a020b9b1af222bb72a77bd19d4cf8a318a56",
+      "response_sha256": "8a7986aac20faa5560fab0d426e0716645b860587354808019883dad2b4203fc"
+    },
+    {
+      "request_id": "req-0006",
+      "role": "verifier",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "ebb3b124eec57e1b75501da780921f63b88b0ff8695dc6b28e82e72c85661b1d",
+      "response_sha256": "b0e8b9e634cb349e832ebc0249f7380b9b69ff3689863b6db1271bcf2ee981fe"
+    },
+    {
+      "request_id": "req-0007",
+      "role": "coordinator",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "49afcf736271547b15eb44f0a9f03d537d7c9c2fbb490d0f96b5e2bbb329d7bc",
+      "response_sha256": "4f8865fffa8b8fc61f48b86c3ba894dafe9df3e606634b8783ff4695642eff40"
+    },
+    {
+      "request_id": "req-0008",
+      "role": "changes",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "d75534473ecb9d6f9b8887115a0c69dbd5e87f0c0d9ced2823c92f883e244385",
+      "response_sha256": "a03f490f1750e8d3e030af52117f55beba852a770e0a6dcff7735481334d2f07"
+    },
+    {
+      "request_id": "req-0009",
+      "role": "metrics",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "45d93259bb0bcf76aae3d7eda9359615dc4330c253c5f2548a71743d132784ed",
+      "response_sha256": "2eb06b25caa1238ad984fe24d6901d5852fcb9657a63bd730f7f965cf8fc4a39"
+    },
+    {
+      "request_id": "req-0010",
+      "role": "metrics",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "aab739e611091ca643d55c7c38aa6c311359c4d37c35970edcc3855ecbca5e8f",
+      "response_sha256": "fe93ccd636b744b8e4e4463d2fcc323a6cd80f8f522aae104f7777839cc4cffc"
+    },
+    {
+      "request_id": "req-0011",
+      "role": "changes",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "322b0ab3d02e1d82998ea3b25774134c367415105a423ff4733125687e9bde1b",
+      "response_sha256": "0da7f0d75f3ab3b1f0a9c9562503a238dfc932a301fddfb185798baaf08256ab"
+    },
+    {
+      "request_id": "req-0012",
+      "role": "verifier",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "5f6dfe43bfb50bc4947a7fb86f4259568d92d53826f07fcb39a74bcf2b5739f0",
+      "response_sha256": "813c3480cafa923452621dad688857208880dd9bc4c660c83395fc9f930245f1"
+    },
+    {
+      "request_id": "req-0013",
+      "role": "coordinator",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "64384906c3dae29c901487256cf710c6e8c97bb67f020a571458ec67e1132b9f",
+      "response_sha256": "cf3247a58c7659c18e6573c59efe3f8d83c400e067ae2542b5270b967effb4b0"
+    },
+    {
+      "request_id": "req-0014",
+      "role": "verifier",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "9612fb57300dcc13b85b5e74b3cb1e75c46ce60e3a492a0b9db08ae300be967e",
+      "response_sha256": "d5aca1def38bcf8b71ac2e9c33a0c8982913986af96daf0309644db71cd7be7e"
+    },
+    {
+      "request_id": "req-0015",
+      "role": "coordinator",
+      "dispatch_matches_request": true,
+      "unseen_evidence_ids": [],
+      "original_schema_errors": [],
+      "strict_schema_errors": [],
+      "request_sha256": "c6ac6d2068a769b1dcd705fbdcb618382c696066bb6cc16e23961b8ccb8e4d31",
+      "response_sha256": "ae33e1c9e97aa6c2951968a93f726b586b182b53af6da932cbdececfeaa1ed95"
+    }
+  ],
+  "log_events": 60,
+  "log_has_timestamps": false,
+  "strict_valid_responses": 15,
+  "original_schema_valid_responses": 15,
+  "missing_external_evidence": [
+    "subagent full transcripts",
+    "inherited context configuration",
+    "actual model and generation settings",
+    "tool and filesystem access logs",
+    "response version history"
+  ],
+  "declared_wall_seconds": 7200.0,
+  "declared_request_timeout": 180.0,
+  "historical_script_default_timeout": 1800,
+  "tool_calls_used": 9,
+  "root_cause": "backend_pool_config_regression"
+}

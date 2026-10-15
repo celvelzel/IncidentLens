@@ -107,8 +107,27 @@ async def test_duplicate_finding_id_cannot_silently_drop_an_expert():
             return output, usage
 
     state = await run_investigation("incident_001", Duplicate())
-    assert state.report.status == "INCONCLUSIVE"
-    assert state.findings == [] and state.evidence_index == {}
+    assert state.report.status == "RESOLVED"
+    assert len({f.finding_id for f in state.findings}) == len(state.findings)
+    assert {"logs", "metrics"}.issubset({f.role for f in state.findings})
+
+
+async def test_benchmark_changes_discovers_diff_with_same_task_and_bounded_calls():
+    from incident_lens.schemas.workflow import WorkflowOptions
+
+    state = await run_investigation(
+        "incident_001", MockProvider(), variant="dynamic_no_verifier",
+        workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True),
+    )
+    assert state.report.status == "RESOLVED"
+    calls = [e for e in state.events if e.event_type == "TOOL_CALL"]
+    discovery = next(e for e in calls if e.details.get("tool_name") == "query_changes")
+    diff = next(e for e in calls if e.details.get("tool_name") == "get_config_diff")
+    assert discovery.task_id == diff.task_id
+    ids = {r["metadata"]["change_id"] for r in discovery.details["result"]["records"]}
+    assert diff.details["args"]["change_id"] in ids
+    assert sum(e.task_id == diff.task_id for e in calls) == 2
+    assert state.llm_calls_used <= state.budgets.max_llm_calls
 
 
 async def test_hypothesis_citations_publish_even_when_not_in_finding():

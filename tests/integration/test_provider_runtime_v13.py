@@ -348,3 +348,33 @@ def test_explicit_invalid_format_never_silently_selects_another_mode(mode):
             response_format_mode=mode,
             recovery={"enabled": True},
         )
+
+
+@pytest.mark.parametrize("reliable", [False, True])
+async def test_request_timeout_is_total_deadline_even_if_transport_ignores_httpx_timeout(reliable):
+    import asyncio
+
+    from incident_lens.llm.provider import ProviderError
+
+    cancelled = []
+
+    async def slow_response(request):
+        try:
+            await asyncio.sleep(10)
+        except asyncio.CancelledError:
+            cancelled.append(True)
+            raise
+        return httpx.Response(200, json=envelope(VALID))
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(slow_response)) as client:
+        provider = MeasuredProvider(RealChatProvider(
+            "https://fixture.invalid", "k", "m", client=client, timeout=0.02,
+            recovery={"enabled": reliable, "max_transport_retries": 0,
+                      "max_physical_attempts_per_call": 1},
+        ))
+        with pytest.raises(ProviderError, match="PROVIDER_TIMEOUT") as exc:
+            await provider.structured_call("coordinator", "", {}, CoordinatorDecision)
+    assert cancelled == [True]
+    assert provider.actual_requests == 1
+    assert exc.value.usage["total_tokens"] is None
+    assert not exc.value.usage["tokens_complete"]

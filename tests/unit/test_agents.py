@@ -201,6 +201,57 @@ async def test_reused_coordinator_task_ids_are_allocated_fresh():
 
 
 @pytest.mark.asyncio
+async def test_finding_ids_bind_observation_and_task_instead_of_model_label():
+    task = (await decide(MockProvider(), {}))[0].assignments[0]
+
+    class LocalID(MockProvider):
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            output.finding.finding_id = "F1"
+            return output, usage
+
+    records = [record("a", "logs", "Redis connection refused", "redis")]
+    first, _ = await analyze(LocalID(), context("logs"), task, records)
+    repeat, _ = await analyze(LocalID(), context("logs"), task, records)
+    other, _ = await analyze(LocalID(), context("logs"),
+                             task.model_copy(update={"task_id": "next-round"}), records)
+    assert first.finding.finding_id == repeat.finding.finding_id
+    assert first.finding.finding_id != other.finding.finding_id
+    assert other.finding.task_id == "next-round"
+
+
+def test_optional_review_checks_do_not_become_acceptance_blockers():
+    from pydantic import ValidationError
+
+    from incident_lens.agents.service import ReviewOutput
+
+    data = dict(target_hypothesis_id="h", verdict="sufficient", rationale="Causal evidence complete")
+    accepted = ReviewOutput(**data, optional_checks=[])
+    assert accepted.requested_checks == []
+    with pytest.raises(ValidationError, match="sufficient requires"):
+        ReviewOutput(**data, contradictions=["Material contradiction"])
+
+
+@pytest.mark.asyncio
+async def test_reconciliation_rejects_unobserved_ids_and_changed_cause():
+    from incident_lens.schemas import Hypothesis
+
+    old = Hypothesis(hypothesis_id="h", culprit_service="backend",
+                     failure_mode="backend_pool_config_regression")
+    initial = (await decide(MockProvider(), {}))[0]
+    for changes in ({"support_ids": ["unobserved"]}, {"culprit_service": "gateway"}):
+        class InvalidUpdate(MockProvider):
+            async def structured_call(self, *args):
+                return initial.model_copy(update={
+                    "hypothesis_updates": [old.model_copy(update=changes)]
+                }), {}
+
+        with pytest.raises(ProviderError, match="COORDINATOR_HYPOTHESIS_UPDATE_INVALID"):
+            await decide(InvalidUpdate(), dict(benchmark_rca=True,
+                         hypotheses=[old.model_dump()], evidence_catalog={"observed": {}}))
+
+
+@pytest.mark.asyncio
 async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metrics():
     from incident_lens.agents.service import InvestigatorPlan
 
@@ -256,3 +307,32 @@ async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metric
     )
     assert plan.calls[0].args["metric_names"] == []
     assert plan.calls[0].args["service"] == "backend"
+
+    proposed = [{"tool_name": "query_changes", "args": {
+        "service": "backend", "start_ts": "2026-01-01T00:00:00Z",
+        "end_ts": "2026-01-01T00:00:00Z", "change_type": "configuration",
+    }}]
+    change_task = change_task.model_copy(update={"allowed_tools": ["query_changes"]})
+    discovery, _ = await plan_tools(
+        Planned(proposed), context("changes"), change_task, {},
+        {"benchmark_discovery": True, "evidence_index": {}},
+    )
+    assert discovery.calls[0].args == {"service": "backend"}
+    narrowed, _ = await plan_tools(
+        Planned(proposed), context("changes"), change_task, {},
+        dict(facts, benchmark_discovery=True),
+    )
+    assert narrowed.calls[0].args == proposed[0]["args"]
+    legacy, _ = await plan_tools(
+        Planned(proposed), context("changes"), change_task, {}, {"evidence_index": {}},
+    )
+    assert legacy.calls[0].args == proposed[0]["args"]
+    log_task = change_task.model_copy(update={"role": "logs", "allowed_tools": ["query_logs"]})
+    log_args = {"service": "backend", "start_ts": "2026-01-01T00:00:00Z",
+                "end_ts": "2026-01-01T01:00:00Z", "severity": "ERROR", "contains": "timeout"}
+    discovered, _ = await plan_tools(
+        Planned([{"tool_name": "query_logs", "args": log_args}]), context("logs"),
+        log_task, {}, {"benchmark_discovery": True, "evidence_index": {}},
+    )
+    assert discovered.calls[0].args == {k: v for k, v in log_args.items()
+                                      if k not in {"severity", "contains"}}

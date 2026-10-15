@@ -18,8 +18,10 @@ from incident_lens.orchestration.guards import (
     evidence_fingerprint,
     finalize_errors,
     review_fingerprint,
+    reviewed_finalization_ready,
 )
 from incident_lens.orchestration.merge import merge_results
+from incident_lens.orchestration.report import observed_chain
 from incident_lens.schemas import (
     Budget,
     CoordinatorDecision,
@@ -108,6 +110,9 @@ class InvestigationRun:
         self.signatures = set()
         self.failed_finalizations = set()
         self.tool_events_offset = 0
+        # Reviews recur after reconciliation; each invocation needs a fresh task id.
+        self.verify_rounds = 0
+        self.coordinate_rounds = 0
         self.state = InvestigationState(
             workspace_id=workspace_id,
             incident_id=incident_id,
@@ -250,13 +255,19 @@ class InvestigationRun:
                 for r in self.workflow.snapshot
             ):
                 raise ValueError("Monitoring snapshot identity mismatch")
-            state.incident_alert = await self.stage_call(
+            state.incident_alert = await self.retry_transient(
+                state,
+                "monitor-1",
                 "monitoring",
-                monitor,
-                self.provider,
-                state.incident_id,
-                self.workflow.snapshot,
-                self.workflow.monitor_mode,
+                "monitoring",
+                lambda: self.stage_call(
+                    "monitoring",
+                    monitor,
+                    self.provider,
+                    state.incident_id,
+                    self.workflow.snapshot,
+                    self.workflow.monitor_mode,
+                ),
             )
             self.event(
                 state,
@@ -276,6 +287,7 @@ class InvestigationRun:
     def payload(self, state, role="coordinator", fetched=None):
         value = state.model_dump(mode="json")
         value["variant"] = self.variant
+        value["benchmark_rca"] = self.workflow.benchmark_rca
         from incident_lens.security.context import ROLE_TOOL_ACL
 
         value["workflow_profile"] = self.workflow.profile
@@ -293,6 +305,21 @@ class InvestigationRun:
             for name in ("metrics", "single"):
                 value["role_tool_acl"][name] += list(DATABASE_TOOLS)
         value["events"] = []
+        # Keep executed query scope/results visible after stripping raw events.
+        # Otherwise a narrow empty slice can masquerade as an absent source and
+        # the coordinator repeatedly asks for telemetry already discovered.
+        value["query_history"] = [
+            {
+                "task_id": e.task_id,
+                "tool_name": e.details["tool_name"],
+                "args": e.details.get("args", {}),
+                "evidence_ids": [r["evidence_id"] for r in
+                                 e.details.get("result", {}).get("records", [])],
+                "error_code": e.details.get("result", {}).get("error_code"),
+            }
+            for e in state.events
+            if e.event_type == "TOOL_CALL" and "tool_name" in e.details
+        ]
         if role == "verifier":
             value["evidence_index"] = {
                 r.evidence_id: r.model_dump(mode="json") for r in fetched or []
@@ -351,6 +378,11 @@ class InvestigationRun:
 
         state = value["investigation"]
         self.state = state
+        role = "single" if self.variant == "single" else "coordinator"
+        # Each invocation needs a fresh task id so retries reuse it while later
+        # rounds cannot collide with a completed record.
+        self.coordinate_rounds += 1
+        task_id = f"coordinate-{self.coordinate_rounds}"
         try:
             self.stop_controller.guard()
             reason = self.exhausted(state)
@@ -380,23 +412,40 @@ class InvestigationRun:
                     action="INVESTIGATE", reason="Fixed schedule", assignments=tasks
                 )
             elif self.variant == "fixed":
-                candidates = [h for h in state.hypotheses if not finalize_errors(state, h, "fixed")]
-                decision = CoordinatorDecision(
-                    action="FINALIZE" if candidates else "ABSTAIN",
-                    reason="Fixed schedule completed",
-                    selected_hypothesis_id=candidates[0].hypothesis_id if candidates else None,
-                    stop_reason="Fixed schedule completed",
-                )
+                if self.workflow.benchmark_rca:
+                    payload = self.payload(state)
+                    payload["fixed_schedule_completed"] = True
+                    decision, usage = await self.retry_transient(
+                        state,
+                        task_id,
+                        role,
+                        "coordinate",
+                        lambda: self.model_call(role, decide, self.provider, payload),
+                    )
+                    self.update_usage(state, usage, role)
+                    if decision.action == "INVESTIGATE":
+                        decision = CoordinatorDecision(
+                            action="ABSTAIN", reason=decision.reason,
+                            stop_reason="Fixed schedule completed with unresolved causal gaps",
+                            hypothesis_updates=decision.hypothesis_updates,
+                        )
+                else:
+                    candidates = [h for h in state.hypotheses if not finalize_errors(state, h, "fixed")]
+                    decision = CoordinatorDecision(
+                        action="FINALIZE" if candidates else "ABSTAIN",
+                        reason="Fixed schedule completed",
+                        selected_hypothesis_id=candidates[0].hypothesis_id if candidates else None,
+                        stop_reason="Fixed schedule completed",
+                    )
             else:
-                decision, usage = await self.model_call(
-                    "single" if self.variant == "single" else "coordinator",
-                    decide,
-                    self.provider,
-                    self.payload(state),
+                decision, usage = await self.retry_transient(
+                    state,
+                    task_id,
+                    role,
+                    "coordinate",
+                    lambda: self.model_call(role, decide, self.provider, self.payload(state)),
                 )
-                self.update_usage(
-                    state, usage, "single" if self.variant == "single" else "coordinator"
-                )
+                self.update_usage(state, usage, role)
                 if decision.action == "INVESTIGATE" and len(decision.assignments) > 2:
                     raise RuntimeError("Coordinator may assign at most two tasks per round")
             if decision.action == "INVESTIGATE" and (
@@ -428,10 +477,29 @@ class InvestigationRun:
                 message=decision.reason,
                 decision=decision.model_dump(mode="json"),
             )
+            changed = False
+            updates = {h.hypothesis_id: h for h in decision.hypothesis_updates}
+            for index, hypothesis in enumerate(state.hypotheses):
+                update = updates.get(hypothesis.hypothesis_id)
+                if update is not None and update.model_dump() != hypothesis.model_dump():
+                    state.hypotheses[index] = update
+                    changed = True
+            if changed:
+                # Previously computed finalize errors are stale after a new
+                # grounded assessment. Other shared questions remain blockers.
+                prior = next((e for e in reversed(state.events)
+                              if e.event_type == "FINALIZE_REJECTED"), None)
+                if prior and state.open_questions == prior.details.get("errors"):
+                    state.open_questions = []
+                self.event(state, "HYPOTHESIS_RECONCILED",
+                           hypothesis_updates=[h.model_dump(mode="json") for h in updates.values()])
             if decision.action == "ABSTAIN":
                 state.stop_reason = decision.stop_reason
                 return {"investigation": state, "route": "report"}
             if decision.action == "FINALIZE":
+                if changed and self.variant == "full":
+                    # Reconciliation cannot reuse acceptance of an older board.
+                    return {"investigation": state, "route": "verify"}
                 return {"investigation": state, "route": "finalize"}
             if state.round_index >= self.limits.max_rounds:
                 raise RuntimeError("Round budget exhausted")
@@ -485,12 +553,13 @@ class InvestigationRun:
         return type(exc).__name__
 
     async def investigate(self, state, task):
-        from incident_lens.agents.service import AnalysisOutput, analyze, plan_tools
+        from incident_lens.agents.service import AnalysisOutput, ToolCall, analyze, plan_tools
         from incident_lens.schemas import Finding
 
         context = self.single_context or self.registry.create_context(task.role)
         role = "single" if self.variant == "single" else task.role
         minimal = {
+            "benchmark_discovery": self.workflow.benchmark_rca,
             "findings": [f.model_dump(mode="json") for f in state.findings],
             "hypotheses": [h.model_dump(mode="json") for h in state.hypotheses],
             "evidence_index": {
@@ -531,6 +600,24 @@ class InvestigationRun:
                 gaps.append(gap)
                 self.event(state, "TOOL_DATA_GAP", role=role, task_id=task.task_id, **gap)
             records.extend(result.records)
+            # Discovery and diff retrieval form one bounded changes investigation.
+            # Use only a returned public change_id and a spare slot in the existing
+            # two-call plan; execute via the registry so ACL/budget/events still apply.
+            if (
+                self.workflow.benchmark_rca
+                and call.tool_name == "query_changes"
+                and len(plan.calls) < 2
+                and "get_config_diff" in context.allowed_tools
+                and "get_config_diff" in task.allowed_tools
+            ):
+                change = next(
+                    (r for r in result.records if r.metadata.get("change_id")), None
+                )
+                if change is not None:
+                    plan.calls.append(ToolCall(
+                        tool_name="get_config_diff",
+                        args={"change_id": change.metadata["change_id"]},
+                    ))
         unique = {r.evidence_id: r for r in records}
         if not unique:
             analysis = AnalysisOutput(
@@ -700,6 +787,61 @@ class InvestigationRun:
                 call_ids=call_ids,
             )
 
+    @classmethod
+    def stage_retryable_error(cls, exc):
+        """Restrict a stage re-issue to transport-class transients on top of the
+        shared recoverability rule. The adapter already bounds structured repair and
+        HTTP status handling internally, so re-driving those would double-count
+        requests; authority/protocol/source violations stay fatal either way.
+        """
+        from incident_lens.llm.provider import ProviderError
+
+        return (
+            cls.recoverable_task_error(exc)
+            and isinstance(exc, ProviderError)
+            and getattr(exc, "code", "") in {"PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR"}
+        )
+
+    async def retry_transient(self, state, task_id, role, stage, operation):
+        """Bounded per-attempt retry shared by non-diagnosis stages.
+
+        Mirrors the diagnosis/verify contract: only transient transport faults are
+        retried, while protocol violations, cancellation, STOP and budget exhaustion
+        fail closed. Binds self.state so runtime task events target this state.
+        """
+        self.state = state
+        self.task_manager.assign(task_id, role)
+        attempt = self.task_manager.start(task_id)
+        while True:
+            self.stop_controller.guard()
+            token = self.call_context.set(
+                {"task_id": task_id, "attempt_id": attempt.attempt_id, "stage": stage}
+            )
+            try:
+                result = await operation()
+            except asyncio.CancelledError:
+                self.task_manager.cancel(task_id)
+                raise
+            except Exception as exc:
+                if self.stop_controller.stopped or getattr(exc, "code", "") == "PROVIDER_CANCELLED":
+                    self.task_manager.cancel(task_id)
+                    raise
+                self.task_manager.fail(task_id, self.safe_error(exc))
+                if (
+                    not self.stage_retryable_error(exc)
+                    or not self.task_manager.can_retry(task_id)
+                    or self.exhausted(state)
+                ):
+                    raise
+                self.task_manager.assign(task_id, role)
+                attempt = self.task_manager.start(task_id)
+            else:
+                completed = self.task_manager.complete(task_id)
+                self.record_recovery(completed, stage)
+                return result
+            finally:
+                self.call_context.reset(token)
+
     def merge(self, value):
         state = value["investigation"]
         try:
@@ -730,6 +872,10 @@ class InvestigationRun:
         from incident_lens.agents.service import verify
 
         state = value["investigation"]
+        # Runtime events (task transitions) are emitted against self.state, so
+        # every node must bind it to its own investigation state first.
+        self.state = state
+        role = "single" if self.variant == "single" else "verifier"
         try:
             # Fetch the shared evidence through verifier ACL before the provider
             # reviews it. No unqueried evidence is available in its payload.
@@ -746,19 +892,55 @@ class InvestigationRun:
             self.event(
                 state,
                 "TOOL_CALL",
-                role="single" if self.variant == "single" else "verifier",
+                role=role,
                 tool_name="fetch_evidence_by_ids",
                 result=result.model_dump(mode="json"),
             )
             if not result.ok:
                 raise RuntimeError("Verifier tool failed: " + str(result.error_code))
-            review, usage = await self.model_call(
-                "single" if self.variant == "single" else "verifier",
-                verify,
-                self.provider,
-                self.payload(state, "verifier", result.records),
-            )
-            self.update_usage(state, usage, "single" if self.variant == "single" else "verifier")
+            # The review gets the same bounded transient-fault retry as a diagnosis
+            # task: one verify-stage timeout must not terminate an otherwise
+            # complete investigation, while protocol violations still fail closed.
+            self.verify_rounds += 1
+            task_id = f"verify-{self.verify_rounds}"
+            self.task_manager.assign(task_id, role)
+            attempt = self.task_manager.start(task_id)
+            while True:
+                self.stop_controller.guard()
+                token = self.call_context.set(
+                    {
+                        "task_id": task_id,
+                        "attempt_id": attempt.attempt_id,
+                        "stage": "verify",
+                    }
+                )
+                try:
+                    review, usage = await self.model_call(
+                        role, verify, self.provider, self.payload(state, "verifier", result.records)
+                    )
+                except asyncio.CancelledError:
+                    self.task_manager.cancel(task_id)
+                    raise
+                except Exception as exc:
+                    if self.stop_controller.stopped or getattr(exc, "code", "") == "PROVIDER_CANCELLED":
+                        self.task_manager.cancel(task_id)
+                        raise
+                    self.task_manager.fail(task_id, self.safe_error(exc))
+                    if (
+                        not self.recoverable_task_error(exc)
+                        or not self.task_manager.can_retry(task_id)
+                        or self.exhausted(state)
+                    ):
+                        raise
+                    self.task_manager.assign(task_id, role)
+                    attempt = self.task_manager.start(task_id)
+                else:
+                    completed = self.task_manager.complete(task_id)
+                    self.record_recovery(completed, "verify")
+                    break
+                finally:
+                    self.call_context.reset(token)
+            self.update_usage(state, usage, role)
             if not set(review.cited_evidence_ids).issubset(
                 {record.evidence_id for record in result.records}
             ):
@@ -784,6 +966,15 @@ class InvestigationRun:
                 evidence_sha256=evidence_fingerprint(state),
             )
             state.tool_calls_used = self.registry.call_count
+            if reviewed_finalization_ready(state, self.variant):
+                self.stop_controller.guard()
+                self.event(
+                    state, "FINALIZE_RESUMED_AFTER_REVIEW",
+                    selected_hypothesis_id=state.decisions[-1].selected_hypothesis_id,
+                    review_event_id=state.events[-1].event_id,
+                    decision_index=len(state.decisions) - 1,
+                )
+                return {"investigation": state, "route": "finalize"}
             return {"investigation": state, "route": "coordinate"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
@@ -829,7 +1020,7 @@ class InvestigationRun:
                 incident_id=state.incident_id,
                 status="RESOLVED",
                 root_cause=supported,
-                causal_chain=supported.predicted_observations,
+                causal_chain=observed_chain(state, supported),
                 supporting_evidence_ids=supported.support_ids,
                 rejected_hypotheses=[h for h in state.hypotheses if h.status == "REJECTED"],
                 stop_reason=state.decisions[-1].stop_reason or "Evidence sufficient",

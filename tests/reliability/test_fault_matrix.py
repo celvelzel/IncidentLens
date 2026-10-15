@@ -132,3 +132,97 @@ async def test_technical_completion_preserves_recovered_and_normal_stops():
         workflow=WorkflowOptions(profile="incident_response"),
     )
     assert technical_completion(abstained)
+
+
+async def test_verify_stage_transient_fault_retries_instead_of_aborting():
+    """A single verify-stage timeout must not sink a complete investigation."""
+    from incident_lens.evaluation.termination import normalize_termination
+    from incident_lens.llm import MockProvider, ProviderError
+    from incident_lens.orchestration.graph import run_investigation
+    from incident_lens.schemas import Budget
+    from incident_lens.schemas.workflow import WorkflowOptions
+
+    class FlakyVerifier(MockProvider):
+        failed = False
+
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if args[0] == "verifier" and args[-1].__name__ == "Review" and not self.failed:
+                self.failed = True
+                raise ProviderError("PROVIDER_TIMEOUT", usage)
+            return output, usage
+
+    state = await run_investigation(
+        "incident_001",
+        FlakyVerifier(),
+        budget=Budget(max_llm_calls=40, max_tool_calls=24),
+        workflow=WorkflowOptions(profile="incident_response"),
+    )
+    assert any(event.event_type == "MODEL_FAILURE" for event in state.events)
+    assert any(
+        event.event_type == "MODEL_RECOVERED" and event.details.get("stage") == "verify"
+        for event in state.events
+    )
+    retried = [
+        event.details
+        for event in state.events
+        if event.event_type == "TASK_ASSIGNED"
+        and str(event.task_id).startswith("verify-")
+        and event.details.get("attempt") == 2
+    ]
+    assert retried
+    # The run must finish normally rather than terminating on a runtime failure.
+    assert not state.termination.runtime_failure
+    assert state.termination.stop_completed
+    assert state.termination.outcome != "FAILED"
+    raw = state.model_dump(mode="json")
+    assert normalize_termination(raw)["protocol_valid"]
+
+
+async def test_coordinate_stage_transient_fault_retries_instead_of_aborting():
+    """A single coordinator-call timeout must not sink the whole investigation."""
+    from incident_lens.evaluation.termination import normalize_termination
+    from incident_lens.llm import MockProvider, ProviderError
+    from incident_lens.orchestration.graph import run_investigation
+    from incident_lens.schemas import Budget
+    from incident_lens.schemas.workflow import WorkflowOptions
+
+    class FlakyCoordinator(MockProvider):
+        failed = False
+
+        async def structured_call(self, *args):
+            output, usage = await super().structured_call(*args)
+            if (
+                args[0] == "coordinator"
+                and args[-1].__name__ == "DynamicDecision"
+                and not self.failed
+            ):
+                self.failed = True
+                raise ProviderError("PROVIDER_TIMEOUT", usage)
+            return output, usage
+
+    state = await run_investigation(
+        "incident_001",
+        FlakyCoordinator(),
+        budget=Budget(max_llm_calls=40, max_tool_calls=24),
+        workflow=WorkflowOptions(profile="incident_response"),
+    )
+    assert any(event.event_type == "MODEL_FAILURE" for event in state.events)
+    assert any(
+        event.event_type == "MODEL_RECOVERED" and event.details.get("stage") == "coordinate"
+        for event in state.events
+    )
+    retried = [
+        event.details
+        for event in state.events
+        if event.event_type == "TASK_ASSIGNED"
+        and str(event.task_id).startswith("coordinate-")
+        and event.details.get("attempt") == 2
+    ]
+    assert retried
+    # The run must finish normally rather than terminating on a runtime failure.
+    assert not state.termination.runtime_failure
+    assert state.termination.stop_completed
+    assert state.termination.outcome != "FAILED"
+    raw = state.model_dump(mode="json")
+    assert normalize_termination(raw)["protocol_valid"]
