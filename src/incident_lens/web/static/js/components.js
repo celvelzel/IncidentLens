@@ -109,7 +109,7 @@ export function initDrawer() {
 
 /* ---------------- Evidence detail ---------------- */
 
-export function evidenceDrawerHtml(record) {
+export function evidenceDrawerHtml(record, observation = null) {
   const src = SOURCE_TYPE_META[record.source_type] || { label: record.source_type, tone: "neutral" };
   const meta = Object.entries(record.metadata || {})
     .map(
@@ -131,6 +131,7 @@ export function evidenceDrawerHtml(record) {
         <div class="kv-row"><dt>事件</dt><dd class="mono">${escapeHtml(record.incident_id)}</dd></div>
         ${meta}
       </dl>
+      ${observation ? `<h3>已记录查询 / Task / Call</h3><pre class="json-block">${escapeHtml(JSON.stringify(observation, null, 2))}</pre>` : ""}
       <div class="field">
         <span class="field-label">原始摘录</span>
         <pre class="json-block" style="white-space:pre-wrap">${escapeHtml(record.excerpt)}</pre>
@@ -138,7 +139,7 @@ export function evidenceDrawerHtml(record) {
     </div>`;
 }
 
-export function bindEvidenceChips(root, evidenceIndex) {
+export function bindEvidenceChips(root, evidenceIndex, provenance = {}) {
   root.querySelectorAll("[data-evidence-id]").forEach((chip) => {
     chip.addEventListener("click", () => {
       const id = chip.dataset.evidenceId;
@@ -147,7 +148,7 @@ export function bindEvidenceChips(root, evidenceIndex) {
         toast(`证据 ${id} 未在本次运行索引中`, "error");
         return;
       }
-      openDrawer(`证据 · ${id}`, evidenceDrawerHtml(record));
+      openDrawer(`证据 · ${id}`, evidenceDrawerHtml(record, provenance[id]));
     });
   });
 }
@@ -158,7 +159,7 @@ export function evidenceChips(ids, evidenceIndex, { emptyText = "无" } = {}) {
     .map((id) => {
       const known = evidenceIndex?.[id] !== undefined;
       return `<button type="button" class="evidence-chip" data-evidence-id="${escapeHtml(id)}" ${
-        known ? "" : 'aria-disabled="true"'
+        known ? "" : 'disabled title="unavailable in this prefix"'
       }>${escapeHtml(id)}</button>`;
     })
     .join("");

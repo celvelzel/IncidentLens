@@ -1,3 +1,4 @@
+import { replayPrefix } from "./replay.js";
 /**
  * IncidentLens views: overview, investigate, run detail, library.
  */
@@ -541,13 +542,69 @@ export async function renderRun(root, params) {
     })}</div>`;
     return;
   }
-  drawRun(root, data);
+  mountReplay(root, data);
+}
+
+function mountReplay(root, data) {
+  const events = data.trace.state?.events || [];
+  root.innerHTML = `<section class="card replay-console" aria-label="Investigation Replay">
+    <h2 class="section-title">Investigation Replay · Recorded Replay</h2>
+    <p class="text-muted">仅显示已保存事件的前缀。缺失历史：not recorded。结构化任务与发现并非模拟对话。</p>
+    <div class="replay-controls">
+      <button class="btn" data-step="first">首步</button><button class="btn" data-step="prev">上一步</button>
+      <button class="btn btn-primary" id="replay-play">播放</button>
+      <button class="btn" data-step="next">下一步</button><button class="btn" data-step="last">末步</button>
+      <label>速度 <select class="select" id="replay-speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+      <output id="replay-position" aria-live="polite"></output>
+    </div>
+    <div id="replay-workflow" class="replay-workflow" aria-label="Workflow Overview"></div>
+    <details><summary>Communication Timeline · 选择已保存事件</summary><div id="replay-events" class="replay-event-list"></div></details>
+    <div id="replay-selection"></div>
+    <details><summary>Hypothesis Evolution · 已记录状态变化</summary><div id="replay-history"></div></details>
+  </section><div id="replay-detail"></div>`;
+  let position = 0, timer = null, activeTab = 'timeline';
+  const play = root.querySelector('#replay-play');
+  const pause = () => { clearTimeout(timer); timer = null; play.textContent = '播放'; play.setAttribute('aria-pressed', 'false'); };
+  function draw() {
+    const state = replayPrefix(data.trace, position);
+    const detail = root.querySelector('#replay-detail');
+    activeTab = detail.querySelector('[aria-selected="true"]')?.dataset.tab || activeTab;
+    drawRun(detail, { ...data, recorded: true, activeTab, trace: { ...data.trace, state }, report_md: state.report ? data.report_md : '' });
+    root.querySelector('#replay-position').textContent = `${position} / ${events.length} 已保存事件`;
+    root.querySelectorAll('[data-step]').forEach(b => { b.disabled = ['first','prev'].includes(b.dataset.step) ? position === 0 : position === events.length; });
+    play.disabled = !events.length || position === events.length;
+    root.querySelector('#replay-workflow').innerHTML = ['coordinator','logs','metrics','database','changes','verifier','finalize','report'].map(role =>
+      `<div><strong>${escapeHtml(role)}</strong><span>${escapeHtml(state.roles[role] || (role === 'report' && state.report ? 'COMPLETED' : 'not recorded / not scheduled'))}</span></div>`).join('');
+    root.querySelector('#replay-events').innerHTML = state.events.map((e, i) => `<button class="btn btn-sm" data-event="${i}">${i+1} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)} · ${escapeHtml(e.task_id || '')}</button>`).join('');
+    root.querySelector('#replay-history').innerHTML = state.hypothesis_history.map(h => `<p class="mono">${escapeHtml(h.event_id)} · ${escapeHtml(h.hypothesis_id)} → ${escapeHtml(h.status)}</p>`).join('') || '<p>not recorded</p>';
+    root.querySelector('#replay-selection').innerHTML = '';
+    root.querySelectorAll('[data-event]').forEach(button => button.addEventListener('click', () => {
+      const e = state.events[Number(button.dataset.event)];
+      const ids = [...new Set([...(e.evidence_ids || []), ...(e.details?.result?.records || []).map(r => r.evidence_id)])];
+      const box = root.querySelector('#replay-selection');
+      box.innerHTML = `<h3>${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.task_id || 'task not recorded')}</h3>${timelineBody(e)}<div class="cite-wrap">${evidenceChips(ids, state.evidence_index, {emptyText:'evidence not recorded'})}</div>`;
+      bindEvidenceChips(box, state.evidence_index, state.provenance);
+    }));
+  }
+  function tick() {
+    if (!root.isConnected || position >= events.length) { pause(); return; }
+    position++; draw();
+    if (position >= events.length) { pause(); return; }
+    timer = setTimeout(tick, 1000 / Number(root.querySelector('#replay-speed').value));
+  }
+  root.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
+    pause(); position = ({first:0, prev:Math.max(0,position-1), next:Math.min(events.length,position+1), last:events.length})[b.dataset.step]; draw();
+  }));
+  play.addEventListener('click', () => { if (timer) pause(); else { play.textContent='暂停'; play.setAttribute('aria-pressed','true'); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
+  root.querySelector('#replay-speed').addEventListener('change', () => { if (timer) { clearTimeout(timer); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
+  window.addEventListener('hashchange', pause, {once:true});
+  draw();
 }
 
 function drawRun(root, data) {
   const { trace, report_md: reportMd, recorded } = data;
   const state = trace.state;
-  const report = state.report;
+  const report = state.report || { status: "not recorded" };
   const status = STATUS_META[report.status] || { tone: "neutral", label: report.status };
   const evidenceIndex = state.evidence_index || {};
   const cacheHits = state.events.filter((e) => e.event_type === "CACHE_HIT").length;
@@ -559,15 +616,17 @@ function drawRun(root, data) {
         <div class="run-head-id">
           <h1 class="mono">${escapeHtml(state.incident_id)}</h1>
           ${badge(status.label, status.tone, true)}
+          ${badge(state.workflow_status || "not recorded")}
           ${trace.provider === "mock" ? badge("MOCK", "accent") : badge("REAL", "info")}
-          ${recorded ? badge("录制回放", "neutral") : badge("实时运行", "neutral")}
+          ${badge("Recorded Replay", "neutral")}
         </div>
         <div class="run-head-meta">
           <span>运行 <span class="mono">${escapeHtml(state.run_id)}</span></span>
           <span>模型 <span class="mono">${escapeHtml(trace.model_id || "unknown")}</span></span>
           <span>变体 <span class="mono">${escapeHtml(trace.variant || "full")}</span></span>
           <span>缓存 <span class="mono">${escapeHtml(trace.cache_mode || "off")}</span></span>
-          <span>耗时 <span class="mono">${formatDuration(trace.elapsed_ms)}</span></span>
+          <span>录制总耗时 <span class="mono">${formatDuration(trace.elapsed_ms)}</span></span>
+          <span>来源指纹 <span class="mono">${escapeHtml(trace.source_hash || trace.dataset_hash || "not recorded")}</span></span>
         </div>
       </div>
       <div class="run-head-actions">
@@ -610,7 +669,7 @@ function drawRun(root, data) {
     hypotheses: () => renderHypotheses(panel, state, evidenceIndex),
     evidence: () => renderEvidence(panel, state),
     findings: () => renderFindings(panel, state, evidenceIndex),
-    report: () => renderReport(panel, state, reportMd),
+    report: () => state.report ? renderReport(panel, state, reportMd) : panel.innerHTML = emptyState({ title: "Report not recorded at this step" }),
   };
 
   function activate(name) {
@@ -621,6 +680,7 @@ function drawRun(root, data) {
       t.setAttribute("aria-selected", String(selected));
       t.tabIndex = selected ? 0 : -1;
     });
+    data.activeTab = name;
     panel.setAttribute("aria-labelledby", `tab-${name}`);
     renderers[name]();
   }
@@ -642,11 +702,11 @@ function drawRun(root, data) {
       }
     });
   });
-  activate("timeline");
+  activate(data.activeTab || "timeline");
 }
 
-function kpiBar(label, used, max) {
-  const pct = max ? Math.min(100, Math.round((used / max) * 100)) : 0;
+function kpiBar(label, used = 0, max = "not recorded") {
+  const pct = Number.isFinite(max) && max > 0 ? Math.min(100, Math.round((used / max) * 100)) : 0;
   return `
     <div class="kpi">
       <div class="kpi-label">${escapeHtml(label)}</div>
@@ -778,7 +838,7 @@ function timelineBody(event) {
         event.evidence_ids?.length ? badge(`${event.evidence_ids.length} 条证据`, "info") : ""
       }</div>`
     );
-    if (d.arguments) parts.push(`<pre class="json-block">${escapeHtml(JSON.stringify(d.arguments, null, 2))}</pre>`);
+    if (d.args || d.arguments) parts.push(`<pre class="json-block">${escapeHtml(JSON.stringify(d.args || d.arguments, null, 2))}</pre>`);
     parts.push(`<pre class="json-block">${escapeHtml(JSON.stringify({ ok: result.ok, record_count: result.record_count, elapsed_ms: result.elapsed_ms, error_code: result.error_code ?? null }, null, 2))}</pre>`);
   } else if (Object.keys(d).length) {
     parts.push(`<pre class="json-block">${escapeHtml(JSON.stringify(d, null, 2))}</pre>`);
@@ -793,7 +853,7 @@ function timelineBody(event) {
 
 function renderHypotheses(panel, state, evidenceIndex) {
   if (!state.hypotheses.length) {
-    panel.innerHTML = emptyState({ title: "本次运行未产生假设", desc: "协调者未提出候选根因假设。" });
+    panel.innerHTML = emptyState({ title: "本次运行未产生假设", desc: "not recorded in this event prefix" });
     return;
   }
   const rootCauseId = state.report?.root_cause?.hypothesis_id;
@@ -804,7 +864,7 @@ function renderHypotheses(panel, state, evidenceIndex) {
           const effective = rootCauseId === h.hypothesis_id ? "SUPPORTED" : h.status;
           const meta = HYPO_STATUS_META[effective] || HYPO_STATUS_META.OPEN;
           return `
-          <article class="hypo-card" data-status="${effective}">
+          <article class="hypo-card" data-status="${escapeHtml(effective)}">
             <div class="hypo-top">
               <span class="hypo-service">${escapeHtml(h.culprit_service)}</span>
               ${badge(meta.label, meta.tone, true)}
@@ -820,7 +880,7 @@ function renderHypotheses(panel, state, evidenceIndex) {
         })
         .join("")}
     </div>`;
-  bindEvidenceChips(panel, evidenceIndex);
+  bindEvidenceChips(panel, evidenceIndex, state.provenance);
 }
 
 /* ---------------- Evidence ---------------- */
@@ -895,7 +955,7 @@ function renderEvidence(panel, state) {
       const open = () => {
         const record = state.evidence_index[row.dataset.ev];
         import("./components.js").then(({ openDrawer, evidenceDrawerHtml }) => {
-          openDrawer(`证据 · ${record.evidence_id}`, evidenceDrawerHtml(record));
+          openDrawer(`证据 · ${record.evidence_id}`, evidenceDrawerHtml(record, state.provenance?.[record.evidence_id]));
         });
       };
       row.addEventListener("click", open);
@@ -941,7 +1001,7 @@ function renderFindings(panel, state, evidenceIndex) {
           .join("")}
       </tbody>
     </table></div>`;
-  bindEvidenceChips(panel, evidenceIndex);
+  bindEvidenceChips(panel, evidenceIndex, state.provenance);
 }
 
 /* ---------------- Report ---------------- */
@@ -952,7 +1012,7 @@ function renderReport(panel, state, reportMd) {
   const evidenceIndex = state.evidence_index || {};
   const rootCause = report.root_cause;
   panel.innerHTML = `
-    <div class="report-hero" data-status="${report.status}">
+    <div class="report-hero" data-status="${escapeHtml(report.status)}">
       <div style="flex:1;min-width:220px">
         <div class="chip-row" style="margin-bottom:8px">${badge(status.label, status.tone, true)}</div>
         <div class="report-hero-title">${escapeHtml(rootCause ? rootCause.failure_mode : "无受支持的根因")}</div>
@@ -997,7 +1057,7 @@ function renderReport(panel, state, reportMd) {
       <summary style="cursor:pointer;color:var(--text-3);font-size:var(--text-sm)">查看 Markdown 原文</summary>
       <pre class="json-block" style="margin-top:var(--sp-3);white-space:pre-wrap">${escapeHtml(reportMd || "")}</pre>
     </details>`;
-  bindEvidenceChips(panel, evidenceIndex);
+  bindEvidenceChips(panel, evidenceIndex, state.provenance);
 }
 
 /* ============================================================

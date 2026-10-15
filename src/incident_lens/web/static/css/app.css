@@ -1008,3 +1008,13 @@
 .plan-only-note { border-left:3px solid var(--info); padding:var(--sp-3) var(--sp-4); margin:var(--sp-4) 0; background:var(--surface-2); }
 .plan-only-note p { margin:var(--sp-2) 0 0; }
 @media(max-width:640px) { .workflow-status-grid,.workflow-plan-grid { grid-template-columns:1fr; } }
+/* Recorded replay: existing console tokens, wrapping controls and readable states. */
+.replay-console { margin-bottom: var(--sp-5); }
+.replay-controls { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2); margin-block:var(--sp-4); }
+.replay-controls label { display:flex; align-items:center; gap:var(--sp-2); }
+.replay-controls .select { width:auto; }
+.replay-workflow { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2); margin-block:var(--sp-4); }
+.replay-workflow div { padding:var(--sp-2); border:1px solid var(--border); border-radius:var(--radius-sm); }
+.replay-workflow span { display:block; font-size:var(--text-xs); }
+.replay-event-list { display:flex; flex-wrap:wrap; gap:var(--sp-2); max-height:240px; overflow:auto; padding-block:var(--sp-3); }
+#replay-selection { overflow-wrap:anywhere; }
