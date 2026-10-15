@@ -68,7 +68,7 @@ async def run(args):
         workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True,
                                  benchmark_fixed_four=args.variant == "fixed"),
     )
-    save_run(state, args.out, "real")
+    save_run(state, args.out, "real", variant=args.variant)
     raw = state.model_dump(mode="json")
     summary = normalize_termination(raw) | usage_metrics(provider, raw)
     summary["source_drift"] = snapshot_changes(frozen_sources, retest_snapshot(project))
