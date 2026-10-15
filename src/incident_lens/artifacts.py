@@ -7,6 +7,13 @@ from incident_lens.orchestration.report import render_report
 from incident_lens.schemas import InvestigationState, ToolResult
 from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL
 
+TOOL_SOURCES = {
+    "query_logs": {"logs"}, "query_metrics": {"metrics"},
+    "get_dependencies": {"topology"}, "query_changes": {"changes"},
+    "get_config_diff": {"configs"}, **{name: {"database"} for name in DATABASE_TOOLS},
+    "fetch_evidence_by_ids": {"logs", "metrics", "topology", "changes", "configs", "database"},
+}
+
 
 def save_run(state, output, provider, variant="full", cache_mode="off", elapsed_ms=None):
     state = InvestigationState.model_validate_json(state.model_dump_json())
@@ -99,7 +106,8 @@ def validate_replay_observations(state):
             raise ValueError("Replay tool observation violates role authority")
         for record in result.records:
             if (record.incident_id != state.incident_id
-                    or record.service not in state.public_summary.services):
+                    or record.service not in state.public_summary.services
+                    or record.source_type not in TOOL_SOURCES[event.details["tool_name"]]):
                 raise ValueError("Replay observation has foreign evidence")
             if record.evidence_id in observed and observed[record.evidence_id] != record:
                 raise ValueError("Replay observation content changed")

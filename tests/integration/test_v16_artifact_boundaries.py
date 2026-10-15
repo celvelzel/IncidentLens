@@ -21,7 +21,7 @@ async def saved(tmp_path):
     return tmp_path / "run", trace, state
 
 
-@pytest.mark.parametrize("mutation", ["missing", "failed", "foreign", "changed", "acl"])
+@pytest.mark.parametrize("mutation", ["missing", "failed", "foreign", "changed", "acl", "source"])
 async def test_replay_rejects_unobserved_or_unauthorized_evidence(saved, mutation):
     out, trace, _ = saved
     trace = copy.deepcopy(trace)
@@ -40,8 +40,12 @@ async def test_replay_rejects_unobserved_or_unauthorized_evidence(saved, mutatio
                 record["incident_id"] = "incident_999"
             elif mutation == "changed":
                 record["excerpt"] = "fabricated replacement"
-            else:
+            elif mutation == "acl":
                 event["role"] = "coordinator"
+            else:
+                for tool in tools:
+                    tool["role"] = "logs"
+                    tool["details"]["tool_name"] = "query_logs"
     (out / "trace.json").write_text(json.dumps(trace), encoding="utf-8")
     with pytest.raises(ValueError):
         load_replay(out / "trace.json")
