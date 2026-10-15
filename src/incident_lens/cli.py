@@ -164,6 +164,10 @@ def main(argv=None):
 
         load_dotenv()
         try:
+            if args.out.is_symlink() or (args.out.exists() and (
+                not args.out.is_dir() or any(args.out.iterdir())
+            )):
+                raise FileExistsError("Use a fresh output directory")
             config = (
                 yaml.safe_load(args.config.read_text(encoding="utf-8"))
                 if args.config.exists()

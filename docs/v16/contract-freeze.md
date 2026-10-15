@@ -1,0 +1,18 @@
+# V1.6 contract freeze v1 — 2026-10-15
+
+Baseline: 62ec53475f4f4c71b9e1cccf33532763c90156f2. Authority: ../plans/v16/CODEX_START_HERE.md and companion implementation plan. No schema migration authorized.
+
+## Replay
+POST /api/replay receives {path}; returns {trace, report_md, path, recorded:true}. server.py owns path confinement and artifacts.load_replay validation. Envelope schema_version=v1: provider(mock/real), variant(single/fixed/dynamic_no_verifier/full), cache_mode, elapsed_ms, state, optional model_id/prompt_version. TraceEvent fields: event_id/run_id/incident_id/timestamp/event_type/role/task_id/call_id/evidence_ids/message/details/source/elapsed_ms. Preserve saved order; use event prefixes, never infer past hypotheses/report from final state. Missing history is not recorded. Evidence must be incident-authorized and observed by the selected prefix. Replay never invokes provider/tools. No backend route change by WP-C.
+
+## Dataset
+incidentbench-v1.0 BenchmarkCaseMetadata: incident_id/split/scenario_family_id/scenario_variant_id/challenge_tags/public_sha256/source_blueprint_id/near_duplicate_cluster_id/counterfactual_pair_id/cohort. Runtime public root and evaluator private root must differ; no private oracle in prompt/replay/public Git. BenchmarkOracle remains evaluator-only after durable completion receipt. Pending candidate labels stay pending; no coding-agent human signatures. Same encoder lineage is not independent family evidence. New dev generation must not overwrite seed or impersonate held-out test.
+
+## Experiments
+Benchmark names: strong_single_equivalent_tools, fixed_four_equivalent_tools, dynamic_no_verifier, full. Runtime aliases: single, fixed, dynamic_no_verifier, full. Same actual provider/model/temperature/response_format, equivalent public tools, budgets, recovery, cache off, current_dynamic (CAES bypass), jobs=1, seeded order. Persist source/config/prompt/public-data/protocol fingerprints. Four-variant rows retain run_key/incident_id/run_id/variant/repeat_id/metadata/source/latency_ms/usage/state/completion_receipt. Scores retain failures in denominators. Human semantic support and unknown tokens/cost remain null. Existing formal/Test fail-closed gates remain.
+
+## Evidence and outputs
+UNIT / OFFLINE_MOCK / ADAPTER_FIXTURE / LIVE_DEVELOPMENT / HUMAN_REVIEWED_TEST. Gate states: NOT_STARTED / IN_PROGRESS / PASS / FAIL / BLOCKED_AWAITING_USER / BLOCKED_UPSTREAM. results/v16/<stage>/<unique-run>; refuse existing outputs and retain failures. Worktree artifacts remain at recorded absolute location until Lead explicitly stages copies with provenance. Paid execution requires explicit budget approval; none given in this task. Public reports must omit secrets and private label contents.
+
+## Contract v1.1 — Lead security hardening
+No envelope/route/schema field changes. Replay now requires each published evidence record to match a recorded successful role-authorized TOOL_CALL, including incident/service/content identity; malformed/failed observations cannot authorize inspection. Nested evaluator-only Oracle fragments are rejected. This is internal trace consistency, not signed trace authenticity. Legacy traces with lost observations are rejected instead of invented history. Download checks links/reparse ancestors and result-root confinement. save_run exclusively creates artifact filenames; precreated metadata-only folders remain usable by live/bridge runners. CLI permits a precreated empty folder for compatibility, rejects nonempty outputs before provider construction. Tests:25pass; raw first failed iteration retained alongside corrected run.

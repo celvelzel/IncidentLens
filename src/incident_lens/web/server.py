@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import stat
 import time
 from pathlib import Path
 from typing import Literal
@@ -51,6 +52,21 @@ def _resolve_trace_path(rel):
     if candidate.name != "trace.json":
         raise PermissionError("only trace.json files are accessible")
     return candidate
+
+
+def _resolve_download_file(path):
+    """Reject links/reparse points in downloads, including every ancestor."""
+    path = path.absolute()
+    for part in (*reversed(path.parents), path):
+        info = part.lstat()
+        if part.is_symlink() or (
+            getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+        ):
+            raise PermissionError("linked artifacts cannot be downloaded")
+    resolved = path.resolve(strict=True)
+    if not resolved.is_relative_to(RESULTS_ROOT.resolve()):
+        raise PermissionError("artifact escapes results directory")
+    return resolved
 
 
 def _trace_summary(path):
@@ -279,7 +295,13 @@ async def api_download(request):
         filename = f"{run_dir}-report.md"
     else:
         return error_response("invalid_request", "Unknown download kind")
-    if not target.is_file():
+    try:
+        target = _resolve_download_file(target)
+        if not target.is_file():
+            return error_response("not_found", "Artifact not found", status=404)
+    except PermissionError:
+        return error_response("forbidden_path", "Unsafe artifact path", status=403)
+    except OSError:
         return error_response("not_found", "Artifact not found", status=404)
     return FileResponse(target, filename=filename)
 
