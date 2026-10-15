@@ -2,9 +2,24 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { replayPrefix, replayReducer, initialReplay } from '../../src/incident_lens/web/static/js/replay.js';
-import { evidenceDrawerHtml, evidenceChips } from '../../src/incident_lens/web/static/js/components.js';
+import { evidenceDrawerHtml, evidenceChips, bindEvidenceChips } from '../../src/incident_lens/web/static/js/components.js';
 const trace = JSON.parse(readFileSync(new URL('./fixtures/mock-success.json',import.meta.url)));
 const events = trace.state.events;
+
+test('inherited object properties never authorize evidence chips or drawer access',()=>{
+  const html=evidenceChips(['constructor','toString','__proto__'],{});
+  assert.equal((html.match(/disabled/g)||[]).length,3);
+  let handler;
+  const chip={dataset:{evidenceId:'constructor'},addEventListener:(type,fn)=>{handler=fn;}};
+  globalThis.document={createElement:()=>({style:{},remove(){}}),
+    getElementById:()=>({appendChild(){}})};
+  // A click must stop at unavailable handling, never try to render a Function as evidence.
+  bindEvidenceChips({querySelectorAll:()=>[chip]},{});
+  const originalTimeout=globalThis.setTimeout;
+  try { globalThis.setTimeout=()=>0; assert.doesNotThrow(()=>handler()); }
+  finally { globalThis.setTimeout=originalTimeout; }
+  delete globalThis.document;
+});
 test('saved Mock success: report and observations follow saved prefix only',()=>{
   const zero=replayPrefix(trace,0); assert.equal(zero.report,null); assert.deepEqual(zero.hypotheses,[]); assert.deepEqual(zero.evidence_index,{});
   const reportIndex=events.findIndex(e=>e.event_type==='REPORT');

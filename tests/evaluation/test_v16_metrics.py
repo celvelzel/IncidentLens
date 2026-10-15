@@ -1,4 +1,6 @@
-from incident_lens.evaluation.v16 import quality_row, summarize
+import pytest
+
+from incident_lens.evaluation.v16 import quality_row, summarize, write_companion
 
 
 def scored(**changes):
@@ -48,3 +50,15 @@ def test_partial_review_cannot_replace_primary_denominator():
 def test_complete_review_can_establish_supported_quality():
     rows = [scored(human_grounded_success=True), scored(human_grounded_success=False)]
     assert summarize(rows)[0]["root_cause_correct_rate"]["rate"] == .5
+
+
+def test_companion_completed_resume_preserves_bytes_and_refuses_mismatch(tmp_path):
+    rows = [dict(run_key="one", variant="full", incident_id="case", source="mock",
+                 technical_completion=True)]
+    result = write_companion(tmp_path, rows)
+    before = (tmp_path / "v16-metrics.json").read_bytes()
+    assert write_companion(tmp_path, rows) == result
+    rows[0]["technical_completion"] = False
+    with pytest.raises(ValueError, match="retained unchanged"):
+        write_companion(tmp_path, rows)
+    assert (tmp_path / "v16-metrics.json").read_bytes() == before

@@ -89,6 +89,10 @@ def write_companion(out, scores):
         ],
     }
     path = Path(out) / "v16-metrics.json"
+    if path.exists():
+        if json.loads(path.read_text(encoding="utf-8")) != payload:
+            raise ValueError("existing V16 companion mismatch; retained unchanged")
+        return payload
     with path.open("x", encoding="utf-8") as stream:
         json.dump(payload, stream, indent=2, sort_keys=True)
     return payload

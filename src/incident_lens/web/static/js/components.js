@@ -143,7 +143,7 @@ export function bindEvidenceChips(root, evidenceIndex, provenance = {}) {
   root.querySelectorAll("[data-evidence-id]").forEach((chip) => {
     chip.addEventListener("click", () => {
       const id = chip.dataset.evidenceId;
-      const record = evidenceIndex[id];
+      const record = evidenceIndex && Object.hasOwn(evidenceIndex, id) ? evidenceIndex[id] : null;
       if (!record) {
         toast(`证据 ${id} 未在本次运行索引中`, "error");
         return;
@@ -157,7 +157,7 @@ export function evidenceChips(ids, evidenceIndex, { emptyText = "无" } = {}) {
   if (!ids?.length) return `<span class="text-muted">${escapeHtml(emptyText)}</span>`;
   return ids
     .map((id) => {
-      const known = evidenceIndex?.[id] !== undefined;
+      const known = evidenceIndex && Object.hasOwn(evidenceIndex, id);
       return `<button type="button" class="evidence-chip" data-evidence-id="${escapeHtml(id)}" ${
         known ? "" : 'disabled title="unavailable in this prefix"'
       }>${escapeHtml(id)}</button>`;
