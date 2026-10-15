@@ -62,3 +62,44 @@ def test_companion_completed_resume_preserves_bytes_and_refuses_mismatch(tmp_pat
     with pytest.raises(ValueError, match="retained unchanged"):
         write_companion(tmp_path, rows)
     assert (tmp_path / "v16-metrics.json").read_bytes() == before
+
+
+def test_failed_stop_does_not_become_false_rca_or_disappear_from_denominator():
+    rows = [scored(), scored(technical_completion=False, runtime_failure=True,
+                             root_cause_correct=False, resolved=True)]
+    assert rows[1]["false_resolution"] is None
+    result = summarize(rows)[0]["false_resolution_rate"]
+    assert result == {"numerator": None, "denominator": 2, "rate": None,
+                      "unknown_n": 1, "known_false_resolution_n": 0}
+    assert scored(identifiable=False, technical_completion=False, resolved=True)[
+        "false_resolution"] is True
+
+
+async def test_cli_completed_resume_validates_existing_companion(tmp_path, monkeypatch):
+    import json
+    import runpy
+    from pathlib import Path
+    from types import SimpleNamespace
+
+    script = runpy.run_path(str(Path("scripts/run_incidentbench.py")))
+    run = script["run"]
+    rows = [dict(run_key="one", variant="full", incident_id="case", source="mock",
+                 technical_completion=True)]
+
+    async def completed(*args, **kwargs):
+        assert kwargs["resume"] is True
+        return rows
+
+    monkeypatch.setitem(run.__globals__, "load_cases", lambda *args: (None, None, ["case"]))
+    monkeypatch.setitem(run.__globals__, "run_experiment", completed)
+    monkeypatch.setitem(run.__globals__, "load_dotenv", lambda *args, **kwargs: None)
+    args = SimpleNamespace(out=tmp_path, resume=True, dataset=tmp_path, split="seed",
+                           protocol=None, provider="mock", protocol_lock=None, oracle_root=None)
+    write_companion(tmp_path, rows)
+    before = (tmp_path / "v16-metrics.json").read_bytes()
+    await run(args)
+    assert (tmp_path / "v16-metrics.json").read_bytes() == before
+    (tmp_path / "v16-metrics.json").write_text(json.dumps({"corrupted": True}))
+    with pytest.raises(ValueError, match="retained unchanged"):
+        await run(args)
+    assert json.loads((tmp_path / "v16-metrics.json").read_text()) == {"corrupted": True}

@@ -20,6 +20,8 @@ def quality_row(row):
         "mechanism_service_match": row.get("root_cause_correct"),
         "semantic_supported_root_cause_correct": reviewed if identifiable else None,
         "false_resolution": (
+            None if identifiable is True and row.get("resolved")
+            and not row["technical_completion"] else
             bool(row.get("resolved") and (not identifiable or not row["root_cause_correct"]))
             if labelled else None
         ),
@@ -48,7 +50,6 @@ def summarize(rows):
             ("budget_exhausted", "budget_exhausted_rate"),
             ("mechanism_service_match", "mechanism_service_match_rate"),
             ("correct_abstention", "correct_abstention_rate"),
-            ("false_resolution", "false_resolution_rate"),
         ):
             item[name] = rate(group, field)
         # Partial review cannot silently replace the all-attempt primary denominator.
@@ -63,9 +64,20 @@ def summarize(rows):
             "rate": rate(reviewed, "semantic_supported_root_cause_correct")["rate"]
             if diagnosed and len(reviewed) == len(diagnosed) else None,
         }
-        for identifiable, name in ((True, "identifiable"), (False, "missing")):
-            item[f"false_resolution_{name}_rate"] = rate(
-                [r for r in group if r["identifiable"] is identifiable], "false_resolution")
+        labelled = [r for r in group if r["identifiable"] is not None]
+        for subset, name in (
+            (labelled, "false_resolution_rate"),
+            ([r for r in labelled if r["identifiable"] is True],
+             "false_resolution_identifiable_rate"),
+            ([r for r in labelled if r["identifiable"] is False],
+             "false_resolution_missing_rate"),
+        ):
+            unknown = sum(r["false_resolution"] is None for r in subset)
+            item[name] = rate(subset, "false_resolution")
+            if unknown:
+                item[name] = {"numerator": None, "denominator": len(subset), "rate": None,
+                              "unknown_n": unknown, "known_false_resolution_n": sum(
+                                  r["false_resolution"] is True for r in subset)}
         item["failure_counts"] = dict(Counter(
             r["failure_category"] or "UNKNOWN" for r in group
             if not r["technical_completion"]))
@@ -85,6 +97,8 @@ def write_companion(out, scores):
             "Historical root_cause_correct is service/mechanism match only.",
             "Semantic quality stays null without complete human review.",
             "False resolution uses labelled mechanism match, not semantic review.",
+            "Identifiable technically failed RESOLVED reports have unknown false-resolution status; "
+            "their all-attempt rate stays null, rather than treating failure as wrong RCA.",
             "Source lineage independence is unreviewed; descriptive results only.",
         ],
     }
