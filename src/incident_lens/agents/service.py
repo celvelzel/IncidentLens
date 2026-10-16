@@ -243,12 +243,18 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
             # Service, time window and record limit remain unchanged.
             call.args.pop("severity", None)
             call.args.pop("contains", None)
-        elif discovery and call.tool_name == "query_changes" and not any(
-            r.get("source_type") == "changes" for r in shared.values()
+        elif (
+            discovery
+            and call.tool_name == "query_changes"
+            and not minimal_facts.get("changes_discovery_done")
+            and not any(r.get("source_type") == "changes" for r in shared.values())
         ):
             # First discovery covers the public incident pack, including changes
             # during observation. A model-assumed onset must not hide the cause.
             # Retain service scope; later queries keep their proposed filters.
+            # The one-shot flag matters when the changes source is genuinely empty:
+            # without it the strip would repeat forever and a windowed NO_DATA
+            # (decisive absence) could never be observed.
             for name in ("start_ts", "end_ts", "change_type"):
                 call.args.pop(name, None)
         elif call.tool_name == "get_config_diff":

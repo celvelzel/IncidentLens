@@ -318,6 +318,13 @@ async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metric
         {"benchmark_discovery": True, "evidence_index": {}},
     )
     assert discovery.calls[0].args == {"service": "backend"}
+    # With an empty changes source, only the one-shot discovery query may drop the
+    # window; later queries must keep it so a decisive NO_DATA stays observable.
+    rerun, _ = await plan_tools(
+        Planned(proposed), context("changes"), change_task, {},
+        {"benchmark_discovery": True, "changes_discovery_done": True, "evidence_index": {}},
+    )
+    assert rerun.calls[0].args == proposed[0]["args"]
     narrowed, _ = await plan_tools(
         Planned(proposed), context("changes"), change_task, {},
         dict(facts, benchmark_discovery=True),

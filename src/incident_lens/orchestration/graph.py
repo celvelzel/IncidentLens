@@ -110,6 +110,10 @@ class InvestigationRun:
         self.signatures = set()
         self.failed_finalizations = set()
         self.tool_events_offset = 0
+        # One-shot guard for changes discovery: only the first query_changes may
+        # drop time filters to expose the whole pack; later calls keep their
+        # proposed window so a decisive NO_DATA can be observed.
+        self.changes_discovery_done = False
         # Reviews recur after reconciliation; each invocation needs a fresh task id.
         self.verify_rounds = 0
         self.coordinate_rounds = 0
@@ -281,7 +285,13 @@ class InvestigationRun:
             return {"investigation": state, "route": "coordinate"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="monitoring")
+            self.event(
+                state,
+                "RUNTIME_ERROR",
+                message=state.stop_reason,
+                stage="monitoring",
+                **self.error_details(exc),
+            )
             return {"investigation": state, "route": "stop"}
 
     def payload(self, state, role="coordinator", fetched=None):
@@ -525,7 +535,13 @@ class InvestigationRun:
             return {"investigation": state, "route": "dispatch"}
         except Exception as exc:
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="coordinate")
+            self.event(
+                state,
+                "RUNTIME_ERROR",
+                message=state.stop_reason,
+                stage="coordinate",
+                **self.error_details(exc),
+            )
             return {"investigation": state, "route": "report"}
 
     @staticmethod
@@ -560,6 +576,7 @@ class InvestigationRun:
         role = "single" if self.variant == "single" else task.role
         minimal = {
             "benchmark_discovery": self.workflow.benchmark_rca,
+            "changes_discovery_done": self.changes_discovery_done,
             "findings": [f.model_dump(mode="json") for f in state.findings],
             "hypotheses": [h.model_dump(mode="json") for h in state.hypotheses],
             "evidence_index": {
@@ -570,6 +587,12 @@ class InvestigationRun:
             role, plan_tools, self.provider, context, task, state.public_summary, minimal
         )
         self.update_usage(state, usage, role)
+        if self.workflow.benchmark_rca and any(
+            call.tool_name == "query_changes" for call in plan.calls
+        ):
+            # The first changes discovery (whole pack, filters stripped) is done;
+            # every later query_changes must keep its proposed window.
+            self.changes_discovery_done = True
         records = []
         gaps = []
         for call in plan.calls:
@@ -717,7 +740,13 @@ class InvestigationRun:
         except Exception as exc:
             state.tool_calls_used = self.registry.call_count
             state.stop_reason = self.safe_error(exc)
-            self.event(state, "RUNTIME_ERROR", message=state.stop_reason, stage="dispatch")
+            self.event(
+                state,
+                "RUNTIME_ERROR",
+                message=state.stop_reason,
+                stage="dispatch",
+                **self.error_details(exc),
+            )
             return {"investigation": state, "route": "report", "local_results": []}
 
     async def execute_task(self, state, task):
@@ -786,6 +815,19 @@ class InvestigationRun:
                 attempt_id=record.attempt_id,
                 call_ids=call_ids,
             )
+
+    @classmethod
+    def error_details(cls, exc):
+        from incident_lens.llm.provider import ProviderError
+
+        code = getattr(exc, "code", "") or (
+            "PROVIDER_TIMEOUT" if isinstance(exc, (TimeoutError, asyncio.TimeoutError)) else ""
+        )
+        transport = isinstance(exc, (TimeoutError, asyncio.TimeoutError)) or (
+            isinstance(exc, ProviderError)
+            and getattr(exc, "code", "") in {"PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR"}
+        )
+        return {"error_code": code, "transport_error": transport}
 
     @classmethod
     def stage_retryable_error(cls, exc):
@@ -865,6 +907,7 @@ class InvestigationRun:
                 message=state.stop_reason,
                 stage="merge",
                 error_type=type(exc).__name__,
+                **self.error_details(exc),
             )
             return {"investigation": state, "route": "report"}
 
@@ -984,6 +1027,7 @@ class InvestigationRun:
                 message=state.stop_reason,
                 stage="verify",
                 error_type=type(exc).__name__,
+                **self.error_details(exc),
             )
             return {"investigation": state, "route": "report"}
 
@@ -1112,7 +1156,11 @@ class InvestigationRun:
             }:
                 state.stop_reason = self.remediation_error
                 self.event(
-                    state, "RUNTIME_ERROR", stage="remediation", message=self.remediation_error
+                    state,
+                    "RUNTIME_ERROR",
+                    stage="remediation",
+                    message=self.remediation_error,
+                    **self.error_details(exc),
                 )
             self.event(
                 state, "REMEDIATION_FAILED", role="remediation", message=self.safe_error(exc)
@@ -1218,8 +1266,74 @@ class InvestigationRun:
         )
         return {"investigation": state, "route": "report"}
 
+    def rescue_report(self, state):
+        runtime_errors = [e for e in state.events if e.event_type == "RUNTIME_ERROR"]
+        if not runtime_errors or not all(
+            e.details.get("transport_error") is True for e in runtime_errors
+        ):
+            return None
+        if not state.decisions or state.decisions[-1].action == "ABSTAIN":
+            return None
+        stop_reason = state.stop_reason or ""
+        if "budget" in stop_reason.lower() or stop_reason == "BUDGET_EXHAUSTED":
+            return None
+        candidates = [
+            h for h in state.hypotheses if finalize_errors(state, h, self.variant) == []
+        ]
+        if len(candidates) != 1:
+            return None
+        hypothesis = candidates[0]
+        review = next(
+            (
+                e
+                for e in reversed(state.events)
+                if e.event_type == "REVIEW"
+                and e.details.get("review", {}).get("target_hypothesis_id")
+                == hypothesis.hypothesis_id
+                and e.details.get("review", {}).get("verdict") == "sufficient"
+            ),
+            None,
+        )
+        if review is None:
+            return None
+        supported = hypothesis.model_copy(update={"status": "SUPPORTED"})
+        report = RCAReport(
+            run_id=state.run_id,
+            incident_id=state.incident_id,
+            status="RESOLVED",
+            root_cause=supported,
+            causal_chain=observed_chain(state, supported),
+            supporting_evidence_ids=supported.support_ids,
+            rejected_hypotheses=[h for h in state.hypotheses if h.status == "REJECTED"],
+            stop_reason=state.decisions[-1].stop_reason or "Evidence sufficient",
+        )
+        report.workflow_status = state.workflow_status
+        report.diagnosis_status = "RESOLVED"
+        if state.termination is not None:
+            report.termination = state.termination.model_copy(deep=True)
+        failed_tasks = {r.task_id for r in self.task_manager.records if r.status == "FAILED"}
+        self.event(
+            state,
+            "DIAGNOSIS_ACCEPTED",
+            root_cause=supported.model_dump(mode="json"),
+            supporting_evidence_ids=supported.support_ids,
+            rescued=True,
+            rescue_review_event_id=review.event_id,
+            degraded_call_ids=[
+                e.details["call_id"]
+                for e in state.events
+                if e.event_type == "MODEL_FAILURE"
+                and e.details.get("task_id") in failed_tasks
+                and e.details.get("stage") == "diagnosis"
+                and not e.details.get("cancelled")
+            ],
+        )
+        return report
+
     def report(self, value):
         state = value["investigation"]
+        if state.report is None:
+            state.report = self.rescue_report(state)
         if state.report is None:
             state.report = RCAReport(
                 run_id=state.run_id,

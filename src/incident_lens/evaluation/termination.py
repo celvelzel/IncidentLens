@@ -35,13 +35,32 @@ def details(event):
     return value if isinstance(value, dict) else {}
 
 
+def acceptance_matches(event, report, events):
+    """A rescued acceptance also requires its checkpoint review to target the root cause."""
+    if event.get("event_type") != "DIAGNOSIS_ACCEPTED":
+        return False
+    if (
+        details(event).get("root_cause") != report.get("root_cause")
+        or details(event).get("supporting_evidence_ids") != report.get("supporting_evidence_ids")
+    ):
+        return False
+    if not details(event).get("rescued"):
+        return True
+    checkpoint = details(event).get("rescue_review_event_id")
+    root_cause_id = (report.get("root_cause") or {}).get("hypothesis_id")
+    return any(
+        e.get("event_type") == "REVIEW"
+        and e.get("event_id") == checkpoint
+        and details(e).get("review", {}).get("target_hypothesis_id") == root_cause_id
+        for e in events
+    )
+
+
 def accepted_diagnosis(state):
     report = state.get("report") or {}
     return (
         any(
-            e.get("event_type") == "DIAGNOSIS_ACCEPTED"
-            and details(e).get("root_cause") == report.get("root_cause")
-            and details(e).get("supporting_evidence_ids") == report.get("supporting_evidence_ids")
+            acceptance_matches(e, report, state.get("events", []))
             for e in state.get("events", [])
         )
         and report.get("status") == "RESOLVED"
@@ -274,7 +293,13 @@ def normalize_termination(state):
                 )
             ):
                 errors.append("stop completed with unacknowledged or active tasks")
-            if any(e.get("event_type") in FROZEN_MUTATIONS for e in events[ri + 1 :]):
+            # A rescued acceptance is published by report() after the stop request;
+            # only a validated rescued checkpoint may cross the freeze boundary.
+            if any(
+                e.get("event_type") in FROZEN_MUTATIONS
+                and not (details(e).get("rescued") and acceptance_matches(e, report, events))
+                for e in events[ri + 1 :]
+            ):
                 errors.append("publication or execution after stop request")
             for _, e in requests + terminals + acknowledgments:
                 for key in ("run_id", "incident_id"):
@@ -357,12 +382,32 @@ def normalize_termination(state):
         accepted = next(
             i for i, e in enumerate(events) if e.get("event_type") == "DIAGNOSIS_ACCEPTED"
         )
+        checkpoint = accepted
+        rescued = details(events[accepted]).get("rescued") is True
+        if rescued:
+            review_id = details(events[accepted]).get("rescue_review_event_id")
+            checkpoint = next(
+                (
+                    i
+                    for i, e in enumerate(events)
+                    if e.get("event_type") == "REVIEW" and e.get("event_id") == review_id
+                ),
+                accepted,
+            )
         if any(
             e.get("event_type") == "RUNTIME_ERROR"
             and details(e).get("stage") not in {"remediation", "stop"}
-            for e in events[:accepted]
+            for e in events[:checkpoint]
         ):
             diagnosis_failure = True
+        elif rescued and checkpoint != accepted:
+            after = [
+                e
+                for e in events[checkpoint + 1 :]
+                if e.get("event_type") == "RUNTIME_ERROR"
+            ]
+            if after and all(details(e).get("transport_error") is True for e in after):
+                diagnosis_failure = False
     return {
         "scoring_version": SCORING_VERSION,
         "termination_source": source,
