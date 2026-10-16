@@ -1,6 +1,7 @@
 """Offline course-project evaluation; never changes runtime or formal label status."""
 
 import hashlib
+import subprocess
 from collections import Counter
 from pathlib import Path
 from uuid import UUID
@@ -274,7 +275,9 @@ def validate_completed(experiment, dataset, historical_source_root):
     )
 
 
-def evaluate_completed(experiment, dataset, oracle_root, out, historical_source_root):
+def evaluate_completed(
+    experiment, dataset, oracle_root, out, historical_source_root, repository=None
+):
     """Write private evaluator output once; a failed state remains in the denominator."""
     out = Path(out).absolute()
     if "local_oracles" not in out.parts or out.exists():
@@ -283,6 +286,24 @@ def evaluate_completed(experiment, dataset, oracle_root, out, historical_source_
     while not ancestor.exists():
         ancestor = ancestor.parent
     safe_path(ancestor)
+    if repository is None:
+        raise PermissionError("explicit output repository required")
+    repository = safe_path(repository)
+    private = repository / "local_oracles"
+    if not out.resolve().is_relative_to(private.resolve()):
+        raise PermissionError("output must be beneath repository/local_oracles")
+    relative = out.relative_to(repository).as_posix()
+    ignored = subprocess.run(
+        ["git", "check-ignore", "-q", "--", relative], cwd=repository, capture_output=True
+    )
+    tracked = subprocess.run(
+        ["git", "ls-files", "--", relative], cwd=repository, capture_output=True
+    )
+    if ignored.returncode != 0 or tracked.returncode != 0 or tracked.stdout.strip():
+        raise PermissionError("private output must be ignored and untracked")
+    oracle_path = safe_path(oracle_root)
+    if out.resolve().is_relative_to(oracle_path) or oracle_path.is_relative_to(out.resolve()):
+        raise PermissionError("evaluation output overlaps oracle input")
     root, raws, provenance = validate_completed(experiment, dataset, historical_source_root)
     if out.resolve().is_relative_to(root) or root.is_relative_to(out.resolve()):
         raise PermissionError("evaluator output overlaps public data")

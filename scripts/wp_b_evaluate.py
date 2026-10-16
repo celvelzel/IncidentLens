@@ -12,9 +12,15 @@ def main():
     parser.add_argument("--oracle-root", required=True)
     parser.add_argument("--historical-source-root", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--repository", required=True)
     args = parser.parse_args()
     rows = evaluate_completed(
-        args.experiment, args.dataset, args.oracle_root, args.out, args.historical_source_root
+        args.experiment,
+        args.dataset,
+        args.oracle_root,
+        args.out,
+        args.historical_source_root,
+        args.repository,
     )
     print(f"Evaluated {len(rows)} persisted attempts; private output saved.")
 

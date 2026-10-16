@@ -276,9 +276,17 @@ def test_corrupt_ledger_refused_before_oracle_access(ledger, monkeypatch, tmp_pa
         pytest.fail("oracle accessed for corrupted ledger")
 
     monkeypatch.setattr("incident_lens.incidentbench.readiness.OracleStore", forbidden)
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(
+        "incident_lens.incidentbench.readiness.subprocess.run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=b""),
+    )
+    labels = tmp_path / "labels"
+    labels.mkdir()
     with pytest.raises(ValueError):
         evaluate_completed(
-            experiment, dataset, "missing", tmp_path / "local_oracles" / "out", history
+            experiment, dataset, labels, tmp_path / "local_oracles" / "out", history, tmp_path
         )
 
 
@@ -309,3 +317,29 @@ def test_unobserved_index_entry_cannot_cover_reference_set():
     result = evaluate_run(raw, oracle)
     assert result["reference_support_set_coverage"] == 0
     assert result["missing_reference_ids"] == ["bad", "e1"]
+
+
+@pytest.mark.parametrize("destination", ["docs/local_oracles/out", "local_oracles/labels/out"])
+def test_nested_public_or_oracle_overlapping_output_rejected(tmp_path, monkeypatch, destination):
+    from types import SimpleNamespace
+
+    labels = tmp_path / "local_oracles" / "labels"
+    labels.mkdir(parents=True)
+    monkeypatch.setattr(
+        "incident_lens.incidentbench.readiness.subprocess.run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=b""),
+    )
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("oracle accessed before private destination validation")
+
+    monkeypatch.setattr("incident_lens.incidentbench.readiness.OracleStore", forbidden)
+    with pytest.raises(PermissionError):
+        evaluate_completed(
+            "missing", "missing", labels, tmp_path / destination, "missing", tmp_path
+        )
+
+def test_unrecovered_model_failure_without_usage_is_provider_failure():
+    raw, _ = fixture()
+    raw["state"].update(report=None, events=[dict(event_type="MODEL_FAILURE", details={})])
+    assert evaluate_run(raw)["outcome_classification"] == "PROVIDER_FAILURE"
