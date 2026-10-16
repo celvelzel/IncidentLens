@@ -12,7 +12,7 @@ import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, ValidationError
 from starlette.applications import Starlette
-from starlette.responses import FileResponse, JSONResponse
+from starlette.responses import JSONResponse, Response
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
@@ -303,7 +303,20 @@ async def api_download(request):
         return error_response("forbidden_path", "Unsafe artifact path", status=403)
     except OSError:
         return error_response("not_found", "Artifact not found", status=404)
-    return FileResponse(target, filename=filename)
+    try:
+        trace, state = load_replay(trace_path)
+    except (ValueError, OSError, KeyError):
+        return error_response("invalid_trace", "Invalid recorded trace")
+    # Serve only validated in-memory data. A sibling markdown file may have been
+    # edited or contaminated independently of the trace; regenerate its content.
+    content = json.dumps(trace, ensure_ascii=False, indent=2) if kind == "trace" else (
+        render_report(state.report)
+    )
+    return Response(
+        content,
+        media_type="application/json" if kind == "trace" else "text/markdown",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 routes = [
