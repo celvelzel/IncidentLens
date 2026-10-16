@@ -1,3 +1,9 @@
+# Current acceptance update — 2026-10-16
+
+User accepted T5 and authorized its checklist completion. The saved positive has RESOLVED/backend_pool_config_regression, protocol_valid=true and completed STOP, but source_unchanged=false. T6 is explicitly deferred/skipped; historical failed attempts are retained. No additional live calls were made during integration. G1a overall is not PASS; frozen-source acceptance and normal negative abstention remain outstanding. Historical zero-request/pending statements below describe the earlier offline delivery only.
+
+---
+
 # V1.6 real E2E acceptance
 
 G1a/G1b: BLOCKED_AWAITING_USER. New real provider requests:0. No live RCA success or correctness claim.

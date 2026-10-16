@@ -1,3 +1,17 @@
+# V1.6 integration update — 2026-10-16
+
+This update supersedes historical pending-operation statements below.
+
+- T5 positive: accepted explicitly by the user; checklist checked. Saved RESOLVED result and completed STOP retained, with source drift disclosed. This is owner-accepted development evidence, not frozen-source research acceptance.
+- T6 negative: deferred/skipped by the user. Historical transport/budget failures remain preserved; no accepted normal abstention and no new paid calls in this integration.
+- G1a overall remains incomplete (T6 + frozen-source acceptance outstanding); G1b/G4/G5 research acceptance remains blocked.
+- WP-B finalization branch codex/wp-b-finalization through f775f32 integrated into main. Owner-accepted development dataset can be used under its recorded policy; formal G2b independent/blind requirements remain unmet. See wp-b-acceptance.md and wp-b-experiment-handoff.md.
+- WP-C real replay branch codex/wp-c-real-replay through 2a9a63f integrated into main. Real T5 recorded replay engineering accepted, with source-drift disclosure. See wp-c-acceptance.md and wp-c-demo-walkthrough.md.
+- G1a runtime fixes committed as 1533040. Worktrees, ignored results and private labels preserved; no branch/worktree deletion, no push, no release tag.
+- Existing worker full-suite evidence is retained; merged-source validation is reported in integration-20261016.md. No claim that worker full suites ran on the combined main tree.
+
+---
+
 # V1.6 status — 2026-10-15 final offline delivery
 
 2026-10-16 WP-B addendum: [WP-B acceptance](wp-b-acceptance.md) records
