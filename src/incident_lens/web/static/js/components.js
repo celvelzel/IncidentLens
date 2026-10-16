@@ -126,12 +126,19 @@ export function evidenceDrawerHtml(record, observation = null) {
         ${badge(record.service, "neutral")}
       </div>
       <dl class="kv-list">
-        <div class="kv-row"><dt>观察时间</dt><dd class="mono">${escapeHtml(record.observed_at)}</dd></div>
+        <div class="kv-row"><dt>Evidence ID（原始 ID）</dt><dd class="mono">${escapeHtml(record.evidence_id)}</dd></div>
+        <div class="kv-row"><dt>证据观察时间（事故时间）</dt><dd class="mono">${escapeHtml(record.observed_at)}</dd></div>
         <div class="kv-row"><dt>来源文件</dt><dd class="mono">${escapeHtml(record.source_path)}</dd></div>
         <div class="kv-row"><dt>事件</dt><dd class="mono">${escapeHtml(record.incident_id)}</dd></div>
         ${meta}
       </dl>
-      ${observation ? `<h3>已记录查询 / Task / Call</h3><pre class="json-block">${escapeHtml(JSON.stringify(observation, null, 2))}</pre>` : ""}
+      <p class="text-muted">来源 Agent、查询执行时间、Findings / Hypotheses 关系与报告引用仅来自当前回放前缀。无法获得的原始证据不补造。</p>
+      ${observation ? `<dl class="kv-list"><div class="kv-row"><dt>首次来源 Agent</dt><dd>${escapeHtml(observation.role || 'not recorded')}</dd></div><div class="kv-row"><dt>查询执行时间</dt><dd class="mono">${escapeHtml(observation.timestamp || 'not recorded')}</dd></div><div class="kv-row"><dt>来源工具 / 事件</dt><dd class="mono">${escapeHtml(observation.tool || 'not recorded')} / ${escapeHtml(observation.event_id || 'not recorded')}</dd></div></dl>
+      <details><summary>已记录查询 / Task / Call</summary><pre class="json-block">${escapeHtml(JSON.stringify({task_id:observation.task_id,call_id:observation.call_id,args:observation.args,observations:observation.observations}, null, 2))}</pre></details>
+      <h3>关联 Finding / Hypothesis</h3>
+      ${(observation.findings || []).map(f=>`<p><strong>${escapeHtml(f.role)} · ${escapeHtml(f.relation)}</strong><br>${escapeHtml(f.claim)}<br><span class="tag-id">${escapeHtml(f.finding_id)}</span></p>`).join('') || '<p class="text-muted">当前前缀没有关联 Finding。</p>'}
+      ${(observation.hypotheses || []).map(h=>`<p>${escapeHtml(h.failure_mode)} · ${escapeHtml(h.relation)} · ${escapeHtml(h.status)}</p>`).join('')}
+      <h3>报告引用</h3>${observation.report_references ? `<p>${observation.report_references.supporting ? '最终报告支持证据' : '未列为最终报告支持证据'}</p>${(observation.report_references.causal_chain || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}` : '<p class="text-muted">当前前缀尚未生成报告。</p>'}` : ""}
       <div class="field">
         <span class="field-label">原始摘录</span>
         <pre class="json-block" style="white-space:pre-wrap">${escapeHtml(record.excerpt)}</pre>

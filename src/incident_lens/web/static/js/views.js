@@ -1,4 +1,5 @@
-import { replayPrefix } from "./replay.js";
+import { replayPrefix, replayBookmarks, eventCategory, evidenceContext } from "./replay.js";
+import { metadataHtml, workflowHtml, historyHtml, reviewTimelineHtml, reliabilityHtml, jumpButton } from "./replay-panels.js";
 /**
  * IncidentLens views: overview, investigate, run detail, library.
  */
@@ -29,6 +30,7 @@ import {
   skeletonRows,
   toast,
   workflowReportHtml,
+  closeDrawer,
 } from "./components.js";
 
 Object.assign(ROLE_LABEL, { database: "数据库代理", monitoring: "监控代理", remediation: "修复方案代理" });
@@ -183,7 +185,7 @@ function traceTable(traces) {
             <th scope="col">变体</th>
             <th scope="col">轮次</th>
             <th scope="col">耗时</th>
-            <th scope="col">更新时间</th>
+            <th scope="col">更新时间</th><th scope="col">演示</th>
           </tr>
         </thead>
         <tbody>
@@ -195,11 +197,11 @@ function traceTable(traces) {
                   aria-label="查看 ${escapeHtml(t.incident_id)} 的运行详情">
                 <td><div class="cell-main mono">${escapeHtml(t.incident_id)}</div><div class="cell-sub mono">${escapeHtml(t.run_id || "")}</div></td>
                 <td>${badge(status.label, status.tone, true)}</td>
-                <td>${badge(t.provider === "mock" ? "MOCK" : "REAL", t.provider === "mock" ? "accent" : "info")}</td>
-                <td class="mono">${escapeHtml(t.variant || "full")}</td>
+                <td>${badge(t.provider === "mock" ? "MOCK" : t.provider === "real" ? "REAL" : "UNKNOWN", t.provider === "mock" ? "accent" : "info")}</td>
+                <td class="mono">${escapeHtml(t.variant || "not recorded")}</td>
                 <td class="mono">${t.rounds ?? "—"}</td>
                 <td class="mono">${formatDuration(t.elapsed_ms)}</td>
-                <td>${formatDateTime(t.modified_at)}</td>
+                <td>${formatDateTime(t.modified_at)}</td><td><a class="btn btn-sm" data-demo-link href="#/run?path=${encodeURIComponent(t.path)}&demo=1">演示回放</a></td>
               </tr>`;
             })
             .join("")}
@@ -213,9 +215,9 @@ function bindTraceRows(container) {
     const open = () => {
       location.hash = `#/run?path=${encodeURIComponent(row.dataset.tracePath)}`;
     };
-    row.addEventListener("click", open);
+    row.addEventListener("click", e => { if (!e.target.closest('a')) open(); });
     row.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
+      if (e.target === row && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         open();
       }
@@ -542,14 +544,14 @@ export async function renderRun(root, params) {
     })}</div>`;
     return;
   }
-  mountReplay(root, data);
+  mountReplay(root, data,params.get('demo') === '1');
 }
 
-function mountReplay(root, data) {
+function mountReplay(root, data,demoMode = false) {
   const events = data.trace.state?.events || [];
+  const bookmarks = replayBookmarks(data.trace);
   root.innerHTML = `<section class="card replay-console" aria-label="Investigation Replay">
-    <h2 class="section-title">Investigation Replay · Recorded Replay</h2>
-    <p class="text-muted">仅显示已保存事件的前缀。缺失历史：not recorded。结构化任务与发现并非模拟对话。</p>
+    ${metadataHtml(data)}
     <div class="replay-controls">
       <button class="btn" data-step="first">首步</button><button class="btn" data-step="prev">上一步</button>
       <button class="btn btn-primary" id="replay-play">播放</button>
@@ -557,48 +559,72 @@ function mountReplay(root, data) {
       <label>速度 <select class="select" id="replay-speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
       <output id="replay-position" aria-live="polite"></output>
     </div>
-    <div id="replay-workflow" class="replay-workflow" aria-label="Workflow Overview"></div>
-    <details><summary>Communication Timeline · 选择已保存事件</summary><div id="replay-events" class="replay-event-list"></div></details>
-    <div id="replay-selection"></div>
-    <details><summary>Hypothesis Evolution · 已记录状态变化</summary><div id="replay-history"></div></details>
+    <div class="replay-seek"><label for="replay-seek">Seek · 保存事件位置</label><input id="replay-seek" type="range" min="0" max="${events.length}" value="0"><label for="replay-jump">Jump</label><input class="input" id="replay-jump" type="number" min="0" max="${events.length}" value="0"><button class="btn" id="replay-jump-go">跳转</button></div>
+    <details id="replay-chapters"><summary>演示章节 · 基于事件语义查找</summary><p class="text-muted">章节名称用于导航；只有跳转后才展示对应历史状态。</p><div class="replay-bookmarks">${bookmarks.map(b=>b.position == null ? `<button class="btn btn-sm" disabled title="Trace 未记录对应事件">${escapeHtml(b.label)} · 未记录</button>` : jumpButton(b.position,b.label,`data-bookmark="${b.id}"`)).join('')}</div></details>
+    <details open><summary>Workflow · 共享状态编排与数据流</summary><div id="replay-workflow" aria-label="Workflow Overview"></div></details>
+    <details><summary>Communication Timeline · 有序事件导航</summary><label for="replay-category">事件类别</label><select class="select" id="replay-category"><option value="all">全部</option>${['dispatch','task','evidence','findings','hypothesis','review','reliability','finalization','termination','other'].map(c=>`<option value="${c}">${c}</option>`).join('')}</select><div id="replay-events" class="replay-event-list"></div></details>
+    <div id="replay-selection" aria-label="当前事件详情"></div>
+    <div class="replay-analysis-grid"><details id="replay-hypotheses"><summary>Hypothesis Evolution · 已提交状态变化</summary><div id="replay-history"></div></details>
+    <details id="replay-review-panel"><summary>Verifier Review / FinalizeGate</summary><div id="replay-reviews"></div></details></div>
+    <details><summary>Provider Timeout / Recovery · 可靠性事件</summary><div id="replay-reliability"></div></details>
   </section><div id="replay-detail"></div>`;
-  let position = 0, timer = null, activeTab = 'timeline';
+  let position = 0, timer = null, activeTab = 'timeline', selectedRole = '', category = 'all';
   const play = root.querySelector('#replay-play');
   const pause = () => { clearTimeout(timer); timer = null; play.textContent = '播放'; play.setAttribute('aria-pressed', 'false'); };
+  const resetInspector = () => {
+    if (!document.getElementById('drawer').hidden) closeDrawer();
+    document.getElementById('drawer-body').replaceChildren();
+  };
+  const seek = count => {
+    pause(); resetInspector();
+    position = Math.max(0,Math.min(events.length,Math.trunc(Number(count)) || 0));
+    draw();
+  };
   function draw() {
     const state = replayPrefix(data.trace, position);
+    state.provenance = evidenceContext(state);
     const detail = root.querySelector('#replay-detail');
     activeTab = detail.querySelector('[aria-selected="true"]')?.dataset.tab || activeTab;
     drawRun(detail, { ...data, recorded: true, activeTab, trace: { ...data.trace, state }, report_md: state.report ? data.report_md : '' });
     root.querySelector('#replay-position').textContent = `${position} / ${events.length} 已保存事件`;
+    root.querySelector('#replay-seek').value = position;
+    root.querySelector('#replay-jump').value = position;
     root.querySelectorAll('[data-step]').forEach(b => { b.disabled = ['first','prev'].includes(b.dataset.step) ? position === 0 : position === events.length; });
     play.disabled = !events.length || position === events.length;
-    root.querySelector('#replay-workflow').innerHTML = ['coordinator','logs','metrics','database','changes','verifier','finalize','report'].map(role =>
-      `<div><strong>${escapeHtml(role)}</strong><span>${escapeHtml(state.roles[role] || (role === 'report' && state.report ? 'COMPLETED' : 'not recorded / not scheduled'))}</span></div>`).join('');
-    root.querySelector('#replay-events').innerHTML = state.events.map((e, i) => `<button class="btn btn-sm" data-event="${i}">${i+1} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)} · ${escapeHtml(e.task_id || '')}</button>`).join('');
-    root.querySelector('#replay-history').innerHTML = state.hypothesis_history.map(h => `<p class="mono">${escapeHtml(h.event_id)} · ${escapeHtml(h.hypothesis_id)} → ${escapeHtml(h.status)}</p>`).join('') || '<p>not recorded</p>';
-    root.querySelector('#replay-selection').innerHTML = '';
-    root.querySelectorAll('[data-event]').forEach(button => button.addEventListener('click', () => {
-      const e = state.events[Number(button.dataset.event)];
-      const ids = [...new Set([...(e.evidence_ids || []), ...(e.details?.result?.records || []).map(r => r.evidence_id)])];
-      const box = root.querySelector('#replay-selection');
-      box.innerHTML = `<h3>${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.task_id || 'task not recorded')}</h3>${timelineBody(e)}<div class="cite-wrap">${evidenceChips(ids, state.evidence_index, {emptyText:'evidence not recorded'})}</div>`;
-      bindEvidenceChips(box, state.evidence_index, state.provenance);
-    }));
+    root.querySelector('#replay-workflow').innerHTML = workflowHtml(state,selectedRole);
+    root.querySelector('#replay-events').innerHTML = events.map((e,i)=>({e,i})).filter(({e})=>category === 'all' || eventCategory(e) === category).map(({e,i})=>jumpButton(i+1,`${i+1} · ${i < position ? `${e.role || 'runtime'} · ${e.event_type}` : '未播放事件'}`,`aria-current="${i+1 === position ? 'step' : 'false'}"`)).join('');
+    root.querySelector('#replay-history').innerHTML = historyHtml(state);
+    root.querySelector('#replay-reviews').innerHTML = reviewTimelineHtml(state);
+    root.querySelector('#replay-reliability').innerHTML = reliabilityHtml(state);
+    const e=state.events.at(-1), box=root.querySelector('#replay-selection');
+    const ids=e ? [...new Set([...(e.evidence_ids || []),...(e.details?.result?.records || []).map(r=>r.evidence_id),...(e.details?.review?.cited_evidence_ids || [])])] : [];
+    box.innerHTML = e ? `<h3>${escapeHtml(e.event_id)} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)}</h3><p class="text-muted">执行事件时间：${escapeHtml(e.timestamp)} · ${escapeHtml(e.task_id || 'task not recorded')}</p>${e.details?.decision?.reason ? `<p>${escapeHtml(e.details.decision.reason)}</p>` : ''}${e.details?.decision?.hypothesis_updates?.length ? '<p class="text-muted">DECISION 包含提议；假设面板仅在 MERGE / HYPOTHESIS_RECONCILED 提交后更新。</p>' : ''}<details><summary>原始结构化事件详情</summary>${timelineBody(e)}</details><div class="cite-wrap">${evidenceChips(ids,state.evidence_index,{emptyText:'此事件没有公开证据引用'})}</div>` : `<h3>调查开始前</h3><p>${escapeHtml(state.public_summary.title || '')}</p><p>${escapeHtml((state.public_summary.observed_symptoms || []).join(' · '))}</p><p class="text-muted">仅已知公开事故摘要；尚未观察工具证据或形成假设。</p>`;
+    root.querySelectorAll('[data-seek]').forEach(button=>button.onclick=()=>seek(button.dataset.seek));
+    root.querySelectorAll('#replay-workflow [data-role]').forEach(button=>button.onclick=()=>{ selectedRole=selectedRole === button.dataset.role ? '' : button.dataset.role; draw(); });
+    bindEvidenceChips(root.querySelector('.replay-console'),state.evidence_index,state.provenance);
   }
   function tick() {
     if (!root.isConnected || position >= events.length) { pause(); return; }
-    position++; draw();
+    resetInspector(); position++; draw();
     if (position >= events.length) { pause(); return; }
     timer = setTimeout(tick, 1000 / Number(root.querySelector('#replay-speed').value));
   }
   root.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
-    pause(); position = ({first:0, prev:Math.max(0,position-1), next:Math.min(events.length,position+1), last:events.length})[b.dataset.step]; draw();
+    seek(({first:0, prev:position-1, next:position+1, last:events.length})[b.dataset.step]);
   }));
+  root.querySelector('#replay-seek').addEventListener('input',e=>seek(e.target.value));
+  root.querySelector('#replay-jump-go').addEventListener('click',()=>seek(root.querySelector('#replay-jump').value));
+  root.querySelector('#replay-jump').addEventListener('keydown',e=>{if(e.key === 'Enter') seek(e.target.value);});
+  root.querySelector('#replay-category').addEventListener('change',e=>{category=e.target.value;draw();});
+  root.querySelector('#replay-demo').addEventListener('change',e=>{
+    root.classList.toggle('replay-demo',e.target.checked);
+    ['replay-chapters','replay-hypotheses','replay-review-panel'].forEach(id=>root.querySelector(`#${id}`).open=e.target.checked);
+  });
   play.addEventListener('click', () => { if (timer) pause(); else { play.textContent='暂停'; play.setAttribute('aria-pressed','true'); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   root.querySelector('#replay-speed').addEventListener('change', () => { if (timer) { clearTimeout(timer); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   window.addEventListener('hashchange', pause, {once:true});
   draw();
+  if(demoMode) { const toggle=root.querySelector('#replay-demo'); toggle.checked=true; toggle.dispatchEvent(new Event('change')); }
 }
 
 function drawRun(root, data) {
@@ -617,19 +643,20 @@ function drawRun(root, data) {
           <h1 class="mono">${escapeHtml(state.incident_id)}</h1>
           ${badge(status.label, status.tone, true)}
           ${badge(state.workflow_status || "not recorded")}
-          ${trace.provider === "mock" ? badge("MOCK", "accent") : badge("REAL", "info")}
+          ${trace.provider === "mock" ? badge("MOCK", "accent") : trace.provider === "real" ? badge("REAL", "info") : badge("PROVIDER UNKNOWN", "warning")}
           ${badge("Recorded Replay", "neutral")}
         </div>
         <div class="run-head-meta">
           <span>运行 <span class="mono">${escapeHtml(state.run_id)}</span></span>
           <span>模型 <span class="mono">${escapeHtml(trace.model_id || "unknown")}</span></span>
-          <span>变体 <span class="mono">${escapeHtml(trace.variant || "full")}</span></span>
-          <span>缓存 <span class="mono">${escapeHtml(trace.cache_mode || "off")}</span></span>
+          <span>变体 <span class="mono">${escapeHtml(trace.variant || "not recorded")}</span></span>
+          <span>缓存 <span class="mono">${escapeHtml(trace.cache_mode || "not recorded")}</span></span>
           <span>录制总耗时 <span class="mono">${formatDuration(trace.elapsed_ms)}</span></span>
           <span>来源指纹 <span class="mono">${escapeHtml(trace.source_hash || trace.dataset_hash || "not recorded")}</span></span>
         </div>
       </div>
       <div class="run-head-actions">
+        ${state.report ? `
         <a class="btn btn-sm" href="/api/download?path=${encodeURIComponent(data.path)}&kind=trace" download>
           <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
           trace.json
@@ -637,7 +664,7 @@ function drawRun(root, data) {
         <a class="btn btn-sm" href="/api/download?path=${encodeURIComponent(data.path)}&kind=report" download>
           <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
           report.md
-        </a>
+        </a>` : '<span class="text-muted">完整 Trace / Report 下载在 REPORT 事件后解锁</span>'}
       </div>
     </div>
 
