@@ -260,6 +260,56 @@ async def api_traces(request):
     return JSONResponse(_list_trace_summaries())
 
 
+def _replay_metadata(path, trace, state):
+    """Read only named public companions; never follow embedded paths or return raw objects."""
+    metadata = {"snapshot": "final_artifact_metadata", "warnings": []}
+
+    def companion(name):
+        candidate = path.parent / name
+        if not candidate.exists():
+            return None
+        try:
+            safe = _resolve_download_file(candidate)
+            if safe.stat().st_size > 2_000_000:
+                raise ValueError("companion too large")
+            value = json.loads(safe.read_text(encoding="utf-8-sig"))
+            if not isinstance(value, dict):
+                raise ValueError("invalid companion")
+            return value
+        except (ValueError, OSError, PermissionError):
+            metadata["warnings"].append(f"{name}: unavailable or unsafe")
+            return None
+
+    scope = companion("scope.json")
+    result = companion("result.json")
+    verified_result = result == state.report.model_dump(mode="json")
+    if scope and scope.get("incident_id") == state.incident_id and scope.get("variant") == trace.get("variant"):
+        protocol = scope.get("protocol")
+        if isinstance(protocol, dict) and protocol.get("provider_id") == trace.get("provider") and protocol.get("model_id") == trace.get("model_id"):
+            keys = ("protocol_id", "model_id", "provider_id", "cache_mode", "max_rounds",
+                    "max_tool_calls", "max_llm_calls", "max_wall_seconds", "request_timeout",
+                    "max_tokens", "formal", "blindness_level", "temperature", "response_format")
+            metadata["protocol"] = {k: v for k in keys if isinstance((v := protocol.get(k)), (str, int, float, bool))}
+        metadata["source_commit"] = scope.get("source_commit") if isinstance(scope.get("source_commit"), str) else None
+        metadata["dataset_revision"] = scope.get("dataset_revision") if isinstance(scope.get("dataset_revision"), str) else None
+        metadata["scope"] = scope.get("scope") if isinstance(scope.get("scope"), str) else None
+    elif scope:
+        metadata["warnings"].append("scope.json: identity mismatch")
+    verification = companion("verification.json")
+    if verification and verified_result and "protocol" in metadata:
+        keys = ("protocol_valid", "source_unchanged", "llm_requests", "actual_http_requests",
+                "logical_structured_calls", "recovered_model_failure_count",
+                "unrecovered_model_failure_count", "total_tokens", "cost_usd")
+        metadata["verification"] = {k: v for k in keys if (v := verification.get(k)) is None or isinstance(v, (str, int, float, bool))}
+        drift = verification.get("source_drift")
+        if isinstance(drift, list) and all(isinstance(v, str) for v in drift):
+            metadata["verification"]["source_drift"] = drift
+        metadata["verification_binding"] = "matching result/run/incident and scope/provider/model; unsigned saved companion"
+    elif verification:
+        metadata["warnings"].append("verification.json: no matching result and protocol; not displayed")
+    return metadata
+
+
 async def api_replay(request):
     try:
         payload = ReplayRequest.model_validate(await request.json())
@@ -270,12 +320,13 @@ async def api_replay(request):
         trace, state = load_replay(path)
     except PermissionError as exc:
         return error_response("forbidden_path", str(exc), status=403)
-    except (ValueError, OSError, KeyError) as exc:
+    except (ValueError, OSError, KeyError, TypeError, AttributeError) as exc:
         logger.warning("replay rejected for %s: %s", payload.path, exc)
         return error_response("invalid_trace", "Invalid recorded trace")
     rel = str(path.relative_to(ROOT)).replace("\\", "/")
     return JSONResponse(
-        {"trace": trace, "report_md": render_report(state.report), "path": rel, "recorded": True}
+        {"trace": trace, "report_md": render_report(state.report), "path": rel, "recorded": True,
+         "replay_metadata": _replay_metadata(path, trace, state)}
     )
 
 

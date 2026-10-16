@@ -39,9 +39,9 @@ test('old missing history never backfills final report, hypotheses, observations
   const old=structuredClone(trace); delete old.state.events;
   const s=replayPrefix(old,999); assert.equal(s.report,null); assert.deepEqual(s.hypotheses,[]); assert.deepEqual(s.evidence_index,{});
 });
-test('failed provider trace without report remains usable and failed',()=>{
+test('model failure without a recorded terminal outcome remains usable and degraded',()=>{
   const failed=structuredClone(trace); failed.state.events=[{event_type:'MODEL_FAILURE',run_id:trace.state.run_id,incident_id:trace.state.incident_id,details:{error_code:'fixture_provider_timeout'}}];
-  const s=replayPrefix(failed,1); assert.equal(s.report,null); assert.equal(s.workflow_status,'FAILED');
+  const s=replayPrefix(failed,1); assert.equal(s.report,null); assert.equal(s.workflow_status,'DEGRADED');
 });
 test('final index alone, failed calls, wrong incident/run/role and mismatched records never authorize evidence',()=>{
   const event=events.find(e=>e.event_type==='TOOL_CALL');
