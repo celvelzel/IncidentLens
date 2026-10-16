@@ -49,3 +49,80 @@ freeze is allowlisted from public case metadata; private root causes, support ID
 rationales and misleading annotations are excluded. The finalizer changes no
 runtime, core contracts, formal Seal behavior or scorer. Runtime isolation and
 scorer regression findings belong to the coordinating WP-B acceptance report.
+
+## Final integrated validation — 2026-10-16
+
+Validated implementation: `b500005651ed5373bdd01869a764d2f2c786ad9b`, isolated
+`codex/wp-b-finalization` checkout. The finalizer was rerun from this checkout:
+30 cases, both public/privileged audits passed, frozen reference bytes unchanged.
+The committed freeze is the resulting `docs/incidentbench/wp-b-project-accepted-freeze.json`;
+its SHA-256 is `27dfe942ceda351c8a9f52b6212d8f6e34b19765926cf2ce4381ce2c435e43d4`.
+Dataset version: `wp-b-project-accepted-v1`. Validated canonical default protocol
+SHA-256: `f041cd492fda139bc286459c1e43a75d98f48fefb50f2553b3833e193cf3ff4b`.
+This default development protocol is not an approved real-model protocol.
+
+| Validation | Actual result |
+|---|---|
+| Lead `python -m pytest -q -rs` | 977 passed, 3 skipped, 384.90s, exit 0 |
+| Lead `python -m ruff check src scripts tests` | all checks passed |
+| Lead `git diff --check` | passed |
+| Download isolation + existing V16 artifact boundaries | 14 passed |
+| Independent QA targeted suite | 50 passed, 1 skipped, 101.97s |
+| Independent QA changed-file Ruff and diff checks | passed |
+| Original Seed80 + Dev40 ledger/state/identity/digest validation | all 120 pass |
+| Original no-oracle score recomputation | exactly equal to retained unscored scores |
+| Integrated-source accepted-reference scoring + repeated recomputation | 80 + 40 rows exactly equal; zero label-load errors |
+| Historical-source paired analysis with reference labels | 80 + 40 rows; scores agree with integrated evaluator |
+| Pilot/Seed/Dev input and frozen Mock lock preparation | 3/20/10 cases; 12/80/40 scheduled keys; no investigations executed |
+
+All skipped tests concern unavailable Windows symlink privileges. Simulated
+reparse confinement tests pass; this does not claim an OS sandbox. Full regression
+includes meaningful four-architecture CLI Mock smoke coverage; the existing
+120-case-variant experiment was not regenerated. No paid request was issued.
+
+The main repository's existing uncommitted `graph.py`/`termination.py` changes were
+preserved. Their source hashes differ from the old experiment lock. A 142-file
+historical snapshot at `results/v16/wp-b-historical-source` reconstructs exact
+historical source/scripts/config/prompt bytes (all four tree hashes match), using
+the saved fingerprint and matching Git blob/newline candidates. Dependency bytes
+also match. Historical execution and current evaluator provenance are separate.
+The current evaluator source-tree digest is
+`d695dd7a56f251f0d0245b8b89f2ac2b64f0c12b9a70af35bab3c6a2c7dd437e`.
+
+Original-repository evidence paths:
+
+- `results/v16/wp-b-final-pytest.log` and `.exit`: full-suite output and exit 0.
+- `results/v16/wp-b-final/freeze.json`: actual finalizer output.
+- `local_oracles/wp-b-final/inventory.json`: full evaluator-only inventory.
+- `local_oracles/wp-b-final/{seed,dev}-evaluation-integrated/evaluation.json`:
+  final accepted-reference metrics; complete evaluator lock matches the integrated
+  checkout, exact frozen public/oracle hashes and acceptance file hash verified.
+- `local_oracles/wp-b-final/{seed,dev}-paired-analysis/`: historical locked
+  analyzer output with Full vs Single/Fixed/Dynamic contrasts. Its
+  `exact_scores_equal=false` is expected because original scores were unscored
+  and labels were newly supplied; repeated labelled scoring and cross-analyzer
+  agreement are independently true. Historical files were not rewritten.
+- `results/v16/wp-b-final/final-verification.json`: source/hash/receipt,
+  no-oracle equality, labelled repeatability and paired-score agreement receipt.
+- `results/v16/wp-b-final/input-command-verification-integrated.json`: final
+  input/command preparation, explicitly imported from this worktree. Its private
+  `*-mock-protocol-lock-integrated.json` locks remain under `local_oracles/wp-b-final`.
+- `results/v16/wp-b-final/pilot-public`,
+  `local_oracles/wp-b-final/pilot-oracles`, and
+  `local_oracles/wp-b-final/pilot-acceptance.json`: ready three-case subset inputs.
+
+The earlier `input-command-verification.json` is superseded: its process resolved
+the editable installation to the primary checkout. It is preserved for audit;
+the integrated replacement explicitly verifies the imported module path and
+records the current source digest. An initial coordinator audit command similarly
+failed to import the new module before setting `PYTHONPATH`; no artifacts were
+changed by that failed command. The corrected full verification passed. A worker
+CLI test also failed when another worker added source files mid-test, correctly
+triggering source-drift refusal; the stable integrated full suite passes that
+test. Failed/intermediate outputs remain retained, never deleted or relabeled.
+
+Independent QA findings were resolved: downloads now use validated Replay data;
+private reports are rendered from validated state; evaluator output is confined
+to an ignored/untracked repository `local_oracles` tree; provider failures use
+the actual normalized counter; `project_accepted` requires exact public/oracle
+freeze hashes. No formal seal, runtime guard or label provenance was weakened.

@@ -36,7 +36,7 @@ Real execution additionally requires authentic external provider readiness match
 After approval, copy the default YAML into the ignored WP-D directory and edit the approved model/provider and ceilings explicitly. Never use the Mock protocol for a real invocation. Create the lock without constructing a provider (set the three paths first):
 
 ```powershell
-$Dataset = "$R/results/wp-b/pilot-public"
+$Dataset = "$R/results/v16/wp-b-final/pilot-public"
 $Protocol = "$R/local_oracles/wp-d/pilot-protocol.yaml"
 $Lock = "$R/local_oracles/wp-d/pilot-lock.json"
 @'
@@ -55,7 +55,7 @@ with lock_path.open("x", encoding="utf-8") as stream:
 
 ```powershell
 # Execute ONLY after WP-D has obtained model/readiness/budget approval.
-& $P scripts/run_incidentbench.py --dataset "$R/results/v16/wp-b-final/pilot-public" --split seed --variant all --provider real --protocol "$R/local_oracles/wp-d/pilot-protocol.yaml" --protocol-lock "$R/local_oracles/wp-d/pilot-lock.json" --readiness "$R/local_oracles/wp-d/readiness.json" --cache-mode off --jobs 1 --out "$R/results/v16/wp-d/pilot-UNIQUE"
+& $P scripts/run_incidentbench.py --dataset $Dataset --split seed --variant all --provider real --protocol $Protocol --protocol-lock $Lock --readiness "$R/local_oracles/wp-d/readiness.json" --cache-mode off --jobs 1 --out "$R/results/v16/wp-d/pilot-UNIQUE"
 # Repeat with the complete Seed/Dev roots, their respective split/lock and fresh output.
 ```
 
@@ -84,3 +84,5 @@ The default logical-call ceilings imply at most 384 admitted calls for the 12-ru
 Historical DeepSeek pilot evidence records 28 investigation HTTP requests across eight technically failed investigations, plus a separate compatibility probe. Known investigation tokens were 85,291 as a lower bound; only five of eight runs had complete usage. Bridge runs have different identity/isolation/accounting limits and cannot estimate API prices. These local records justify provider-risk controls, not a precise cost forecast. Mock timing under concurrent validation load is unsuitable for architecture speed claims.
 
 Seed and Dev share `causal-world-v1` encoder lineage and near-duplicate grouping. Treat the combined 30 as correlated development cases; descriptive paired differences are primary. Existing family bootstrap/exact discordance outputs are exploratory and cannot certify independent samples or significance. No production reliability, independent blind performance, cross-source generalization, semantic-grounding correctness or Full superiority is established. Formal G2b/sealing and real E2E gates remain distinct from WP-B engineering readiness.
+
+The final integrated Pilot is already materialized at `$R/results/v16/wp-b-final/pilot-public`, with labels `$R/local_oracles/wp-b-final/pilot-oracles` and hash-bound subset acceptance `$R/local_oracles/wp-b-final/pilot-acceptance.json`. For its completed evaluation, pass that subset acceptance with `--acceptance`, the pilot oracle root and its split `seed`; the complete Seed acceptance is intentionally not interchangeable with a subset. Offline input/command verification and Mock protocol locks for all three batches are recorded in `$R/results/v16/wp-b-final/input-command-verification-integrated.json`. These validate 12/80/40 scheduled attempts without executing them. Real protocol/model approval still has to replace the Mock preparation.

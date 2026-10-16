@@ -667,12 +667,36 @@
     }
   },
   "exact_public_duplicates": [],
-  "finalizer_script_sha256": "fb785cfac347cf3219cca022b062290708b485fc4b14c159956685a7f98c8cc0",
-  "finalizer_source_commit": "31b4f4031576649282cac5c2f36b70f4a2643dda",
+  "finalizer_script_sha256": "9bb0792b449a30e33591b424a7e66862093fe83c070e406f07394640edb384ad",
+  "finalizer_source_commit": "b500005651ed5373bdd01869a764d2f2c786ad9b",
   "limitations": [
     "Shared causal-world-v1 encoder; no independent-family or blind-test claim.",
     "Competing hypotheses have no separate annotation field; not inferred as truth."
   ],
+  "pilot": {
+    "case_ids": [
+      "incident_1001",
+      "incident_1002",
+      "incident_1003"
+    ],
+    "oracle_sha256": "e1febefb9950109cdb5f76bbb2c47ff485e791a7d151d901e64c07d46bf2ca6f",
+    "public_sha256": "1faf6be4565e156ae6d11e8a9e9d99cc1191df9566cab3f877281f1090cc07ef",
+    "validation": {
+      "coverage": {
+        "dev/core": 0,
+        "dev/monitoring": 0,
+        "dev/ood": 0,
+        "seed/core": 3,
+        "seed/monitoring": 0,
+        "seed/ood": 0,
+        "test/core": 0,
+        "test/monitoring": 0,
+        "test/ood": 0
+      },
+      "errors": [],
+      "ok": true
+    }
+  },
   "protocol_file_sha256": "62775bc411be7a7f6e148860284579f7892e47c4094fc9d82e1be2519477f88e",
   "protocol_sha256": "f041cd492fda139bc286459c1e43a75d98f48fefb50f2553b3833e193cf3ff4b",
   "reference_label_policy": {

@@ -1,5 +1,14 @@
 # V1.6 status — 2026-10-15 final offline delivery
 
+2026-10-16 WP-B addendum: [WP-B acceptance](wp-b-acceptance.md) records
+`READY_FOR_REAL_BENCHMARK` for course-project/development use and
+`OWNER_REVIEW_ACCEPTED` for the exact frozen 20 Seed + 10 Dev reference labels.
+The owner waived another human-review round for that scope. The historical
+review-blocking text below no longer blocks project-level development experiments;
+formal G2b/sealing and real model/readiness/budget gates remain separate and unmet.
+Final WP-B regression: 977 passed, 3 skipped; independent QA: 50 passed, 1 skipped.
+The rest of this document is the retained 2026-10-15 release record.
+
 Authority: original docs/plans/v16/CODEX_START_HERE.md and IncidentLens_V1.6_Codex_MultiAgent_Implementation_Plan.md. User plans retained byte-for-byte, untracked as originally found. Requested docs/v16 input paths were absent; located originals under docs/plans/v16.
 
 Baseline HEAD62ec53475f4f4c71b9e1cccf33532763c90156f2, main, original dirty state only ?? docs/plans/v16/. Final validated implementation/source commitc69ac16a63962db4ea3237deeb5c470237b3c872. Subsequent delivery documentation/screenshots do not change that source. No push/publication or paid requests.
