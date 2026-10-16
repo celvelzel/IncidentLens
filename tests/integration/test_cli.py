@@ -14,7 +14,7 @@ def test_installed_cli_and_schema_export(tmp_path):
         capture_output=True,
         text=True,
     )
-    assert version.stdout.strip() == "IncidentLens 0.1.3"
+    assert version.stdout.strip() == "IncidentLens 1.6.1"
     subprocess.run(
         [sys.executable, "-m", "incident_lens.cli", "export-schemas", "--out", str(tmp_path)],
         check=True,
