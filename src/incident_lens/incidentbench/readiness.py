@@ -275,8 +275,30 @@ def validate_completed(experiment, dataset, historical_source_root):
     )
 
 
+def validate_acceptance(path, split, dataset, oracle_root):
+    """Bind owner authorization to exact public and private frozen bytes."""
+    acceptance = read_json(path)
+    policy = acceptance.get("reference_label_policy", {})
+    if (
+        policy.get("status") != "project_accepted"
+        or policy.get("authorization") != "OWNER_REVIEW_ACCEPTED"
+    ):
+        raise ValueError("owner acceptance policy missing")
+    frozen = acceptance.get("datasets", {}).get(split, {})
+    oracle_digest = digest_tree(oracle_root)
+    if (
+        frozen.get("public_sha256") != digest_tree(dataset)
+        or frozen.get("oracle_sha256") != oracle_digest
+    ):
+        raise ValueError("accepted dataset or oracle hash mismatch")
+    return {
+        "acceptance_sha256": hashlib.sha256(safe_path(path).read_bytes()).hexdigest(),
+        "accepted_oracle_sha256": oracle_digest,
+    }
+
+
 def evaluate_completed(
-    experiment, dataset, oracle_root, out, historical_source_root, repository=None
+    experiment, dataset, oracle_root, out, historical_source_root, repository=None, acceptance=None
 ):
     """Write private evaluator output once; a failed state remains in the denominator."""
     out = Path(out).absolute()
@@ -307,6 +329,11 @@ def evaluate_completed(
     root, raws, provenance = validate_completed(experiment, dataset, historical_source_root)
     if out.resolve().is_relative_to(root) or root.is_relative_to(out.resolve()):
         raise PermissionError("evaluator output overlaps public data")
+    label_policy = "candidate_reference; see external owner acceptance"
+    if acceptance is not None:
+        context = read_json(Path(experiment) / "experiment-context.json")
+        provenance.update(validate_acceptance(acceptance, context["split"], root, oracle_path))
+        label_policy = "project_accepted"
     store = OracleStore(oracle_root, public_root=root)
     rows = []
     for raw in raws:
@@ -329,7 +356,7 @@ def evaluate_completed(
             "rows": rows,
             "aggregate": summarize(rows),
             "provenance": provenance,
-            "reference_label_policy": "candidate_reference; see external owner acceptance",
+            "reference_label_policy": label_policy,
             "formal_independent_review": "unchanged; not asserted",
             "coverage_policy": "reference coverage only; not semantic support",
         },

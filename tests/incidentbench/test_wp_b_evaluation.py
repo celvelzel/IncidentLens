@@ -339,7 +339,45 @@ def test_nested_public_or_oracle_overlapping_output_rejected(tmp_path, monkeypat
             "missing", "missing", labels, tmp_path / destination, "missing", tmp_path
         )
 
+
 def test_unrecovered_model_failure_without_usage_is_provider_failure():
     raw, _ = fixture()
     raw["state"].update(report=None, events=[dict(event_type="MODEL_FAILURE", details={})])
     assert evaluate_run(raw)["outcome_classification"] == "PROVIDER_FAILURE"
+
+
+def test_acceptance_binds_exact_oracle_and_public_bytes(tmp_path):
+    import json
+
+    from incident_lens.incidentbench.manifest import digest_tree
+    from incident_lens.incidentbench.readiness import validate_acceptance
+
+    public, labels = tmp_path / "public", tmp_path / "labels"
+    public.mkdir()
+    labels.mkdir()
+    candidate = labels / "benchmark_oracle.json"
+    candidate.write_text('{"candidate": "original"}')
+    acceptance = tmp_path / "acceptance.json"
+    acceptance.write_text(
+        json.dumps(
+            {
+                "reference_label_policy": {
+                    "status": "project_accepted",
+                    "authorization": "OWNER_REVIEW_ACCEPTED",
+                },
+                "datasets": {
+                    "seed": {
+                        "public_sha256": digest_tree(public),
+                        "oracle_sha256": digest_tree(labels),
+                    }
+                },
+            }
+        )
+    )
+    result = validate_acceptance(acceptance, "seed", public, labels)
+    assert result["accepted_oracle_sha256"] == digest_tree(labels)
+    candidate.write_text('{"candidate": "changed"}')
+    with pytest.raises(ValueError, match="hash mismatch"):
+        validate_acceptance(acceptance, "seed", public, labels)
+    with pytest.raises(ValueError, match="hash mismatch"):
+        validate_acceptance(acceptance, "dev", public, labels)

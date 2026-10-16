@@ -13,6 +13,7 @@ def main():
     parser.add_argument("--historical-source-root", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--repository", required=True)
+    parser.add_argument("--acceptance", required=True)
     args = parser.parse_args()
     rows = evaluate_completed(
         args.experiment,
@@ -21,6 +22,7 @@ def main():
         args.out,
         args.historical_source_root,
         args.repository,
+        args.acceptance,
     )
     print(f"Evaluated {len(rows)} persisted attempts; private output saved.")
 
