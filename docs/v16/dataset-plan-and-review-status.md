@@ -1,5 +1,11 @@
 # V1.6 dataset plan and review status
 
+2026-10-16 project-level update: [owner acceptance policy](wp-b-label-acceptance-policy.md)
+and [WP-B acceptance](wp-b-acceptance.md) supersede the development-use human-review
+blocker in this historical record. Exact frozen Seed20/Dev10 labels are
+`OWNER_REVIEW_ACCEPTED`; formal independent provenance stays pending and G2b
+remains separate. G2a remains PASS. No label or reviewer field was changed.
+
 G2a engineering acceptance: PASS after final integrated QA. G2b BLOCKED_AWAITING_USER.
 
 Original20Seed unchanged. Actual new Dev10:2ordinary,2misleading,2missing,4counterfactual cases (2pairs). New Test0; accepted human labels0; audited independent families0. Shared causal-world-v1 encoder is disclosed; new dates/IDs/workloads are not independent families. No strict blind/generalization claim.
