@@ -13,7 +13,7 @@ Original repository `$R = 'C:\Develop\python_projects\COMP5584_Agents\IncidentLe
 
 Each runtime dataset includes manifest, coverage, public index, topology, split IDs and public case observations. Oracle file layout is `rca/incidents/<id>/private/benchmark_oracle.json`. Evaluator credentials/permissions must remain separate from Agent filesystem/tool access. Never mount the oracle root as runtime data, tool response, prompt context or frontend Replay input. Run raw persistence precedes receipt-gated oracle access. Keep raw Agent artifacts separate from evaluator output containing reference comparisons.
 
-The full case-ID list and hashes are in [inventory](wp-b-final-dataset-inventory.md) and `docs/incidentbench/wp-b-freeze.json`; detailed causes, support, competing alternatives and misleading references are in the ignored evaluator inventory, whose exact path is recorded in validation. Owner acceptance is an external sidecar; original pending reviewer provenance is preserved.
+The full case-ID list and hashes are in [inventory](wp-b-final-dataset-inventory.md) and `docs/incidentbench/wp-b-project-accepted-freeze.json`; detailed causes, support, competing alternatives and misleading references are in the ignored evaluator inventory, whose exact path is recorded in validation. Owner acceptance is an external sidecar; original pending reviewer provenance is preserved.
 
 ## Freeze and offline preparation
 
@@ -23,7 +23,7 @@ After final source integration, run the finalizer from that checkout with fresh 
 & $P scripts/finalize_wp_b_dataset.py --repository $R --public-out "$R/results/v16/wp-b-final/freeze.json" --evaluator-out "$R/local_oracles/wp-b-final/inventory.json" --pilot-public-out "$R/results/v16/wp-b-final/pilot-public" --pilot-oracle-out "$R/local_oracles/wp-b-final/pilot-oracles"
 ```
 
-The three-case pilot copies the original ordinary, misleading and insufficient-evidence case bytes; no root cause or observation is regenerated. Pilot metadata is a separately hashed subset, not the complete Seed manifest. Use its actual IDs and split from the preparation receipt. Validate both public and privileged modes before model execution. No provider is constructed by the finalizer/validator or offline evaluator.
+The three-case pilot copies the original ordinary, misleading and insufficient-evidence case bytes; no root cause or observation is regenerated. Pilot metadata is a separately hashed subset, not the complete Seed manifest. Prepared and validated input already exists at `$R/results/wp-b/pilot-public`, with evaluator-only labels at `$R/local_oracles/wp-b-pilot`: `incident_1001` ordinary, `incident_1002` misleading, and `incident_1003` insufficient evidence, all in Seed. Use these existing paths or prepare fresh outputs with the command above. Validate both public and privileged modes before model execution. No provider is constructed by the finalizer/validator or offline evaluator.
 
 ## Four-architecture execution
 
@@ -32,6 +32,26 @@ The three-case pilot copies the original ordinary, misleading and insufficient-e
 Start from `configs/incidentbench-protocol.yaml`. Before real execution, create a private frozen real protocol: set `provider_id=real`, the explicitly approved `model_id`, a unique protocol ID, and keep `formal=false`, `blindness_level=development_visible`. Temperature 0, cache off, jobs 1, equivalent tools, four variants, seeded schedule 14100, analysis seed 14101, and identical budgets/recovery settings apply across architectures. Default proposal per investigation: six rounds, 24 tools, 32 logical model calls, 600-second wall limit, 180-second request timeout. These are proposed ceilings, not approval or guaranteed adequacy; historical real failures justify a small pilot first. Freeze response format, provider recovery/repair settings in `configs/system.yaml`, dependency versions, prompts and all source hashes as well. Do not substitute a model or adjust ceilings midway through a paired batch.
 
 Real execution additionally requires authentic external provider readiness matching model/response format and explicit budget approval. Readiness is compatibility evidence, not a successful RCA result. Do not fabricate `provider_compatible=true`. Credentials stay in the existing project-local mechanism and must never be printed or committed. Freeze a protocol lock through `manifest.create_lock(dataset, ExperimentProtocol(...))` after final preparation; use a separate lock for each dataset/subset.
+
+After approval, copy the default YAML into the ignored WP-D directory and edit the approved model/provider and ceilings explicitly. Never use the Mock protocol for a real invocation. Create the lock without constructing a provider (set the three paths first):
+
+```powershell
+$Dataset = "$R/results/wp-b/pilot-public"
+$Protocol = "$R/local_oracles/wp-d/pilot-protocol.yaml"
+$Lock = "$R/local_oracles/wp-d/pilot-lock.json"
+@'
+import json, sys, yaml
+from pathlib import Path
+from incident_lens.incidentbench.manifest import create_lock
+from incident_lens.incidentbench.schemas import ExperimentProtocol
+dataset, protocol_path, lock_path = map(Path, sys.argv[1:])
+protocol = ExperimentProtocol.model_validate(yaml.safe_load(protocol_path.read_bytes()))
+assert protocol.provider_id == "real" and not protocol.formal
+assert protocol.model_id not in {"mock", "deterministic-public-policy-v1", "TO_FILL_BEFORE_FREEZE"}
+with lock_path.open("x", encoding="utf-8") as stream:
+    json.dump(create_lock(dataset, protocol), stream, indent=2, sort_keys=True)
+'@ | & $P - $Dataset $Protocol $Lock
+```
 
 ```powershell
 # Execute ONLY after WP-D has obtained model/readiness/budget approval.
@@ -43,7 +63,13 @@ Omitting `--oracle-root` intentionally keeps execution artifacts unscored and su
 
 ## Scoring, analysis and recovery
 
-`scripts/analyze_incidentbench.py --input <batch>/raw-runs.jsonl --out <fresh-analysis>` verifies the original experiment lock and replays saved scoring without provider calls. Add `--oracle-root` only in the evaluator environment, keeping the output private. Preserve original paths: existing completion receipts bind absolute saved-state paths and no relocation protocol exists. New additive WP-B evaluation supplies separate service/mechanism matches, outcome categories and reference coverage; see validation for its exact CLI and tested outputs. Never interpret citation existence or reference-set coverage as independently confirmed semantic grounding.
+`scripts/analyze_incidentbench.py --input <batch>/raw-runs.jsonl --out <fresh-analysis>` verifies the original experiment lock and replays saved scoring without provider calls. Add `--oracle-root` only in the evaluator environment, keeping the output private. Preserve original paths: existing completion receipts bind absolute saved-state paths and no relocation protocol exists. New additive `scripts/wp_b_evaluate.py` supplies separate service/mechanism matches, outcome categories and reference coverage. Example (fresh output required):
+
+```powershell
+& $P scripts/wp_b_evaluate.py --experiment "$R/results/v16/eval-smoke/integrated-seed-20261015-02" --dataset "$R/data/incidentbench_v1" --oracle-root "$R/local_oracles/incidentbench_v1" --historical-source-root "$R/results/v16/wp-b-historical-source" --repository $R --acceptance docs/incidentbench/wp-b-project-accepted-freeze.json --out "$R/local_oracles/wp-b-final/seed-recheck-UNIQUE"
+```
+
+For newly executed batches, pass their exact frozen execution checkout as `--historical-source-root`. The preserved 142-file historical snapshot matches all four historical source/scripts/config/prompt tree digests and the dependency lock; it was reconstructed without altering the dirty primary checkout. Read the output's actual per-row oracle digest alongside the external owner acceptance freeze; the generic evaluator does not automatically declare arbitrary input labels owner-approved. See validation for actual output paths. Never interpret citation existence or reference-set coverage as independently confirmed semantic grounding.
 
 Existing Seed80 and Dev40 Mock ledgers are reused from `$R/results/v16/eval-smoke/integrated-{seed,dev}-20261015-02`. Their source/locks describe the historical implementation; new offline evaluation is a new scorer version, not a new execution of those investigations. Do not edit the historical scores/locks to disguise drift. Unknown/incomplete usage or cost remains null, with known lower bounds shown separately.
 

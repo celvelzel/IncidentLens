@@ -7,6 +7,7 @@ import stat
 import time
 from pathlib import Path
 from typing import Literal
+from urllib.parse import quote
 
 import yaml
 from dotenv import load_dotenv
@@ -315,7 +316,7 @@ async def api_download(request):
     return Response(
         content,
         media_type="application/json" if kind == "trace" else "text/markdown",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={"Content-Disposition": f"attachment; filename*=utf-8''{quote(filename)}"},
     )
 
 
