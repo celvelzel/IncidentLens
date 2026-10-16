@@ -1,0 +1,700 @@
+{
+  "cases": [
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1001",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "8204ee6d24bcc804c8c08e80ca2afa4dc196001e35884260836a53c5e295349f",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_000",
+      "scenario_variant_id": "var_0_ordinary",
+      "source_blueprint_id": "blueprint_000",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1002",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "81e4de504e9eff55cddf69a322f96e6edfae510e7adcd447fcf2c044808fae1c",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_000",
+      "scenario_variant_id": "var_0_misleading",
+      "source_blueprint_id": "blueprint_000",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1003",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "3db1fbe1a42c54dad9d5f9af0b455ec063ea7ee26f6758b71cf1fbca13e17912",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_000",
+      "scenario_variant_id": "var_0_missing",
+      "source_blueprint_id": "blueprint_000",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_0",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1004",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "6a18ad41dbd39bd8a9587a088dee8353991313d55d97ada8449204c64a9bf626",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_000",
+      "scenario_variant_id": "var_0_a",
+      "source_blueprint_id": "blueprint_000",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_0",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1005",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "435223707341b05c2f6e6f042138403eba2b7be32d10b2c7a5ffdd0b9c4b1f63",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_000",
+      "scenario_variant_id": "var_0_b",
+      "source_blueprint_id": "blueprint_000",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1006",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "9723d186e4f113ce6523611a8adb2023601884099217496dcc03d9cba911cc9f",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_001",
+      "scenario_variant_id": "var_1_ordinary",
+      "source_blueprint_id": "blueprint_001",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1007",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "ae73b71c0053078915c577bebe0200a8b235e7c0d63e4b62def6291acb10dd50",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_001",
+      "scenario_variant_id": "var_1_misleading",
+      "source_blueprint_id": "blueprint_001",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1008",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "3cf8a5b83d7e1b6988197ae290b7d563c4f7ce16f5b99aa4d36af92a8fa88f69",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_001",
+      "scenario_variant_id": "var_1_missing",
+      "source_blueprint_id": "blueprint_001",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_1",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1009",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "70a5be4ca5f237e46ec80e5349c864db7010e02123fde9a10393d4ee14a0c90e",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_001",
+      "scenario_variant_id": "var_1_a",
+      "source_blueprint_id": "blueprint_001",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_1",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1010",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "9b77fa908ffee13be75ebc200cd44c96a303f17b281602d18ae17942be0e3af9",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_001",
+      "scenario_variant_id": "var_1_b",
+      "source_blueprint_id": "blueprint_001",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1011",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "fc669e123df0b470f2218515b0390fffd70098e7e1354bc7fe14bb45433362b0",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_002",
+      "scenario_variant_id": "var_2_ordinary",
+      "source_blueprint_id": "blueprint_002",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1012",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "eb2c1c74fa0c0306c04cb30484dec4318f8e7a3b5c720cfd2090bb44a2895183",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_002",
+      "scenario_variant_id": "var_2_misleading",
+      "source_blueprint_id": "blueprint_002",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1013",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "aeb5ed741ba2f32ebd7b922f7f1ae8a9c449394aa7195afe4fb8f2d657ceb98d",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_002",
+      "scenario_variant_id": "var_2_missing",
+      "source_blueprint_id": "blueprint_002",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_2",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1014",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "aa73d664e1089df3274210d1ca0be6e3c54e2225eafa959a7da1fe62c7551ec7",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_002",
+      "scenario_variant_id": "var_2_a",
+      "source_blueprint_id": "blueprint_002",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_2",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1015",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "77bec352df06fa8a55affda03291b66cee08e2825c9873f44be3e0e91b8dce56",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_002",
+      "scenario_variant_id": "var_2_b",
+      "source_blueprint_id": "blueprint_002",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1016",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "90ce7815cd0bc2a1a1d120c1a0ed68de10493b1459c65471f9d0c8f3af9355ee",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_003",
+      "scenario_variant_id": "var_3_ordinary",
+      "source_blueprint_id": "blueprint_003",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1017",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "e6dfea76a4469df416893bd3e633fe06b5d4ac75718370784e4fcc812cee0438",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_003",
+      "scenario_variant_id": "var_3_misleading",
+      "source_blueprint_id": "blueprint_003",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1018",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "c096a120e2a5d79e8d75a8144013d183590d3cf459830450354983e770246584",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_003",
+      "scenario_variant_id": "var_3_missing",
+      "source_blueprint_id": "blueprint_003",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_3",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1019",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "0ee99d8339322326d9412343ffc81f018b668bf89bb78b257f9ad0d25499b335",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_003",
+      "scenario_variant_id": "var_3_a",
+      "source_blueprint_id": "blueprint_003",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_3",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_1020",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "918844a82fa7d010d25bc9cfeff273769f543661a0fce016f732128a4cdb3506",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_003",
+      "scenario_variant_id": "var_3_b",
+      "source_blueprint_id": "blueprint_003",
+      "split": "seed"
+    },
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3001",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "1ffb488047c99c84171d5ba321a52debaad8680eff7e75e1d88046ad9824b226",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_000",
+      "scenario_variant_id": "v16_0_ordinary",
+      "source_blueprint_id": "bp_v16_000",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3002",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "c7f1485e6f1d4690a58d265f5a6f5a0af5a0a5b44ba030fb968c2b9a16e06a46",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_000",
+      "scenario_variant_id": "v16_0_misleading",
+      "source_blueprint_id": "bp_v16_000",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3003",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "f25405a8261863ee9d95b9f6e8406a55a16343fe6939eedcba671885bc0831d8",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_000",
+      "scenario_variant_id": "v16_0_missing",
+      "source_blueprint_id": "bp_v16_000",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_v16_0",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3004",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "98b679d79c6b2dd23b7376ee0c6da4cfc85d362d470d9ab45673623782ef89a4",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_000",
+      "scenario_variant_id": "v16_0_a",
+      "source_blueprint_id": "bp_v16_000",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_v16_0",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3005",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "dbec24a3fc74536d129b82b2a573811284770e7769c647000c9790ed61a3cfe3",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_000",
+      "scenario_variant_id": "v16_0_b",
+      "source_blueprint_id": "bp_v16_000",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "ordinary"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3006",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "5971314c30f43b436a6dc15dce5d4e92ec8f0e86d641d2244d6d16f7d5ed15fe",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_001",
+      "scenario_variant_id": "v16_1_ordinary",
+      "source_blueprint_id": "bp_v16_001",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "misleading"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3007",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "423f2710f74cff37424e53c8f8b4fc29a63e000ef8b9b9f19dbdc5c4315d9931",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_001",
+      "scenario_variant_id": "v16_1_misleading",
+      "source_blueprint_id": "bp_v16_001",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "missing"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": null,
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3008",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "a46406fa008172fc806084dd6eea2f530128934f88407515744267e5e840f15c",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_001",
+      "scenario_variant_id": "v16_1_missing",
+      "source_blueprint_id": "bp_v16_001",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_v16_1",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3009",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "94dfeeec2f233f64547ee85289cc0aa633cfd55704f3d28aeb638671c3a40c32",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_001",
+      "scenario_variant_id": "v16_1_a",
+      "source_blueprint_id": "bp_v16_001",
+      "split": "dev"
+    },
+    {
+      "challenge_tags": [
+        "counterfactual"
+      ],
+      "cohort": "core",
+      "counterfactual_pair_id": "pair_v16_1",
+      "generator_lineage": "causal-world-v1",
+      "incident_id": "incident_3010",
+      "near_duplicate_cluster_id": "cluster_causal_world_v1",
+      "public_sha256": "22b7a053cba2d9aba9b2c58db45325167db905eb2312c63be914c554d0819572",
+      "reference_label_status": "project_accepted",
+      "scenario_family_id": "fam_v16_001",
+      "scenario_variant_id": "v16_1_b",
+      "source_blueprint_id": "bp_v16_001",
+      "split": "dev"
+    }
+  ],
+  "cross_split_near_duplicates": [
+    {
+      "left": "incident_1001",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3001"
+    },
+    {
+      "left": "incident_1001",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3004"
+    },
+    {
+      "left": "incident_1002",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3002"
+    },
+    {
+      "left": "incident_1003",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3003"
+    },
+    {
+      "left": "incident_1003",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3008"
+    },
+    {
+      "left": "incident_1004",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3001"
+    },
+    {
+      "left": "incident_1004",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3004"
+    },
+    {
+      "left": "incident_1005",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3005"
+    },
+    {
+      "left": "incident_1006",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3006"
+    },
+    {
+      "left": "incident_1006",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3009"
+    },
+    {
+      "left": "incident_1007",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3007"
+    },
+    {
+      "left": "incident_1008",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3003"
+    },
+    {
+      "left": "incident_1008",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3008"
+    },
+    {
+      "left": "incident_1009",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3006"
+    },
+    {
+      "left": "incident_1009",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3009"
+    },
+    {
+      "left": "incident_1010",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3010"
+    },
+    {
+      "left": "incident_1013",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3003"
+    },
+    {
+      "left": "incident_1013",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3008"
+    },
+    {
+      "left": "incident_1018",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3003"
+    },
+    {
+      "left": "incident_1018",
+      "normalized_excerpt_similarity": 1.0,
+      "right": "incident_3008"
+    }
+  ],
+  "dataset_version": "wp-b-project-accepted-v1",
+  "datasets": {
+    "dev": {
+      "case_count": 10,
+      "manifest_sha256": "247425f6b5e79b37eb41e9533fb022cdec6c310194df218d018902046506ff0f",
+      "oracle_path": "local_oracles/incidentbench_v16_dev",
+      "oracle_sha256": "bd6f31a193b7b92955690da87bb2db3bf324d8159705701733de0dfc448e9e4f",
+      "public_path": "data/incidentbench_v16_dev",
+      "public_sha256": "fbafae81ce91af19f66dba7a7c633fc58ca59e6dbac6bfb8419199d6aa2bda26",
+      "validation": {
+        "privileged": {
+          "coverage": {
+            "dev/core": 10,
+            "dev/monitoring": 0,
+            "dev/ood": 0,
+            "seed/core": 0,
+            "seed/monitoring": 0,
+            "seed/ood": 0,
+            "test/core": 0,
+            "test/monitoring": 0,
+            "test/ood": 0
+          },
+          "errors": [],
+          "ok": true
+        },
+        "public": {
+          "coverage": {
+            "dev/core": 10,
+            "dev/monitoring": 0,
+            "dev/ood": 0,
+            "seed/core": 0,
+            "seed/monitoring": 0,
+            "seed/ood": 0,
+            "test/core": 0,
+            "test/monitoring": 0,
+            "test/ood": 0
+          },
+          "errors": [],
+          "ok": true
+        }
+      }
+    },
+    "seed": {
+      "case_count": 20,
+      "manifest_sha256": "acdd163e5e29b18934efda0eed9eaa977ae30daf1aa6309f4d6d149d063368b8",
+      "oracle_path": "local_oracles/incidentbench_v1",
+      "oracle_sha256": "13ed24fa585015cb7a7790ae53e19765091699873f1ab1a13015b3dcf6cf1d9d",
+      "public_path": "data/incidentbench_v1",
+      "public_sha256": "5a76e499e8172f9c4e754f789f1b377f9d7a78a59ff262ec271becaab3b80f07",
+      "validation": {
+        "privileged": {
+          "coverage": {
+            "dev/core": 0,
+            "dev/monitoring": 0,
+            "dev/ood": 0,
+            "seed/core": 20,
+            "seed/monitoring": 0,
+            "seed/ood": 0,
+            "test/core": 0,
+            "test/monitoring": 0,
+            "test/ood": 0
+          },
+          "errors": [],
+          "ok": true
+        },
+        "public": {
+          "coverage": {
+            "dev/core": 0,
+            "dev/monitoring": 0,
+            "dev/ood": 0,
+            "seed/core": 20,
+            "seed/monitoring": 0,
+            "seed/ood": 0,
+            "test/core": 0,
+            "test/monitoring": 0,
+            "test/ood": 0
+          },
+          "errors": [],
+          "ok": true
+        }
+      }
+    }
+  },
+  "exact_public_duplicates": [],
+  "finalizer_script_sha256": "fb785cfac347cf3219cca022b062290708b485fc4b14c159956685a7f98c8cc0",
+  "finalizer_source_commit": "31b4f4031576649282cac5c2f36b70f4a2643dda",
+  "limitations": [
+    "Shared causal-world-v1 encoder; no independent-family or blind-test claim.",
+    "Competing hypotheses have no separate annotation field; not inferred as truth."
+  ],
+  "protocol_file_sha256": "62775bc411be7a7f6e148860284579f7892e47c4094fc9d82e1be2519477f88e",
+  "protocol_sha256": "f041cd492fda139bc286459c1e43a75d98f48fefb50f2553b3833e193cf3ff4b",
+  "reference_label_policy": {
+    "authorization": "OWNER_REVIEW_ACCEPTED",
+    "authorization_date": "2026-10-16",
+    "basis": "Project owner explicitly accepted the existing Seed20 and Dev10 references.",
+    "blindness_level": "development_visible",
+    "formal_sealed": false,
+    "independent_double_review": false,
+    "label_scope": "course_project_development_reference",
+    "status": "project_accepted"
+  },
+  "shared_cross_split_groups": [
+    {
+      "field": "near_duplicate_cluster_id",
+      "splits": [
+        "dev",
+        "seed"
+      ],
+      "value": "cluster_causal_world_v1"
+    }
+  ],
+  "shared_encoder_lineage": "causal-world-v1",
+  "source_commit": "31b4f4031576649282cac5c2f36b70f4a2643dda"
+}
