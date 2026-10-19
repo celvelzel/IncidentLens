@@ -365,6 +365,75 @@ forensic continuation, not a new complete live investigation. The saved final su
 result is 914 passed, 3 skipped. Details and artifacts:
 [finalization acceptance](finalize-resume-20261015.md).
 
+## ISSUE-7: Verifier `cited_evidence_ids` mismatch on a completed review is a fatal `RuntimeError`, not a retryable/repairable defect
+
+### Symptom (2026-10-17 t6-real-2, incident_2002 negative retest)
+
+Run `results/v16/t6-closure/20261016-static-01/t6-real-2/` ended `UNRECOVERABLE_ERROR / FAILED`
+at the verify stage with `stop_reason: "Verifier cited unshared evidence"`, after
+5 rounds, 24 LLM calls and 21 tool calls. Two `logs_backend_2002_011` diagnosis
+calls had already burned two `PROVIDER_TIMEOUT` attempts (~423s each). This is a
+third, distinct failure mode from the historical loop and transport cases:
+the model completed a full review call and only the evidence citation check failed.
+
+### Observed evidence
+
+- event-129 `fetch_evidence_by_ids` returned exactly 4 records:
+  `incident_2002-E-004`, `incident_2002-E-001`, `incident_2002-T-backend`, `incident_2002-T-gateway`.
+- event-133 `LLM_CALL` for the review **succeeded** (29,244 tokens, 89s,
+  `tokens_complete: true`) — the model produced a well-formed review.
+- event-134 `RUNTIME_ERROR` `RuntimeError("Verifier cited unshared evidence")`,
+  stage `verify`, `transport_error: false`. The run died despite the review call
+  itself succeeding.
+
+### Root-cause chain (current code)
+
+1. `graph.py` `verify()` (~L980-988) fetches shared evidence through the verifier
+   ACL with `{"ids": list(state.evidence_index)[:50]}` — all 4 public IDs were fetched.
+2. The review model call succeeds; then `graph.py` (~L1040-1043) hard-checks
+   `review.cited_evidence_ids ⊆ {record.evidence_id for record in result.records}`
+   and raises a bare `RuntimeError` on any mismatch.
+3. The raised error escapes the `while True` retry loop because the citation check
+   sits **outside** the try/except that wraps `self.model_call(...)` — it is neither
+   retried nor repaired, and is not an evidence/competition guard that would justify
+   failing closed on a protocol violation.
+4. `evaluation/termination.py` records the exception as
+   `UNRECOVERABLE_ERROR / FAILED` (`diagnosis_failure: true`), even though the
+   underlying diagnosis was on track to abstain normally.
+
+The citation check enforces a content constraint on model output (which IDs the
+model chose to cite) — the same class of defect as a schema violation, which the
+structured-output pipeline repairs rather than kills the run for. Treating it as
+`RuntimeError` converts one plausible model slip into whole-investigation failure.
+
+### Expected behavior (fix requirements)
+
+- A citation mismatch on a completed review must be handled like a structured
+  repairable defect (targeted repair/retry within existing bounded retry budget),
+  or degrade gracefully (e.g. drop the unshared citations and record a warning),
+  never raise an unguarded `RuntimeError`.
+- Protocol-borne guards (evidence/competition/finalization) keep fail-closed semantics;
+  model-cited metadata mismatches do not.
+
+### Related run conditions (not the root cause)
+
+- Two `PROVIDER_TIMEOUT` calls on `logs_backend_2002_011` consumed the task's
+  2-attempt budget (ISSUE-4 class endpoint stall) but did not terminate the run.
+- `result.json` shows `root_cause: null` / `INCONCLUSIVE` — no fabricated root cause.
+
+### Post-fix retest (2026-10-17 t6-real-3, incident_2002)
+
+The ISSUE-7 fix (dynamic `Literal` citation binding + `ProviderError` repair path +
+empty-changes-scope guard) held under live load: zero `REVIEW_CITATION_VALIDATION`
+violations, zero fabricated root cause, investigation progressed through 3 review
+cycles requesting genuinely discriminating checks instead of looping. The run still
+ended `UNRECOVERABLE_ERROR / FAILED` (`failure_stage: coordinate`), but purely from
+the ISSUE-4 endpoint stall class: `coordinate-4` consumed both task attempts on
+two consecutive `PROVIDER_TIMEOUT` calls (~423s each; events 138/145), then
+`RUNTIME_ERROR` at event 148. `result.json` `stop_reason: PROVIDER_TIMEOUT`.
+No code defect remains in this failure chain; a healthy endpoint is required for
+the negative-case abstention acceptance.
+
 ## References
 
 - Real readiness probe (healthy): `results/incidentbench/v1/20261014-comp-deepseek-v4-flash-pilot-budget32/readiness.json`

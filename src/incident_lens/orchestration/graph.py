@@ -51,10 +51,12 @@ class InvestigationRun:
         run_id=None,
         cache=None,
         workflow=None,
+        journal=None,
     ):
         from incident_lens.tools import ToolRegistry
 
         self.provider = copy.copy(provider)
+        self.journal = journal
         self.evidence_provider = evidence_provider
         self.limits = limits or Budget()
         self.variant = variant
@@ -108,6 +110,7 @@ class InvestigationRun:
             self.provider.token_observer = self.call_budget.observe_tokens
             self.call_budget.observed_tokens = True
         self.signatures = set()
+        self.completed_scopes = {}
         self.failed_finalizations = set()
         self.tool_events_offset = 0
         # One-shot guard for changes discovery: only the first query_changes may
@@ -149,6 +152,8 @@ class InvestigationRun:
             details=details,
         )
         state.events.append(event)
+        if self.journal is not None:
+            self.journal.event(event, self)
 
     def runtime_event(self, event_type, **details):
         if event_type == "WORKFLOW_STOP_REQUESTED":
@@ -174,6 +179,8 @@ class InvestigationRun:
         )
         if stage:
             self.stage_calls[stage] += 1
+        if self.journal is not None:
+            self.journal.request(self, permit)
         return permit
 
     async def model_call(self, role, function, *args):
@@ -196,6 +203,8 @@ class InvestigationRun:
             "call_id": f"model-call-{self.call_sequence}",
         }
         token = self.call_context.set(metadata)
+        if self.journal is not None:
+            self.journal.model_activity(metadata, True)
         pending = asyncio.create_task(self.call_budget.call(function, *args, metadata=metadata))
         self.active_model_calls[pending] = role
         try:
@@ -227,6 +236,8 @@ class InvestigationRun:
         finally:
             self.active_model_calls.pop(pending, None)
             self.call_context.reset(token)
+            if self.journal is not None:
+                self.journal.model_activity(metadata, False)
 
     async def stage_call(self, stage, function, *args):
         # The stable guard reads task-local stage; concurrent investigators never
@@ -326,6 +337,10 @@ class InvestigationRun:
                 "evidence_ids": [r["evidence_id"] for r in
                                  e.details.get("result", {}).get("records", [])],
                 "error_code": e.details.get("result", {}).get("error_code"),
+                "ok": e.details.get("result", {}).get("ok", False),
+                "record_count": len(e.details.get("result", {}).get("records", [])),
+                "next_cursor": e.details.get("result", {}).get("next_cursor"),
+                "completed": e.task_id in state.completed_task_ids,
             }
             for e in state.events
             if e.event_type == "TOOL_CALL" and "tool_name" in e.details
@@ -511,6 +526,22 @@ class InvestigationRun:
                     # Reconciliation cannot reuse acceptance of an older board.
                     return {"investigation": state, "route": "verify"}
                 return {"investigation": state, "route": "finalize"}
+            known_change = any(
+                r.metadata.get("change_id") for r in state.evidence_index.values()
+            )
+            # A known change can still have an unread diff outside an empty
+            # query slice. Single mode also permits its full context tool ACL,
+            # so task.allowed_tools cannot bound its next effective query.
+            completed_repeat = self.variant != "single" and bool(decision.assignments) and all(
+                not (known_change and "get_config_diff" in t.allowed_tools)
+                and self.completed_scopes.get(self.structured_scope(t)) == evidence_fingerprint(state)
+                for t in decision.assignments
+            )
+            if completed_repeat and not self.exhausted(state):
+                state.stop_reason = "INCONCLUSIVE"
+                self.event(state, "INVESTIGATION_NO_PROGRESS",
+                           reason="Completed empty changes scope without new evidence")
+                return {"investigation": state, "route": "report"}
             if state.round_index >= self.limits.max_rounds:
                 raise RuntimeError("Round budget exhausted")
             if self.registry.call_count >= self.limits.max_tool_calls:
@@ -543,6 +574,20 @@ class InvestigationRun:
                 **self.error_details(exc),
             )
             return {"investigation": state, "route": "report"}
+
+    @staticmethod
+    def structured_scope(task):
+        # Empty filters leave the requested scope entirely in prose; never infer
+        # equivalence there. Tool permissions are part of the requested check.
+        if (
+            not task.filters
+            or not set(task.allowed_tools).issubset({"query_changes", "get_config_diff"})
+            or "query_changes" not in task.allowed_tools
+        ):
+            return None
+        return json.dumps(
+            [task.role, sorted(task.allowed_tools), task.filters], sort_keys=True
+        )
 
     @staticmethod
     def safe_error(exc):
@@ -889,6 +934,24 @@ class InvestigationRun:
         try:
             self.stop_controller.guard()
             state = merge_results(state, value["local_results"], self.registry)
+            for _, task, _ in value["local_results"]:
+                scope = self.structured_scope(task)
+                calls = [e.details for e in state.events
+                         if e.event_type == "TOOL_CALL" and e.task_id == task.task_id]
+                # Only exact, empty changes scopes can be safely compared without
+                # prose: metric/log questions may select different effective calls.
+                # Publication and successful, exhausted effective queries are both
+                # required. Failed analysis, failed tools and partial pages cannot
+                # turn a later retry into a normal abstention.
+                if scope is not None and calls and all(
+                    c.get("tool_name") == "query_changes"
+                    and c.get("args") == task.filters
+                    and c.get("result", {}).get("ok")
+                    and not c.get("result", {}).get("records")
+                    and c.get("result", {}).get("next_cursor") is None
+                    for c in calls
+                ):
+                    self.completed_scopes[scope] = evidence_fingerprint(state)
             self.event(
                 state,
                 "MERGE",
@@ -961,10 +1024,30 @@ class InvestigationRun:
                     review, usage = await self.model_call(
                         role, verify, self.provider, self.payload(state, "verifier", result.records)
                     )
+                    citation_validation = usage.get("review_citation_validation")
+                    if citation_validation:
+                        self.event(state, "REVIEW_CITATION_VALIDATION", role=role,
+                                   **citation_validation, repaired=True)
+                    invalid_ids = sorted(set(review.cited_evidence_ids) -
+                                         {record.evidence_id for record in result.records})
+                    if invalid_ids:
+                        from incident_lens.llm.provider import ProviderError
+
+                        # Defense in depth for providers that bypass the supplied
+                        # output model. Never accept or silently trim this review.
+                        self.update_usage(state, usage, role)
+                        self.event(state, "REVIEW_CITATION_VALIDATION", role=role,
+                                   allowed_evidence_ids=sorted(r.evidence_id for r in result.records),
+                                   invalid_citation_attempts=[invalid_ids], repaired=False)
+                        raise ProviderError("REVIEW_CITATION_INVALID")
                 except asyncio.CancelledError:
                     self.task_manager.cancel(task_id)
                     raise
                 except Exception as exc:
+                    citation_validation = getattr(exc, "review_citation_validation", None)
+                    if citation_validation:
+                        self.event(state, "REVIEW_CITATION_VALIDATION", role=role,
+                                   **citation_validation, repaired=False)
                     if self.stop_controller.stopped or getattr(exc, "code", "") == "PROVIDER_CANCELLED":
                         self.task_manager.cancel(task_id)
                         raise
@@ -984,10 +1067,6 @@ class InvestigationRun:
                 finally:
                     self.call_context.reset(token)
             self.update_usage(state, usage, role)
-            if not set(review.cited_evidence_ids).issubset(
-                {record.evidence_id for record in result.records}
-            ):
-                raise RuntimeError("Verifier cited unshared evidence")
             state.reviews.append(review)
             state.requested_checks = list(review.requested_checks)
             if (
@@ -1427,6 +1506,7 @@ async def run_investigation(
     run_id=None,
     cache=None,
     workflow=None,
+    journal=None,
 ):
     from incident_lens.tools import EvidenceProvider
 
@@ -1442,5 +1522,6 @@ async def run_investigation(
         run_id,
         cache,
         workflow,
+        journal,
     )
     return await run.run()

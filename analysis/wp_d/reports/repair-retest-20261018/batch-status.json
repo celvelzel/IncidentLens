@@ -1,0 +1,93 @@
+{
+  "started_at": "2026-10-18T12:29:07.890081+00:00",
+  "phase": "completed",
+  "cells": [
+    {
+      "slot": 4,
+      "incident": "incident_1003",
+      "variant": "full",
+      "out": "run-04-incident_1003-full-postfix-01",
+      "started_at": "2026-10-18T12:29:08.404636+00:00",
+      "phase": "completed",
+      "pid": 35996,
+      "progress": {
+        "round_index": 7,
+        "physical_requests": 39,
+        "tool_calls": 26,
+        "last_event": "REPORT",
+        "heartbeat_at": "2026-10-18T13:32:05.793812+00:00"
+      },
+      "returncode": 0,
+      "ended_at": "2026-10-18T13:32:25.393926+00:00",
+      "termination": "UNRECOVERABLE_ERROR",
+      "outcome": "FAILED",
+      "runtime_failure": true
+    },
+    {
+      "slot": 8,
+      "incident": "incident_1001",
+      "variant": "full",
+      "out": "run-08-incident_1001-full-postfix-01",
+      "started_at": "2026-10-18T13:32:26.581455+00:00",
+      "phase": "completed",
+      "pid": 11784,
+      "progress": {
+        "round_index": 3,
+        "physical_requests": 22,
+        "tool_calls": 14,
+        "last_event": "REPORT",
+        "heartbeat_at": "2026-10-18T14:02:41.545218+00:00"
+      },
+      "returncode": 0,
+      "ended_at": "2026-10-18T14:02:57.680981+00:00",
+      "termination": "UNRECOVERABLE_ERROR",
+      "outcome": "FAILED",
+      "runtime_failure": true
+    },
+    {
+      "slot": 11,
+      "incident": "incident_1001",
+      "variant": "single",
+      "out": "run-11-incident_1001-single-postfix-01",
+      "started_at": "2026-10-18T14:02:58.835583+00:00",
+      "phase": "completed",
+      "pid": 39564,
+      "progress": {
+        "round_index": 1,
+        "physical_requests": 5,
+        "tool_calls": 0,
+        "last_event": "REPORT",
+        "heartbeat_at": "2026-10-18T14:04:30.749598+00:00"
+      },
+      "returncode": 0,
+      "ended_at": "2026-10-18T14:04:58.874443+00:00",
+      "termination": "UNRECOVERABLE_ERROR",
+      "outcome": "FAILED",
+      "runtime_failure": true
+    },
+    {
+      "slot": 12,
+      "incident": "incident_1003",
+      "variant": "single",
+      "out": "run-12-incident_1003-single-postfix-01",
+      "started_at": "2026-10-18T14:04:59.808920+00:00",
+      "phase": "completed",
+      "pid": 35800,
+      "progress": {
+        "round_index": 0,
+        "physical_requests": 1,
+        "tool_calls": 0,
+        "last_event": "REPORT",
+        "heartbeat_at": "2026-10-18T14:05:01.367954+00:00"
+      },
+      "returncode": 0,
+      "ended_at": "2026-10-18T14:05:29.833085+00:00",
+      "termination": "UNRECOVERABLE_ERROR",
+      "outcome": "FAILED",
+      "runtime_failure": true
+    }
+  ],
+  "standby_prevention": false,
+  "ended_at": "2026-10-18T14:05:30.290702+00:00",
+  "frozen_inputs_unchanged": true
+}

@@ -126,17 +126,17 @@ flowchart TD
 
 ### Agent 职责
 
-| Agent / 角色标识 | 一句话职责 |
-| --- | --- |
-| Monitoring (`monitoring`) | 根据公开快照或回放识别异常并生成告警，证据不足或正常时允许输出 `NO_ALERT`。 |
-| Coordinator / Supervisor (`coordinator`) | 根据证据缺口和剩余预算分配或重规划调查任务，并决定定稿或弃权。 |
-| Log Investigator (`logs`) | 从日志还原错误时间线与传播过程，区分因果信号和伴随症状。 |
-| Metrics & Dependency Investigator (`metrics`) | 检查服务健康、容量与依赖状态，定位异常影响范围。 |
-| Database Investigator (`database`) | 分析连接、会话、锁和慢查询，区分数据库内部故障、应用连接池问题与下游症状。 |
-| Change Investigator (`changes`) | 对照事故起点检查部署和配置差异，识别可能触发故障的变更。 |
-| Verifier / Skeptic (`verifier`) | 基于授权共享证据质疑候选根因，并提出矛盾或具体补充检查。 |
-| Remediation (`remediation`) | 为已接受的根因生成带证据、前提、风险、验证与回滚步骤的修复建议。 |
-| Single-Agent 基线 (`single`) | 由同一智能体完成规划、调查和自我反思，用于架构对比。 |
+| Agent / 角色标识                                  | 一句话职责                                       |
+| --------------------------------------------- | ------------------------------------------- |
+| Monitoring (`monitoring`)                     | 根据公开快照或回放识别异常并生成告警，证据不足或正常时允许输出 `NO_ALERT`。 |
+| Coordinator / Supervisor (`coordinator`)      | 根据证据缺口和剩余预算分配或重规划调查任务，并决定定稿或弃权。             |
+| Log Investigator (`logs`)                     | 从日志还原错误时间线与传播过程，区分因果信号和伴随症状。                |
+| Metrics & Dependency Investigator (`metrics`) | 检查服务健康、容量与依赖状态，定位异常影响范围。                    |
+| Database Investigator (`database`)            | 分析连接、会话、锁和慢查询，区分数据库内部故障、应用连接池问题与下游症状。       |
+| Change Investigator (`changes`)               | 对照事故起点检查部署和配置差异，识别可能触发故障的变更。                |
+| Verifier / Skeptic (`verifier`)               | 基于授权共享证据质疑候选根因，并提出矛盾或具体补充检查。                |
+| Remediation (`remediation`)                   | 为已接受的根因生成带证据、前提、风险、验证与回滚步骤的修复建议。            |
+| Single-Agent 基线 (`single`)                    | 由同一智能体完成规划、调查和自我反思，用于架构对比。                  |
 
 ### 运行机制与预算
 
@@ -147,10 +147,10 @@ FinalizeGate 拒绝被否决的候选、未解疑问、竞争假设和缺失的�
 TaskManager 管理有限重试；StopController 冻结任务与工具调用、取消工作并等待停止确认。
 这些组件及确定性 Reporter 是运行时组件，不是额外的 LLM Agent；不支持树形通信。
 
-| 配置 | 工作流 | 轮次 | 工具调用 | 实际模型请求 | 总时限 |
-| --- | --- | --- | --- | --- | --- |
-| [system.yaml](configs/system.yaml)（默认） | `legacy_rca` | 4 | 12 | 16 | 600 秒 |
-| [incident-response.yaml](configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 秒 |
+| 配置                                                       | 工作流                 | 轮次 | 工具调用 | 实际模型请求 | 总时限   |
+| -------------------------------------------------------- | ------------------- | -- | ---- | ------ | ----- |
+| [system.yaml](configs/system.yaml)（默认）                   | `legacy_rca`        | 4  | 12   | 16     | 600 秒 |
+| [incident-response.yaml](configs/incident-response.yaml) | `incident_response` | 6  | 24   | 24     | 600 秒 |
 
 事件响应配置还限制监控调用为 8 次、修复调用为 2 次、单任务尝试为 2 次、停止确认等待为 5 秒；
 阶段限额共享全局预算，JSON 修复请求也计入实际模型请求。默认单次模型请求时限为 180 秒，允许一次 JSON 修复。
@@ -176,16 +176,16 @@ CLI 参数可覆盖配置；`--max-tokens` 在已计量用量耗尽后阻止进�
 
 将 `.env.example` 复制为项目本地的 `.env`。真实模式需要:
 
-| 变量 | 含义 |
-| --- | --- |
-| `INCIDENT_LENS_BASE_URL` | Chat-completions 基础 URL 或完整端点 |
-| `INCIDENT_LENS_API_KEY` | 本地密钥,永不导出或提交 |
-| `INCIDENT_LENS_MODEL` | 提供方模型标识 |
-| `CACHE_MODE` | off(默认)、exact、semantic |
-| `CACHE_DB_PATH` | SQLite 文件路径 |
-| `CACHE_SIMILARITY_THRESHOLD` | 至少 0.95 |
-| `CACHE_TTL_HOURS` | 过期时间,默认 24 |
-| `CACHE_EMBEDDING_MODEL` | fake 或显式安装的本地模型 |
+| 变量                           | 含义                            |
+| ---------------------------- | ----------------------------- |
+| `INCIDENT_LENS_BASE_URL`     | Chat-completions 基础 URL 或完整端点 |
+| `INCIDENT_LENS_API_KEY`      | 本地密钥,永不导出或提交                  |
+| `INCIDENT_LENS_MODEL`        | 提供方模型标识                       |
+| `CACHE_MODE`                 | off(默认)、exact、semantic        |
+| `CACHE_DB_PATH`              | SQLite 文件路径                   |
+| `CACHE_SIMILARITY_THRESHOLD` | 至少 0.95                       |
+| `CACHE_TTL_HOURS`            | 过期时间,默认 24                    |
+| `CACHE_EMBEDDING_MODEL`      | fake 或显式安装的本地模型               |
 
 ```powershell
 .venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider real --out results/real001
@@ -244,13 +244,13 @@ best effort。Trace 增加安全分类与尝试标识，旧记录仍可 Replay�
 
 所有工具均为只读：
 
-| 证据类型 | 工具 |
-| --- | --- |
-| 日志 | `query_logs` |
-| 指标与依赖 | `query_metrics`、`get_dependencies` |
-| 变更 | `query_changes`、`get_config_diff` |
-| 数据库 | `get_db_connections`、`get_db_active_sessions`、`get_db_lock_waits`、`get_db_slow_queries`、`get_db_health_metrics` |
-| 共享证据 | `fetch_evidence_by_ids` |
+| 证据类型  | 工具                                                                                                              |
+| ----- | --------------------------------------------------------------------------------------------------------------- |
+| 日志    | `query_logs`                                                                                                    |
+| 指标与依赖 | `query_metrics`、`get_dependencies`                                                                              |
+| 变更    | `query_changes`、`get_config_diff`                                                                               |
+| 数据库   | `get_db_connections`、`get_db_active_sessions`、`get_db_lock_waits`、`get_db_slow_queries`、`get_db_health_metrics` |
+| 共享证据  | `fetch_evidence_by_ids`                                                                                         |
 
 数据库观测位于可选 `public/database.jsonl`，旧数据包无需补充该文件。
 ToolRegistry 强制执行角色权限；公平对比可显式启用 `database_equivalent_tools`，为 Metrics / Single 提供等价数据库工具。
@@ -263,12 +263,12 @@ IncidentBench 将版本化公开观测与仅供评测器读取的因果标签分
 校验证据契约、manifest 哈希与同源家族泄漏。Runner 复用现有 Graph，关闭缓存，
 为每次运行创建独立 Provider 和预算，并开放等价数据库工具：
 
-| 条件 | 调查方式 |
-| --- | --- |
-| `strong_single_equivalent_tools` | 同一运行身份使用全部等价工具并进行自我反思 |
-| `fixed_four_equivalent_tools` | 日志、指标、数据库和变更专家执行一次固定批次 |
-| `dynamic_no_verifier` | 动态选择专家，不执行 Verifier 审核 |
-| `full` | 动态选择专家，并由 Verifier 提供反馈 |
+| 条件                               | 调查方式                    |
+| -------------------------------- | ----------------------- |
+| `strong_single_equivalent_tools` | 同一运行身份使用全部等价工具并进行自我反思   |
+| `fixed_four_equivalent_tools`    | 日志、指标、数据库和变更专家执行一次固定批次  |
+| `dynamic_no_verifier`            | 动态选择专家，不执行 Verifier 审核  |
+| `full`                           | 动态选择专家，并由 Verifier 提供反馈 |
 
 Benchmark 显式启用固定四专家；旧 `fixed` 继续使用三专家。完成或失败的状态先持久化，
 评测器随后才读取标签。保存产物支持候选标签重算、匿名引用审核导出和按来源聚类的配对分析。
@@ -321,7 +321,7 @@ IncidentBench 要求 editable 源码安装；独立 wheel 环境暂不支持，�
 .venv\Scripts\python.exe scripts/verify_install.py --out results/fresh-install
 ```
 
-Single(全部工具加自我反思)、fixed(一次固定专家组)、dynamic_no_verifier 与
+Single(全部工具加自我反思)、fixed(一次固定专家组)、dynamic\_no\_verifier 与
 full 共享输入、模型、温度、预算与落地规则。架构对比强制关闭缓存。评估器
 仅在执行结束后读取真值。输出:case-level.csv、aggregate.csv、raw-runs.jsonl
 与 error-analysis.md。准确率/弃权率/引用率的分母彼此分离;未知 token/成本与
@@ -343,13 +343,13 @@ CAES 在完整动态调查中增加有界任务选择步骤。CandidateGenerator
 不读取私有 Oracle。实际任务继续经过原 TaskManager、角色 ACL、物理请求 permit、
 STOP 协议、校验合并、Verifier 和 FinalizeGate。
 
-| 策略 | 行为 |
-| --- | --- |
-| `current_dynamic` | 默认策略：执行原 Coordinator 任务，绕过 CAES。 |
-| `first_eligible` | 按候选生成顺序选择满足约束的任务。 |
-| `active_no_cost` | 排序时去除成本分母，仍保留硬预算。 |
-| `active_no_discrimination` | 去除区分性权重，仍保留成本和可执行性约束。 |
-| `active_evidence` | 完整 CAES 启发式价值/成本排序及多样性检查。 |
+| 策略                         | 行为                               |
+| -------------------------- | -------------------------------- |
+| `current_dynamic`          | 默认策略：执行原 Coordinator 任务，绕过 CAES。 |
+| `first_eligible`           | 按候选生成顺序选择满足约束的任务。                |
+| `active_no_cost`           | 排序时去除成本分母，仍保留硬预算。                |
+| `active_no_discrimination` | 去除区分性权重，仍保留成本和可执行性约束。            |
+| `active_evidence`          | 完整 CAES 启发式价值/成本排序及多样性检查。        |
 
 `--shadow-caes` 记录完整 CAES 建议，实际仍执行 Coordinator 任务；观测时使用默认
 策略。观测失败回退至原提案，STOP 与截止时间检查仍有效。CAES 选项要求
@@ -423,15 +423,3 @@ null。紧预算仍可能在后续工作流调用中耗尽。Seed Mock 只验证
 ```
 
 代码风格遵循 Ruff（`line-length = 100`、`py311`）。新增角色应同步维护公共契约、只读工具权限和对应测试；不要提交本地密钥。
-
-## 局限性与诚实声明
-
-这是一个个人研究与学习项目。在线 LLM 对比、学习型嵌入的性能与人工语义引用
-复核,都需要单独的实测验收后才能支撑研究性结论。合成数据集使用共享因果模板,
-不能证明生产泛化能力;测试集归属只是留出约定,并非盲测证明。Mock 结果证明的
-是流水线的正确性,而不是真实模型精度或架构优越性。每项声明的完整边界详见
-上文章节与所链接的文档。
-
-### 终止协议与计分
-
-新运行发送 `WORKFLOW_STOP_REQUESTED`、实际停止后的 `STOP_ACK`，以及最终 `NORMAL_TERMINATION` 或 `RUNTIME_FAILURE`；state 与 report 保存一致的结构化终止结果。正常停止与恢复后的模型调用失败保留已确认诊断的分数；方案生成失败、停止确认失败分别计分，并使完整工作流失败。`PLAN_ONLY` 不表示服务已经恢复。历史 STOP trace 通过保守兼容分类继续读取；分母与离线重算规则见[评测说明](docs/evaluation.md)。

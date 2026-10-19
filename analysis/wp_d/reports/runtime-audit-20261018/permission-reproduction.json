@@ -1,0 +1,8 @@
+{
+  "reproduced": true,
+  "exception": "PermissionError",
+  "winerror": 5,
+  "task_record_status": "FAILED",
+  "can_retry": true,
+  "note": "TASK_FAILED is persisted before status.json replacement raises. Exception escapes fail() before retry logic. This reproduces a candidate mechanism, not proof of the actual file holder in slot12."
+}

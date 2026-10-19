@@ -72,6 +72,7 @@ def evidence_index():
 
 def fake_run():
     run = InvestigationRun.__new__(InvestigationRun)
+    run.journal = None
     run.variant = "full"
     run.response_profile = False
     run.registry = SimpleNamespace(call_count=0)

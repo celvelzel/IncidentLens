@@ -19,7 +19,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v12-evidence-reconciliation-v3"
+PROMPT_VERSION = "roles-v12-evidence-reconciliation-v5"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -37,8 +37,8 @@ ROLE_PROMPTS = {
     "metrics": "Compare cause-specific health against downstream symptoms. Allowed query_metrics(service,metric_names,start_ts,end_ts); empty names means all. Prefer metric_names=[] on first inspection of a service to discover actual available metric names. Do not invent names; empty results are not proof of healthy behavior. get_dependencies(service?).",
     "database": DATABASE_PROMPT
     + " Submit structured requested_checks (RequestCheck) for additional discriminating tasks where necessary.",
-    "changes": "Compare changes before AND during the observation window and actual config diffs against observed symptoms. started_at is the start of observation, not a proven failure onset; do not use it as the query end by default. For initial discovery omit optional time/type filters unless a justified narrower window is supplied. Allowed query_changes(service?,start_ts?,end_ts?,change_type?); get_config_diff(change_id). A change_id is metadata.change_id from an observed change record, NEVER its evidence_id. Consult minimal_facts.evidence_index for published metadata. If no actual change_id is available, query_changes first; runtime can use a spare tool slot to fetch the discovered diff. Never guess a diff ID.",
-    "verifier": "Check only shared observations. Demand two independent sources and a cause discriminator, challenge contradictions with concrete requested tasks. Do not manufacture objections. Distinguish missing causal evidence from optional corroboration. A config mechanism followed by matching service symptoms can be sufficient; missing unrelated service metrics, percentiles or severity labels alone is not a causal contradiction. requested_checks are BLOCKING causal gaps. Put nonblocking corroboration in optional_checks. A sufficient verdict requires empty requested_checks and contradictions. Request the unobserved causal source before repeating unavailable telemetry.",
+    "changes": "Compare changes before AND during the observation window and actual config diffs against observed symptoms. started_at is the start of observation, not a proven failure onset; do not use it as the query end by default. For initial discovery omit optional time/type filters unless a justified narrower window is supplied. Omitted query_changes time bounds cover the entire supplied evidence pack; they are not an invalid or incomplete window. A successful empty broad query is a causal evidence gap, never proof of health. Allowed query_changes(service?,start_ts?,end_ts?,change_type?); get_config_diff(change_id). A change_id is metadata.change_id from an observed change record, NEVER its evidence_id. Consult minimal_facts.evidence_index for published metadata. If no actual change_id is available, query_changes first; runtime can use a spare tool slot to fetch the discovered diff. Never guess a diff ID.",
+    "verifier": "Check only shared observations. Demand two independent sources and a cause discriminator, challenge contradictions with concrete requested tasks. Do not manufacture objections. Distinguish missing causal evidence from optional corroboration. A config mechanism followed by matching service symptoms can be sufficient; missing unrelated service metrics, percentiles or severity labels alone is not a causal contradiction. requested_checks are BLOCKING causal gaps. Put nonblocking corroboration in optional_checks. A sufficient verdict requires empty requested_checks and contradictions. Request the unobserved causal source before repeating unavailable telemetry. In query_history, successful completed query_changes with omitted time bounds covers the entire supplied pack for its service/type filters. Do not request time bounds merely because they were omitted. An empty result remains a causal evidence gap, not proof of health; abstain if no new discriminating scope is available.",
     "single": "Plan, investigate and self-reflect under a single runtime identity. Distinguish self-reflection from independent review.",
 }
 
@@ -161,7 +161,7 @@ async def decide(provider, state_payload):
     result, usage = await provider.structured_call(
         role, prompt(role) + "\n" + ROLE_PROMPTS["coordinator"]
         + "\nInspect changes/config diffs before concluding evidence is insufficient. "
-        "Use query_history to distinguish an empty filtered slice from an absent source. "
+        "Use query_history effective args, ok, record_count, next_cursor and completed to distinguish successful exhausted scope from failed or partial queries. Omitted query_changes time bounds cover the entire supplied pack. An empty broad query remains an evidence gap, not health. If completed scopes leave no new discriminating check, ABSTAIN. "
         "Do not repeatedly query unavailable metrics; choose a new causal source."
         "\nAction contract: INVESTIGATE requires a non-empty assignments list; FINALIZE requires "
         "selected_hypothesis_id and stop_reason with no assignments; ABSTAIN requires stop_reason "
@@ -201,9 +201,46 @@ async def verify(provider, state_payload):
     role = "single" if state_payload.get("variant") == "single" else "verifier"
     state_payload["role_tool_acl"] = {role: list(tools) for role, tools in ROLE_TOOL_ACL.items()}
     state_payload["tool_argument_schemas"] = tool_schemas(ARGUMENT_MODELS)
-    return await provider.structured_call(
-        role, prompt(role) + "\n" + ROLE_PROMPTS["verifier"], state_payload, REVIEW_SCHEMA
+    # Bind generation and local validation to exactly the records fetched under
+    # the verifier ACL, rather than IDs mentioned elsewhere on the shared board.
+    ids = tuple(sorted(state_payload.get("evidence_index", {})))
+    refs = list[Literal[ids]] if ids else list[str]
+    field = Field(default_factory=list) if ids else Field(default_factory=list, max_length=0)
+    invalid_attempts = []
+
+    @model_validator(mode="before")
+    def record_invalid_citations(cls, value):
+        if isinstance(value, dict) and isinstance(value.get("cited_evidence_ids"), list):
+            invalid = [eid for eid in value["cited_evidence_ids"]
+                       if isinstance(eid, str) and eid not in ids]
+            if invalid:
+                invalid_attempts.append(sorted(set(invalid)))
+        return value
+
+    schema = create_model(
+        "Review", __base__=ReviewOutput,
+        cited_evidence_ids=(refs, field),
+        __validators__={"record_invalid_citations": record_invalid_citations},
     )
+    try:
+        review, usage = await provider.structured_call(
+            role, prompt(role) + "\n" + ROLE_PROMPTS["verifier"]
+            + "\nEvery cited_evidence_ids entry must come from evidence_index; "
+            "use an empty list if no fetched observation supports the review.",
+            state_payload, schema,
+        )
+    except ProviderError as exc:
+        if invalid_attempts:
+            exc.review_citation_validation = {
+                "allowed_evidence_ids": list(ids), "invalid_citation_attempts": invalid_attempts,
+            }
+        raise
+    if invalid_attempts:
+        usage = dict(usage)
+        usage["review_citation_validation"] = {
+            "allowed_evidence_ids": list(ids), "invalid_citation_attempts": invalid_attempts,
+        }
+    return review, usage
 
 
 async def plan_tools(provider, context, task, public_summary, minimal_facts):

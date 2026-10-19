@@ -481,19 +481,4 @@ easiest to review.
 ```
 
 Code style follows Ruff (`line-length = 100`, `py311`). New roles should update public
-contracts, read-only tool permissions and corresponding tests. Never commit local secrets.
-
-## Limitations and honest scope
-
-This is a personal research and learning project. Live LLM comparisons, learned
-embedding performance and manual semantic citation review require separate
-measured acceptance before research-performance claims. The synthetic dataset
-uses shared causal templates and does not establish production generalization;
-test membership is a holdout convention, not proof of blind evaluation. Mock
-results demonstrate correctness of the pipeline, not real-model accuracy or
-architecture superiority. See the sections above and linked documents for the
-full boundary of every claim.
-
-### Termination and scoring
-
-New runs emit `WORKFLOW_STOP_REQUESTED`, actual `STOP_ACK` acknowledgments and a final `NORMAL_TERMINATION` or `RUNTIME_FAILURE`. State and report share a structured termination result. Normal shutdown and recovered model-call failures preserve accepted diagnosis credit; plan generation failure and shutdown failure are reported separately and fail the complete workflow. `PLAN_ONLY` never implies service recovery. Historical STOP traces remain readable through conservative normalization. See [evaluation semantics](docs/evaluation.md) for applicable denominators and offline rescoring.
+contracts, read-only tool permissions and corresponding tests. Never commit local secrets

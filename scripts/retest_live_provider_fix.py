@@ -19,12 +19,13 @@ from incident_lens.incidentbench.schemas import ExperimentProtocol
 from incident_lens.llm.config import provider_options
 from incident_lens.llm.provider import RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
+from incident_lens.orchestration.observability import RunJournal
 from incident_lens.schemas import Budget
 from incident_lens.schemas.workflow import WorkflowOptions
 from incident_lens.tools import EvidenceProvider
 
 
-async def run(args):
+async def run_case(args):
     project = Path(__file__).resolve().parents[1]
     load_dotenv(project / ".env", override=False)
     protocol = ExperimentProtocol.model_validate_json(args.protocol.read_text(encoding="utf-8-sig"))
@@ -59,6 +60,7 @@ async def run(args):
         "dispatch_policy": "collect-siblings; bounded-provider-retry; public-change-discovery; bounded-diff-fetch",
     }
     (args.out / "scope.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    args.journal = RunJournal(args.out / "observability", metadata)
     state = await run_investigation(
         args.incident, provider, data_root=args.dataset / "rca", variant=args.variant,
         budget=Budget(
@@ -67,12 +69,14 @@ async def run(args):
         ),
         workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True,
                                  benchmark_fixed_four=args.variant == "fixed"),
+        journal=args.journal,
     )
     save_run(state, args.out, "real", variant=args.variant)
     raw = state.model_dump(mode="json")
     summary = normalize_termination(raw) | usage_metrics(provider, raw)
     summary["source_drift"] = snapshot_changes(frozen_sources, retest_snapshot(project))
     summary["source_unchanged"] = not summary["source_drift"]
+    summary["observability"] = args.journal.health()
     summary["query_gap_count"] = sum(e.event_type == "TOOL_DATA_GAP" for e in state.events)
     summary["fatal_dispatch"] = any(
         e.event_type == "RUNTIME_ERROR" and e.details.get("stage") == "dispatch"
@@ -82,6 +86,18 @@ async def run(args):
         json.dumps(summary, indent=2) + "\n", encoding="utf-8",
     )
     print(json.dumps(summary))
+
+
+async def run(args):
+    error = None
+    try:
+        await run_case(args)
+    except BaseException as exc:
+        error = exc
+        raise
+    finally:
+        if getattr(args, "journal", None) is not None:
+            args.journal.close(error)
 
 
 if __name__ == "__main__":

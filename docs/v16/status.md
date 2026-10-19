@@ -1,3 +1,18 @@
+# 后续迭代需求 — 2026-10-17
+
+已纳入[长时测试可观测性、检查点与断点续跑计划](../plans/IncidentLens_Observability_Checkpoint_Resume_Iteration_Plan.md)。
+先交付增量事件、心跳与安全检查点，再分阶段实现批次续跑和单调查恢复；后续扩大真实实验前先验收记录能力。
+当前为计划，尚未实现；不热修改已启动 T6 的冻结源码，也不改变已有 G1a/真实 resume 守卫。
+
+# T6 resumption — 2026-10-16
+
+The owner resumed T6, authorized `deepseek-v4-flash-0731` without an overall
+budget cap, and selected the accepted Seed three-case pilot. Historical deferred
+and approval-pending statements below are superseded for this bounded task.
+See [T6 closure and pilot](t6-closure-and-pilot-20261016.md) for static failure
+attribution, reviewed repair, frozen-source regression and live execution evidence.
+G1a/G4 remain unaccepted until their actual downstream acceptance succeeds.
+
 # V1.6 integration update — 2026-10-16
 
 This update supersedes historical pending-operation statements below.

@@ -1,0 +1,113 @@
+{
+  "basis": "project candidate reference labels; no sentence-level semantic audit",
+  "rows": [
+    {
+      "slot": 1,
+      "case": "incident_1002",
+      "variant": "full",
+      "result": "根因正确，通过",
+      "termination": "DIAGNOSIS_READY",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 2,
+      "case": "incident_1002",
+      "variant": "dynamic_no_verifier",
+      "result": "根因正确，通过",
+      "termination": "DIAGNOSIS_READY",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 3,
+      "case": "incident_1001",
+      "variant": "fixed",
+      "result": "根因正确，通过",
+      "termination": "DIAGNOSIS_READY",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 4,
+      "case": "incident_1003",
+      "variant": "full",
+      "result": "运行失败，未通过",
+      "termination": "BUDGET_EXHAUSTED",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 5,
+      "case": "incident_1001",
+      "variant": "dynamic_no_verifier",
+      "result": "错误弃答，未通过",
+      "termination": "INCONCLUSIVE",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 6,
+      "case": "incident_1002",
+      "variant": "single",
+      "result": "根因正确，通过",
+      "termination": "DIAGNOSIS_READY",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 7,
+      "case": "incident_1003",
+      "variant": "fixed",
+      "result": "正确弃答，通过",
+      "termination": "INCONCLUSIVE",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 8,
+      "case": "incident_1001",
+      "variant": "full",
+      "result": "运行失败，未通过",
+      "termination": "BUDGET_EXHAUSTED",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 9,
+      "case": "incident_1002",
+      "variant": "fixed",
+      "result": "错误弃答，未通过",
+      "termination": "INCONCLUSIVE",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 10,
+      "case": "incident_1003",
+      "variant": "dynamic_no_verifier",
+      "result": "正确弃答，通过",
+      "termination": "INCONCLUSIVE",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 11,
+      "case": "incident_1001",
+      "variant": "single",
+      "result": "运行失败，未通过",
+      "termination": "UNRECOVERABLE_ERROR",
+      "source_unchanged": true,
+      "protocol_valid": true
+    },
+    {
+      "slot": 12,
+      "case": "incident_1003",
+      "variant": "single",
+      "result": "运行失败，未通过",
+      "termination": "UNRECOVERABLE_ERROR",
+      "source_unchanged": true,
+      "protocol_valid": true
+    }
+  ]
+}

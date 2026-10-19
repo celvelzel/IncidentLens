@@ -1,0 +1,16 @@
+{
+  "view": "completed_run_case_result_only",
+  "changes_original_attempt_statistics": false,
+  "input_root": "results/v16/wp-d/matrix-20261017-01",
+  "slot": 5,
+  "selected_attempt": "run-05-incident_1001-dynamic_no_verifier-retry-02",
+  "excluded_from_diagnostic_correctness_only": [
+    "run-05-incident_1001-dynamic_no_verifier",
+    "run-05-incident_1001-dynamic_no_verifier-retry-01"
+  ],
+  "preserve_raw_attempts_and_usage": true,
+  "selection_rule": "only completed attempt; not best-answer selection",
+  "case_result": "incorrect_abstention",
+  "integration": "Superseded by matrix final-selection.json, now consumed by summarize.py",
+  "historical_snapshot": true
+}
