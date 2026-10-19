@@ -5,7 +5,7 @@
   "basis": "pre-20261019-repair checkout; matches four postfix reruns; original matrix cells used an earlier runtime version",
   "restoration": "Unpack source-snapshot.zip into a separate checkout to restore exact bytes, independent of Git text normalization. Do not unpack over the repaired main branch.",
   "credentials_included": false,
-  "private_oracles_included": false,
+  "private_oracles_included": true,
   "files": {
     ".gitattributes": "e45cf6c37ec81b15201fe92e96fb5cd13feefcd68b79fba4a8143e43f0f6f9e7",
     "configs/active-investigation.example.yaml": "4137f3147bd52afb473a3768099488fd09ad7ba3c3eaaa4323643e9e6d5bbee0",
@@ -735,5 +735,7 @@
     "tests/web/replay-demo.test.mjs": "6c8e9e187a0e0719bf8077f901771b9a5cd5f0a9628f61f2db0f2392bb5d6c83",
     "tests/web/replay.test.mjs": "aff2b71bd95a065382531726cad71957d69fcdfd899efbe9c6b570105e02f71c"
   },
-  "archive_sha256": "594aabe36a786d596ad553c694887ac3a7d750b94f602d9ba9b0ede4f58b21bd"
+  "archive_sha256": "594aabe36a786d596ad553c694887ac3a7d750b94f602d9ba9b0ede4f58b21bd",
+  "local_oracles_included": false,
+  "oracle_scope": "Only existing tracked seed-fixture ground_truth files under data/incidents are archived for offline reproducibility; local_oracles and private WP-B labels are excluded."
 }
