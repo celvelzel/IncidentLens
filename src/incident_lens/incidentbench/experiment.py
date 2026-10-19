@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from uuid import UUID, uuid4
 
-from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics, write_csv
+from incident_lens.evaluation.runner import MeasuredProvider, csv_rows, usage_metrics, write_csv
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
 from incident_lens.schemas.workflow import WorkflowOptions
@@ -122,7 +122,7 @@ def write_csv_preserving(path, rows):
         stream = io.StringIO(newline="")
         writer = csv.DictWriter(stream, fieldnames=headers)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(csv_rows(rows))
         if existing_bytes != stream.getvalue().encode("utf-8"):
             raise ValueError("existing derived CSV mismatch")
     else:

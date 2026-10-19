@@ -203,6 +203,14 @@ def aggregate(rows):
                 tool_calls=measured_sum("tool_calls"),
                 llm_requests=measured_sum("llm_requests"),
                 total_tokens=measured_sum("total_tokens"),
+                measured_total_tokens=(
+                    sum(r.get("measured_total_tokens", r.get("total_tokens")) or 0 for r in group)
+                    if any(r.get("measured_total_tokens", r.get("total_tokens")) is not None for r in group)
+                    else None
+                ),
+                token_usage_complete_runs=sum(r.get("total_tokens") is not None for r in group),
+                token_usage_incomplete_runs=sum(r.get("total_tokens") is None for r in group),
+                token_usage_basis="provider_reported; measured_total_tokens is a lower bound when incomplete",
                 cost_usd=measured_sum("cost_usd"),
                 failed_calls=measured_sum("failed_calls"),
                 latency_ms=measured_sum("latency_ms"),

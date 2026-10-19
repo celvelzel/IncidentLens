@@ -10,6 +10,8 @@ from uuid import uuid4
 import httpx
 from pydantic import BaseModel, ValidationError
 
+from incident_lens.llm.usage import begin_request, record_usage
+
 HTTP_CALL_CONTEXT = ContextVar("incident_lens_http_call", default=None)
 
 
@@ -21,6 +23,8 @@ class ProviderError(RuntimeError):
         self.code = code
         self.usage = usage or {}
         self.failure = failure
+        if failure is not None:
+            self.usage["failure"] = failure.model_dump(mode="json")
 
 
 class LLMProvider(ABC):
@@ -144,11 +148,13 @@ class RealChatProvider(LLMProvider):
             source="model",
             model_id=self.model_id,
             llm_calls=0,
+            actual_http_requests=0,
             prompt_tokens=None,
             completion_tokens=None,
             total_tokens=None,
             measured_total_tokens=0,
             tokens_complete=True,
+            provider_recovery_enabled=False,
         )
         schema = strict_schema(output_model)
         messages = output_messages(system_prompt, user_payload, schema)
@@ -170,7 +176,6 @@ class RealChatProvider(LLMProvider):
         if self.thinking is not None:
             body["thinking"] = {"type": self.thinking}
         client = self._client or httpx.AsyncClient(timeout=self.timeout, trust_env=self._trust_env)
-        unknown_tokens = set()
         request_pending = False
         permit = None
         reconciler = self.request_reconciler
@@ -182,7 +187,10 @@ class RealChatProvider(LLMProvider):
                     except RuntimeError:
                         raise ProviderError("REQUEST_BUDGET_EXCEEDED", usage) from None
                 usage["llm_calls"] += 1
+                usage["actual_http_requests"] += 1
+                begin_request(usage)
                 request_pending = True
+                attempt_started = self.clock()
                 try:
                     response = await asyncio.wait_for(client.post(
                         self.endpoint
@@ -192,22 +200,45 @@ class RealChatProvider(LLMProvider):
                         headers={"Authorization": "Bearer " + self._api_key},
                         timeout=self.timeout,
                     ), timeout=self.timeout)
-                except (httpx.TimeoutException, TimeoutError):
-                    raise ProviderError("PROVIDER_TIMEOUT", usage) from None
+                except (httpx.TimeoutException, TimeoutError) as exc:
+                    from incident_lens.llm.errors import classify_transport
+
+                    info = classify_transport(
+                        exc if isinstance(exc, httpx.TimeoutException) else httpx.ReadTimeout("deadline"),
+                        elapsed_ms=(self.clock() - attempt_started) * 1000,
+                        http_attempt_index=usage["llm_calls"],
+                    )
+                    raise ProviderError("PROVIDER_TIMEOUT", usage, info) from None
                 except asyncio.CancelledError as exc:
                     exc.usage = usage
                     raise
-                except httpx.HTTPError:
-                    raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage) from None
-                if response.status_code in (400, 404, 422):
-                    raise ProviderError("STRUCTURED_OUTPUT_COMPATIBILITY_ERROR", usage)
+                except httpx.HTTPError as exc:
+                    from incident_lens.llm.errors import classify_transport
+
+                    info = classify_transport(exc, elapsed_ms=(self.clock() - attempt_started) * 1000,
+                                              http_attempt_index=usage["llm_calls"])
+                    raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage, info) from None
                 if response.status_code >= 400:
                     from incident_lens.llm.errors import classify_http
 
-                    raise ProviderError(
-                        "PROVIDER_HTTP_ERROR", usage,
-                        failure=classify_http(response.status_code, response.headers),
-                    )
+                    try:
+                        envelope = response.json()
+                    except ValueError:
+                        envelope = None
+                    envelope = envelope if isinstance(envelope, dict) else {}
+                    total = record_usage(usage, envelope.get("usage"))
+                    if total is not None and self.token_observer is not None:
+                        self.token_observer(total)
+                    if reconciler is not None:
+                        reconciler(permit, total)
+                    request_pending = False
+                    error = envelope.get("error")
+                    code = error.get("code") if isinstance(error, dict) else None
+                    info = classify_http(response.status_code, response.headers, code,
+                                         elapsed_ms=(self.clock() - attempt_started) * 1000,
+                                         http_attempt_index=usage["llm_calls"],
+                                         usage_complete=usage["tokens_complete"])
+                    raise ProviderError(info.legacy_code, usage, info)
                 try:
                     data = response.json()
                     if not isinstance(data, dict):
@@ -215,22 +246,9 @@ class RealChatProvider(LLMProvider):
                     token_usage = data.get("usage") or {}
                     if not isinstance(token_usage, dict):
                         raise ValueError("Invalid usage envelope")
-                    total = token_usage.get("total_tokens")
-                    if isinstance(total, int) and not isinstance(total, bool) and total >= 0:
-                        usage["measured_total_tokens"] += total
-                        if self.token_observer is not None:
-                            self.token_observer(total)
-                    else:
-                        usage["tokens_complete"] = False
-                    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
-                        n = token_usage.get(key)
-                        if key in unknown_tokens:
-                            continue
-                        if isinstance(n, int) and not isinstance(n, bool) and n >= 0:
-                            usage[key] = (usage[key] or 0) + n
-                        else:
-                            usage[key] = None
-                            unknown_tokens.add(key)
+                    total = record_usage(usage, token_usage)
+                    if total is not None and self.token_observer is not None:
+                        self.token_observer(total)
                     if reconciler is not None:
                         reconciler(permit, total if type(total) is int and total >= 0 else None)
                     request_pending = False
@@ -243,7 +261,6 @@ class RealChatProvider(LLMProvider):
                         usage["tokens_complete"] = False
                         for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
                             usage[key] = None
-                            unknown_tokens.add(key)
                         if reconciler is not None:
                             reconciler(permit, None)
                         request_pending = False
@@ -299,10 +316,9 @@ class RealChatProvider(LLMProvider):
             total_tokens=None,
             measured_total_tokens=0,
             tokens_complete=True,
+            provider_recovery_enabled=True,
             provider_attempts=[],
         )
-        sums = {key: 0 for key in ("prompt_tokens", "completion_tokens", "total_tokens")}
-        unknown = set()
         schema = strict_schema(output_model)
         messages = output_messages(system_prompt, user_payload, schema)
         body = dict(model=self.model_id, temperature=self.temperature, messages=messages)
@@ -335,10 +351,11 @@ class RealChatProvider(LLMProvider):
                 emit(kind, role=role, **safe)
 
         def mark_unknown():
-            usage["tokens_complete"] = False
-            unknown.update(sums)
-            for key in sums:
-                usage[key] = None
+            # begin_request already recorded an unknown physical attempt. Keep
+            # earlier measurements, even if a later request never responds.
+            from incident_lens.llm.usage import refresh_usage
+
+            refresh_usage(usage)
 
         def budget_snapshot():
             return (
@@ -429,6 +446,7 @@ class RealChatProvider(LLMProvider):
                         raise failure_error(info) from None
                 usage["llm_calls"] += 1
                 usage["actual_http_requests"] += 1
+                begin_request(usage)
                 if next_kind == "retry":
                     retries += 1
                     usage["transport_retries"] = retries
@@ -443,6 +461,8 @@ class RealChatProvider(LLMProvider):
                     repair_index=repairs,
                 )
                 info = None
+                response = None
+                attempt_started = self.clock()
                 context = dict(
                     logical_call_id=logical_id,
                     http_attempt_index=usage["llm_calls"],
@@ -467,22 +487,27 @@ class RealChatProvider(LLMProvider):
                 except (httpx.HTTPError, TimeoutError) as exc:
                     if isinstance(exc, TimeoutError):
                         exc = httpx.ReadTimeout("Request deadline exceeded")
-                    context["elapsed_ms"] = (self.clock() - started) * 1000
+                    context["elapsed_ms"] = (self.clock() - attempt_started) * 1000
                     info = classify_transport(exc, **context)
                 if info is None and response.status_code >= 400:
                     code = None
+                    envelope = None
                     try:
                         envelope = response.json()
                         error = envelope.get("error") if isinstance(envelope, dict) else None
                         code = error.get("code") if isinstance(error, dict) else None
                     except ValueError:
                         pass
-                    context["elapsed_ms"] = (self.clock() - started) * 1000
+                    context["elapsed_ms"] = (self.clock() - attempt_started) * 1000
                     info = classify_http(response.status_code, response.headers, code, **context)
                 if info is not None:
-                    mark_unknown()
+                    reported = envelope.get("usage") if response is not None and isinstance(envelope, dict) else None
+                    total = record_usage(usage, reported)
+                    if total is not None and observer is not None:
+                        observer(total)
+                    info = info.model_copy(update={"usage_complete": usage["tokens_complete"]})
                     if reconciler is not None:
-                        reconciler(permit, None)
+                        reconciler(permit, total)
                     pending = False
                     event(
                         "PROVIDER_FAILURE_CLASSIFIED",
@@ -522,20 +547,9 @@ class RealChatProvider(LLMProvider):
                     data = None
                 token_data = data.get("usage") if isinstance(data, dict) else None
                 token_data = token_data if isinstance(token_data, dict) else {}
-                total = token_data.get("total_tokens")
-                if isinstance(total, int) and not isinstance(total, bool) and total >= 0:
-                    usage["measured_total_tokens"] += total
-                    if observer is not None:
-                        observer(total)
-                else:
-                    usage["tokens_complete"] = False
-                for key in sums:
-                    n = token_data.get(key)
-                    if isinstance(n, int) and not isinstance(n, bool) and n >= 0:
-                        sums[key] += n
-                    else:
-                        unknown.add(key)
-                    usage[key] = None if key in unknown else sums[key]
+                total = record_usage(usage, token_data)
+                if total is not None and observer is not None:
+                    observer(total)
                 if reconciler is not None:
                     reconciler(permit, total if type(total) is int and total >= 0 else None)
                 pending = False

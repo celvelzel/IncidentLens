@@ -74,6 +74,12 @@ async def run_case(args):
     save_run(state, args.out, "real", variant=args.variant)
     raw = state.model_dump(mode="json")
     summary = normalize_termination(raw) | usage_metrics(provider, raw)
+    (args.out / "measured-usage.json").write_text(
+        json.dumps({"schema_version": 1, "calls": provider.calls,
+                    "token_usage_by_role": summary["token_usage_by_role"],
+                    "token_usage_basis": summary["token_usage_basis"]}, indent=2) + "\n",
+        encoding="utf-8",
+    )
     summary["source_drift"] = snapshot_changes(frozen_sources, retest_snapshot(project))
     summary["source_unchanged"] = not summary["source_drift"]
     summary["observability"] = args.journal.health()

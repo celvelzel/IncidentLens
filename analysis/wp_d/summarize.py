@@ -55,6 +55,68 @@ def classify(result, verification):
     return "unverified_terminal"
 
 
+def token_accounting(verification, events):
+    """Recover existing measurements without changing artifacts or inventing usage.
+
+    This is deliberately stdlib-only, independent of the runtime package.
+    Legacy mixed-attempt coverage counts are conservative, not exact.
+    """
+    keys = ("prompt_tokens", "completion_tokens", "total_tokens")
+
+    def valid(value):
+        return type(value) is int and value >= 0
+
+    if valid(verification.get("measured_total_tokens")):
+        fields = (*keys, *("measured_" + k for k in keys), "tokens_complete",
+                  "requests_with_token_usage", "requests_without_token_usage", "token_usage_basis")
+        return {k: verification.get(k) for k in fields} | {"token_recovery_basis": "verification"}
+    calls, seen = [], set()
+    for index, event in enumerate(events):
+        if event.get("event_type") not in {"LLM_CALL", "MODEL_FAILURE"}:
+            continue
+        details = event.get("details", {})
+        identity = details.get("call_id") or event.get("call_id") or f"event-{index}"
+        if identity in seen or details.get("llm_calls", 1) == 0:
+            continue
+        seen.add(identity)
+        details = dict(details)
+        if (not valid(details.get("total_tokens"))
+                and valid(details.get("prompt_tokens"))
+                and valid(details.get("completion_tokens"))):
+            details["total_tokens"] = details["prompt_tokens"] + details["completion_tokens"]
+            details["measured_total_tokens"] = details["total_tokens"]
+            details["tokens_complete"] = True
+        calls.append(details)
+    result = {}
+    for key in keys:
+        measurements = [c.get("measured_" + key, c.get(key)) for c in calls]
+        result["measured_" + key] = (
+            sum(v for v in measurements if valid(v)) if any(valid(v) for v in measurements) else None
+        )
+        total = verification.get(key)
+        result[key] = total if valid(total) else None
+    observed_requests = sum(c.get("llm_calls", 1) for c in calls)
+    expected_requests = verification.get("actual_http_requests")
+    known = sum(c.get("llm_calls", 1) for c in calls
+                if valid(c.get("total_tokens")) and c.get("tokens_complete", True))
+    result["requests_with_token_usage"] = known
+    result["requests_without_token_usage"] = max(
+        0, max(observed_requests, expected_requests or 0) - known
+    )
+    for key in keys:
+        if (result[key] is None and calls and expected_requests == observed_requests
+                and all(valid(c.get(key)) for c in calls)):
+            result[key] = sum(c[key] for c in calls)
+        # Complete verification totals take precedence over an incomplete trace.
+        if valid(result[key]):
+            result["measured_" + key] = result[key]
+    result["tokens_complete"] = result["total_tokens"] is not None
+    result["token_usage_basis"] = "provider_reported; measured_* are lower bounds when incomplete"
+    result["token_recovery_basis"] = "verification_totals_and_trace_measurements"
+    result["token_coverage_basis"] = "conservative_legacy_counts; mixed-attempt counts may be unknown"
+    return result
+
+
 def summarize(root):
     reader = Reader()
     order = reader.read(root / "run-order.json")
@@ -137,7 +199,8 @@ def summarize(root):
                     "prompt_tokens", "completion_tokens", "cost_usd", "provider_failures",
                     "task_retries", "repair_requests", "query_gap_count"):
             row[key] = verification.get(key)
-        row["tokens_complete"] = row["total_tokens"] is not None
+        row.update(token_accounting(verification, events))
+        row["verifier"] = verification.get("verifier")
         if mismatches:
             row["classification"] = "identity_mismatch"
         rows.append(row)
@@ -149,11 +212,11 @@ def summarize(root):
             key = row["classification"]
             counts[key] = counts.get(key, 0) + 1
         groups[variant] = {"scheduled_cells": len(original), "classifications": counts}
-        for metric in ("actual_http_requests", "total_tokens", "cost_usd", "elapsed_event_seconds"):
+        for metric in ("actual_http_requests", "total_tokens", "measured_total_tokens", "cost_usd", "elapsed_event_seconds"):
             known = [r[metric] for r in original if type(r[metric]) in (int, float)]
             groups[variant][metric] = {"known_sum": sum(known) if known else None,
                                       "known_count": len(known), "unknown_count": len(original)-len(known)}
-    return {"schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
+    return {"schema_version": 2, "generated_at": datetime.now(timezone.utc).isoformat(),
             "input_root": str(root), "snapshot_only": True, "expected_cells": len(schedule),
             "rows": rows, "by_variant_original_attempts": groups,
             "selection_basis": "user_authorized_final_selection" if replacements else "frozen_original_attempts",
@@ -167,6 +230,7 @@ def summarize(root):
                         "Candidates require evaluator/manual evidence review; no oracle read.",
                         "Missing artifacts do not establish whether a process is alive.",
                         "Unknown usage is not zero; extra attempts stay separate unless explicitly excluded.",
+                        "Measured tokens survive incomplete calls; partial totals are lower bounds, not full usage or estimated cost.",
                         "With final-selection.json, legacy by_variant_original_attempts contains selected cells; use selection_basis and by_variant_selected_attempts."]}
 
 
@@ -194,9 +258,9 @@ def main():
                 writer.writerow({k: json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v
                                  for k, v in row.items()})
     lines = ["# WP-D artifact snapshot", "", *[f"- {c}" for c in report["caveats"]], "",
-             "| Attempt | Case | Architecture | Classification | HTTP | Tokens |", "|---|---|---|---|---|---|"]
+             "| Attempt | Case | Architecture | Classification | HTTP | Total tokens | Measured tokens (lower bound if incomplete) | Complete |", "|---|---|---|---|---|---|---|---|"]
     for row in report["rows"]:
-        values = [row[k] for k in ("attempt_dir", "incident_id", "variant", "classification", "actual_http_requests", "total_tokens")]
+        values = [row[k] for k in ("attempt_dir", "incident_id", "variant", "classification", "actual_http_requests", "total_tokens", "measured_total_tokens", "tokens_complete")]
         lines.append("| " + " | ".join(str(v).replace("|", "\\|").replace("\n", " ") if v is not None else "unknown" for v in values) + " |")
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Saved {len(report['rows'])} attempt rows to {out}")

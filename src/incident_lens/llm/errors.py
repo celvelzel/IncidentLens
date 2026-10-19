@@ -26,6 +26,7 @@ FailureCategory = Literal[
     "WALL_BUDGET_EXHAUSTED",
     "TOKEN_BUDGET_EXHAUSTED",
     "UNKNOWN_PROVIDER_ERROR",
+    "QUOTA_EXHAUSTED",
 ]
 
 # Only exact, reviewed protocol codes may survive into diagnostics.
@@ -123,6 +124,11 @@ def classify_http(status_code, headers=None, sanitized_error_code=None, **contex
         if status_code in (400, 404, 422)
         else "PROVIDER_HTTP_ERROR",
     )
+    # Quota exhaustion is not a short-lived rate limit, even with HTTP 429.
+    if code == "insufficient_quota":
+        category, retryable = "QUOTA_EXHAUSTED", False
+    elif code == "invalid_api_key":
+        category, retryable = "AUTHENTICATION_FAILED", False
     return FailureInfo(
         **context,
         category=category,

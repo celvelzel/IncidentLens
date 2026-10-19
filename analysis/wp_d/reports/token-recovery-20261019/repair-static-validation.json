@@ -1,0 +1,26 @@
+{
+  "ast_files": 12,
+  "ruff": "passed",
+  "scoped_diff_check": "passed",
+  "pytest_executed": false,
+  "live_provider_calls_executed": false,
+  "historical_input_hashes_checked": 50,
+  "historical_input_drift": [],
+  "changed_python_sha256": {
+    "src/incident_lens/llm/usage.py": "85532be820e84d4332797e0f62a32dde0d5b9ba02433f2124d3d960187d2898d",
+    "src/incident_lens/llm/errors.py": "9f264f52fc308de00b7e1dd70ba76094bb2f1af2aab8ecf97eef52c42e0a974d",
+    "src/incident_lens/llm/provider.py": "de4d85800c409978daf2c895534d3235517d712e7719b63d6d1dfe334dbe1e4c",
+    "src/incident_lens/evaluation/runner.py": "edb925b6c8f86501217ec1db01435889b681ebfcaed31bcc0ca3b9f8610d03e1",
+    "src/incident_lens/evaluation/metrics.py": "4078d8f5b7135a9dac97cbea1c436a7727c67ce1235ed938a6d7a0e116f0c574",
+    "src/incident_lens/evaluation/verifier.py": "66af8b8b92c254c37613970b3e227da7696a6ab639c10b01310bdfe301f2285d",
+    "src/incident_lens/orchestration/budget.py": "1aacf2d2f513eb6f29d816f773baa5cb9d49d1a125ae5adc1911e49931db13f3",
+    "src/incident_lens/orchestration/graph.py": "bf56a363e65e17d522644bbdeeefa51591f241ceb6518d796a5ef1401efd3aab",
+    "src/incident_lens/agents/service.py": "7f142b81c37c26a55b5ffbbea51dcd5045823a4b9272294138349f8f5747506b",
+    "scripts/retest_live_provider_fix.py": "5ee49c05fde9286c29078aa08c956f94bb534baa43337faebc31108a49f818bd",
+    "analysis/wp_d/summarize.py": "d554713f47149d3d0cf4088ae39bbd2433c647e23611d7f468943ff47d2c587a",
+    "tests/integration/test_wpd_repair_accounting.py": "10a8a0ddb9b7762d19140e257e59b1248f026074840a6a5ea41f92f6c8568ec1"
+  },
+  "unrelated_existing_diff_warning": "docs/plans/v16/g1a-rescue-live-e2e/tasks.md:72: new blank line at EOF; left unchanged",
+  "phase": "initial_static_validation_before_offline_acceptance",
+  "latest_acceptance": "results/acceptance/wp-d-repair-offline-20261019"
+}

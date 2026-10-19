@@ -19,7 +19,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v12-evidence-reconciliation-v5"
+PROMPT_VERSION = "roles-v12-evidence-reconciliation-v6"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -104,6 +104,7 @@ def analysis_schema(records):
     hypothesis = create_model(
         "ObservedHypothesis",
         __base__=Hypothesis,
+        failure_mode=(Literal[tuple(FAILURE_MODES)], ...),
         support_ids=(refs, field),
         against_ids=(refs, field),
     )
@@ -158,6 +159,17 @@ async def decide(provider, state_payload):
         )
     if state_payload.get("fixed_schedule_completed"):
         instruction += "\nThe fixed investigation schedule is complete. Reconcile the shared board, then FINALIZE or ABSTAIN; never assign more tools or tasks."
+    instruction += (
+        "\nRead candidate_assessments before deciding: these are deterministic gate diagnostics, "
+        "not truth labels. Reconcile EVERY listed competing hypothesis, not just the chosen one. "
+        "A generic symptom alone does not distinguish mechanisms. Keep a competitor open when "
+        "there is a material causal gap; reject it only with observed contrary evidence. "
+        "Follow investigation_budget: reserve final decision and review calls. Prefer the check "
+        "that distinguishes supported mechanisms. A narrower or keyword-filtered query cannot "
+        "discover new records inside an already successful, complete, unfiltered scope; do not "
+        "request it solely because that filter combination has not been tried. "
+        "Use exact failure_mode_taxonomy values; put explanations in findings and predictions."
+    )
     result, usage = await provider.structured_call(
         role, prompt(role) + "\n" + ROLE_PROMPTS["coordinator"]
         + "\nInspect changes/config diffs before concluding evidence is insufficient. "
@@ -204,6 +216,11 @@ async def verify(provider, state_payload):
     # Bind generation and local validation to exactly the records fetched under
     # the verifier ACL, rather than IDs mentioned elsewhere on the shared board.
     ids = tuple(sorted(state_payload.get("evidence_index", {})))
+    targets = tuple(h["hypothesis_id"] for h in state_payload.get("hypotheses", []))
+    decisions = state_payload.get("decisions", [])
+    selected = decisions[-1].get("selected_hypothesis_id") if decisions else None
+    if selected in targets:
+        targets = (selected,)
     refs = list[Literal[ids]] if ids else list[str]
     field = Field(default_factory=list) if ids else Field(default_factory=list, max_length=0)
     invalid_attempts = []
@@ -220,13 +237,16 @@ async def verify(provider, state_payload):
     schema = create_model(
         "Review", __base__=ReviewOutput,
         cited_evidence_ids=(refs, field),
+        target_hypothesis_id=(Literal[targets], ...) if targets else (str, ...),
         __validators__={"record_invalid_citations": record_invalid_citations},
     )
     try:
         review, usage = await provider.structured_call(
             role, prompt(role) + "\n" + ROLE_PROMPTS["verifier"]
             + "\nEvery cited_evidence_ids entry must come from evidence_index; "
-            "use an empty list if no fetched observation supports the review.",
+            "use an empty list if no fetched observation supports the review. "
+            "When the latest decision selects a hypothesis for FINALIZE, review that hypothesis. "
+            "Otherwise review the best grounded existing candidate, never invent a target ID.",
             state_payload, schema,
         )
     except ProviderError as exc:
@@ -235,6 +255,8 @@ async def verify(provider, state_payload):
                 "allowed_evidence_ids": list(ids), "invalid_citation_attempts": invalid_attempts,
             }
         raise
+    if targets and review.target_hypothesis_id not in targets:
+        raise ProviderError("REVIEW_TARGET_INVALID", usage)
     if invalid_attempts:
         usage = dict(usage)
         usage["review_citation_validation"] = {

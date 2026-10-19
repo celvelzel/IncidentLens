@@ -1,0 +1,142 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+....................s................................................... [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+.............F............................................FFFF.......... [ 55%]
+........................................................................ [ 62%]
+...........s......................................F.F................... [ 69%]
+.FF.F.F....................FF.F.F....................FF................. [ 76%]
+......................s................................................. [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+............................                                             [100%]
+================================== FAILURES ===================================
+____ test_refreshed_finalize_does_not_request_another_coordinator_decision ____
+tests\integration\test_review_boundary.py:70: in test_refreshed_finalize_does_not_request_another_coordinator_decision
+    assert state.events[resumed - 1].event_type == "REVIEW"
+E   AssertionError: assert 'REVIEW_EFFECT' == 'REVIEW'
+E     
+E     - REVIEW
+E     + REVIEW_EFFECT
+____________ test_retest_runner_preserves_variant_metadata[single] ____________
+tests\integration\test_v16_e2e_preflight.py:131: in test_retest_runner_preserves_variant_metadata
+    await runner.run(argparse.Namespace(protocol=protocol, dataset=tmp_path,
+scripts\retest_live_provider_fix.py:100: in run
+    await run_case(args)
+scripts\retest_live_provider_fix.py:78: in run_case
+    json.dumps({"schema_version": 1, "calls": provider.calls,
+                                              ^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute 'calls'
+____________ test_retest_runner_preserves_variant_metadata[fixed] _____________
+tests\integration\test_v16_e2e_preflight.py:131: in test_retest_runner_preserves_variant_metadata
+    await runner.run(argparse.Namespace(protocol=protocol, dataset=tmp_path,
+scripts\retest_live_provider_fix.py:100: in run
+    await run_case(args)
+scripts\retest_live_provider_fix.py:78: in run_case
+    json.dumps({"schema_version": 1, "calls": provider.calls,
+                                              ^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute 'calls'
+_____ test_retest_runner_preserves_variant_metadata[dynamic_no_verifier] ______
+tests\integration\test_v16_e2e_preflight.py:131: in test_retest_runner_preserves_variant_metadata
+    await runner.run(argparse.Namespace(protocol=protocol, dataset=tmp_path,
+scripts\retest_live_provider_fix.py:100: in run
+    await run_case(args)
+scripts\retest_live_provider_fix.py:78: in run_case
+    json.dumps({"schema_version": 1, "calls": provider.calls,
+                                              ^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute 'calls'
+_____________ test_retest_runner_preserves_variant_metadata[full] _____________
+tests\integration\test_v16_e2e_preflight.py:131: in test_retest_runner_preserves_variant_metadata
+    await runner.run(argparse.Namespace(protocol=protocol, dataset=tmp_path,
+scripts\retest_live_provider_fix.py:100: in run
+    await run_case(args)
+scripts\retest_live_provider_fix.py:78: in run_case
+    json.dumps({"schema_version": 1, "calls": provider.calls,
+                                              ^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute 'calls'
+_________________________ test_paired_faults[R1-F02] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 6 is None
+_________________________ test_paired_faults[R1-F04] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R1-F31] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R1-F32] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 12 is None
+_________________________ test_paired_faults[R2-F02] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 6 is None
+_________________________ test_paired_faults[R2-F04] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R2-F31] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R2-F32] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 12 is None
+_________________________ test_paired_faults[R3-F02] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 6 is None
+_________________________ test_paired_faults[R3-F04] __________________________
+tests\reliability\test_fault_matrix.py:33: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R3-F31] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 9 is None
+_________________________ test_paired_faults[R3-F32] __________________________
+tests\reliability\test_fault_matrix.py:65: in test_paired_faults
+    assert row["total_tokens"] is None
+E   assert 12 is None
+============================ slowest 15 durations =============================
+30.16s call     tests/evaluation/test_concurrency.py::test_bounded_actual_runs_persist_and_match_serial
+23.83s call     tests/incidentbench/test_wp_b_finalization.py::test_inventory_safe_reproducible_and_original_bytes
+14.75s call     tests/evaluation/test_evaluation.py::test_actual_all_seed_variants_fairness_oracle_after_run_and_cache_off
+14.39s call     tests/incidentbench/test_cli_e2e.py::test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite
+10.81s call     tests/incidentbench/test_experiment_fairness.py::test_actual_four_graph_runs_durable_before_scoring_fresh_output
+10.35s call     tests/incidentbench/test_experiment_fairness.py::test_resume_raw_before_score_no_completed_graph_reexecution
+9.21s call     tests/active_investigation/test_ablations.py::test_default_protocol_runs_genuine_graph_all_six
+8.05s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[case-level.csv]
+7.84s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[reproducibility.txt]
+7.64s call     tests/incidentbench/test_experiment_fairness.py::test_resume_last_raw_before_score_requires_zero_graph_calls
+7.60s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[coverage.json]
+6.90s call     tests/incidentbench/test_experiment_fairness.py::test_resume_started_without_state_retains_failure_unknown_usage
+6.66s call     tests/incidentbench/test_replay_errors.py::test_replay_preserves_invalid_oracle_errors_and_failure_denominators
+6.61s call     tests/active_investigation/test_score_replay.py::test_completed_resume_no_provider_and_exact_bytes
+6.30s call     tests/incidentbench/test_wp_b_finalization.py::test_inventory_rejects_hash_drift
+=========================== short test summary info ===========================
+FAILED tests/integration/test_review_boundary.py::test_refreshed_finalize_does_not_request_another_coordinator_decision
+FAILED tests/integration/test_v16_e2e_preflight.py::test_retest_runner_preserves_variant_metadata[single]
+FAILED tests/integration/test_v16_e2e_preflight.py::test_retest_runner_preserves_variant_metadata[fixed]
+FAILED tests/integration/test_v16_e2e_preflight.py::test_retest_runner_preserves_variant_metadata[dynamic_no_verifier]
+FAILED tests/integration/test_v16_e2e_preflight.py::test_retest_runner_preserves_variant_metadata[full]
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R1-F02] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R1-F04] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R1-F31] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R1-F32] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R2-F02] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R2-F04] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R2-F31] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R2-F32] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R3-F02] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R3-F04] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R3-F31] - a...
+FAILED tests/reliability/test_fault_matrix.py::test_paired_faults[R3-F32] - a...
+17 failed, 1016 passed, 3 skipped in 318.86s (0:05:18)

@@ -8,6 +8,7 @@ from incident_lens.llm.provider import RealChatProvider
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.orchestration.merge import merge_results
 from incident_lens.schemas import Budget, Finding, InvestigationState, InvestigationTask
+from incident_lens.schemas.workflow import WorkflowOptions
 from incident_lens.tools import EvidenceProvider, ToolRegistry
 
 
@@ -68,6 +69,9 @@ async def test_partial_or_cancelled_request_usage_is_not_invented(failure):
                 "https://fixture.invalid/v1", "fixture-secret", "fixture", client=client
             ),
             budget=budget,
+            # This test isolates physical-request accounting; stage retries have
+            # their own recovery tests and can now retry HTTP 5xx as intended.
+            workflow=WorkflowOptions(max_attempts=1),
         )
     assert state.report.status == "INCONCLUSIVE"
     assert state.llm_calls_used == calls == (2 if failure in ("http_error", "bad_envelope") else 1)

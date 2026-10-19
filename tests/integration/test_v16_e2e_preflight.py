@@ -117,8 +117,10 @@ async def test_retest_runner_preserves_variant_metadata(tmp_path, monkeypatch, v
                        "MODEL": "offline-fixture"}.items():
         monkeypatch.setenv(f"INCIDENT_LENS_{key}", value)
     monkeypatch.setattr(runner, "RealChatProvider", lambda *a, **k: None)
-    monkeypatch.setattr(runner, "MeasuredProvider", lambda *a: SimpleNamespace(model_parameters={}))
-    monkeypatch.setattr(runner, "usage_metrics", lambda *a: {})
+    monkeypatch.setattr(runner, "MeasuredProvider", lambda *a: SimpleNamespace(model_parameters={}, calls=[]))
+    monkeypatch.setattr(runner, "usage_metrics", lambda *a: {
+        "token_usage_by_role": {}, "token_usage_basis": "offline_fixture",
+    })
     monkeypatch.setattr(runner, "EvidenceProvider", lambda *a: SimpleNamespace(dataset_revision="fixture"))
 
     async def investigate(*args, **kwargs):
@@ -131,3 +133,6 @@ async def test_retest_runner_preserves_variant_metadata(tmp_path, monkeypatch, v
     await runner.run(argparse.Namespace(protocol=protocol, dataset=tmp_path,
                                         out=output, incident="incident_001", variant=variant))
     assert preflight.read_json(output / "trace.json")["variant"] == variant
+    measured = preflight.read_json(output / "measured-usage.json")
+    assert measured == {"schema_version": 1, "calls": [], "token_usage_by_role": {},
+                        "token_usage_basis": "offline_fixture"}

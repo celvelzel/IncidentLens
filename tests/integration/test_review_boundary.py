@@ -67,7 +67,12 @@ async def test_refreshed_finalize_does_not_request_another_coordinator_decision(
     assert normalize_termination(state.model_dump(mode="json"))["protocol_valid"]
     resumed = next(i for i, e in enumerate(state.events)
                    if e.event_type == "FINALIZE_RESUMED_AFTER_REVIEW")
-    assert state.events[resumed - 1].event_type == "REVIEW"
+    review_id = state.events[resumed].details["review_event_id"]
+    reviewed = next(i for i, e in enumerate(state.events) if e.event_id == review_id)
+    assert state.events[reviewed].event_type == "REVIEW"
+    # Observability events may intervene; no model work or decision may do so.
+    assert all(e.event_type == "REVIEW_EFFECT" for e in state.events[reviewed + 1:resumed])
+    assert state.events[resumed - 1].details["review_event_id"] == review_id
     assert state.events[resumed + 1].event_type == "DIAGNOSIS_ACCEPTED"
     assert not any(e.event_type in {"LLM_CALL", "DECISION", "MODEL_FAILURE"}
                    for e in state.events[resumed + 1:])

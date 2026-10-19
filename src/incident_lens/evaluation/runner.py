@@ -13,6 +13,7 @@ from pathlib import Path
 
 from incident_lens.agents.service import PROMPT_VERSION
 from incident_lens.llm import LLMProvider, MockProvider
+from incident_lens.llm.usage import aggregate_usage
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
 from incident_lens.tools import EvidenceProvider
@@ -123,13 +124,15 @@ class MeasuredProvider(LLMProvider):
             result, usage = await delegate.structured_call(
                 role, system_prompt, user_payload, output_model
             )
-            self.calls.append(dict(usage=usage, failed=False))
+            self.calls.append(dict(usage=dict(usage), role=role, failed=False))
             return result, usage
         except BaseException as exc:
-            usage = dict(getattr(exc, "usage", {}))
+            usage = dict(getattr(exc, "usage", None) or {})
+            if getattr(exc, "failure", None) is not None:
+                usage["failure"] = exc.failure.model_dump(mode="json")
             usage.setdefault("llm_calls", self._call_requests.get())
             self.calls.append(dict(
-                usage=usage, failed=True,
+                usage=usage, role=role, failed=True,
                 cancelled=isinstance(exc, asyncio.CancelledError)
                 or getattr(exc, "code", "") == "PROVIDER_CANCELLED",
             ))
@@ -139,11 +142,9 @@ class MeasuredProvider(LLMProvider):
 
 
 def usage_metrics(provider, state):
-    def token_sum(key):
-        values = [c["usage"].get(key) for c in provider.calls]
-        if not values or any(v is None for v in values):
-            return None
-        return sum(values)
+    from incident_lens.evaluation.verifier import verifier_metrics
+
+    tokens = aggregate_usage([c["usage"] for c in provider.calls])
 
     failed_tools = sum(
         e["event_type"] == "TOOL_CALL" and e.get("details", {}).get("result", {}).get("ok") is False
@@ -177,9 +178,14 @@ def usage_metrics(provider, state):
             )
             for c in provider.calls
         ),
-        prompt_tokens=token_sum("prompt_tokens"),
-        completion_tokens=token_sum("completion_tokens"),
-        total_tokens=token_sum("total_tokens"),
+        **tokens,
+        token_usage_by_role={
+            role: aggregate_usage([c["usage"] for c in provider.calls if c.get("role") == role])
+            for role in sorted({c["role"] for c in provider.calls if c.get("role")})
+        },
+        verifier=verifier_metrics(state),
+        provider_failure_details=[c["usage"]["failure"] for c in provider.calls
+                                  if c["failed"] and c["usage"].get("failure")],
         cost_usd=None,
         failed_calls=failed_model_calls + failed_tools,
         provider_failures=provider_failures,
@@ -189,13 +195,22 @@ def usage_metrics(provider, state):
     )
 
 
+def csv_rows(rows):
+    """Nested measurements must survive sorted JSON persistence and resume."""
+    return [
+        {key: json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+         if isinstance(value, (dict, list)) else value for key, value in row.items()}
+        for row in rows
+    ]
+
+
 def write_csv(path, rows):
     fields = list(dict.fromkeys(key for row in rows for key in row))
     temporary = path.with_suffix(path.suffix + ".tmp")
     with temporary.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(csv_rows(rows))
     temporary.replace(path)
 
 

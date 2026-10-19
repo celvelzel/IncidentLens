@@ -1,0 +1,32 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+....................s................................................... [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+...........s............................................................ [ 69%]
+........................................................................ [ 76%]
+......................s................................................. [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+............................                                             [100%]
+============================ slowest 15 durations =============================
+26.42s call     tests/evaluation/test_concurrency.py::test_bounded_actual_runs_persist_and_match_serial
+24.37s call     tests/incidentbench/test_wp_b_finalization.py::test_inventory_safe_reproducible_and_original_bytes
+13.28s call     tests/evaluation/test_evaluation.py::test_actual_all_seed_variants_fairness_oracle_after_run_and_cache_off
+13.02s call     tests/incidentbench/test_cli_e2e.py::test_fresh_cli_build_validate_mock_recompute_and_refuse_overwrite
+10.62s call     tests/incidentbench/test_experiment_fairness.py::test_resume_raw_before_score_no_completed_graph_reexecution
+10.00s call     tests/incidentbench/test_experiment_fairness.py::test_actual_four_graph_runs_durable_before_scoring_fresh_output
+9.39s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[coverage.json]
+8.37s call     tests/active_investigation/test_ablations.py::test_default_protocol_runs_genuine_graph_all_six
+7.85s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[reproducibility.txt]
+7.74s call     tests/incidentbench/test_experiment_fairness.py::test_resume_last_raw_before_score_requires_zero_graph_calls
+7.60s call     tests/incidentbench/test_experiment_fairness.py::test_completed_resume_rejects_derived_tamper[case-level.csv]
+6.98s call     tests/incidentbench/test_experiment_fairness.py::test_resume_started_without_state_retains_failure_unknown_usage
+6.90s call     tests/incidentbench/test_replay_errors.py::test_replay_preserves_invalid_oracle_errors_and_failure_denominators
+6.48s call     tests/active_investigation/test_score_replay.py::test_completed_resume_no_provider_and_exact_bytes
+6.23s call     tests/incidentbench/test_experiment_fairness.py::test_development_test_never_loads_oracle_and_empty_split_refuses
+1033 passed, 3 skipped in 296.80s (0:04:56)

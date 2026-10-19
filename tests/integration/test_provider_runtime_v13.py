@@ -65,7 +65,8 @@ async def test_production_adapter_sequences(sequence, expected, category):
             _, usage = await provider.structured_call("coordinator", "", {}, CoordinatorDecision)
             assert usage["llm_calls"] == expected
             if sequence[0] in (429, 503):
-                assert usage["total_tokens"] is None and not usage["tokens_complete"]
+                # This fixture supplies valid usage on error responses too.
+                assert usage["total_tokens"] == expected * 3 and usage["tokens_complete"]
     assert provider.actual_requests == len(requests) == expected
 
 

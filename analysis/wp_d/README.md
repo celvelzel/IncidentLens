@@ -22,6 +22,12 @@ diagnosis_candidate。候选不代表正确；`diagnosis_correct`、`evidence_su
 `abstention_appropriate` 留给独立评估/人工复核，不自动接触答案。
 超时等事件可能出现在最终成功的调查中，不能仅按 provider_failures 将整次结果判为运行失败。
 
+Token 汇总使用 schema_version=2。`total_tokens` 仅在完整时提供；
+`measured_total_tokens`、`measured_prompt_tokens`、`measured_completion_tokens` 保留已收到的提供方用量，
+不完整时是下界，不是估算的完整总量。新运行直接读取 verification 的计数；旧运行从 trace 的
+LLM_CALL / MODEL_FAILURE 事件恢复已有测量，并记录 token_recovery_basis。历史多次尝试的用量覆盖计数
+可能只能保守计算；提供方未返回的用量不能补造。单元级用量未知不再隐藏已知部分。
+
 有 `run-order.json` 时保留所有预定单元（本批预期 12 个）；未列入排期的尝试单独列出，
 不自动推断父尝试，不择优替换原记录。汇总分组只统计原排期，额外成本可从所有行另外核算。
 没有排期文件时只列已发现产物，不声称矩阵完整。耗时采用 trace 首尾事件差，不等于进程总耗时。

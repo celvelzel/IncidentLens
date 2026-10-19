@@ -80,7 +80,9 @@ def envelope(kind):
             }
         ]
     }
-    if kind != "unknown":
+    # These schedules exercise error responses with unknown billing. Separate
+    # adapter tests cover error responses that explicitly report valid usage.
+    if kind != "unknown" and not (type(kind) is int and kind >= 400):
         data["usage"] = {"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3}
     return data
 
@@ -176,7 +178,7 @@ async def run_case(scenario, variant, baseline_class):
             code, usage = getattr(exc, "code", type(exc).__name__), getattr(exc, "usage", {})
             category = getattr(getattr(exc, "failure", None), "category", None)
     total = usage.get("total_tokens")
-    # A dispatched failed request cannot have a known aggregate bill.
+    # Missing usage on any dispatched attempt prevents a known aggregate bill.
     if not completed and (not usage or not usage.get("tokens_complete", False)):
         total = None
     # A transport retry reuses the same repair message; count only its introduction.

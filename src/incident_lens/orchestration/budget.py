@@ -74,6 +74,8 @@ class CallBudget:
                 exc.cancellation_reason = "wall_budget_exhausted"
             usage = getattr(exc, "usage", None)
             if usage:
+                if getattr(exc, "failure", None) is not None:
+                    usage = dict(usage, failure=exc.failure.model_dump(mode="json"))
                 self.usage.append(dict(usage))
                 self.failures.append(
                     dict(usage)

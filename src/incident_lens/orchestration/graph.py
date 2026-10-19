@@ -120,6 +120,7 @@ class InvestigationRun:
         # Reviews recur after reconciliation; each invocation needs a fresh task id.
         self.verify_rounds = 0
         self.coordinate_rounds = 0
+        self.last_review_signature = None
         self.state = InvestigationState(
             workspace_id=workspace_id,
             incident_id=incident_id,
@@ -210,7 +211,8 @@ class InvestigationRun:
         try:
             result = await pending
             self.stop_controller.guard()
-            return result
+            output, usage = result
+            return output, dict(usage, stage=stage, call_id=metadata["call_id"])
         except BaseException as exc:
             for failure in self.call_budget.failures:
                 if failure.get("call_id") == metadata["call_id"]:
@@ -326,6 +328,23 @@ class InvestigationRun:
             for name in ("metrics", "single"):
                 value["role_tool_acl"][name] += list(DATABASE_TOOLS)
         value["events"] = []
+        from incident_lens.agents.service import FAILURE_MODES
+
+        value["failure_mode_taxonomy"] = FAILURE_MODES
+        value["candidate_assessments"] = self.candidate_assessments(state)
+        remaining = max(0, self.limits.max_llm_calls - self.call_budget.calls)
+        reserve = 1 + int(self.variant in {"full", "single"})
+        value["investigation_budget"] = {
+            "remaining_requests": remaining,
+            "reserved_decision_and_review_requests": reserve,
+            "minimum_requests_per_investigation": 2,
+            "affordable_tasks": max(0, (remaining - reserve) // 2),
+            "remaining_rounds": max(0, self.limits.max_rounds - state.round_index),
+            "remaining_tool_calls": max(0, self.limits.max_tool_calls - self.registry.call_count),
+        }
+        rejected = next((e for e in reversed(state.events)
+                         if e.event_type == "FINALIZE_REJECTED"), None)
+        value["last_finalization_feedback"] = rejected.details if rejected else None
         # Keep executed query scope/results visible after stripping raw events.
         # Otherwise a narrow empty slice can masquerade as an absent source and
         # the coordinator repeatedly asks for telemetry already discovered.
@@ -377,6 +396,42 @@ class InvestigationRun:
             )
         return value
 
+    def candidate_assessments(self, state):
+        return {
+            h.hypothesis_id: {
+                "finalize_errors": finalize_errors(state, h, self.variant),
+                "competing_hypothesis_ids": [
+                    other.hypothesis_id for other in state.hypotheses
+                    if other.hypothesis_id != h.hypothesis_id and other.status != "REJECTED"
+                    and (other.support_ids or other.open_questions)
+                ],
+                "cause_discriminator_ids": [
+                    eid for eid in h.support_ids if eid in state.evidence_index
+                    and cause_discriminator(h, state.evidence_index[eid])
+                ],
+            }
+            for h in state.hypotheses
+        }
+
+    @staticmethod
+    def board_fingerprint(state):
+        """Changes in assessment matter even when no new evidence IDs appeared."""
+        value = {
+            "evidence": evidence_fingerprint(state),
+            "hypotheses": [h.model_dump(mode="json") for h in state.hypotheses],
+            "open_questions": state.open_questions,
+            "requested_checks": [t.model_dump(mode="json") for t in state.requested_checks],
+        }
+        return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+
+    @staticmethod
+    def check_signature(check):
+        return json.dumps([
+            check.role, sorted(check.allowed_tools), check.filters,
+            # Unstructured requests may differ materially despite empty filters.
+            None if check.filters else [check.question, check.expected_discriminator],
+        ], sort_keys=True)
+
     def update_usage(self, state, usage, role):
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens
@@ -387,6 +442,11 @@ class InvestigationRun:
         details["model_parameters"] = getattr(
             self.provider, "model_parameters", {"temperature": self.provider.temperature}
         )
+        details["stage"] = usage.get("stage") or self.call_context.get().get("stage") or (
+            "verify" if role == "verifier" else "coordinate" if role == "coordinator" else "diagnosis"
+        )
+        # single mode also performs independent runtime stages under one identity.
+        details["review_stage"] = details["stage"] == "verify"
         self.event(state, "LLM_CALL", role=role, source=usage.get("source", "model"), **details)
 
     def exhausted(self, state):
@@ -510,16 +570,15 @@ class InvestigationRun:
                     state.hypotheses[index] = update
                     changed = True
             if changed:
-                # Previously computed finalize errors are stale after a new
-                # grounded assessment. Other shared questions remain blockers.
-                prior = next((e for e in reversed(state.events)
-                              if e.event_type == "FINALIZE_REJECTED"), None)
-                if prior and state.open_questions == prior.details.get("errors"):
-                    state.open_questions = []
+                # Gate errors are separate from real shared causal questions.
                 self.event(state, "HYPOTHESIS_RECONCILED",
                            hypothesis_updates=[h.model_dump(mode="json") for h in updates.values()])
             if decision.action == "ABSTAIN":
                 state.stop_reason = decision.stop_reason
+                self.event(state, "ABSTENTION_ASSESSMENT", role=role,
+                           candidate_assessments=self.candidate_assessments(state),
+                           shared_open_questions=list(state.open_questions),
+                           reason=decision.stop_reason)
                 return {"investigation": state, "route": "report"}
             if decision.action == "FINALIZE":
                 if changed and self.variant == "full":
@@ -546,11 +605,23 @@ class InvestigationRun:
                 raise RuntimeError("Round budget exhausted")
             if self.registry.call_count >= self.limits.max_tool_calls:
                 raise RuntimeError("Tool budget exhausted")
+            remaining = self.limits.max_llm_calls - self.call_budget.calls
+            reserve = 1 + int(self.variant in {"full", "single"})
+            affordable = max(0, (remaining - reserve) // 2)
+            if self.variant != "fixed" and len(decision.assignments) > affordable:
+                if not affordable:
+                    raise RuntimeError("LLM call budget cannot fund investigation and final decision")
+                deferred = decision.assignments[affordable:]
+                decision.assignments = decision.assignments[:affordable]
+                self.event(state, "INVESTIGATION_BUDGET_RESERVED", reserved_requests=reserve,
+                           deferred_task_ids=[t.task_id for t in deferred],
+                           executed_task_ids=[t.task_id for t in decision.assignments])
             signature = json.dumps(
-                [(t.role, t.question, t.filters) for t in decision.assignments], sort_keys=True
+                [(t.role, t.allowed_tools, t.filters, t.expected_discriminator)
+                 for t in decision.assignments], sort_keys=True
             )
             # Repeated task against an unchanged board is a loop, not progress.
-            signature += json.dumps(sorted(state.evidence_index))
+            signature += self.board_fingerprint(state)
             if signature in self.signatures:
                 state.stop_reason = "INCONCLUSIVE"
                 self.event(state, "INVESTIGATION_NO_PROGRESS", reason="Repeated check without new evidence")
@@ -593,6 +664,14 @@ class InvestigationRun:
     def safe_error(exc):
         # Provider errors must be sanitized at adapter boundary. Unknown exceptions
         # expose their type only; no request payload, credentials or stack traces.
+        from incident_lens.llm.provider import ProviderError
+
+        if isinstance(exc, ProviderError) and exc.code in {
+            "PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR", "PROVIDER_HTTP_ERROR",
+            "STRUCTURED_OUTPUT_COMPATIBILITY_ERROR", "STRUCTURED_OUTPUT_INVALID",
+            "REQUEST_BUDGET_EXCEEDED",
+        }:
+            return exc.code
         if isinstance(exc, (TimeoutError, asyncio.TimeoutError)):
             return "TIMEOUT"
         merge_codes = {
@@ -823,6 +902,7 @@ class InvestigationRun:
                     not self.recoverable_task_error(exc)
                     or not self.task_manager.can_retry(task.task_id)
                     or self.exhausted(state)
+                    or not await self.wait_for_retry(state, exc, task.task_id, "diagnosis")
                 ):
                     raise
                 self.task_manager.assign(task.task_id, task.role)
@@ -836,6 +916,8 @@ class InvestigationRun:
 
         if isinstance(exc, ProviderError):
             if getattr(exc, "failure", None) is not None:
+                if exc.usage.get("provider_recovery_enabled"):
+                    return False
                 return exc.failure.retryable
             return exc.code in {
                 "PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR", "PROVIDER_HTTP_ERROR",
@@ -872,7 +954,10 @@ class InvestigationRun:
             isinstance(exc, ProviderError)
             and getattr(exc, "code", "") in {"PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR"}
         )
-        return {"error_code": code, "transport_error": transport}
+        details = {"error_code": code, "transport_error": transport}
+        if getattr(exc, "failure", None) is not None:
+            details["provider_failure"] = exc.failure.model_dump(mode="json")
+        return details
 
     @classmethod
     def stage_retryable_error(cls, exc):
@@ -883,11 +968,33 @@ class InvestigationRun:
         """
         from incident_lens.llm.provider import ProviderError
 
-        return (
-            cls.recoverable_task_error(exc)
-            and isinstance(exc, ProviderError)
-            and getattr(exc, "code", "") in {"PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR"}
+        return cls.recoverable_task_error(exc) and isinstance(exc, ProviderError) and (
+            getattr(exc, "failure", None) is not None
+            or exc.code in {"PROVIDER_TIMEOUT", "PROVIDER_TRANSPORT_ERROR"}
         )
+
+    async def wait_for_retry(self, state, exc, task_id, stage):
+        """Back off transient task retries within the original attempt/wall budgets."""
+        from incident_lens.llm.transport_retry import compute_backoff
+        from incident_lens.orchestration.recovery import RecoveryConfig
+
+        failure = getattr(exc, "failure", None)
+        if failure is None or not failure.retryable:
+            return True  # Preserve legacy bounded structured-output repair behavior.
+        delegate = getattr(self.provider, "delegate", self.provider)
+        config = getattr(delegate, "recovery", RecoveryConfig())
+        attempts = [r for r in self.task_manager.records if r.task_id == task_id]
+        delay = compute_backoff(max(0, len(attempts) - 1), failure.retry_after_seconds,
+                                config, getattr(delegate, "rng", None))
+        if delay + config.min_request_time_seconds + config.safety_margin_seconds > self.call_budget.remaining_seconds():
+            self.event(state, "TASK_RETRY_DENIED", task_id=task_id, stage=stage,
+                       reason="insufficient_remaining_wall_budget", delay_seconds=delay)
+            return False
+        self.event(state, "TASK_RETRY_SCHEDULED", task_id=task_id, stage=stage,
+                   delay_seconds=delay, provider_failure=failure.model_dump(mode="json"))
+        await asyncio.sleep(delay)
+        self.stop_controller.guard()
+        return not self.exhausted(state)
 
     async def retry_transient(self, state, task_id, role, stage, operation):
         """Bounded per-attempt retry shared by non-diagnosis stages.
@@ -918,6 +1025,7 @@ class InvestigationRun:
                     not self.stage_retryable_error(exc)
                     or not self.task_manager.can_retry(task_id)
                     or self.exhausted(state)
+                    or not await self.wait_for_retry(state, exc, task_id, stage)
                 ):
                     raise
                 self.task_manager.assign(task_id, role)
@@ -933,7 +1041,33 @@ class InvestigationRun:
         state = value["investigation"]
         try:
             self.stop_controller.guard()
+            previous_ids = set(state.evidence_index)
+            prior_review = next((e for e in reversed(state.events) if e.event_type == "REVIEW"), None)
             state = merge_results(state, value["local_results"], self.registry)
+            if prior_review:
+                new_ids = set(state.evidence_index) - previous_ids
+                for check in prior_review.details.get("review", {}).get("requested_checks", []):
+                    matched = []
+                    for _, task, _ in value["local_results"]:
+                        calls = [e.details for e in state.events if e.event_type == "TOOL_CALL"
+                                 and e.task_id == task.task_id]
+                        if (task.role == check["role"]
+                                and (task.task_id == check["task_id"] or check.get("filters"))
+                                and any(
+                            c.get("tool_name") in check.get("allowed_tools", [])
+                            and c.get("result", {}).get("ok") is True
+                            and all(c.get("args", {}).get(k) == v
+                                    for k, v in check.get("filters", {}).items())
+                            for c in calls
+                        )):
+                            matched.append(task.task_id)
+                    if matched:
+                        matched_ids = {r["evidence_id"] for e in state.events
+                                       if e.event_type == "TOOL_CALL" and e.task_id in matched
+                                       for r in e.details.get("result", {}).get("records", [])}
+                        self.event(state, "REVIEW_FOLLOWUP", review_event_id=prior_review.event_id,
+                                   requested_task_id=check["task_id"], completed_task_ids=matched,
+                                   new_evidence_ids=sorted(new_ids & matched_ids))
             for _, task, _ in value["local_results"]:
                 scope = self.structured_scope(task)
                 calls = [e.details for e in state.events
@@ -983,6 +1117,22 @@ class InvestigationRun:
         self.state = state
         role = "single" if self.variant == "single" else "verifier"
         try:
+            if not state.hypotheses:
+                self.event(state, "REVIEW_SKIPPED", role=role, reason="no_candidate_to_review")
+                return {"investigation": state, "route": "coordinate"}
+            signature = self.board_fingerprint(state)
+            selected = state.decisions[-1].selected_hypothesis_id if state.decisions else None
+            if (signature == getattr(self, "last_review_signature", None) and state.reviews
+                    and (selected is None or selected == state.reviews[-1].target_hypothesis_id)):
+                self.event(state, "REVIEW_REUSED", role=role, board_sha256=signature,
+                           reason="unchanged_evidence_and_assessment")
+                return {"investigation": state,
+                        "route": "finalize" if reviewed_finalization_ready(state, self.variant) else "coordinate"}
+            before = self.candidate_assessments(state)
+            prior_checks = {
+                self.check_signature(check)
+                for old in state.reviews for check in old.requested_checks
+            }
             # Fetch the shared evidence through verifier ACL before the provider
             # reviews it. No unqueried evidence is available in its payload.
             context = self.single_context or self.registry.create_context("verifier")
@@ -1056,6 +1206,7 @@ class InvestigationRun:
                         not self.recoverable_task_error(exc)
                         or not self.task_manager.can_retry(task_id)
                         or self.exhausted(state)
+                        or not await self.wait_for_retry(state, exc, task_id, "verify")
                     ):
                         raise
                     self.task_manager.assign(task_id, role)
@@ -1087,13 +1238,32 @@ class InvestigationRun:
                 hypothesis_sha256=review_fingerprint(candidate) if candidate else None,
                 evidence_sha256=evidence_fingerprint(state),
             )
+            review_event_id = state.events[-1].event_id
+            after = self.candidate_assessments(state)
+            target = review.target_hypothesis_id
+            before_errors = before.get(target, {}).get("finalize_errors", [])
+            after_errors = after.get(target, {}).get("finalize_errors", [])
+            self.event(
+                state, "REVIEW_EFFECT", role=role, review_event_id=review_event_id,
+                target_hypothesis_id=target, board_sha256=signature,
+                gate_errors_before=before_errors, gate_errors_after=after_errors,
+                gate_discharged=bool(before_errors) and not after_errors,
+                added_blockers=bool(set(after_errors) - set(before_errors)),
+                repeated_requested_checks=sum(self.check_signature(c) in prior_checks
+                                              for c in review.requested_checks),
+                contradictions=list(review.contradictions),
+                blocking_check_count=len(review.requested_checks),
+                optional_check_count=len(review.optional_checks),
+                benefit_assessment="pending_manual_or_paired_evaluation",
+            )
+            self.last_review_signature = self.board_fingerprint(state)
             state.tool_calls_used = self.registry.call_count
             if reviewed_finalization_ready(state, self.variant):
                 self.stop_controller.guard()
                 self.event(
                     state, "FINALIZE_RESUMED_AFTER_REVIEW",
                     selected_hypothesis_id=state.decisions[-1].selected_hypothesis_id,
-                    review_event_id=state.events[-1].event_id,
+                    review_event_id=review_event_id,
                     decision_index=len(state.decisions) - 1,
                 )
                 return {"investigation": state, "route": "finalize"}
@@ -1124,9 +1294,11 @@ class InvestigationRun:
         if not self.call_budget.remaining_seconds():
             errors.append("Wall-clock budget audit failed")
         if errors:
-            state.open_questions = list(errors)
-            self.event(state, "FINALIZE_REJECTED", errors=errors)
-            attempt = (selected, tuple(sorted(state.evidence_index)))
+            # Gate diagnostics are feedback, never new causal evidence/questions.
+            self.event(state, "FINALIZE_REJECTED", errors=errors,
+                       selected_hypothesis_id=selected,
+                       candidate_assessments=self.candidate_assessments(state))
+            attempt = (selected, self.board_fingerprint(state), tuple(errors))
             repeated = attempt in self.failed_finalizations
             self.failed_finalizations.add(attempt)
             if (
@@ -1414,11 +1586,15 @@ class InvestigationRun:
         if state.report is None:
             state.report = self.rescue_report(state)
         if state.report is None:
+            rejected = next((e for e in reversed(state.events)
+                             if e.event_type == "FINALIZE_REJECTED"), None)
             state.report = RCAReport(
                 run_id=state.run_id,
                 incident_id=state.incident_id,
                 status="INCONCLUSIVE",
-                unresolved=state.open_questions or ["Need additional discriminating evidence"],
+                unresolved=state.open_questions or (
+                    rejected.details.get("errors") if rejected else None
+                ) or ["Need additional discriminating evidence"],
                 rejected_hypotheses=[h for h in state.hypotheses if h.status == "REJECTED"],
                 stop_reason=state.stop_reason or "Insufficient evidence",
                 diagnosis_status="INCONCLUSIVE" if self.response_profile else None,
