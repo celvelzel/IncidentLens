@@ -1,0 +1,11 @@
+{
+  "retest_of": "run-04-incident_1003-full-subagent-01",
+  "retest_dir": "run-04-incident_1003-full-subagent-01-retest-01",
+  "parent_outcome": "UNRECOVERABLE_ERROR / FAILED / INCONCLUSIVE",
+  "parent_failure_stage": "coordinate",
+  "parent_cause": "Serving-layer latency, not a model or case defect. Request _bridge/requests/req-0021.json was emitted at 13:02:05; the bridge blocked for its fixed 420 s request_timeout and raised a provider timeout at 13:09:05 (verification.json mtime), before any response was written (no _bridge/receipts/req-0021.json exists; receipts stop at req-0020). unrecovered_model_failure_count=1, task_retries=0, transport_retries=0. The answer to req-0021 was written only after the run had already failed.",
+  "parent_serving_defect": "req-0021 was the first request whose serialized messages exceeded the sub-agent single-read cap (96 KB > 64 KB). It was served by splitting into four ordered part files; the four sequential sub-agent read turns plus model latency exceeded the 420 s window.",
+  "mitigation_in_retest": "Part files are now written as compact JSON (no indentation) at 55 KB per part (expected 2 parts for a 96 KB payload), and the serving sub-agent is instructed to read all parts in a single turn.",
+  "parent_artifacts_preserved": true,
+  "note": "Parent attempt is preserved unmodified; nothing was repaired, restarted, or overwritten in place."
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "run-6ac754790fbe4aa8bc2d9c78979e2ccb",
+  "incident_id": "incident_1003",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "All available causal sources are exhausted (changes, postgres telemetry/logs, redis/payment metrics/logs, backend timeout traces) and none identifies why the backend request deadline at 12:00:14Z was exceeded; no observed evidence supports selecting backend, redis, or payment as culprit, so the investigation abstains from root-cause attribution.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

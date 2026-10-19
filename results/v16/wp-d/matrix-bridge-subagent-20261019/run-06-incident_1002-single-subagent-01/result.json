@@ -1,0 +1,91 @@
+{
+  "run_id": "run-0bd36799c8fc47cdb6ff263ffa596005",
+  "incident_id": "incident_1002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1002-E-003",
+      "incident_1002-E-004",
+      "incident_1002-E-005",
+      "incident_1002-E-007",
+      "incident_1002-E-008",
+      "incident_1002-E-010",
+      "incident_1002-T-backend"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "The runtime-1 backend config diff reduces db_pool_max from 20 to 2 while concurrency=120, applied at 2026-10-01T12:00:10Z (incident_1002-E-004), logged as a runtime settings deployment (incident_1002-E-003).",
+      "Connection-pool queueing pool_waiters=118 appears at the same 2026-10-01T12:00:10Z timestamp, close to concurrency minus the reduced pool size (incident_1002-E-005).",
+      "The backend 'Request processing exceeded deadline' error follows the config change at 2026-10-01T12:00:14Z (incident_1002-E-008).",
+      "Postgres stays below its connection limit at 30 of 100 (incident_1002-E-007), because the pool is shrunk application-side rather than the datastore being saturated.",
+      "Payment and redis emit no ERROR/CRITICAL records and no payment latency or error deviation over 2026-10-01T11:30:00Z-12:30:00Z, so no external dependency stall is observed."
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_1002-T-backend] backend: backend depends on: postgres, redis, payment",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-007] postgres: Server connections below limit",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:44+00:00 [incident_1002-E-010] gateway: Presentation asset deployment completed; routing unchanged"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1002-E-003",
+    "incident_1002-E-004",
+    "incident_1002-E-005",
+    "incident_1002-E-007",
+    "incident_1002-E-008",
+    "incident_1002-E-010",
+    "incident_1002-T-backend"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [
+        "Postgres active sessions approach or reach the 100-connection limit around 2026-10-01T12:00:14Z."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-08846516798c9ee4cb79fb1d1babf88c17c611c83e83c3e9ba21b1c768a0f030",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-T-payment"
+      ],
+      "predicted_observations": [
+        "Payment latency and timeout_count would rise materially above baseline during 2026-10-01T11:30:00Z-12:30:00Z."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Finalizing backend_pool_config_regression for service backend: the runtime-1 configuration change reduced db_pool_max from 20 to 2 under concurrency=120 at 2026-10-01T12:00:10Z (incident_1002-E-004), connection-pool queueing pool_waiters=118 appeared at the same timestamp (incident_1002-E-005), and the backend 'Request processing exceeded deadline' symptom followed at 2026-10-01T12:00:14Z (incident_1002-E-008); postgres remained at 30 of 100 connections (incident_1002-E-007) and payment/redis showed no error or latency signal, so the queueing originates in the application connection pool rather than the datastore or an external dependency.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

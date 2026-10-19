@@ -1,0 +1,280 @@
+{
+  "scoring_version": "2",
+  "termination_source": "v2",
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  },
+  "termination_reason": "DIAGNOSIS_READY",
+  "termination_outcome": "SUCCESS",
+  "protocol_valid": true,
+  "protocol_errors": [],
+  "runtime_failure": false,
+  "diagnosis_failure": false,
+  "stop_completion": true,
+  "recovered_model_failure_count": 0,
+  "unrecovered_model_failure_count": 0,
+  "llm_requests": 26,
+  "actual_http_requests": 0,
+  "logical_structured_calls": 26,
+  "task_retries": 0,
+  "transport_retries": 0,
+  "repair_requests": 0,
+  "prompt_tokens": null,
+  "measured_prompt_tokens": 0,
+  "completion_tokens": null,
+  "measured_completion_tokens": 0,
+  "total_tokens": null,
+  "measured_total_tokens": 0,
+  "tokens_complete": false,
+  "requests_with_token_usage": 0,
+  "requests_without_token_usage": 26,
+  "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete",
+  "token_usage_by_role": {
+    "changes": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 2,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "coordinator": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 7,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "database": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 3,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "logs": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 3,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "metrics": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 6,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "verifier": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    }
+  },
+  "verifier": {
+    "review_kind": "independent",
+    "completed_reviews": 5,
+    "sufficient_reviews": 3,
+    "blocking_reviews": 2,
+    "requested_checks": 5,
+    "optional_checks": 8,
+    "repeated_requested_checks": 0,
+    "reviews_discharge_gate": 1,
+    "reviews_add_blockers": 1,
+    "reused_reviews": 1,
+    "skipped_reviews": 0,
+    "citation_validation_events": 0,
+    "requested_check_followups": [
+      {
+        "review_event_id": "event-26",
+        "requested_task_id": "task-0008-metrics-backend-pool",
+        "completed_task_ids": [
+          "task-0008-metrics-backend-pool"
+        ],
+        "new_evidence_ids": []
+      },
+      {
+        "review_event_id": "event-102",
+        "requested_task_id": "task-0013-db-sessions-locks-slowq",
+        "completed_task_ids": [
+          "task-0013-db-sessions-locks-slowq"
+        ],
+        "new_evidence_ids": []
+      }
+    ],
+    "followups_with_new_evidence": 0,
+    "llm_requests": 5,
+    "http_requests": 0,
+    "usage": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "effects": [
+      {
+        "review_event_id": "event-26",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "93344eef84b5b6572bb397c48f22c6a27171af46c332fd4b2c8c8544a4f6423e",
+        "gate_errors_before": [
+          "No observed cause-specific discriminator for the candidate",
+          "No supported discriminating investigation",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "No observed cause-specific discriminator for the candidate",
+          "No supported discriminating investigation",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 2,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-54",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "4016abebeac6bb1c8ccf8896a5cd3f531093536a322cd0cf0e0248ac0b2851a4",
+        "gate_errors_before": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 0,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-67",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "bd421028b31179b4b408dc8a5dfb30eb1fbe5c99aedae57e64dea1e638013e27",
+        "gate_errors_before": [
+          "Competing hypothesis remains unresolved",
+          "Verifier review does not match current candidate/evidence snapshot"
+        ],
+        "gate_errors_after": [
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 0,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-102",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "0c13f15ee07679b0b79e0e10e849276fd3fb3fa2dbd481282735d03eb8460a86",
+        "gate_errors_before": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Verifier review does not match current candidate/evidence snapshot"
+        ],
+        "gate_errors_after": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_discharged": false,
+        "added_blockers": true,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 3,
+        "optional_check_count": 0,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-137",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "c11bb5bb89256852051fe43c6ccca2314911e33fd654747bb7ca31d9a143acae",
+        "gate_errors_before": [
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [],
+        "gate_discharged": true,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 0,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      }
+    ],
+    "benefit_assessment": "pending_manual_or_paired_evaluation",
+    "caveat": "Gate changes and new evidence do not establish corrected diagnosis or causal benefit."
+  },
+  "provider_failure_details": [],
+  "cost_usd": null,
+  "failed_calls": 0,
+  "provider_failures": 0,
+  "cancelled_model_calls": 0,
+  "failed_model_calls": 0,
+  "failed_tool_calls": 0,
+  "source_drift": [],
+  "source_unchanged": true,
+  "query_gap_count": 5,
+  "fatal_dispatch": false,
+  "bridge_model_id": "trae-subagent-bridge-v1",
+  "bridge_requests": 26,
+  "isolation_verified": false
+}

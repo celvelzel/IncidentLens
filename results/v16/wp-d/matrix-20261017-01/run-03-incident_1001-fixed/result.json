@@ -1,0 +1,154 @@
+{
+  "run_id": "run-2f275fc05aa04204aeaa87dc8150a785",
+  "incident_id": "incident_1001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1001-E-003",
+      "incident_1001-E-004",
+      "incident_1001-E-008",
+      "incident_1001-E-009",
+      "incident_1001-E-007"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend error rate and latency increase after the config change (observed via E-008 deadline exceeded and E-009 gateway 5xx)",
+      "DB pool metrics show max connections capped at 2, causing queuing (observed via E-004 config diff)",
+      "No corresponding change in upstream services before this time (observed via E-003 only change in window)",
+      "Postgres connection pool exhaustion or connection wait timeouts in backend logs after 12:00:10Z (observed via E-008 deadline exceeded)"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-007] postgres: Server connections below limit",
+    "2026-10-01T12:00:14+00:00 [incident_1001-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:14+00:00 [incident_1001-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1001-E-003",
+    "incident_1001-E-004",
+    "incident_1001-E-008",
+    "incident_1001-E-009",
+    "incident_1001-E-007"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_1001-E-008",
+        "incident_1001-E-009",
+        "incident_1001-T-backend",
+        "incident_1001-T-gateway"
+      ],
+      "against_ids": [
+        "incident_1001-E-004"
+      ],
+      "predicted_observations": [
+        "Backend error rate or resource saturation metrics elevated, gateway 5xx elevated as downstream symptom",
+        "Backend logs show resource saturation indicators (e.g., thread pool exhaustion, memory pressure, queue buildup) around 12:00:14Z",
+        "Gateway logs show increased latency or 5xx responses after 12:00:14Z"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-b94cbb22a4a7979e83913802734bf723e93250d4aca9aecb806a87af2e8b335b",
+      "culprit_service": "gateway",
+      "failure_mode": "gateway_self_failure",
+      "support_ids": [
+        "incident_1001-E-009",
+        "incident_1001-T-gateway"
+      ],
+      "against_ids": [
+        "incident_1001-E-008"
+      ],
+      "predicted_observations": [
+        "Gateway 5xx rate elevated while backend, postgres, redis, and payment metrics are healthy"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-E-009",
+        "incident_1001-T-backend",
+        "incident_1001-T-gateway",
+        "incident_1001-T-postgres"
+      ],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "Connection count would be at or near the connection limit",
+        "Postgres connection exhaustion or lock contention metrics elevated, backend errors elevated, gateway 5xx elevated"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-b645caa41a50357eeef8b5b0ddf65d66b43af94981a3be3ade6e10acfdcb3147",
+      "culprit_service": "redis",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [
+        "incident_1001-E-009",
+        "incident_1001-T-gateway",
+        "incident_1001-T-backend",
+        "incident_1001-T-redis"
+      ],
+      "against_ids": [
+        "incident_1001-E-004",
+        "incident_1001-E-008"
+      ],
+      "predicted_observations": [
+        "Redis error or latency metrics elevated, backend errors elevated, gateway 5xx elevated"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-08846516798c9ee4cb79fb1d1babf88c17c611c83e83c3e9ba21b1c768a0f030",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout",
+      "support_ids": [
+        "incident_1001-E-009",
+        "incident_1001-T-gateway",
+        "incident_1001-T-backend",
+        "incident_1001-T-payment"
+      ],
+      "against_ids": [
+        "incident_1001-E-004",
+        "incident_1001-E-008"
+      ],
+      "predicted_observations": [
+        "Payment timeout or error metrics elevated, backend errors elevated, gateway 5xx elevated"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal support established: backend runtime config change (db_pool_max 20->2) at 12:00:10Z is the only change in the window, followed by backend deadline exceeded at 12:00:14Z and elevated gateway 5xx. Postgres connection count is below limit, excluding postgres exhaustion. Competing hypotheses reconciled and rejected based on the observed config diff. Sufficient review from logs, metrics, database, and changes findings.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

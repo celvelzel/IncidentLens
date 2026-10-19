@@ -1,0 +1,76 @@
+{
+  "finding": {
+    "finding_id": "f1-metrics-backend",
+    "task_id": "t4-metrics-backend",
+    "run_id": "run-077d2281e6b24db8b2030c97e87f389e",
+    "incident_id": "incident_1003",
+    "role": "metrics",
+    "claim": "The metrics result for backend during 2026-10-01T11:30:00Z-12:30:00Z contains only a single observation, request_latency_ms=40 ms at 2026-10-01T12:00:00Z; no cpu_usage, memory_usage, or queue_depth values and no concurrent postgres (connection counts, lock waits) or redis availability/timeout metrics were returned. With no baseline and only one latency datapoint, backend resource and latency elevation cannot be established and backend resource saturation cannot be distinguished from upstream dependency degradation.",
+    "evidence_ids": [
+      "incident_1003-E-001"
+    ],
+    "relation": "neutral",
+    "confidence_qualifier": "unknown",
+    "followup_question": "What are the incident-window versus baseline values for backend cpu_usage, memory_usage, request_latency, and queue_depth, together with concurrent postgres connection-count/lock-wait and redis availability/timeout metrics?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "h1-backend-saturation",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [],
+      "against_ids": [],
+      "predicted_observations": [
+        "backend cpu_usage and memory_usage elevated above baseline during the incident window",
+        "backend request_latency and queue_depth elevated above baseline during the incident window",
+        "postgres connection counts and lock waits remain flat/unaffected during the same window",
+        "redis availability across the window remains stable"
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "No baseline and no time series were returned, so relative elevation of backend resource and latency metrics cannot be computed.",
+        "Concurrent postgres connection/lock and redis availability metrics were not returned, so upstream degradation cannot be excluded as an alternative mechanism."
+      ]
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "t5-metrics-backend-baseline",
+      "role": "metrics",
+      "question": "For backend, what are the incident-window (2026-10-01T11:30:00Z-12:30:00Z) versus baseline values and shape of cpu_usage, memory_usage, request_latency, and queue_depth?",
+      "allowed_tools": [
+        "query_metrics"
+      ],
+      "filters": {
+        "service": "backend",
+        "metric_names": [
+          "cpu_usage",
+          "memory_usage",
+          "request_latency",
+          "queue_depth"
+        ],
+        "start_ts": "2026-10-01T11:30:00Z",
+        "end_ts": "2026-10-01T12:30:00Z"
+      },
+      "reason": "A baseline comparison of backend resource and latency/queue metrics is required to determine whether resource saturation is the cause; the prior result returned only a single latency datapoint with no baseline.",
+      "expected_discriminator": "Sustained elevation of backend cpu/memory/latency/queue relative to baseline supports backend_resource_saturation, whereas flat backend resource metrics during degraded behavior argue against local saturation."
+    },
+    {
+      "task_id": "t6-db-postgres-concurrency",
+      "role": "database",
+      "question": "During 2026-10-01T11:30:00Z-12:30:00Z, do postgres connection counts and lock waits for the incident's database degrade relative to baseline?",
+      "allowed_tools": [
+        "get_db_connections",
+        "get_db_active_sessions",
+        "get_db_lock_waits"
+      ],
+      "filters": {
+        "service": "postgres",
+        "start_ts": "2026-10-01T11:30:00Z",
+        "end_ts": "2026-10-01T12:30:00Z"
+      },
+      "reason": "Concurrent postgres connection and lock-wait metrics are the cause-specific discriminator separating backend_resource_saturation from a database-culprit mechanism (postgres_connection_exhaustion or postgres_lock_contention), and they were not present in the returned metrics.",
+      "expected_discriminator": "Elevated postgres connection counts favor postgres_connection_exhaustion and elevated lock waits favor postgres_lock_contention, whereas flat connection and lock metrics favor backend_resource_saturation."
+    }
+  ]
+}

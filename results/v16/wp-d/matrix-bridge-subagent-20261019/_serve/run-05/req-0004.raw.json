@@ -1,0 +1,108 @@
+{
+  "finding": {
+    "finding_id": "finding-metrics-0001",
+    "task_id": "task-metrics-0001",
+    "run_id": "run-d0fa200903a54603b2a15a644dbce502",
+    "incident_id": "incident_1001",
+    "role": "metrics",
+    "claim": "Within the observation window the only observed abnormal metric is gateway http_5xx_rate=0.35 ratio at 2026-10-01T12:00:14Z (incident_1001-E-009); topology records show gateway depends on backend, and backend depends on postgres, redis, payment, so gateway sits downstream of backend and cannot be concluded to be the propagation origin from this single symptom alone. No per-service latency or error time series were supplied to establish onset ordering.",
+    "evidence_ids": [
+      "incident_1001-E-009",
+      "incident_1001-T-gateway",
+      "incident_1001-T-backend",
+      "incident_1001-T-postgres",
+      "incident_1001-T-redis",
+      "incident_1001-T-payment"
+    ],
+    "relation": "supports",
+    "confidence_qualifier": "weak",
+    "followup_question": "Which service (gateway, backend, postgres, redis, payment) shows the earliest onset of elevated latency or error rate before 2026-10-01T12:00:14Z, and does backend error rate or latency rise before gateway's http_5xx_rate?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-metrics-0001",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_1001-T-gateway",
+        "incident_1001-T-backend"
+      ],
+      "against_ids": [
+        "incident_1001-E-009"
+      ],
+      "predicted_observations": [
+        "backend request latency and error rate rise at or before 2026-10-01T12:00:14Z while gateway http_5xx_rate rises only afterward.",
+        "CPU/memory saturation or thread/connection pool utilization on backend increases across the observation window.",
+        "Dependency edges gateway->backend and backend->postgres/redis/payment remain unchanged, so the regression is internal to backend resources."
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "No backend resource or latency time series were supplied, so it is unknown whether backend degrades before gateway.",
+        "It is unknown whether backend's upstream dependencies (postgres, redis, payment) degraded before backend."
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-metrics-0002",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-T-backend",
+        "incident_1001-T-postgres"
+      ],
+      "against_ids": [
+        "incident_1001-E-009"
+      ],
+      "predicted_observations": [
+        "postgres active connections approach or hit the connection limit before backend latency rises.",
+        "Backend dependency call latency to postgres increases and propagates upward to gateway 5xx rate.",
+        "Redis and payment metrics remain normal, isolating postgres as the origin rather than a shared resource limit."
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "No postgres connection or latency metrics were supplied for the window, so exhaustion is unverified.",
+        "It is unknown whether backend's elevated errors originate from postgres calls or from another dependency."
+      ]
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "task-metrics-0002",
+      "role": "metrics",
+      "question": "For gateway and backend, what are the per-minute latency and error-rate time series between 2026-10-01T11:50:00Z and 2026-10-01T12:30:00Z, and which service's onset of degradation precedes the other?",
+      "allowed_tools": [
+        "query_metrics"
+      ],
+      "filters": {
+        "start_ts": "2026-10-01T11:50:00Z",
+        "end_ts": "2026-10-01T12:30:00Z",
+        "services": [
+          "gateway",
+          "backend"
+        ]
+      },
+      "reason": "Gateway 5xx is observed but gateway depends on backend, so latency/error onset ordering between the two is needed to distinguish an upstream origin from a downstream victim.",
+      "expected_discriminator": "If backend latency/error rises at or before gateway's, backend is the propagation origin; if backend only degrades after gateway, gateway or a shared downstream dependency is implicated instead."
+    },
+    {
+      "task_id": "task-metrics-0003",
+      "role": "database",
+      "question": "For postgres within 2026-10-01T11:50:00Z to 2026-10-01T12:30:00Z, do active connections, lock waits, or slow queries change before backend/gateway degrade?",
+      "allowed_tools": [
+        "get_db_connections",
+        "get_db_active_sessions",
+        "get_db_lock_waits",
+        "get_db_slow_queries",
+        "get_db_health_metrics"
+      ],
+      "filters": {
+        "start_ts": "2026-10-01T11:50:00Z",
+        "end_ts": "2026-10-01T12:30:00Z",
+        "services": [
+          "postgres"
+        ]
+      },
+      "reason": "Backend depends on postgres and the observation window shows only downstream gateway errors; postgres-side connection, lock, and slow-query signals are needed to test the connection-exhaustion hypothesis and establish causal chronology.",
+      "expected_discriminator": "Escalating postgres connections/lock waits or a slow-query burst preceding backend degradation supports postgres as origin, whereas stable postgres health shifts the origin to backend resources."
+    }
+  ]
+}

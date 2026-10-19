@@ -1,0 +1,69 @@
+{
+  "finding": {
+    "finding_id": "fixed-database-F-001",
+    "task_id": "fixed-database",
+    "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+    "incident_id": "incident_1002",
+    "role": "database",
+    "claim": "Observed postgres server connection_count of 30 against connection_limit of 100 shows database connection capacity remaining healthy at the incident window, providing no observed mechanism for database-side connection exhaustion.",
+    "evidence_ids": ["incident_1002-E-007"],
+    "relation": "refutes",
+    "confidence_qualifier": "supported",
+    "followup_question": "What were the measured active sessions, blocking lock waits, and slow-query durations on postgres at 2026-10-01T12:00:10Z, and did application-side pool_limit/pool_in_use reach saturation?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "H-001",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": ["incident_1002-E-007"],
+      "predicted_observations": [
+        "postgres connection_count at or above connection_limit (100)",
+        "rising connection_count preceding the incident window",
+        "active sessions queuing or rejection of new connections from the application"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No internal evidence beyond a single connection snapshot is available to confirm whether connection_count trended toward the limit before the incident window."
+      ]
+    },
+    {
+      "hypothesis_id": "H-002",
+      "culprit_service": "backend",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [],
+      "against_ids": [],
+      "predicted_observations": [
+        "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+        "connection acquisition timeouts reported by the backend while database capacity is healthy",
+        "config diff showing a reduced pool size or changed pool timeout near the incident window"
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "No metrics evidence for application pool_limit/pool_in_use is present in the supplied records, so an upstream pool configuration fault cannot be confirmed or excluded.",
+        "No config-change evidence is available to show whether the backend pool settings were altered before the incident."
+      ]
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "db-check-active-and-locks",
+      "role": "database",
+      "question": "During 2026-10-01T12:00:00Z to 2026-10-01T12:00:20Z on postgres, what were the active session counts, blocking lock waits, and slow-query durations, and how did they compare with the observed connection_count of 30 against connection_limit of 100?",
+      "allowed_tools": ["get_db_connections", "get_db_active_sessions", "get_db_lock_waits", "get_db_slow_queries", "get_db_health_metrics"],
+      "filters": {"service": "postgres", "start_ts": "2026-10-01T12:00:00Z", "end_ts": "2026-10-01T12:00:20Z"},
+      "reason": "The single observed snapshot shows healthy connection headroom; measured blocking sessions and query durations are required before any lock-contention or slow-query database root cause could be supported.",
+      "expected_discriminator": "Measured blocking sessions or long slow queries would support a postgres lock or slow-query mechanism, whereas absence of blocking and normal query durations with healthy capacity refutes database-side causes and points to an upstream application pool fault."
+    },
+    {
+      "task_id": "metrics-check-app-pool",
+      "role": "metrics",
+      "question": "During 2026-10-01T12:00:00Z to 2026-10-01T12:00:20Z, did the backend application connection pool reach its pool_limit or show high pool_in_use while postgres connection capacity remained healthy?",
+      "allowed_tools": ["get_metrics"],
+      "filters": {"service": "backend", "metric": "pool_limit,pool_in_use", "start_ts": "2026-10-01T12:00:00Z", "end_ts": "2026-10-01T12:00:20Z"},
+      "reason": "Healthy database capacity does not rule out an upstream application pool configuration fault, so application-side pool utilization must be measured to discriminate the two.",
+      "expected_discriminator": "pool_in_use at pool_limit with healthy database capacity supports a backend pool configuration regression, whereas low pool utilization removes the pool-saturation mechanism."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "run-780b3503edd74b66a4f5fc85c512d49c",
+  "incident_id": "incident_1003",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule complete with no cause-specific discriminator observed for either candidate; database scopes returned NO_DATA (an evidence gap, not health), and the backend and postgres hypotheses remain mutually unresolved with no observed contrary evidence, so no cause is finalizable and no further in-scope discriminating check remains.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

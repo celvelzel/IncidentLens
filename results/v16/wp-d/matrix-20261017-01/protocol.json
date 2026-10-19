@@ -1,0 +1,28 @@
+{
+  "protocol_id": "incidentbench-v16-wp-d-fixed-matrix-20261017-01",
+  "benchmark_version": "incidentbench-v1",
+  "provider_id": "real",
+  "model_id": "deepseek-v4-flash-0731",
+  "temperature": 0.0,
+  "cache_mode": "off",
+  "jobs": 1,
+  "run_order_seed": 14100,
+  "repeats": 1,
+  "variants": [
+    "strong_single_equivalent_tools",
+    "fixed_four_equivalent_tools",
+    "dynamic_no_verifier",
+    "full"
+  ],
+  "max_rounds": 8,
+  "max_tool_calls": 32,
+  "max_llm_calls": 48,
+  "max_wall_seconds": 5400,
+  "response_format": "json_schema",
+  "request_timeout": 420,
+  "blindness_level": "development_visible",
+  "formal": false,
+  "analysis_seed": 14101,
+  "bootstrap_samples": 10000,
+  "analysis_plan": "family_clustered_paired_bootstrap_plus_exact_discordance"
+}

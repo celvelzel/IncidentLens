@@ -1,0 +1,64 @@
+{
+  "finding": {
+    "finding_id": "finding-db-conn-health-0006",
+    "task_id": "task-db-connection-health-0006",
+    "run_id": "run-81b83f87c7e5466682f1ffc2d9280778",
+    "incident_id": "incident_1001",
+    "role": "database",
+    "claim": "The only observed postgres datastore record in the window (2026-10-01T12:00:10Z) reports connection_count 30 against connection_limit 100, i.e. server connections below the limit with substantial headroom, so postgres shows no connection exhaustion at the sampled point while a backend pool_waiters signal is reported elevated.",
+    "evidence_ids": ["incident_1001-E-007"],
+    "relation": "refutes",
+    "confidence_qualifier": "supported",
+    "followup_question": "Do postgres active-session, lock-wait and slow-query counters during 11:50-12:30Z also stay within normal bounds, and does a backend-side metrics check confirm pool_waiters elevated coincident with this connection sample?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-backend-pool-config-regression-0006",
+      "culprit_service": "backend",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": ["incident_1001-E-007"],
+      "against_ids": [],
+      "predicted_observations": [
+        "postgres server connections remain well below connection_limit (e.g. ~30 of 100) across the window rather than approaching the limit",
+        "backend pool_waiters stays elevated while postgres active sessions remain low, matching a backend-side pool configuration regression",
+        "postgres lock waits and slow-query counts show no coincident spike"
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "Postgres active-session, lock-wait and slow-query counters were not observed in this window, so a postgres-side contending mechanism cannot yet be fully excluded; these counters are needed to confirm postgres stayed healthy throughout."
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-postgres-connection-exhaustion-0006",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": ["incident_1001-E-007"],
+      "predicted_observations": [
+        "postgres connection_count would be at or near connection_limit, and active sessions saturated"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "task-db-active-sessions-health-0007",
+      "role": "database",
+      "question": "During 2026-10-01T11:50:00Z-12:30:00Z, do postgres active-session and health metrics show saturating sessions or connection pressure that could raise backend pool_waiters, or do they stay low and healthy?",
+      "allowed_tools": ["get_db_active_sessions", "get_db_health_metrics", "get_db_connections"],
+      "filters": {"service": "postgres", "start_ts": "2026-10-01T11:50:00Z", "end_ts": "2026-10-01T12:30:00Z"},
+      "reason": "E-007 shows connections below the limit only at a single sample; active-session and health series across the window are needed to confirm postgres never approached saturation coincident with the backend pool_waiters signal.",
+      "expected_discriminator": "Saturated or rising active sessions favour a postgres-side mechanism, whereas persistently low sessions with connections well below the limit favour backend_pool_config_regression."
+    },
+    {
+      "task_id": "task-db-locks-slowqueries-0008",
+      "role": "database",
+      "question": "During 2026-10-01T11:50:00Z-12:30:00Z, do postgres lock-wait and slow-query counters show contention or slow queries coincident with elevated backend pool_waiters, or are they quiet?",
+      "allowed_tools": ["get_db_lock_waits", "get_db_slow_queries"],
+      "filters": {"service": "postgres", "start_ts": "2026-10-01T11:50:00Z", "end_ts": "2026-10-01T12:30:00Z"},
+      "reason": "The task reason notes postgres_lock_contention and postgres_slow_query remain unexcluded because datastore-level dependency edges were not observed; lock-wait and slow-query series directly discriminate those mechanisms from a backend pool config regression.",
+      "expected_discriminator": "Rising lock waits or slow queries favour a postgres-side contention mechanism, whereas quiet lock-wait and slow-query counters with healthy connections favour backend_pool_config_regression."
+    }
+  ]
+}

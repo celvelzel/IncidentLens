@@ -1,0 +1,291 @@
+{
+  "scoring_version": "2",
+  "termination_source": "v2",
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  },
+  "termination_reason": "DIAGNOSIS_READY",
+  "termination_outcome": "SUCCESS",
+  "protocol_valid": true,
+  "protocol_errors": [],
+  "runtime_failure": false,
+  "diagnosis_failure": false,
+  "stop_completion": true,
+  "recovered_model_failure_count": 0,
+  "unrecovered_model_failure_count": 0,
+  "llm_requests": 22,
+  "actual_http_requests": 0,
+  "logical_structured_calls": 22,
+  "task_retries": 0,
+  "transport_retries": 0,
+  "repair_requests": 0,
+  "prompt_tokens": null,
+  "measured_prompt_tokens": 0,
+  "completion_tokens": null,
+  "measured_completion_tokens": 0,
+  "total_tokens": null,
+  "measured_total_tokens": 0,
+  "tokens_complete": false,
+  "requests_with_token_usage": 0,
+  "requests_without_token_usage": 22,
+  "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete",
+  "token_usage_by_role": {
+    "changes": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "coordinator": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "database": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 4,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "logs": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 3,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "verifier": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    }
+  },
+  "verifier": {
+    "review_kind": "independent",
+    "completed_reviews": 5,
+    "sufficient_reviews": 2,
+    "blocking_reviews": 3,
+    "requested_checks": 6,
+    "optional_checks": 7,
+    "repeated_requested_checks": 0,
+    "reviews_discharge_gate": 1,
+    "reviews_add_blockers": 0,
+    "reused_reviews": 0,
+    "skipped_reviews": 0,
+    "citation_validation_events": 0,
+    "requested_check_followups": [
+      {
+        "review_event_id": "event-27",
+        "requested_task_id": "rv-db-active-sessions",
+        "completed_task_ids": [
+          "task-0003"
+        ],
+        "new_evidence_ids": []
+      },
+      {
+        "review_event_id": "event-27",
+        "requested_task_id": "rv-db-slow-health",
+        "completed_task_ids": [
+          "task-0004"
+        ],
+        "new_evidence_ids": []
+      },
+      {
+        "review_event_id": "event-57",
+        "requested_task_id": "rv-logs-postgres",
+        "completed_task_ids": [
+          "task-0005"
+        ],
+        "new_evidence_ids": []
+      },
+      {
+        "review_event_id": "event-86",
+        "requested_task_id": "rv-changes-postgres",
+        "completed_task_ids": [
+          "task-0008"
+        ],
+        "new_evidence_ids": []
+      }
+    ],
+    "followups_with_new_evidence": 0,
+    "llm_requests": 5,
+    "http_requests": 0,
+    "usage": {
+      "prompt_tokens": null,
+      "measured_prompt_tokens": 0,
+      "completion_tokens": null,
+      "measured_completion_tokens": 0,
+      "total_tokens": null,
+      "measured_total_tokens": 0,
+      "tokens_complete": false,
+      "requests_with_token_usage": 0,
+      "requests_without_token_usage": 5,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "effects": [
+      {
+        "review_event_id": "event-27",
+        "target_hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+        "board_sha256": "197f09911ef1eb5281ed64eb1064409e783d33d6f8f734fba9017cf8f2055a0b",
+        "gate_errors_before": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 2,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-57",
+        "target_hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+        "board_sha256": "f0c797476478ef17ce46b57e5018fd9eb9db7af285a926d3a35351fa86931b0b",
+        "gate_errors_before": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 2,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-86",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "6325f10f609afb68b40a7363fd17949e6e8d2b8af97db214b1930c8a40b747cc",
+        "gate_errors_before": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 2,
+        "optional_check_count": 1,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-113",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "cefa513d66002720e5e2308197041a054e32ff850e84d6491ccbc05aa75e244a",
+        "gate_errors_before": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved",
+          "Independent verifier has not accepted the candidate"
+        ],
+        "gate_errors_after": [
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 0,
+        "optional_check_count": 1,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-126",
+        "target_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "board_sha256": "4661b56a40f1cf1645ed5a2d049c4c9e94456fe85b992fb223aa26cfb34b60a5",
+        "gate_errors_before": [
+          "Verifier review does not match current candidate/evidence snapshot"
+        ],
+        "gate_errors_after": [],
+        "gate_discharged": true,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [],
+        "blocking_check_count": 0,
+        "optional_check_count": 1,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      }
+    ],
+    "benefit_assessment": "pending_manual_or_paired_evaluation",
+    "caveat": "Gate changes and new evidence do not establish corrected diagnosis or causal benefit."
+  },
+  "provider_failure_details": [],
+  "cost_usd": null,
+  "failed_calls": 0,
+  "provider_failures": 0,
+  "cancelled_model_calls": 0,
+  "failed_model_calls": 0,
+  "failed_tool_calls": 0,
+  "source_drift": [],
+  "source_unchanged": true,
+  "query_gap_count": 7,
+  "fatal_dispatch": false,
+  "bridge_model_id": "trae-subagent-bridge-v1",
+  "bridge_requests": 22,
+  "isolation_verified": false
+}

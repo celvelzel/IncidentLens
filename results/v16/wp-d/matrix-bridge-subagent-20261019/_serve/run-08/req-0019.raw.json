@@ -1,0 +1,57 @@
+{
+  "finding": {
+    "finding_id": "finding-0013-db-postgres",
+    "task_id": "task-0013-db-postgres",
+    "run_id": "run-2d8e3257175e4cbd8f442c40fb5d6f6c",
+    "incident_id": "incident_1001",
+    "role": "database",
+    "claim": "At 2026-10-01T12:00:10Z postgres reported connection_count 30 against connection_limit 100 (30% utilization), i.e. server connections below limit, so postgres capacity is healthy during the incident window and does not itself exhibit connection exhaustion.",
+    "evidence_ids": ["incident_1001-E-007"],
+    "relation": "refutes",
+    "confidence_qualifier": "supported",
+    "followup_question": "Do get_db_active_sessions, get_db_lock_waits, and get_db_slow_queries over 2026-10-01T11:45:00Z-2026-10-01T13:00:00Z show any blocking sessions or long-running queries that could back-pressure backend pool waiters?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd0466",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": ["incident_1001-E-007"],
+      "predicted_observations": [
+        "connection_count at or near connection_limit (e.g. above 90 of 100) during 2026-10-01T11:45:00Z-2026-10-01T13:00:00Z",
+        "active sessions saturating the 100-connection limit",
+        "application db pool waiters blocked by postgres-side connection refusal or slow query back-pressure"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-backend-pool-config-regression",
+      "culprit_service": "backend",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [],
+      "against_ids": [],
+      "predicted_observations": [
+        "db_pool_max reduced in backend config during the incident window while postgres connection_count stays well below connection_limit",
+        "backend pool_in_use pinned at the reduced pool_limit with waiters queued, co-timed with deadline-exceeded errors"
+      ],
+      "status": "OPEN",
+      "open_questions": [
+        "Does backend pool telemetry show pool_limit reduced and pool_in_use pinned at that reduced limit during the window?",
+        "Is there a config change reducing the backend database pool size co-timed with the observed db_pool_max reduction?"
+      ]
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "task-0013-db-sessions-locks-slowq",
+      "role": "database",
+      "question": "During 2026-10-01T11:45:00Z-2026-10-01T13:00:00Z, do postgres active sessions approach the 100-connection limit, or do get_db_lock_waits / get_db_slow_queries show measured blocking sessions or long-running queries that could back-pressure backend pool waiters?",
+      "allowed_tools": ["get_db_active_sessions", "get_db_lock_waits", "get_db_slow_queries", "get_db_health_metrics"],
+      "filters": {"service": "postgres", "start_ts": "2026-10-01T11:45:00Z", "end_ts": "2026-10-01T13:00:00Z"},
+      "reason": "The only database evidence is a single connection snapshot (30/100); measured active sessions, lock waits and query durations are required to fully rule postgres in or out as the shared back-pressure source rather than inferring from one connection reading.",
+      "expected_discriminator": "Non-zero blocking sessions or slow queries with long durations co-timed with the window would make postgres a plausible shared cause; a low active-session count with no lock waits or slow queries confirms postgres is healthy and keeps the cause local to backend pool sizing."
+    }
+  ]
+}

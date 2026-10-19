@@ -1,0 +1,68 @@
+{
+  "finding": {
+    "finding_id": "incident_1001-chg-0004",
+    "task_id": "task-changes-backend-pool-config-0004",
+    "run_id": "run-81b83f87c7e5466682f1ffc2d9280778",
+    "incident_id": "incident_1001",
+    "role": "changes",
+    "claim": "Within the incident window, the backend change record incident_1001-E-003 (change_id runtime-1, change_type configuration, observed at 2026-10-01T12:00:10Z) shows 'Runtime settings deployment applied', and the corresponding config diff in incident_1001-E-004 shows db_pool_max 20 -> 2 with concurrency=120. This is an observed reduction of the backend connection-pool size in-window, i.e. the parameter regression that backend_pool_config_regression requires; no contrary change record or config diff is present in the returned evidence.",
+    "evidence_ids": [
+      "incident_1001-E-003",
+      "incident_1001-E-004"
+    ],
+    "relation": "supports",
+    "confidence_qualifier": "supported",
+    "followup_question": "Do backend pool_waiters rise only after 2026-10-01T12:00:10Z and saturate at the reduced pool ceiling of 2 rather than at a host-resource limit?"
+  },
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-backend-pool-config-regression-0004",
+      "culprit_service": "backend",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [
+        "incident_1001-E-003",
+        "incident_1001-E-004"
+      ],
+      "against_ids": [],
+      "predicted_observations": [
+        "backend pool_waiters increase after 2026-10-01T12:00:10Z once db_pool_max is reduced to 2",
+        "backend pooling saturates at the reduced ceiling of 2 concurrent connections while concurrency=120 demand is unmet",
+        "postgres-side connection usage remains below its own limit while backend pool_waiters are elevated"
+      ],
+      "status": "SUPPORTED",
+      "open_questions": [
+        "Whether postgres is near its connection limit or has headroom is unobserved, which is material to separating backend_pool_config_regression from postgres_connection_exhaustion."
+      ]
+    }
+  ],
+  "requested_checks": [
+    {
+      "task_id": "task-database-verify-postgres-connection-state-0005",
+      "role": "database",
+      "question": "Do postgres-side usage signals show connection exhaustion independent of the backend pool reduction (db_pool_max 20 -> 2, concurrency=120), or is postgres-side connection headroom present?",
+      "allowed_tools": [
+        "get_db_connections",
+        "get_db_active_sessions",
+        "get_db_health_metrics"
+      ],
+      "filters": {
+        "service": "postgres"
+      },
+      "reason": "Separates backend_pool_config_regression (postgres not exhausted) from postgres_connection_exhaustion (postgres at or near its connection limit); the change evidence establishes the reduced backend pool but not the postgres-side connection state.",
+      "expected_discriminator": "Postgres connections at or near its limit supports postgres_connection_exhaustion; substantial postgres headroom with elevated backend pool_waiters supports backend_pool_config_regression."
+    },
+    {
+      "task_id": "task-metrics-pool-waiters-chronology-0006",
+      "role": "metrics",
+      "question": "Do backend pool_waiters and pool-utilisation metrics rise only after the 2026-10-01T12:00:10Z config change, and does the rise track the reduced pool ceiling rather than host CPU/memory saturation?",
+      "allowed_tools": [
+        "query_metrics"
+      ],
+      "filters": {
+        "service": "backend"
+      },
+      "reason": "Tests the causal chronology of the observed config regression and discriminates backend_pool_config_regression from backend_resource_saturation by checking whether contention is pool-bound versus host-resource-bound.",
+      "expected_discriminator": "pool_waiters rising after 2026-10-01T12:00:10Z and tracking the reduced pool ceiling with normal host resources supports backend_pool_config_regression; elevated host CPU/memory saturation instead supports backend_resource_saturation."
+    }
+  ]
+}

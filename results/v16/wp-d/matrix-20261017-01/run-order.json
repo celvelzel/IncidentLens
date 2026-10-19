@@ -1,0 +1,60 @@
+{
+  "matrix": "WP-D fixed matrix (development-visible pilot)",
+  "frozen_at": "2026-10-17",
+  "scope": "development-set exploratory pilot; 12 investigations for issue discovery and trend judgement only, not formal accuracy claims",
+  "protocol_file": "protocol.json",
+  "dataset": "results/wp-b/pilot-public",
+  "oracle_root": "local_oracles/wp-b-pilot (evaluator-only; never mounted at runtime)",
+  "order_source": "incidentbench.experiment.run_order with run_order_seed=14100 (canonical pilot schedule, identical construction as run_incidentbench.py)",
+  "case_category_mapping_verified": {
+    "sources": [
+      "docs/incidentbench/v16-inventory.csv",
+      "docs/v16/wp-b-final-dataset-inventory.md",
+      "results/wp-b/pilot-public/public_case_index.json"
+    ],
+    "incident_1001": "ordinary (普通)",
+    "incident_1002": "misleading (误导)",
+    "incident_1003": "missing / insufficient evidence (证据不足)"
+  },
+  "variant_cli_mapping": {
+    "strong_single_equivalent_tools": "single",
+    "fixed_four_equivalent_tools": "fixed",
+    "dynamic_no_verifier": "dynamic_no_verifier",
+    "full": "full"
+  },
+  "uniform_conditions": {
+    "model_id": "deepseek-v4-flash-0731",
+    "temperature": 0,
+    "response_format": "json_schema",
+    "cache_mode": "off",
+    "jobs": 1,
+    "max_llm_calls_physical_requests": 48,
+    "max_tool_calls": 32,
+    "max_rounds": 8,
+    "max_wall_seconds": 5400,
+    "request_timeout": 420,
+    "monetary_budget": "no cap (previously authorized); unknown usage stays unknown",
+    "recording_and_retry": "identical for all four architectures (MeasuredProvider + RunJournal + bounded provider retry from configs/system.yaml); no architecture receives extra attempts"
+  },
+  "execution_policy": {
+    "serial": true,
+    "attempts_per_cell": 1,
+    "fresh_output_dir_per_investigation": true,
+    "status_query": "one-shot reads via scripts/run_status.py; checkpoint is diagnostic-only, no resume",
+    "failure_policy": "connection failures, timeouts and interruptions stay as the original attempt; any additional retest uses a new directory recording parent attempt and reason, never overwriting failed results"
+  },
+  "frozen_run_order": [
+    {"slot": 1, "incident_id": "incident_1002", "category": "misleading", "variant_cli": "full", "out": "run-01-incident_1002-full"},
+    {"slot": 2, "incident_id": "incident_1002", "category": "misleading", "variant_cli": "dynamic_no_verifier", "out": "run-02-incident_1002-dynamic_no_verifier"},
+    {"slot": 3, "incident_id": "incident_1001", "category": "ordinary", "variant_cli": "fixed", "out": "run-03-incident_1001-fixed"},
+    {"slot": 4, "incident_id": "incident_1003", "category": "missing", "variant_cli": "full", "out": "run-04-incident_1003-full"},
+    {"slot": 5, "incident_id": "incident_1001", "category": "ordinary", "variant_cli": "dynamic_no_verifier", "out": "run-05-incident_1001-dynamic_no_verifier"},
+    {"slot": 6, "incident_id": "incident_1002", "category": "misleading", "variant_cli": "single", "out": "run-06-incident_1002-single"},
+    {"slot": 7, "incident_id": "incident_1003", "category": "missing", "variant_cli": "fixed", "out": "run-07-incident_1003-fixed"},
+    {"slot": 8, "incident_id": "incident_1001", "category": "ordinary", "variant_cli": "full", "out": "run-08-incident_1001-full"},
+    {"slot": 9, "incident_id": "incident_1002", "category": "misleading", "variant_cli": "fixed", "out": "run-09-incident_1002-fixed"},
+    {"slot": 10, "incident_id": "incident_1003", "category": "missing", "variant_cli": "dynamic_no_verifier", "out": "run-10-incident_1003-dynamic_no_verifier"},
+    {"slot": 11, "incident_id": "incident_1001", "category": "ordinary", "variant_cli": "single", "out": "run-11-incident_1001-single"},
+    {"slot": 12, "incident_id": "incident_1003", "category": "missing", "variant_cli": "single", "out": "run-12-incident_1003-single"}
+  ]
+}

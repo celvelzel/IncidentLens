@@ -1,0 +1,115 @@
+{
+  "run_id": "run-d0fa200903a54603b2a15a644dbce502",
+  "incident_id": "incident_1001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1001-E-001",
+      "incident_1001-E-003",
+      "incident_1001-E-004",
+      "incident_1001-E-005",
+      "incident_1001-E-007"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend pool_waiters stay elevated (118 requests at 2026-10-01T12:00:10Z) while postgres connection_count remains far below its connection_limit of 100.",
+      "Backend request latency exceeds its deadline and propagates to the downstream gateway http_5xx_rate once the reduced db_pool_max of 2 can no longer service concurrency 120.",
+      "The degradation onset coincides with the runtime-1 change at 2026-10-01T12:00:10Z that reduced db_pool_max from 20 to 2 while concurrency stayed at 120."
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_1001-E-001] backend: request_latency_ms=40 ms",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-007] postgres: Server connections below limit"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1001-E-001",
+    "incident_1001-E-003",
+    "incident_1001-E-004",
+    "incident_1001-E-005",
+    "incident_1001-E-007"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_1001-T-backend",
+        "incident_1001-T-gateway"
+      ],
+      "against_ids": [
+        "incident_1001-E-004"
+      ],
+      "predicted_observations": [
+        "Backend logs in the window show generic CPU or memory pressure or resource-saturation messages rather than pool-specific acquisition errors.",
+        "CPU or memory saturation time series on backend rise across the observation window rather than tracking the runtime-1 change timestamp."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-T-backend",
+        "incident_1001-T-postgres"
+      ],
+      "against_ids": [
+        "incident_1001-E-004",
+        "incident_1001-E-007",
+        "incident_1001-E-009"
+      ],
+      "predicted_observations": [
+        "client connection refusals or a large pool of waiting client connections at the database layer",
+        "postgres connection-utilization metric shows sustained high utilization across 2026-10-01T11:50:00Z-12:30:00Z.",
+        "postgres connection_count approaching or equal to connection_limit of 100",
+        "postgres connections_active climbs toward the configured pool/connection ceiling and stays pinned before backend pool_waiters rises."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-9afcba485a9308dfd49121b2635ea8fa9026c45f543be4d2ede00163d0a67df5",
+      "culprit_service": "backend",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-E-005",
+        "incident_1001-E-001",
+        "incident_1001-E-009"
+      ],
+      "against_ids": [
+        "incident_1001-E-006",
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "Backend-side database connection count is at or near the configured connection limit while pool_waiters stays elevated.",
+        "Postgres active connections approach or hit its connection_limit of 100 before backend latency rises."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal support for backend_pool_config_regression is complete and consistent: the observed runtime-1 change (incident_1001-E-003) reduces db_pool_max from 20 to 2 while concurrency stays 120 (incident_1001-E-004), backend pool_waiters reaches 118 at the change timestamp (incident_1001-E-005) with backend latency onset preceding the downstream gateway 5xx (incident_1001-E-001, incident_1001-E-009), and postgres stays well below its connection limit (incident_1001-E-006, incident_1001-E-007) so the bound is application-side. The competing postgres_connection_exhaustion and backend_resource_saturation explanations are rejected against observed contrary evidence, and no unqueried source remains for a further discriminating check.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "run_id": "run-9a0c7fd4c1ea4b029e6b57746e427461",
+  "incident_id": "incident_1001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1001-E-003",
+      "incident_1001-E-004",
+      "incident_1001-E-008",
+      "incident_1001-E-009",
+      "incident_1001-T-backend",
+      "incident_1001-T-gateway"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend dependency latency to postgres/redis/payment remains normal, isolating the backend itself.",
+      "Backend exposes a cause-specific anomaly (pool saturation) at or before 2026-10-01T12:00:14Z.",
+      "Gateway 5xx error rate rises after backend degradation onset, not before.",
+      "backend connection pool in-use pins at the new maximum of 2",
+      "connection acquisition waits or pool-exhaustion/timeout errors rise on backend after 2026-10-01T12:00:10Z",
+      "db_pool_max remains 2 while concurrency stays 120 across the observation window"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_1001-T-backend] backend: backend depends on: postgres, redis, payment",
+    "2026-10-01T12:00:00+00:00 [incident_1001-T-gateway] gateway: gateway depends on: backend",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:14+00:00 [incident_1001-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:14+00:00 [incident_1001-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1001-E-003",
+    "incident_1001-E-004",
+    "incident_1001-E-008",
+    "incident_1001-E-009",
+    "incident_1001-T-backend",
+    "incident_1001-T-gateway"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_1001-E-008"
+      ],
+      "against_ids": [
+        "incident_1001-E-004"
+      ],
+      "predicted_observations": [
+        "backend latency rises monotonically before 2026-10-01T12:00:14Z",
+        "backend logs show queuing, thread-pool or connection-pool starvation messages",
+        "gateway continues to serve HTTP 200 with elevated but successful latency"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-08846516798c9ee4cb79fb1d1babf88c17c611c83e83c3e9ba21b1c768a0f030",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout",
+      "support_ids": [
+        "incident_1001-T-backend",
+        "incident_1001-T-payment"
+      ],
+      "against_ids": [
+        "incident_1001-E-004"
+      ],
+      "predicted_observations": [
+        "Backend calls to payment show elevated latency or timeout errors preceding the gateway 5xx spike.",
+        "Payment-side metrics (if available) show increased latency or error responses.",
+        "Postgres and redis metric behavior remains normal while payment latency is elevated."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "connection_count approaching or equal to connection_limit (100)",
+        "rising connection_count correlated with the incident onset"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal support is present, the cause-specific discriminator E-004 is observed, and the fixed schedule is exhausted with no further tools or tasks assignable. The runtime-1 config change E-003 and its config diff E-004 (db_pool_max reduced 20->2 at 2026-10-01T12:00:10Z with concurrency 120) precede the backend deadline breach E-008 at 12:00:14Z and the downstream gateway 5xx rate E-009, while postgres capacity stayed healthy E-007. All competing hypotheses are reconciled: backend_resource_saturation (hyp-32a63) and payment_external_timeout (hyp-088465) are rejected as the observed mechanism is the backend pool config regression, and postgres_connection_exhaustion (hyp-51bd) remains rejected by E-007. The board is reconciled and review will refresh after these changes.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "run-a8bb59bf73fd4d21bd658890acbdf321",
+  "incident_id": "incident_1003",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Wall-clock budget exhausted",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "BUDGET_EXHAUSTED",
+    "outcome": "FAILED",
+    "failure_stage": "verify",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

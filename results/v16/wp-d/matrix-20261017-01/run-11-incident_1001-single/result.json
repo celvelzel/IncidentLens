@@ -1,0 +1,64 @@
+{
+  "run_id": "run-777485c7e9c94f6ba8ef23f8969188f4",
+  "incident_id": "incident_1001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-E-001",
+        "incident_1001-E-005",
+        "incident_1001-E-009"
+      ],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "get_db_connections would show connection_count near connection_limit=100 at 12:00.",
+        "get_db_health_metrics would show connection limit reached or connection acceptance failures."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Did connection_count approach 100 at any point between 11:45 and 12:15 despite the 30/100 reading at 12:00:10Z?"
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-9afcba485a9308dfd49121b2635ea8fa9026c45f543be4d2ede00163d0a67df5",
+      "culprit_service": "backend",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1001-E-005"
+      ],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "Backend pool_waiters and gateway http_5xx_rate remain elevated even if config diff shows no pool change at 12:00:10Z.",
+        "Database health or active session metrics show Postgres max_connections reached, or backend resource metrics show saturation before 12:00:10Z."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "PROVIDER_TIMEOUT",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "coordinate",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

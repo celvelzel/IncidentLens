@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "authorization": "User confirmed experiments complete and requested slot 5 cleanup, 2026-10-18",
+  "replacements": [
+    {
+      "slot": 5,
+      "original_out": "run-05-incident_1001-dynamic_no_verifier",
+      "selected_out": "run-05-incident_1001-dynamic_no_verifier-retry-02",
+      "excluded_attempts": [
+        "run-05-incident_1001-dynamic_no_verifier",
+        "run-05-incident_1001-dynamic_no_verifier-retry-01"
+      ],
+      "reason": "network interruptions user-confirmed; only completed attempt selected, irrespective of answer correctness"
+    },
+    {
+      "slot": 4,
+      "original_out": "run-04-incident_1003-full",
+      "selected_out": "run-04-incident_1003-full-postfix-01",
+      "excluded_attempts": [
+        "run-04-incident_1003-full"
+      ],
+      "reason": "User-authorized post-fix rerun; old runtime failure excluded; mixed-version exploratory comparison only"
+    },
+    {
+      "slot": 8,
+      "original_out": "run-08-incident_1001-full",
+      "selected_out": "run-08-incident_1001-full-postfix-01",
+      "excluded_attempts": [
+        "run-08-incident_1001-full"
+      ],
+      "reason": "User-authorized post-fix rerun; old runtime failure excluded; mixed-version exploratory comparison only"
+    },
+    {
+      "slot": 11,
+      "original_out": "run-11-incident_1001-single",
+      "selected_out": "run-11-incident_1001-single-postfix-01",
+      "excluded_attempts": [
+        "run-11-incident_1001-single"
+      ],
+      "reason": "User-authorized post-fix rerun; old runtime failure excluded; mixed-version exploratory comparison only"
+    },
+    {
+      "slot": 12,
+      "original_out": "run-12-incident_1003-single",
+      "selected_out": "run-12-incident_1003-single-postfix-01",
+      "excluded_attempts": [
+        "run-12-incident_1003-single"
+      ],
+      "reason": "User-authorized post-fix rerun; old runtime failure excluded; mixed-version exploratory comparison only"
+    }
+  ]
+}

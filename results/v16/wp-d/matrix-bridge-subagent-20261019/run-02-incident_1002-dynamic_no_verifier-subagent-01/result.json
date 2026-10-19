@@ -1,0 +1,88 @@
+{
+  "run_id": "run-ede4aa9ed7614cbf8d994ebffa6f3d65",
+  "incident_id": "incident_1002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1002-E-003",
+      "incident_1002-E-004",
+      "incident_1002-E-005",
+      "incident_1002-E-007"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "A runtime settings deployment touching backend pool sizing occurs at the 2026-10-01T12:00:10Z pool_waiters spike (incident_1002-E-003)",
+      "The config diff for change_id runtime-1 reduces the maximum connection pool limit, db_pool_max 20->2 under concurrency 120 (incident_1002-E-004)",
+      "Backend emits a deadline-exceeded error beginning at the pool_waiters spike (incident_1002-E-008)",
+      "No contemporaneous postgres connection exhaustion accompanies the backend pool waits, connection_count 30 vs limit 100 (incident_1002-E-007)"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-007] postgres: Server connections below limit"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1002-E-003",
+    "incident_1002-E-004",
+    "incident_1002-E-005",
+    "incident_1002-E-007"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_1002-E-001",
+        "incident_1002-E-005"
+      ],
+      "against_ids": [
+        "incident_1002-E-004"
+      ],
+      "predicted_observations": [
+        "backend cpu_usage and thread_pool_active rise together with the pool_waiters spike",
+        "pool_waiters scale with offered request load rather than with any newly deployed configuration change",
+        "latency grows monotonically with pool_waiters across the window"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [
+        "active sessions queued on connection acquisition",
+        "clients time out acquiring connections from the database",
+        "connection_count approaches or equals connection_limit"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "FINALIZE: backend_pool_config_regression is established with a cause-specific discriminator. Incident chronology shows backend baseline latency 40 ms (incident_1002-E-001) followed within 10 s by pool_waiters 118 (incident_1002-E-005), a runtime settings deployment at 2026-10-01T12:00:10Z (incident_1002-E-003) whose config diff reduces db_pool_max from 20 to 2 under concurrency 120 (incident_1002-E-004), a generic backend deadline-exceeded log at 12:00:14Z (incident_1002-E-008), and postgres connection_count 30 against connection_limit 100 ruling out database connection exhaustion (incident_1002-E-007). The competing backend_resource_saturation hypothesis is rejected by incident_1002-E-004, and no further discriminating check remains since the backend metrics scope is complete and exhausted and the redis/payment metric queries returned NO_DATA.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

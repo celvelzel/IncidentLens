@@ -1,0 +1,65 @@
+{
+  "run_id": "run-7d980b48a2444a66b23f55d6934633c9",
+  "incident_id": "incident_1002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1002-E-003",
+      "incident_1002-E-004",
+      "incident_1002-E-008"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend deadline errors appear from 2026-10-01T12:00:14Z, approximately four seconds after the runtime-1 configuration change, consistent with connection-pool starvation.",
+      "If the pool regression is causal, backend pool acquisition wait/queue metrics rise while upstream datastore latency stays flat.",
+      "The change_id runtime-1 config diff shows db_pool_max reduced from 20 to 2 and concurrency=120 at 2026-10-01T12:00:10Z."
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1002-E-003",
+    "incident_1002-E-004",
+    "incident_1002-E-008"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [
+        "Active server sessions approaching or equalling connection_limit (100) during the incident window",
+        "New-connection queueing or refusals visible in active-session telemetry",
+        "get_db_connections showing connection_count at or near connection_limit"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Finalize backend_pool_config_regression on the backend service: incident_1002-E-003 (runtime-1 configuration change applied 2026-10-01T12:00:10Z) and incident_1002-E-004 (config diff, db_pool_max 20 -> 2 with concurrency=120) show the deployment reduced the backend database connection-pool size, and incident_1002-E-008 (backend 'Request processing exceeded deadline' at 2026-10-01T12:00:14Z) records the matching downstream symptom four seconds later; the competing postgres_lock_contention candidate is unsupported with all of its first-party discriminating scopes exhausted empty, and the REJECTED postgres_connection_exhaustion candidate is refuted by incident_1002-E-007 (connection_count 30 against connection_limit 100).",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "run-631bb0d5845c4b16bd6fa26b1655d1ba",
+  "incident_id": "incident_1001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "Active sessions at or near connection limit",
+        "Connection count at or near max_connections across the window",
+        "Health metrics showing connection saturation"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "ProviderError",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "coordinate",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "run_id": "run-ceb5a18d4fd44ac1ad458faf71d8bfd9",
+  "incident_id": "incident_1002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1002-E-001",
+      "incident_1002-E-003",
+      "incident_1002-E-004",
+      "incident_1002-E-005",
+      "incident_1002-E-007",
+      "incident_1002-E-008",
+      "incident_1002-E-009"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend pool_waiters=118 at 12:00:10Z coincident with db_pool_max reduction to 2",
+      "Backend request deadline exceeded at 12:00:14Z",
+      "Gateway http_5xx_rate=0.35 at 12:00:14Z",
+      "Postgres connection_count=30/100 at 12:00:10Z, below limit"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_1002-E-001] backend: request_latency_ms=40 ms",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-007] postgres: Server connections below limit",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1002-E-001",
+    "incident_1002-E-003",
+    "incident_1002-E-004",
+    "incident_1002-E-005",
+    "incident_1002-E-007",
+    "incident_1002-E-008",
+    "incident_1002-E-009"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1002-E-005",
+        "incident_1002-E-009"
+      ],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal mechanism confirmed: backend pool config regression (db_pool_max 20->2) at 12:00:10Z caused pool_waiters=118 and downstream gateway 5xx; Postgres connection exhaustion refuted by E-007; sufficient review.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

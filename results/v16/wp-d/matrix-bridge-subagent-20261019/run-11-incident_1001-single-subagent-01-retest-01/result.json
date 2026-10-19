@@ -1,0 +1,69 @@
+{
+  "run_id": "run-81b83f87c7e5466682f1ffc2d9280778",
+  "incident_id": "incident_1001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1001-E-003",
+      "incident_1001-E-004",
+      "incident_1001-E-005",
+      "incident_1001-E-007"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "backend pool_waiters increase after 2026-10-01T12:00:10Z once db_pool_max is reduced to 2",
+      "backend pool_waiters stays elevated while postgres active sessions remain low, matching a backend-side pool configuration regression",
+      "backend pooling saturates at the reduced ceiling of 2 concurrent connections while concurrency=120 demand is unmet",
+      "postgres lock waits and slow-query counts show no coincident spike",
+      "postgres server connections remain well below connection_limit (e.g. ~30 of 100) across the window rather than approaching the limit",
+      "postgres-side connection usage remains below its own limit while backend pool_waiters are elevated"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-005] backend: pool_waiters=118 requests",
+    "2026-10-01T12:00:10+00:00 [incident_1001-E-007] postgres: Server connections below limit"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1001-E-003",
+    "incident_1001-E-004",
+    "incident_1001-E-005",
+    "incident_1001-E-007"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-007"
+      ],
+      "predicted_observations": [
+        "postgres connection_count would be at or near connection_limit, and active sessions saturated"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Finalized on hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e (backend_pool_config_regression): latest review verdict 'sufficient' with no contradictions or requested checks; observed in-window config mechanism incident_1001-E-003 plus cause discriminator incident_1001-E-004 (db_pool_max 20 -> 2; concurrency=120) supported by the coincident pool_waiters=118 symptom (incident_1001-E-005) across changes/configs and metrics, with the competing postgres_connection_exhaustion hypothesis refuted by incident_1001-E-007 and the stale headroom open question resolved.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

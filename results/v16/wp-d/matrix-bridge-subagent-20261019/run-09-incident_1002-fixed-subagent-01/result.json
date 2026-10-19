@@ -1,0 +1,93 @@
+{
+  "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+  "incident_id": "incident_1002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_1002-E-003",
+      "incident_1002-E-004",
+      "incident_1002-E-008",
+      "incident_1002-E-009",
+      "incident_1002-T-gateway"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+      "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+      "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+      "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+      "config diff showing a reduced pool size or changed pool timeout near the incident window",
+      "connection acquisition timeouts reported by the backend while database capacity is healthy"
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-01T12:00:00+00:00 [incident_1002-T-gateway] gateway: gateway depends on: backend",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline",
+    "2026-10-01T12:00:14+00:00 [incident_1002-E-009] gateway: http_5xx_rate=0.35 ratio"
+  ],
+  "supporting_evidence_ids": [
+    "incident_1002-E-003",
+    "incident_1002-E-004",
+    "incident_1002-E-008",
+    "incident_1002-E-009",
+    "incident_1002-T-gateway"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-E-004"
+      ],
+      "predicted_observations": [
+        "Backend emits error-severity logs or resource-saturation signals within the same window.",
+        "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+        "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+        "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+        "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+        "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [
+        "active sessions queuing or rejection of new connections from the application",
+        "postgres connection_count at or above connection_limit (100)",
+        "rising connection_count preceding the incident window"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

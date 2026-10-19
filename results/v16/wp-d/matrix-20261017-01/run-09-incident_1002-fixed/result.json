@@ -1,0 +1,50 @@
+{
+  "run_id": "run-ca99b14250244d67be0c6fc839a23f45",
+  "incident_id": "incident_1002",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_1002-E-009",
+        "incident_1002-T-backend"
+      ],
+      "against_ids": [
+        "incident_1002-E-007"
+      ],
+      "predicted_observations": [
+        "Backend shows connection acquisition errors",
+        "Connection count remains below limit during the incident window",
+        "Gateway 5xx rate correlates with postgres connection exhaustion",
+        "No active sessions exceeding the connection limit",
+        "Postgres connection count is at or near max_connections"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "What is the application pool configuration?"
+      ]
+    }
+  ],
+  "unresolved": [
+    "Unresolved shared questions prevent finalization",
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Unresolved shared questions prevent finalization; Competing hypothesis remains unresolved",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

@@ -1,0 +1,2402 @@
+{
+  "schema_version": "v1",
+  "provider": "real",
+  "variant": "full",
+  "cache_mode": "off",
+  "elapsed_ms": null,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_1002",
+    "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+    "public_summary": {
+      "incident_id": "incident_1002",
+      "title": "Service observation window",
+      "started_at": "2026-10-01T12:00:00Z",
+      "observed_symptoms": [
+        "Request latency and error rate observation window"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 8,
+      "max_tool_calls": 32,
+      "max_llm_calls": 48,
+      "max_wall_seconds": 5400.0,
+      "max_tokens": null
+    },
+    "round_index": 1,
+    "findings": [
+      {
+        "finding_id": "finding-3e11a08713b0e25210ce603dc50b77a09c8ee6b24c6d5ccf957d04aee7fe4509",
+        "task_id": "fixed-logs",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "role": "logs",
+        "claim": "Gateway logs an HTTP 200 completion at 2026-10-01T12:00:00Z and 14 seconds later backend logs 'Request processing exceeded deadline' at 2026-10-01T12:00:14Z; neither excerpt carries severity metadata or names an internal failure mechanism.",
+        "evidence_ids": [
+          "incident_1002-E-002",
+          "incident_1002-E-008"
+        ],
+        "relation": "neutral",
+        "confidence_qualifier": "supported",
+        "followup_question": "Do backend logs between 2026-10-01T11:59:50Z and 2026-10-01T12:00:30Z contain error-severity entries that identify an internal failure mechanism?"
+      },
+      {
+        "finding_id": "finding-aa3b94701eca9191045a61a367c15cd5c6e8a3bf5e3349665577b656e8d0347a",
+        "task_id": "fixed-metrics",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "role": "metrics",
+        "claim": "Gateway shows an elevated http_5xx_rate of 0.35 at 2026-10-01T12:00:14Z, while topology records that gateway depends on backend; this is a gateway-side error symptom consistent with a downstream dependency problem, and no backend-side causal metric has been observed yet.",
+        "evidence_ids": [
+          "incident_1002-E-009",
+          "incident_1002-T-gateway"
+        ],
+        "relation": "neutral",
+        "confidence_qualifier": "weak",
+        "followup_question": "What metric names are available for backend and its datastore, and how do they behave in the window around 2026-10-01T12:00Z?"
+      },
+      {
+        "finding_id": "finding-c0b6aeadcbf23b27ec07fd1474b9d575b976faeb399f78bf9b8aa0c0f6784d1f",
+        "task_id": "fixed-database",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "role": "database",
+        "claim": "Observed postgres server connection_count of 30 against connection_limit of 100 shows database connection capacity remaining healthy at the incident window, providing no observed mechanism for database-side connection exhaustion. Data gaps (not evidence of health): [{\"call_id\": \"call-05954e37d9d84337beaab1cca10de21c\", \"tool_name\": \"get_db_health_metrics\", \"args\": {\"service\": \"postgres\", \"start_ts\": \"2026-10-01T12:00:00Z\", \"end_ts\": \"2026-10-01T12:30:00Z\", \"limit\": 50}, \"outcome\": \"NO_DATA\"}]",
+        "evidence_ids": [
+          "incident_1002-E-007"
+        ],
+        "relation": "refutes",
+        "confidence_qualifier": "supported",
+        "followup_question": "What were the measured active sessions, blocking lock waits, and slow-query durations on postgres at 2026-10-01T12:00:10Z, and did application-side pool_limit/pool_in_use reach saturation?"
+      },
+      {
+        "finding_id": "finding-54129eaec4b9c32feaa986f12c4d7386f7063e29cc240a910c75305e7aa962b0",
+        "task_id": "fixed-changes",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "role": "changes",
+        "claim": "A backend runtime configuration deployment (change_id runtime-1, configuration) was applied at 2026-10-01T12:00:10Z and its config diff shows db_pool_max reduced from 20 to 2 while concurrency=120, a concrete parameter regression on the backend service. The later gateway deployment (change_id assets-2, deployment) explicitly reports 'routing unchanged' and only touches presentation assets, so it introduces no observed routing or backend change.",
+        "evidence_ids": [
+          "incident_1002-E-003",
+          "incident_1002-E-004",
+          "incident_1002-E-010"
+        ],
+        "relation": "supports",
+        "confidence_qualifier": "supported",
+        "followup_question": "Does the runtime-1 diff contain any other parameter changes besides db_pool_max 20 -> 2 that could further constrain the mechanism?"
+      }
+    ],
+    "evidence_index": {
+      "incident_1002-E-002": {
+        "evidence_id": "incident_1002-E-002",
+        "incident_id": "incident_1002",
+        "source_type": "logs",
+        "service": "gateway",
+        "observed_at": "2026-10-01T12:00:00Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "Request completed with HTTP 200",
+        "metadata": {}
+      },
+      "incident_1002-E-008": {
+        "evidence_id": "incident_1002-E-008",
+        "incident_id": "incident_1002",
+        "source_type": "logs",
+        "service": "backend",
+        "observed_at": "2026-10-01T12:00:14Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "Request processing exceeded deadline",
+        "metadata": {}
+      },
+      "incident_1002-E-009": {
+        "evidence_id": "incident_1002-E-009",
+        "incident_id": "incident_1002",
+        "source_type": "metrics",
+        "service": "gateway",
+        "observed_at": "2026-10-01T12:00:14Z",
+        "source_path": "public/metrics.csv",
+        "excerpt": "http_5xx_rate=0.35 ratio",
+        "metadata": {
+          "metric_name": "http_5xx_rate",
+          "value": 0.35,
+          "unit": "ratio"
+        }
+      },
+      "incident_1002-T-gateway": {
+        "evidence_id": "incident_1002-T-gateway",
+        "incident_id": "incident_1002",
+        "source_type": "topology",
+        "service": "gateway",
+        "observed_at": "2026-10-01T12:00:00Z",
+        "source_path": "topology/services.yaml",
+        "excerpt": "gateway depends on: backend",
+        "metadata": {
+          "dependencies": [
+            "backend"
+          ]
+        }
+      },
+      "incident_1002-E-007": {
+        "evidence_id": "incident_1002-E-007",
+        "incident_id": "incident_1002",
+        "source_type": "database",
+        "service": "postgres",
+        "observed_at": "2026-10-01T12:00:10Z",
+        "source_path": "public/database.jsonl",
+        "excerpt": "Server connections below limit",
+        "metadata": {
+          "category": "connections",
+          "connection_count": 30,
+          "connection_limit": 100
+        }
+      },
+      "incident_1002-E-003": {
+        "evidence_id": "incident_1002-E-003",
+        "incident_id": "incident_1002",
+        "source_type": "changes",
+        "service": "backend",
+        "observed_at": "2026-10-01T12:00:10Z",
+        "source_path": "public/changes.jsonl",
+        "excerpt": "Runtime settings deployment applied",
+        "metadata": {
+          "change_id": "runtime-1",
+          "change_type": "configuration"
+        }
+      },
+      "incident_1002-E-010": {
+        "evidence_id": "incident_1002-E-010",
+        "incident_id": "incident_1002",
+        "source_type": "changes",
+        "service": "gateway",
+        "observed_at": "2026-10-01T12:00:44Z",
+        "source_path": "public/changes.jsonl",
+        "excerpt": "Presentation asset deployment completed; routing unchanged",
+        "metadata": {
+          "change_id": "assets-2",
+          "change_type": "deployment"
+        }
+      },
+      "incident_1002-E-004": {
+        "evidence_id": "incident_1002-E-004",
+        "incident_id": "incident_1002",
+        "source_type": "configs",
+        "service": "backend",
+        "observed_at": "2026-10-01T12:00:10Z",
+        "source_path": "public/configs.jsonl",
+        "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+        "metadata": {
+          "change_id": "runtime-1"
+        }
+      }
+    },
+    "hypotheses": [
+      {
+        "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+        "culprit_service": "backend",
+        "failure_mode": "backend_resource_saturation",
+        "support_ids": [],
+        "against_ids": [
+          "incident_1002-E-004"
+        ],
+        "predicted_observations": [
+          "Backend emits error-severity logs or resource-saturation signals within the same window.",
+          "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+          "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+          "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+          "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+          "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+        ],
+        "status": "REJECTED",
+        "open_questions": []
+      },
+      {
+        "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [],
+        "against_ids": [
+          "incident_1002-E-007"
+        ],
+        "predicted_observations": [
+          "active sessions queuing or rejection of new connections from the application",
+          "postgres connection_count at or above connection_limit (100)",
+          "rising connection_count preceding the incident window"
+        ],
+        "status": "REJECTED",
+        "open_questions": []
+      },
+      {
+        "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_1002-E-003",
+          "incident_1002-E-004",
+          "incident_1002-E-008",
+          "incident_1002-E-009",
+          "incident_1002-T-gateway"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+          "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+          "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+          "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+          "config diff showing a reduced pool size or changed pool timeout near the incident window",
+          "connection acquisition timeouts reported by the backend while database capacity is healthy"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      }
+    ],
+    "tasks": [
+      {
+        "task_id": "fixed-logs",
+        "role": "logs",
+        "question": "Investigate logs evidence for the incident",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-metrics",
+        "role": "metrics",
+        "question": "Investigate metrics evidence for the incident",
+        "allowed_tools": [
+          "query_metrics",
+          "get_dependencies"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-database",
+        "role": "database",
+        "question": "Investigate database evidence for the incident",
+        "allowed_tools": [
+          "get_db_connections",
+          "get_db_active_sessions",
+          "get_db_lock_waits",
+          "get_db_slow_queries",
+          "get_db_health_metrics"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-changes",
+        "role": "changes",
+        "question": "Investigate changes evidence for the incident",
+        "allowed_tools": [
+          "query_changes",
+          "get_config_diff"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      }
+    ],
+    "reviews": [],
+    "decisions": [
+      {
+        "action": "INVESTIGATE",
+        "reason": "Fixed schedule",
+        "assignments": [
+          {
+            "task_id": "fixed-logs",
+            "role": "logs",
+            "question": "Investigate logs evidence for the incident",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-metrics",
+            "role": "metrics",
+            "question": "Investigate metrics evidence for the incident",
+            "allowed_tools": [
+              "query_metrics",
+              "get_dependencies"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-database",
+            "role": "database",
+            "question": "Investigate database evidence for the incident",
+            "allowed_tools": [
+              "get_db_connections",
+              "get_db_active_sessions",
+              "get_db_lock_waits",
+              "get_db_slow_queries",
+              "get_db_health_metrics"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-changes",
+            "role": "changes",
+            "question": "Investigate changes evidence for the incident",
+            "allowed_tools": [
+              "query_changes",
+              "get_config_diff"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          }
+        ],
+        "hypothesis_updates": [],
+        "selected_hypothesis_id": null,
+        "stop_reason": null
+      },
+      {
+        "action": "FINALIZE",
+        "reason": "The fixed investigation schedule is complete, so the shared board is reconciled without new assignments. The only hypothesis carrying an observed cause-specific discriminator is backend_pool_config_regression (hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e): the runtime-1 backend configuration change applied at 2026-10-01T12:00:10Z (incident_1002-E-003) exposes a config diff reducing db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-004), which is a concrete observed mechanism. The symptom chronology follows that change: backend exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) and gateway http_5xx_rate rose to 0.35 at 12:00:14Z (incident_1002-E-009), while topology only fixes gateway -> backend as the dependency edge (incident_1002-T-gateway). The generic competing backend_resource_saturation hypothesis has no observed saturation discriminator and is contradicted by the observed configuration mechanism, and postgres_connection_exhaustion is already refuted by healthy postgres capacity (incident_1002-E-007). Answerable open questions about config-change evidence and the runtime-1 diff are now cleared by the observed diff, and the remaining pool telemetry gap is optional rather than a material blocker. No additional discriminating check remains against completed scopes, so finalization is warranted.",
+        "assignments": [],
+        "hypothesis_updates": [
+          {
+            "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+            "culprit_service": "backend",
+            "failure_mode": "backend_pool_config_regression",
+            "support_ids": [
+              "incident_1002-E-003",
+              "incident_1002-E-004",
+              "incident_1002-E-008",
+              "incident_1002-E-009",
+              "incident_1002-T-gateway"
+            ],
+            "against_ids": [],
+            "predicted_observations": [
+              "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+              "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+              "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+              "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+              "config diff showing a reduced pool size or changed pool timeout near the incident window",
+              "connection acquisition timeouts reported by the backend while database capacity is healthy"
+            ],
+            "status": "SUPPORTED",
+            "open_questions": []
+          },
+          {
+            "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+            "culprit_service": "backend",
+            "failure_mode": "backend_resource_saturation",
+            "support_ids": [],
+            "against_ids": [
+              "incident_1002-E-004"
+            ],
+            "predicted_observations": [
+              "Backend emits error-severity logs or resource-saturation signals within the same window.",
+              "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+              "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+              "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+              "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+              "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+            ],
+            "status": "REJECTED",
+            "open_questions": []
+          },
+          {
+            "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+            "culprit_service": "postgres",
+            "failure_mode": "postgres_connection_exhaustion",
+            "support_ids": [],
+            "against_ids": [
+              "incident_1002-E-007"
+            ],
+            "predicted_observations": [
+              "active sessions queuing or rejection of new connections from the application",
+              "postgres connection_count at or above connection_limit (100)",
+              "rising connection_count preceding the incident window"
+            ],
+            "status": "REJECTED",
+            "open_questions": []
+          }
+        ],
+        "selected_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis."
+      }
+    ],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.089283Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Fixed schedule",
+        "details": {
+          "decision": {
+            "action": "INVESTIGATE",
+            "reason": "Fixed schedule",
+            "assignments": [
+              {
+                "task_id": "fixed-logs",
+                "role": "logs",
+                "question": "Investigate logs evidence for the incident",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-metrics",
+                "role": "metrics",
+                "question": "Investigate metrics evidence for the incident",
+                "allowed_tools": [
+                  "query_metrics",
+                  "get_dependencies"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-database",
+                "role": "database",
+                "question": "Investigate database evidence for the incident",
+                "allowed_tools": [
+                  "get_db_connections",
+                  "get_db_active_sessions",
+                  "get_db_lock_waits",
+                  "get_db_slow_queries",
+                  "get_db_health_metrics"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-changes",
+                "role": "changes",
+                "question": "Investigate changes evidence for the incident",
+                "allowed_tools": [
+                  "query_changes",
+                  "get_config_diff"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              }
+            ],
+            "hypothesis_updates": [],
+            "selected_hypothesis_id": null,
+            "stop_reason": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.089433Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.089470Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.089490Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-5",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.089511Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-6",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.091812Z",
+        "event_type": "TASK_RUNNING",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-7",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.092004Z",
+        "event_type": "TASK_RUNNING",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-8",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.092070Z",
+        "event_type": "TASK_RUNNING",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-9",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:18:31.092114Z",
+        "event_type": "TASK_RUNNING",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-10",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.562244Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-1",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 53446.68059999822,
+          "stage": "diagnosis",
+          "call_id": "model-call-1",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-11",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.562437Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": "model-call-2",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 53442.082599998685,
+          "stage": "diagnosis",
+          "call_id": "model-call-2",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-12",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.562907Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-3",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 53439.28270001197,
+          "stage": "diagnosis",
+          "call_id": "model-call-3",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-13",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.575787Z",
+        "event_type": "LLM_CALL",
+        "role": "changes",
+        "task_id": null,
+        "call_id": "model-call-4",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 53440.010999998776,
+          "stage": "diagnosis",
+          "call_id": "model-call-4",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-14",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.576205Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_connections",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T12:00:00Z",
+            "end_ts": "2026-10-01T12:30:00Z",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-a359d06d0656475ba8fe113cc187f8b7",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-007",
+                "incident_id": "incident_1002",
+                "source_type": "database",
+                "service": "postgres",
+                "observed_at": "2026-10-01T12:00:10Z",
+                "source_path": "public/database.jsonl",
+                "excerpt": "Server connections below limit",
+                "metadata": {
+                  "category": "connections",
+                  "connection_count": 30,
+                  "connection_limit": 100
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 11.000200000125915,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-15",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.576480Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "service": "gateway",
+            "start_ts": "2026-10-01T11:50:00Z",
+            "end_ts": "2026-10-01T13:00:00Z",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-1caf9d59cdc9404d93abfba7bb2b74b0",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-002",
+                "incident_id": "incident_1002",
+                "source_type": "logs",
+                "service": "gateway",
+                "observed_at": "2026-10-01T12:00:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "Request completed with HTTP 200",
+                "metadata": {}
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 12.389199997414835,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-16",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.576554Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "gateway",
+            "metric_names": [],
+            "start_ts": "2026-10-01T11:45:00Z",
+            "end_ts": "2026-10-01T12:30:00Z"
+          },
+          "result": {
+            "call_id": "call-054e525591d040b0ab5a9845f1c475c9",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-009",
+                "incident_id": "incident_1002",
+                "source_type": "metrics",
+                "service": "gateway",
+                "observed_at": "2026-10-01T12:00:14Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "http_5xx_rate=0.35 ratio",
+                "metadata": {
+                  "metric_name": "http_5xx_rate",
+                  "value": 0.35,
+                  "unit": "ratio"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 12.384799993014894,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-metrics"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-17",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.589356Z",
+        "event_type": "TOOL_CALL",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_changes",
+          "args": {},
+          "result": {
+            "call_id": "call-90e396f06cf447cfbd96925c4c14dbcb",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-003",
+                "incident_id": "incident_1002",
+                "source_type": "changes",
+                "service": "backend",
+                "observed_at": "2026-10-01T12:00:10Z",
+                "source_path": "public/changes.jsonl",
+                "excerpt": "Runtime settings deployment applied",
+                "metadata": {
+                  "change_id": "runtime-1",
+                  "change_type": "configuration"
+                }
+              },
+              {
+                "evidence_id": "incident_1002-E-010",
+                "incident_id": "incident_1002",
+                "source_type": "changes",
+                "service": "gateway",
+                "observed_at": "2026-10-01T12:00:44Z",
+                "source_path": "public/changes.jsonl",
+                "excerpt": "Presentation asset deployment completed; routing unchanged",
+                "metadata": {
+                  "change_id": "assets-2",
+                  "change_type": "deployment"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 12.8714000020409,
+            "record_count": 2,
+            "next_cursor": null
+          },
+          "task_id": "fixed-changes"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-18",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.589477Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_dependencies",
+          "args": {
+            "service": "gateway"
+          },
+          "result": {
+            "call_id": "call-37789b91b3bb49b5a14c63c461df170e",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-T-gateway",
+                "incident_id": "incident_1002",
+                "source_type": "topology",
+                "service": "gateway",
+                "observed_at": "2026-10-01T12:00:00Z",
+                "source_path": "topology/services.yaml",
+                "excerpt": "gateway depends on: backend",
+                "metadata": {
+                  "dependencies": [
+                    "backend"
+                  ]
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 12.010100006591529,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-metrics"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-19",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.609136Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T12:00:00Z",
+            "end_ts": "2026-10-01T12:30:00Z",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-05954e37d9d84337beaab1cca10de21c",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 18.589800005429424,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-20",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.609176Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": "call-05954e37d9d84337beaab1cca10de21c",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "call_id": "call-05954e37d9d84337beaab1cca10de21c",
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "service": "postgres",
+            "start_ts": "2026-10-01T12:00:00Z",
+            "end_ts": "2026-10-01T12:30:00Z",
+            "limit": 50
+          },
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-21",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.609227Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "service": "backend",
+            "start_ts": "2026-10-01T11:50:00Z",
+            "end_ts": "2026-10-01T13:00:00Z",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-234e777966ab4c62bb5ee1fab3de6cb1",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-008",
+                "incident_id": "incident_1002",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-01T12:00:14Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "Request processing exceeded deadline",
+                "metadata": {}
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 19.066699998802505,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-22",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:19:24.609254Z",
+        "event_type": "TOOL_CALL",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_config_diff",
+          "args": {
+            "change_id": "runtime-1"
+          },
+          "result": {
+            "call_id": "call-d98187ded8214aa386d72b630fb54349",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_1002-E-004",
+                "incident_id": "incident_1002",
+                "source_type": "configs",
+                "service": "backend",
+                "observed_at": "2026-10-01T12:00:10Z",
+                "source_path": "public/configs.jsonl",
+                "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+                "metadata": {
+                  "change_id": "runtime-1"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 18.130399999790825,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-changes"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-23",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989574Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": "model-call-5",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 129362.50139999902,
+          "stage": "diagnosis",
+          "call_id": "model-call-5",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-24",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989649Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-25",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989720Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-6",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 129354.12049999286,
+          "stage": "diagnosis",
+          "call_id": "model-call-6",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-26",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989774Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-27",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989820Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-7",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 129340.48250000342,
+          "stage": "diagnosis",
+          "call_id": "model-call-7",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-28",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989839Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-29",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989877Z",
+        "event_type": "LLM_CALL",
+        "role": "changes",
+        "task_id": null,
+        "call_id": "model-call-8",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 129330.96669999941,
+          "stage": "diagnosis",
+          "call_id": "model-call-8",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-30",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.989896Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-31",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.993049Z",
+        "event_type": "MERGE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "findings": [
+            {
+              "finding_id": "finding-3e11a08713b0e25210ce603dc50b77a09c8ee6b24c6d5ccf957d04aee7fe4509",
+              "task_id": "fixed-logs",
+              "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+              "incident_id": "incident_1002",
+              "role": "logs",
+              "claim": "Gateway logs an HTTP 200 completion at 2026-10-01T12:00:00Z and 14 seconds later backend logs 'Request processing exceeded deadline' at 2026-10-01T12:00:14Z; neither excerpt carries severity metadata or names an internal failure mechanism.",
+              "evidence_ids": [
+                "incident_1002-E-002",
+                "incident_1002-E-008"
+              ],
+              "relation": "neutral",
+              "confidence_qualifier": "supported",
+              "followup_question": "Do backend logs between 2026-10-01T11:59:50Z and 2026-10-01T12:00:30Z contain error-severity entries that identify an internal failure mechanism?"
+            },
+            {
+              "finding_id": "finding-aa3b94701eca9191045a61a367c15cd5c6e8a3bf5e3349665577b656e8d0347a",
+              "task_id": "fixed-metrics",
+              "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+              "incident_id": "incident_1002",
+              "role": "metrics",
+              "claim": "Gateway shows an elevated http_5xx_rate of 0.35 at 2026-10-01T12:00:14Z, while topology records that gateway depends on backend; this is a gateway-side error symptom consistent with a downstream dependency problem, and no backend-side causal metric has been observed yet.",
+              "evidence_ids": [
+                "incident_1002-E-009",
+                "incident_1002-T-gateway"
+              ],
+              "relation": "neutral",
+              "confidence_qualifier": "weak",
+              "followup_question": "What metric names are available for backend and its datastore, and how do they behave in the window around 2026-10-01T12:00Z?"
+            },
+            {
+              "finding_id": "finding-c0b6aeadcbf23b27ec07fd1474b9d575b976faeb399f78bf9b8aa0c0f6784d1f",
+              "task_id": "fixed-database",
+              "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+              "incident_id": "incident_1002",
+              "role": "database",
+              "claim": "Observed postgres server connection_count of 30 against connection_limit of 100 shows database connection capacity remaining healthy at the incident window, providing no observed mechanism for database-side connection exhaustion. Data gaps (not evidence of health): [{\"call_id\": \"call-05954e37d9d84337beaab1cca10de21c\", \"tool_name\": \"get_db_health_metrics\", \"args\": {\"service\": \"postgres\", \"start_ts\": \"2026-10-01T12:00:00Z\", \"end_ts\": \"2026-10-01T12:30:00Z\", \"limit\": 50}, \"outcome\": \"NO_DATA\"}]",
+              "evidence_ids": [
+                "incident_1002-E-007"
+              ],
+              "relation": "refutes",
+              "confidence_qualifier": "supported",
+              "followup_question": "What were the measured active sessions, blocking lock waits, and slow-query durations on postgres at 2026-10-01T12:00:10Z, and did application-side pool_limit/pool_in_use reach saturation?"
+            },
+            {
+              "finding_id": "finding-54129eaec4b9c32feaa986f12c4d7386f7063e29cc240a910c75305e7aa962b0",
+              "task_id": "fixed-changes",
+              "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+              "incident_id": "incident_1002",
+              "role": "changes",
+              "claim": "A backend runtime configuration deployment (change_id runtime-1, configuration) was applied at 2026-10-01T12:00:10Z and its config diff shows db_pool_max reduced from 20 to 2 while concurrency=120, a concrete parameter regression on the backend service. The later gateway deployment (change_id assets-2, deployment) explicitly reports 'routing unchanged' and only touches presentation assets, so it introduces no observed routing or backend change.",
+              "evidence_ids": [
+                "incident_1002-E-003",
+                "incident_1002-E-004",
+                "incident_1002-E-010"
+              ],
+              "relation": "supports",
+              "confidence_qualifier": "supported",
+              "followup_question": "Does the runtime-1 diff contain any other parameter changes besides db_pool_max 20 -> 2 that could further constrain the mechanism?"
+            }
+          ],
+          "hypotheses": [
+            {
+              "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+              "culprit_service": "backend",
+              "failure_mode": "backend_resource_saturation",
+              "support_ids": [
+                "incident_1002-E-008",
+                "incident_1002-E-009",
+                "incident_1002-T-gateway"
+              ],
+              "against_ids": [
+                "incident_1002-E-002"
+              ],
+              "predicted_observations": [
+                "Backend emits error-severity logs or resource-saturation signals within the same window.",
+                "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+                "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+                "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+                "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+                "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Is there backend error-severity evidence that names an internal failure mechanism rather than only the deadline-exceeded symptom?",
+                "backend-side metric names and values around the incident window are unknown; an empty metric query would not confirm health",
+                "no causal chronology is established because only a gateway-level 5xx ratio and a static dependency edge are observed"
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_connection_exhaustion",
+              "support_ids": [],
+              "against_ids": [
+                "incident_1002-E-007"
+              ],
+              "predicted_observations": [
+                "active sessions queuing or rejection of new connections from the application",
+                "postgres connection_count at or above connection_limit (100)",
+                "rising connection_count preceding the incident window"
+              ],
+              "status": "REJECTED",
+              "open_questions": [
+                "No internal evidence beyond a single connection snapshot is available to confirm whether connection_count trended toward the limit before the incident window."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_1002-E-003",
+                "incident_1002-E-004"
+              ],
+              "against_ids": [
+                "incident_1002-E-010"
+              ],
+              "predicted_observations": [
+                "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+                "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+                "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+                "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+                "config diff showing a reduced pool size or changed pool timeout near the incident window",
+                "connection acquisition timeouts reported by the backend while database capacity is healthy"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "No config-change evidence is available to show whether the backend pool settings were altered before the incident.",
+                "No metrics evidence for application pool_limit/pool_in_use is present in the supplied records, so an upstream pool configuration fault cannot be confirmed or excluded.",
+                "No runtime-1 config diff beyond the db_pool_max 20 -> 2 change has been fetched to confirm the full parameter set.",
+                "The observation window start (started_at) is not a proven failure onset; the exact time of symptom onset relative to the 12:00:10Z runtime-1 application is not yet established."
+              ]
+            }
+          ]
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-32",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.994624Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-33",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:21:33.994677Z",
+        "event_type": "TASK_RUNNING",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-34",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.298666Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-35",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.298786Z",
+        "event_type": "LLM_CALL",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": "model-call-9",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "trae-subagent-bridge-v1",
+          "llm_calls": 1,
+          "actual_http_requests": 0,
+          "bridge_requests": 1,
+          "logical_structured_calls": 1,
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "total_tokens": null,
+          "measured_total_tokens": 0,
+          "tokens_complete": false,
+          "elapsed_ms": 130295.34799999965,
+          "stage": "coordinate",
+          "call_id": "model-call-9",
+          "prompt_version": "roles-v12-evidence-reconciliation-v6",
+          "model_parameters": {
+            "requested_temperature": 0.0,
+            "temperature_verified": false,
+            "model_id": "trae-subagent-bridge-v1",
+            "model_identity_verified": false,
+            "bridge": "file-queue/development-unverified-servicer",
+            "call_timeout_seconds": 420.0,
+            "session_id": "d25a765fdf794c4d80b458f486396c00",
+            "isolation_verified": false
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-36",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.298819Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "The fixed investigation schedule is complete, so the shared board is reconciled without new assignments. The only hypothesis carrying an observed cause-specific discriminator is backend_pool_config_regression (hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e): the runtime-1 backend configuration change applied at 2026-10-01T12:00:10Z (incident_1002-E-003) exposes a config diff reducing db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-004), which is a concrete observed mechanism. The symptom chronology follows that change: backend exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) and gateway http_5xx_rate rose to 0.35 at 12:00:14Z (incident_1002-E-009), while topology only fixes gateway -> backend as the dependency edge (incident_1002-T-gateway). The generic competing backend_resource_saturation hypothesis has no observed saturation discriminator and is contradicted by the observed configuration mechanism, and postgres_connection_exhaustion is already refuted by healthy postgres capacity (incident_1002-E-007). Answerable open questions about config-change evidence and the runtime-1 diff are now cleared by the observed diff, and the remaining pool telemetry gap is optional rather than a material blocker. No additional discriminating check remains against completed scopes, so finalization is warranted.",
+        "details": {
+          "decision": {
+            "action": "FINALIZE",
+            "reason": "The fixed investigation schedule is complete, so the shared board is reconciled without new assignments. The only hypothesis carrying an observed cause-specific discriminator is backend_pool_config_regression (hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e): the runtime-1 backend configuration change applied at 2026-10-01T12:00:10Z (incident_1002-E-003) exposes a config diff reducing db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-004), which is a concrete observed mechanism. The symptom chronology follows that change: backend exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) and gateway http_5xx_rate rose to 0.35 at 12:00:14Z (incident_1002-E-009), while topology only fixes gateway -> backend as the dependency edge (incident_1002-T-gateway). The generic competing backend_resource_saturation hypothesis has no observed saturation discriminator and is contradicted by the observed configuration mechanism, and postgres_connection_exhaustion is already refuted by healthy postgres capacity (incident_1002-E-007). Answerable open questions about config-change evidence and the runtime-1 diff are now cleared by the observed diff, and the remaining pool telemetry gap is optional rather than a material blocker. No additional discriminating check remains against completed scopes, so finalization is warranted.",
+            "assignments": [],
+            "hypothesis_updates": [
+              {
+                "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "culprit_service": "backend",
+                "failure_mode": "backend_pool_config_regression",
+                "support_ids": [
+                  "incident_1002-E-003",
+                  "incident_1002-E-004",
+                  "incident_1002-E-008",
+                  "incident_1002-E-009",
+                  "incident_1002-T-gateway"
+                ],
+                "against_ids": [],
+                "predicted_observations": [
+                  "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+                  "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+                  "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+                  "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+                  "config diff showing a reduced pool size or changed pool timeout near the incident window",
+                  "connection acquisition timeouts reported by the backend while database capacity is healthy"
+                ],
+                "status": "SUPPORTED",
+                "open_questions": []
+              },
+              {
+                "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "culprit_service": "backend",
+                "failure_mode": "backend_resource_saturation",
+                "support_ids": [],
+                "against_ids": [
+                  "incident_1002-E-004"
+                ],
+                "predicted_observations": [
+                  "Backend emits error-severity logs or resource-saturation signals within the same window.",
+                  "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+                  "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+                  "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+                  "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+                  "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+                ],
+                "status": "REJECTED",
+                "open_questions": []
+              },
+              {
+                "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+                "culprit_service": "postgres",
+                "failure_mode": "postgres_connection_exhaustion",
+                "support_ids": [],
+                "against_ids": [
+                  "incident_1002-E-007"
+                ],
+                "predicted_observations": [
+                  "active sessions queuing or rejection of new connections from the application",
+                  "postgres connection_count at or above connection_limit (100)",
+                  "rising connection_count preceding the incident window"
+                ],
+                "status": "REJECTED",
+                "open_questions": []
+              }
+            ],
+            "selected_hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+            "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis."
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-37",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.298865Z",
+        "event_type": "HYPOTHESIS_RECONCILED",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "hypothesis_updates": [
+            {
+              "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_1002-E-003",
+                "incident_1002-E-004",
+                "incident_1002-E-008",
+                "incident_1002-E-009",
+                "incident_1002-T-gateway"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+                "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+                "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+                "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+                "config diff showing a reduced pool size or changed pool timeout near the incident window",
+                "connection acquisition timeouts reported by the backend while database capacity is healthy"
+              ],
+              "status": "SUPPORTED",
+              "open_questions": []
+            },
+            {
+              "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+              "culprit_service": "backend",
+              "failure_mode": "backend_resource_saturation",
+              "support_ids": [],
+              "against_ids": [
+                "incident_1002-E-004"
+              ],
+              "predicted_observations": [
+                "Backend emits error-severity logs or resource-saturation signals within the same window.",
+                "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+                "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+                "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+                "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+                "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+              ],
+              "status": "REJECTED",
+              "open_questions": []
+            },
+            {
+              "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_connection_exhaustion",
+              "support_ids": [],
+              "against_ids": [
+                "incident_1002-E-007"
+              ],
+              "predicted_observations": [
+                "active sessions queuing or rejection of new connections from the application",
+                "postgres connection_count at or above connection_limit (100)",
+                "rising connection_count preceding the incident window"
+              ],
+              "status": "REJECTED",
+              "open_questions": []
+            }
+          ]
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-38",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.300122Z",
+        "event_type": "DIAGNOSIS_ACCEPTED",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "root_cause": {
+            "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+            "culprit_service": "backend",
+            "failure_mode": "backend_pool_config_regression",
+            "support_ids": [
+              "incident_1002-E-003",
+              "incident_1002-E-004",
+              "incident_1002-E-008",
+              "incident_1002-E-009",
+              "incident_1002-T-gateway"
+            ],
+            "against_ids": [],
+            "predicted_observations": [
+              "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+              "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+              "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+              "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+              "config diff showing a reduced pool size or changed pool timeout near the incident window",
+              "connection acquisition timeouts reported by the backend while database capacity is healthy"
+            ],
+            "status": "SUPPORTED",
+            "open_questions": []
+          },
+          "supporting_evidence_ids": [
+            "incident_1002-E-003",
+            "incident_1002-E-004",
+            "incident_1002-E-008",
+            "incident_1002-E-009",
+            "incident_1002-T-gateway"
+          ],
+          "degraded_call_ids": []
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-39",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.301279Z",
+        "event_type": "WORKFLOW_STOP_REQUESTED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_1002",
+          "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+          "stop_reason": "DIAGNOSIS_READY",
+          "message_type": "WORKFLOW_STOP_REQUESTED",
+          "protocol_version": "2",
+          "required_roles": []
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-40",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.301476Z",
+        "event_type": "NORMAL_TERMINATION",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "protocol_version": "2",
+          "reason": "DIAGNOSIS_READY",
+          "outcome": "SUCCESS",
+          "failure_stage": null,
+          "stop_completed": true,
+          "runtime_failure": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-41",
+        "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+        "incident_id": "incident_1002",
+        "timestamp": "2026-10-19T07:23:44.301990Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+            "incident_id": "incident_1002",
+            "status": "RESOLVED",
+            "root_cause": {
+              "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_1002-E-003",
+                "incident_1002-E-004",
+                "incident_1002-E-008",
+                "incident_1002-E-009",
+                "incident_1002-T-gateway"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+                "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+                "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+                "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+                "config diff showing a reduced pool size or changed pool timeout near the incident window",
+                "connection acquisition timeouts reported by the backend while database capacity is healthy"
+              ],
+              "status": "SUPPORTED",
+              "open_questions": []
+            },
+            "causal_chain": [
+              "2026-10-01T12:00:00+00:00 [incident_1002-T-gateway] gateway: gateway depends on: backend",
+              "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+              "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+              "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline",
+              "2026-10-01T12:00:14+00:00 [incident_1002-E-009] gateway: http_5xx_rate=0.35 ratio"
+            ],
+            "supporting_evidence_ids": [
+              "incident_1002-E-003",
+              "incident_1002-E-004",
+              "incident_1002-E-008",
+              "incident_1002-E-009",
+              "incident_1002-T-gateway"
+            ],
+            "rejected_hypotheses": [
+              {
+                "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "culprit_service": "backend",
+                "failure_mode": "backend_resource_saturation",
+                "support_ids": [],
+                "against_ids": [
+                  "incident_1002-E-004"
+                ],
+                "predicted_observations": [
+                  "Backend emits error-severity logs or resource-saturation signals within the same window.",
+                  "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+                  "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+                  "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+                  "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+                  "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+                ],
+                "status": "REJECTED",
+                "open_questions": []
+              },
+              {
+                "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+                "culprit_service": "postgres",
+                "failure_mode": "postgres_connection_exhaustion",
+                "support_ids": [],
+                "against_ids": [
+                  "incident_1002-E-007"
+                ],
+                "predicted_observations": [
+                  "active sessions queuing or rejection of new connections from the application",
+                  "postgres connection_count at or above connection_limit (100)",
+                  "rising connection_count preceding the incident window"
+                ],
+                "status": "REJECTED",
+                "open_questions": []
+              }
+            ],
+            "unresolved": [],
+            "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis.",
+            "diagnosis_status": "RESOLVED",
+            "remediation_status": "NOT_STARTED",
+            "workflow_status": "FINISHED",
+            "remediation_plan": null,
+            "termination": {
+              "protocol_version": "2",
+              "reason": "DIAGNOSIS_READY",
+              "outcome": "SUCCESS",
+              "failure_stage": null,
+              "stop_completed": true,
+              "runtime_failure": false
+            }
+          },
+          "variant": "fixed",
+          "tokens_complete": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-364d388e50a84e5e9ce060bb43f68761",
+      "incident_id": "incident_1002",
+      "status": "RESOLVED",
+      "root_cause": {
+        "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_1002-E-003",
+          "incident_1002-E-004",
+          "incident_1002-E-008",
+          "incident_1002-E-009",
+          "incident_1002-T-gateway"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Backend connection pool saturation metrics (active connections near db_pool_max=2) coincident with the runtime-1 application timestamp 2026-10-01T12:00:10Z",
+          "Backend errors indicating pool wait/timeouts under concurrency=120 while pool max is only 2",
+          "Gateway layer shows downstream backend errors rather than its own routing or presentation failures",
+          "application pool_limit or pool_in_use saturated while postgres connection_count remains well below connection_limit",
+          "config diff showing a reduced pool size or changed pool timeout near the incident window",
+          "connection acquisition timeouts reported by the backend while database capacity is healthy"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": []
+      },
+      "causal_chain": [
+        "2026-10-01T12:00:00+00:00 [incident_1002-T-gateway] gateway: gateway depends on: backend",
+        "2026-10-01T12:00:10+00:00 [incident_1002-E-003] backend: Runtime settings deployment applied",
+        "2026-10-01T12:00:10+00:00 [incident_1002-E-004] backend: db_pool_max 20 -> 2; concurrency=120",
+        "2026-10-01T12:00:14+00:00 [incident_1002-E-008] backend: Request processing exceeded deadline",
+        "2026-10-01T12:00:14+00:00 [incident_1002-E-009] gateway: http_5xx_rate=0.35 ratio"
+      ],
+      "supporting_evidence_ids": [
+        "incident_1002-E-003",
+        "incident_1002-E-004",
+        "incident_1002-E-008",
+        "incident_1002-E-009",
+        "incident_1002-T-gateway"
+      ],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+          "culprit_service": "backend",
+          "failure_mode": "backend_resource_saturation",
+          "support_ids": [],
+          "against_ids": [
+            "incident_1002-E-004"
+          ],
+          "predicted_observations": [
+            "Backend emits error-severity logs or resource-saturation signals within the same window.",
+            "Backend latency rises at or before 2026-10-01T12:00:14Z when the deadline is exceeded.",
+            "Gateway continues to return HTTP 200 while backend exceeds its deadline.",
+            "backend exposes resource metrics (cpu, memory, thread/connection pool) with a spike or saturation onset at or before 2026-10-01T12:00:14Z",
+            "gateway http_5xx_rate elevation follows or coincides with backend latency/error increase, not preceding it",
+            "get_dependencies shows gateway -> backend as the immediate downstream dependency path"
+          ],
+          "status": "REJECTED",
+          "open_questions": []
+        },
+        {
+          "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+          "culprit_service": "postgres",
+          "failure_mode": "postgres_connection_exhaustion",
+          "support_ids": [],
+          "against_ids": [
+            "incident_1002-E-007"
+          ],
+          "predicted_observations": [
+            "active sessions queuing or rejection of new connections from the application",
+            "postgres connection_count at or above connection_limit (100)",
+            "rising connection_count preceding the incident window"
+          ],
+          "status": "REJECTED",
+          "open_questions": []
+        }
+      ],
+      "unresolved": [],
+      "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis.",
+      "diagnosis_status": "RESOLVED",
+      "remediation_status": "NOT_STARTED",
+      "workflow_status": "FINISHED",
+      "remediation_plan": null,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "DIAGNOSIS_READY",
+        "outcome": "SUCCESS",
+        "failure_stage": null,
+        "stop_completed": true,
+        "runtime_failure": false
+      }
+    },
+    "stop_reason": null,
+    "open_questions": [],
+    "requested_checks": [
+      {
+        "task_id": "logs-backend-deadline-window",
+        "role": "logs",
+        "question": "What backend log entries exist between 2026-10-01T11:59:50Z and 2026-10-01T12:00:30Z around the deadline-exceeded event?",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "service": "backend",
+          "start_ts": "2026-10-01T11:59:50Z",
+          "end_ts": "2026-10-01T12:00:30Z",
+          "limit": 50
+        },
+        "reason": "Determine whether backend logged error-severity or internal failure evidence before or at the deadline-exceeded entry, without filtering by severity on first inspection.",
+        "expected_discriminator": "Distinguish backend internal failure from a downstream symptom observed at the gateway"
+      },
+      {
+        "task_id": "logs-gateway-window",
+        "role": "logs",
+        "question": "What gateway log entries exist between 2026-10-01T11:59:50Z and 2026-10-01T12:00:30Z around the HTTP 200 completion?",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "service": "gateway",
+          "start_ts": "2026-10-01T11:59:50Z",
+          "end_ts": "2026-10-01T12:00:30Z",
+          "limit": 50
+        },
+        "reason": "Establish gateway chronology to compare with backend timing and confirm whether the gateway surfaced any errors.",
+        "expected_discriminator": "Distinguish a healthy gateway from one masking a backend failure"
+      },
+      {
+        "task_id": "check-backend-metrics-discover",
+        "role": "metrics",
+        "question": "What metric names are available for backend and what are their values over the incident window?",
+        "allowed_tools": [
+          "query_metrics",
+          "get_dependencies"
+        ],
+        "filters": {
+          "service": "backend",
+          "metric_names": [],
+          "start_ts": "2026-10-01T11:50:00Z",
+          "end_ts": "2026-10-01T12:10:00Z"
+        },
+        "reason": "Backend is the immediate dependency of gateway per topology; discovering its actual metric names first avoids inventing metric names and can reveal a cause-specific health signal versus the downstream gateway symptom.",
+        "expected_discriminator": "Cause-specific backend health signals (saturation/latency onset) versus the gateway-only downstream 5xx symptom would separate a backend failure from a gateway-local problem."
+      },
+      {
+        "task_id": "check-gateway-dependency-path",
+        "role": "metrics",
+        "question": "What does the dependency graph show beneath gateway and backend, and which downstream datastore could be the origin?",
+        "allowed_tools": [
+          "get_dependencies"
+        ],
+        "filters": {
+          "service": "gateway"
+        },
+        "reason": "Establishing the causal chain below backend is required before attributing the gateway 5xx symptom to any culprit; the observed edge only shows gateway -> backend.",
+        "expected_discriminator": "A populated dependency path ending in a datastore would indicate a candidate upstream cause distinct from treating gateway as the culprit."
+      },
+      {
+        "task_id": "db-check-active-and-locks",
+        "role": "database",
+        "question": "During 2026-10-01T12:00:00Z to 2026-10-01T12:00:20Z on postgres, what were the active session counts, blocking lock waits, and slow-query durations, and how did they compare with the observed connection_count of 30 against connection_limit of 100?",
+        "allowed_tools": [
+          "get_db_connections",
+          "get_db_active_sessions",
+          "get_db_lock_waits",
+          "get_db_slow_queries",
+          "get_db_health_metrics"
+        ],
+        "filters": {
+          "service": "postgres",
+          "start_ts": "2026-10-01T12:00:00Z",
+          "end_ts": "2026-10-01T12:00:20Z"
+        },
+        "reason": "The single observed snapshot shows healthy connection headroom; measured blocking sessions and query durations are required before any lock-contention or slow-query database root cause could be supported.",
+        "expected_discriminator": "Measured blocking sessions or long slow queries would support a postgres lock or slow-query mechanism, whereas absence of blocking and normal query durations with healthy capacity refutes database-side causes and points to an upstream application pool fault."
+      },
+      {
+        "task_id": "metrics-check-app-pool",
+        "role": "metrics",
+        "question": "During 2026-10-01T12:00:00Z to 2026-10-01T12:00:20Z, did the backend application connection pool reach its pool_limit or show high pool_in_use while postgres connection capacity remained healthy?",
+        "allowed_tools": [
+          "get_metrics"
+        ],
+        "filters": {
+          "service": "backend",
+          "metric": "pool_limit,pool_in_use",
+          "start_ts": "2026-10-01T12:00:00Z",
+          "end_ts": "2026-10-01T12:00:20Z"
+        },
+        "reason": "Healthy database capacity does not rule out an upstream application pool configuration fault, so application-side pool utilization must be measured to discriminate the two.",
+        "expected_discriminator": "pool_in_use at pool_limit with healthy database capacity supports a backend pool configuration regression, whereas low pool utilization removes the pool-saturation mechanism."
+      },
+      {
+        "task_id": "check-changes-diff-runtime1",
+        "role": "changes",
+        "question": "Fetch the full config diff for change_id runtime-1 to enumerate every parameter changed at 2026-10-01T12:00:10Z on the backend service.",
+        "allowed_tools": [
+          "get_config_diff"
+        ],
+        "filters": {
+          "change_id": "runtime-1",
+          "service": "backend"
+        },
+        "reason": "The observed excerpt shows only db_pool_max 20 -> 2; a full diff confirms whether the regression is limited to the connection pool parameter and rules out competing config causes.",
+        "expected_discriminator": "A diff containing only db_pool_max 20 -> 2 supports backend_pool_config_regression; additional unrelated parameter changes would require alternative failure modes such as postgres_connection_exhaustion."
+      },
+      {
+        "task_id": "check-changes-backend-timeline",
+        "role": "changes",
+        "question": "Query all changes for the backend service across the full supplied evidence window to determine the chronology of change events relative to the observation window.",
+        "allowed_tools": [
+          "query_changes"
+        ],
+        "filters": {
+          "service": "backend"
+        },
+        "reason": "Establishes the causal chronology of backend changes and whether runtime-1 is the only backend change before observed symptoms, without applying unjustified time bounds.",
+        "expected_discriminator": "If runtime-1 is the sole backend change preceding symptoms, downstream-symptom explanations are excluded; multiple backend changes would require chronology comparison to isolate the culprit."
+      }
+    ],
+    "completed_task_ids": [
+      "fixed-logs",
+      "fixed-metrics",
+      "fixed-database",
+      "fixed-changes"
+    ],
+    "tool_calls_used": 8,
+    "llm_calls_used": 9,
+    "tokens_used": 0,
+    "incident_alert": null,
+    "task_records": [
+      {
+        "task_id": "fixed-logs",
+        "attempt_id": "attempt-1",
+        "role": "logs",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-metrics",
+        "attempt_id": "attempt-2",
+        "role": "metrics",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-database",
+        "attempt_id": "attempt-3",
+        "role": "database",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-changes",
+        "attempt_id": "attempt-4",
+        "role": "changes",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "coordinate-2",
+        "attempt_id": "attempt-5",
+        "role": "coordinator",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      }
+    ],
+    "workflow_status": "FINISHED",
+    "termination": {
+      "protocol_version": "2",
+      "reason": "DIAGNOSIS_READY",
+      "outcome": "SUCCESS",
+      "failure_stage": null,
+      "stop_completed": true,
+      "runtime_failure": false
+    }
+  },
+  "model_id": "trae-subagent-bridge-v1",
+  "prompt_version": "roles-v12-evidence-reconciliation-v6"
+}

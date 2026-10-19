@@ -1,0 +1,114 @@
+{
+  "run_id": "run-dc205fd008f64dfeb4e597a53a422e5b",
+  "incident_id": "incident_1001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-cc149351b45e671882f1ad0d83fc86f701cad23532d89eee76216243521c2c61",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation: backend CPU/memory or throughput saturation prevents requests from completing within their deadline, producing deadline-exceeded errors without pool-specific log text.",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-005"
+      ],
+      "predicted_observations": [
+        "CPU/memory utilization near saturation at/after 12:00:10Z in backend metrics",
+        "Deadline-exceeded errors coinciding with throughput/latency degradation metrics",
+        "No pool waiters or max-connection saturation in pool metrics despite deadline-exceeded errors"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-b33f4083a09a9daa43c6c54b0f9cd8657992c8479f57d9248a48ce32390814de",
+      "culprit_service": "redis",
+      "failure_mode": "redis_unavailable: Redis becomes unavailable or times out around 12:00:10Z, causing gateway 5xx responses for requests depending on redis",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-003",
+        "incident_1001-E-004",
+        "incident_1001-E-005",
+        "incident_1001-E-008"
+      ],
+      "predicted_observations": [
+        "Gateway 5xx correlation matches redis-dependent request paths",
+        "Redis availability/error metrics show an outage or timeout step at 12:00:10-12:01Z",
+        "Redis latency metric becomes absent, spiked, or errors rise at the same window"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-6fa8682eeee124c1b944bfbac3f08879e56e6901e9a3d807cf556d194c0a6927",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout: Payment external calls time out around 12:00:10Z, causing gateway 5xx responses for payment-related requests",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-003",
+        "incident_1001-E-004",
+        "incident_1001-E-005",
+        "incident_1001-E-008"
+      ],
+      "predicted_observations": [
+        "Gateway 5xx correlation matches payment-dependent routes",
+        "Payment error metrics step at the same window",
+        "Payment success rate drops or latency spikes at 12:00:10-12:01Z"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-b645caa41a50357eeef8b5b0ddf65d66b43af94981a3be3ade6e10acfdcb3147",
+      "culprit_service": "redis",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-003",
+        "incident_1001-E-004",
+        "incident_1001-E-005"
+      ],
+      "predicted_observations": [
+        "Backend or gateway logs at 12:00:10-12:00:14Z contain redis connection refused/timeout errors",
+        "Redis availability/error metrics or logs show an outage at ~12:00:10-12:01Z"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-08846516798c9ee4cb79fb1d1babf88c17c611c83e83c3e9ba21b1c768a0f030",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout",
+      "support_ids": [],
+      "against_ids": [
+        "incident_1001-E-003",
+        "incident_1001-E-004",
+        "incident_1001-E-005"
+      ],
+      "predicted_observations": [
+        "Backend logs at 12:00:10-12:00:14Z reference payment client timeout/upstream errors",
+        "Payment latency/error metrics or logs spike at ~12:00:10-12:01Z and correlate with gateway 5xx"
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Competing hypothesis remains unresolved",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}
