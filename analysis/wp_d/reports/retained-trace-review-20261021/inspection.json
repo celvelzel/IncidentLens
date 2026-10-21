@@ -1,0 +1,1189 @@
+{
+  "scope": "read-only artifact inspection; selected completed runs only; no semantic scoring",
+  "per_variant": {
+    "full": {
+      "requests": 67,
+      "repairs": 2,
+      "tools": 51,
+      "rounds": 12,
+      "reviews": 13,
+      "finalize_rejections": 1
+    },
+    "dynamic_no_verifier": {
+      "requests": 48,
+      "repairs": 0,
+      "tools": 34,
+      "rounds": 11,
+      "reviews": 0,
+      "finalize_rejections": 0
+    },
+    "fixed": {
+      "requests": 26,
+      "repairs": 0,
+      "tools": 23,
+      "rounds": 3,
+      "reviews": 0,
+      "finalize_rejections": 1
+    },
+    "single": {
+      "requests": 52,
+      "repairs": 0,
+      "tools": 44,
+      "rounds": 10,
+      "reviews": 8,
+      "finalize_rejections": 0
+    }
+  },
+  "citations": [
+    {
+      "run": "run-01-incident_1002-full-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1002-E-003",
+          "incident_id": "incident_1002",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-004",
+          "incident_id": "incident_1002",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-008",
+          "incident_id": "incident_1002",
+          "source_type": "logs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "Request processing exceeded deadline",
+          "metadata": {}
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-007",
+              "incident_id": "incident_1002",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Finalize backend_pool_config_regression on the backend service: incident_1002-E-003 (runtime-1 configuration change applied 2026-10-01T12:00:10Z) and incident_1002-E-004 (config diff, db_pool_max 20 -> 2 with concurrency=120) show the deployment reduced the backend database connection-pool size, and incident_1002-E-008 (backend 'Request processing exceeded deadline' at 2026-10-01T12:00:14Z) records the matching downstream symptom four seconds later; the competing postgres_lock_contention candidate is unsupported with all of its first-party discriminating scopes exhausted empty, and the REJECTED postgres_connection_exhaustion candidate is refuted by incident_1002-E-007 (connection_count 30 against connection_limit 100).",
+      "tool_event_counts": {
+        "query_logs": 3,
+        "get_db_connections": 1,
+        "get_db_lock_waits": 1,
+        "fetch_evidence_by_ids": 5,
+        "get_db_active_sessions": 1,
+        "get_db_slow_queries": 1,
+        "get_db_health_metrics": 1,
+        "query_changes": 3,
+        "get_config_diff": 1
+      }
+    },
+    {
+      "run": "run-02-incident_1002-dynamic_no_verifier-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1002-E-003",
+          "incident_id": "incident_1002",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-004",
+          "incident_id": "incident_1002",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-005",
+          "incident_id": "incident_1002",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=118 requests",
+          "metadata": {
+            "metric_name": "pool_waiters",
+            "value": 118.0,
+            "unit": "requests"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-007",
+          "incident_id": "incident_1002",
+          "source_type": "database",
+          "service": "postgres",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Server connections below limit",
+          "metadata": {
+            "category": "connections",
+            "connection_count": 30,
+            "connection_limit": 100
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "backend_resource_saturation",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-004",
+              "incident_id": "incident_1002",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-007",
+              "incident_id": "incident_1002",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "FINALIZE: backend_pool_config_regression is established with a cause-specific discriminator. Incident chronology shows backend baseline latency 40 ms (incident_1002-E-001) followed within 10 s by pool_waiters 118 (incident_1002-E-005), a runtime settings deployment at 2026-10-01T12:00:10Z (incident_1002-E-003) whose config diff reduces db_pool_max from 20 to 2 under concurrency 120 (incident_1002-E-004), a generic backend deadline-exceeded log at 12:00:14Z (incident_1002-E-008), and postgres connection_count 30 against connection_limit 100 ruling out database connection exhaustion (incident_1002-E-007). The competing backend_resource_saturation hypothesis is rejected by incident_1002-E-004, and no further discriminating check remains since the backend metrics scope is complete and exhausted and the redis/payment metric queries returned NO_DATA.",
+      "tool_event_counts": {
+        "query_metrics": 3,
+        "get_db_connections": 1,
+        "get_dependencies": 1,
+        "get_db_lock_waits": 1,
+        "query_changes": 2,
+        "query_logs": 1,
+        "get_config_diff": 1
+      }
+    },
+    {
+      "run": "run-03-incident_1001-fixed-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1001-E-003",
+          "incident_id": "incident_1001",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-004",
+          "incident_id": "incident_1001",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-008",
+          "incident_id": "incident_1001",
+          "source_type": "logs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "Request processing exceeded deadline",
+          "metadata": {}
+        },
+        {
+          "evidence_id": "incident_1001-E-009",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "gateway",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "http_5xx_rate=0.35 ratio",
+          "metadata": {
+            "metric_name": "http_5xx_rate",
+            "value": 0.35,
+            "unit": "ratio"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-T-backend",
+          "incident_id": "incident_1001",
+          "source_type": "topology",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "topology/services.yaml",
+          "excerpt": "backend depends on: postgres, redis, payment",
+          "metadata": {
+            "dependencies": [
+              "postgres",
+              "redis",
+              "payment"
+            ]
+          }
+        },
+        {
+          "evidence_id": "incident_1001-T-gateway",
+          "incident_id": "incident_1001",
+          "source_type": "topology",
+          "service": "gateway",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "topology/services.yaml",
+          "excerpt": "gateway depends on: backend",
+          "metadata": {
+            "dependencies": [
+              "backend"
+            ]
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "backend_resource_saturation",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-004",
+              "incident_id": "incident_1001",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "payment_external_timeout",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-004",
+              "incident_id": "incident_1001",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-007",
+              "incident_id": "incident_1001",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Causal support is present, the cause-specific discriminator E-004 is observed, and the fixed schedule is exhausted with no further tools or tasks assignable. The runtime-1 config change E-003 and its config diff E-004 (db_pool_max reduced 20->2 at 2026-10-01T12:00:10Z with concurrency 120) precede the backend deadline breach E-008 at 12:00:14Z and the downstream gateway 5xx rate E-009, while postgres capacity stayed healthy E-007. All competing hypotheses are reconciled: backend_resource_saturation (hyp-32a63) and payment_external_timeout (hyp-088465) are rejected as the observed mechanism is the backend pool config regression, and postgres_connection_exhaustion (hyp-51bd) remains rejected by E-007. The board is reconciled and review will refresh after these changes.",
+      "tool_event_counts": {
+        "query_logs": 2,
+        "get_dependencies": 1,
+        "get_db_health_metrics": 1,
+        "query_metrics": 1,
+        "get_db_connections": 1,
+        "query_changes": 1,
+        "get_config_diff": 1
+      }
+    },
+    {
+      "run": "run-04-incident_1003-full-subagent-01-retest-01",
+      "support": [],
+      "support_missing_observation": [],
+      "rejected": [],
+      "stop_reason": "All candidate-discriminating scopes are exhausted with completed=true: query_changes unbounded (task-0002, 0 records), backend query_metrics (task-0003, only incident_1003-E-001), all five postgres database tools (tasks 0004-0006, 0 records each) and payment query_logs (task-0007, 0 records). cause_discriminator_ids is empty for both hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d (backend_resource_saturation) and hyp-db862d36010be73e9256ee258159be14ee36d57dbfce08fba5b0982e7b0bc1fd (postgres_slow_query), the latest review reports empty requested_checks and abstains, and both candidates still require two supporting records from different sources plus an observed cause-specific discriminator. With no observed discriminating evidence and no new unexhausted discriminating scope, the correct outcome is ABSTAIN rather than an unsupported FINALIZE.",
+      "tool_event_counts": {
+        "query_logs": 3,
+        "query_changes": 1,
+        "fetch_evidence_by_ids": 3,
+        "get_db_slow_queries": 1,
+        "query_metrics": 2,
+        "get_db_lock_waits": 1,
+        "get_db_connections": 1,
+        "get_db_health_metrics": 1,
+        "get_db_active_sessions": 1
+      }
+    },
+    {
+      "run": "run-05-incident_1001-dynamic_no_verifier-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1001-E-001",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "request_latency_ms=40 ms",
+          "metadata": {
+            "metric_name": "request_latency_ms",
+            "value": 40.0,
+            "unit": "ms"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-003",
+          "incident_id": "incident_1001",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-004",
+          "incident_id": "incident_1001",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-005",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=118 requests",
+          "metadata": {
+            "metric_name": "pool_waiters",
+            "value": 118.0,
+            "unit": "requests"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-007",
+          "incident_id": "incident_1001",
+          "source_type": "database",
+          "service": "postgres",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Server connections below limit",
+          "metadata": {
+            "category": "connections",
+            "connection_count": 30,
+            "connection_limit": 100
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "backend_resource_saturation",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-004",
+              "incident_id": "incident_1001",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-004",
+              "incident_id": "incident_1001",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            },
+            {
+              "evidence_id": "incident_1001-E-007",
+              "incident_id": "incident_1001",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            },
+            {
+              "evidence_id": "incident_1001-E-009",
+              "incident_id": "incident_1001",
+              "source_type": "metrics",
+              "service": "gateway",
+              "observed_at": "2026-10-01T12:00:14Z",
+              "source_path": "public/metrics.csv",
+              "excerpt": "http_5xx_rate=0.35 ratio",
+              "metadata": {
+                "metric_name": "http_5xx_rate",
+                "value": 0.35,
+                "unit": "ratio"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-006",
+              "incident_id": "incident_1001",
+              "source_type": "metrics",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/metrics.csv",
+              "excerpt": "connections_active=30 connections",
+              "metadata": {
+                "metric_name": "connections_active",
+                "value": 30.0,
+                "unit": "connections"
+              }
+            },
+            {
+              "evidence_id": "incident_1001-E-007",
+              "incident_id": "incident_1001",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Causal support for backend_pool_config_regression is complete and consistent: the observed runtime-1 change (incident_1001-E-003) reduces db_pool_max from 20 to 2 while concurrency stays 120 (incident_1001-E-004), backend pool_waiters reaches 118 at the change timestamp (incident_1001-E-005) with backend latency onset preceding the downstream gateway 5xx (incident_1001-E-001, incident_1001-E-009), and postgres stays well below its connection limit (incident_1001-E-006, incident_1001-E-007) so the bound is application-side. The competing postgres_connection_exhaustion and backend_resource_saturation explanations are rejected against observed contrary evidence, and no unqueried source remains for a further discriminating check.",
+      "tool_event_counts": {
+        "query_changes": 1,
+        "get_dependencies": 1,
+        "query_metrics": 4,
+        "get_config_diff": 1,
+        "query_logs": 1,
+        "get_db_connections": 1,
+        "get_db_active_sessions": 1
+      }
+    },
+    {
+      "run": "run-06-incident_1002-single-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1002-E-003",
+          "incident_id": "incident_1002",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-004",
+          "incident_id": "incident_1002",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-005",
+          "incident_id": "incident_1002",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=118 requests",
+          "metadata": {
+            "metric_name": "pool_waiters",
+            "value": 118.0,
+            "unit": "requests"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-007",
+          "incident_id": "incident_1002",
+          "source_type": "database",
+          "service": "postgres",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Server connections below limit",
+          "metadata": {
+            "category": "connections",
+            "connection_count": 30,
+            "connection_limit": 100
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-008",
+          "incident_id": "incident_1002",
+          "source_type": "logs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "Request processing exceeded deadline",
+          "metadata": {}
+        },
+        {
+          "evidence_id": "incident_1002-E-010",
+          "incident_id": "incident_1002",
+          "source_type": "changes",
+          "service": "gateway",
+          "observed_at": "2026-10-01T12:00:44Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Presentation asset deployment completed; routing unchanged",
+          "metadata": {
+            "change_id": "assets-2",
+            "change_type": "deployment"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-T-backend",
+          "incident_id": "incident_1002",
+          "source_type": "topology",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "topology/services.yaml",
+          "excerpt": "backend depends on: postgres, redis, payment",
+          "metadata": {
+            "dependencies": [
+              "postgres",
+              "redis",
+              "payment"
+            ]
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-007",
+              "incident_id": "incident_1002",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "payment_external_timeout",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-T-payment",
+              "incident_id": "incident_1002",
+              "source_type": "topology",
+              "service": "payment",
+              "observed_at": "2026-10-01T12:00:00Z",
+              "source_path": "topology/services.yaml",
+              "excerpt": "payment depends on: none",
+              "metadata": {
+                "dependencies": []
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Finalizing backend_pool_config_regression for service backend: the runtime-1 configuration change reduced db_pool_max from 20 to 2 under concurrency=120 at 2026-10-01T12:00:10Z (incident_1002-E-004), connection-pool queueing pool_waiters=118 appeared at the same timestamp (incident_1002-E-005), and the backend 'Request processing exceeded deadline' symptom followed at 2026-10-01T12:00:14Z (incident_1002-E-008); postgres remained at 30 of 100 connections (incident_1002-E-007) and payment/redis showed no error or latency signal, so the queueing originates in the application connection pool rather than the datastore or an external dependency.",
+      "tool_event_counts": {
+        "query_logs": 6,
+        "get_db_connections": 1,
+        "get_db_lock_waits": 1,
+        "fetch_evidence_by_ids": 4,
+        "query_changes": 3,
+        "get_config_diff": 1,
+        "query_metrics": 2,
+        "get_dependencies": 2
+      }
+    },
+    {
+      "run": "run-07-incident_1003-fixed-subagent-01",
+      "support": [],
+      "support_missing_observation": [],
+      "rejected": [],
+      "stop_reason": "Fixed schedule complete with no cause-specific discriminator observed for either candidate; database scopes returned NO_DATA (an evidence gap, not health), and the backend and postgres hypotheses remain mutually unresolved with no observed contrary evidence, so no cause is finalizable and no further in-scope discriminating check remains.",
+      "tool_event_counts": {
+        "query_logs": 2,
+        "query_metrics": 1,
+        "get_dependencies": 1,
+        "query_changes": 1,
+        "get_db_connections": 1,
+        "get_db_health_metrics": 1
+      }
+    },
+    {
+      "run": "run-08-incident_1001-full-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1001-E-001",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "request_latency_ms=40 ms",
+          "metadata": {
+            "metric_name": "request_latency_ms",
+            "value": 40.0,
+            "unit": "ms"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-003",
+          "incident_id": "incident_1001",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-004",
+          "incident_id": "incident_1001",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-005",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=118 requests",
+          "metadata": {
+            "metric_name": "pool_waiters",
+            "value": 118.0,
+            "unit": "requests"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-008",
+          "incident_id": "incident_1001",
+          "source_type": "logs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "Request processing exceeded deadline",
+          "metadata": {}
+        },
+        {
+          "evidence_id": "incident_1001-T-backend",
+          "incident_id": "incident_1001",
+          "source_type": "topology",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "topology/services.yaml",
+          "excerpt": "backend depends on: postgres, redis, payment",
+          "metadata": {
+            "dependencies": [
+              "postgres",
+              "redis",
+              "payment"
+            ]
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "backend_resource_saturation",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-004",
+              "incident_id": "incident_1001",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            },
+            {
+              "evidence_id": "incident_1001-E-005",
+              "incident_id": "incident_1001",
+              "source_type": "metrics",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/metrics.csv",
+              "excerpt": "pool_waiters=118 requests",
+              "metadata": {
+                "metric_name": "pool_waiters",
+                "value": 118.0,
+                "unit": "requests"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-007",
+              "incident_id": "incident_1001",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "payment_external_timeout",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-T-payment",
+              "incident_id": "incident_1001",
+              "source_type": "topology",
+              "service": "payment",
+              "observed_at": "2026-10-01T12:00:00Z",
+              "source_path": "topology/services.yaml",
+              "excerpt": "payment depends on: none",
+              "metadata": {
+                "dependencies": []
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Causal mechanism observed: runtime-1 change incident_1001-E-003 at 2026-10-01T12:00:10Z with config diff incident_1001-E-004 lowering backend db_pool_max from 20 to 2 (concurrency=120), immediately followed by pool_waiters=118 (incident_1001-E-005) and a backend deadline-exceeded log at 12:00:14Z (incident_1001-E-008) against a non-inflated request_latency_ms=40 ms baseline (incident_1001-E-001). All competing hypotheses are reconciled: postgres_connection_exhaustion refuted by incident_1001-E-007 and the empty postgres session/lock/slow-query scopes; payment_external_timeout rejected with no observed external dependency (incident_1001-T-payment) and no payment telemetry; backend_resource_saturation rejected with no local-resource series in the discovered backend metric set. No new discriminating check remains among the completed scopes.",
+      "tool_event_counts": {
+        "query_metrics": 3,
+        "query_logs": 3,
+        "get_dependencies": 3,
+        "fetch_evidence_by_ids": 5,
+        "query_changes": 1,
+        "get_config_diff": 1,
+        "get_db_connections": 1,
+        "get_db_active_sessions": 1,
+        "get_db_lock_waits": 1,
+        "get_db_slow_queries": 1
+      }
+    },
+    {
+      "run": "run-09-incident_1002-fixed-subagent-01",
+      "support": [
+        {
+          "evidence_id": "incident_1002-E-003",
+          "incident_id": "incident_1002",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-004",
+          "incident_id": "incident_1002",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-E-008",
+          "incident_id": "incident_1002",
+          "source_type": "logs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/logs.jsonl",
+          "excerpt": "Request processing exceeded deadline",
+          "metadata": {}
+        },
+        {
+          "evidence_id": "incident_1002-E-009",
+          "incident_id": "incident_1002",
+          "source_type": "metrics",
+          "service": "gateway",
+          "observed_at": "2026-10-01T12:00:14Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "http_5xx_rate=0.35 ratio",
+          "metadata": {
+            "metric_name": "http_5xx_rate",
+            "value": 0.35,
+            "unit": "ratio"
+          }
+        },
+        {
+          "evidence_id": "incident_1002-T-gateway",
+          "incident_id": "incident_1002",
+          "source_type": "topology",
+          "service": "gateway",
+          "observed_at": "2026-10-01T12:00:00Z",
+          "source_path": "topology/services.yaml",
+          "excerpt": "gateway depends on: backend",
+          "metadata": {
+            "dependencies": [
+              "backend"
+            ]
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "backend_resource_saturation",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-004",
+              "incident_id": "incident_1002",
+              "source_type": "configs",
+              "service": "backend",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/configs.jsonl",
+              "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+              "metadata": {
+                "change_id": "runtime-1"
+              }
+            }
+          ]
+        },
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1002-E-007",
+              "incident_id": "incident_1002",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Backend runtime-1 configuration change applied at 2026-10-01T12:00:10Z reduced db_pool_max from 20 to 2 under concurrency=120 (incident_1002-E-003, incident_1002-E-004), and the backend then exceeded its processing deadline at 12:00:14Z (incident_1002-E-008) with the gateway http_5xx_rate rising to 0.35 at 12:00:14Z (incident_1002-E-009), a coherent causal chronology for backend_pool_config_regression. Postgres connection capacity remained healthy (incident_1002-E-007), no resource-saturation discriminator was observed for the generic competitor, and the completed scopes leave no further discriminating check, so the decision is to finalize on the config-regression hypothesis.",
+      "tool_event_counts": {
+        "get_db_connections": 1,
+        "query_logs": 2,
+        "query_metrics": 1,
+        "query_changes": 1,
+        "get_dependencies": 1,
+        "get_db_health_metrics": 1,
+        "get_config_diff": 1
+      }
+    },
+    {
+      "run": "run-10-incident_1003-dynamic_no_verifier-subagent-03",
+      "support": [],
+      "support_missing_observation": [],
+      "rejected": [],
+      "stop_reason": "Insufficient causal evidence to finalize. Evidence sources are exhausted with only generic symptoms: one backend log deadline overrun with no dependency named (incident_1003-E-003), one pre-deadline backend latency sample of 40 ms (incident_1003-E-001), and one backend dependency edge (incident_1003-T-backend); logs for postgres, redis, and payment, the broad change history, and all postgres and payment database and metric telemetry completed with zero records. No hypothesis has an observed cause-specific discriminator or support from two distinct sources, and no competing explanation can be rejected with observed contrary evidence, so further checks would repeat completed scopes without discriminating backend resource saturation from postgres connection exhaustion or payment external timeout.",
+      "tool_event_counts": {
+        "query_logs": 4,
+        "query_changes": 1,
+        "get_db_connections": 1,
+        "get_db_active_sessions": 1,
+        "query_metrics": 3,
+        "get_db_lock_waits": 1,
+        "get_dependencies": 1,
+        "get_db_slow_queries": 1,
+        "get_db_health_metrics": 1
+      }
+    },
+    {
+      "run": "run-11-incident_1001-single-subagent-01-retest-01",
+      "support": [
+        {
+          "evidence_id": "incident_1001-E-003",
+          "incident_id": "incident_1001",
+          "source_type": "changes",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/changes.jsonl",
+          "excerpt": "Runtime settings deployment applied",
+          "metadata": {
+            "change_id": "runtime-1",
+            "change_type": "configuration"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-004",
+          "incident_id": "incident_1001",
+          "source_type": "configs",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/configs.jsonl",
+          "excerpt": "db_pool_max 20 -> 2; concurrency=120",
+          "metadata": {
+            "change_id": "runtime-1"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-005",
+          "incident_id": "incident_1001",
+          "source_type": "metrics",
+          "service": "backend",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/metrics.csv",
+          "excerpt": "pool_waiters=118 requests",
+          "metadata": {
+            "metric_name": "pool_waiters",
+            "value": 118.0,
+            "unit": "requests"
+          }
+        },
+        {
+          "evidence_id": "incident_1001-E-007",
+          "incident_id": "incident_1001",
+          "source_type": "database",
+          "service": "postgres",
+          "observed_at": "2026-10-01T12:00:10Z",
+          "source_path": "public/database.jsonl",
+          "excerpt": "Server connections below limit",
+          "metadata": {
+            "category": "connections",
+            "connection_count": 30,
+            "connection_limit": 100
+          }
+        }
+      ],
+      "support_missing_observation": [],
+      "rejected": [
+        {
+          "failure_mode": "postgres_connection_exhaustion",
+          "contrary_records": [
+            {
+              "evidence_id": "incident_1001-E-007",
+              "incident_id": "incident_1001",
+              "source_type": "database",
+              "service": "postgres",
+              "observed_at": "2026-10-01T12:00:10Z",
+              "source_path": "public/database.jsonl",
+              "excerpt": "Server connections below limit",
+              "metadata": {
+                "category": "connections",
+                "connection_count": 30,
+                "connection_limit": 100
+              }
+            }
+          ]
+        }
+      ],
+      "stop_reason": "Finalized on hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e (backend_pool_config_regression): latest review verdict 'sufficient' with no contradictions or requested checks; observed in-window config mechanism incident_1001-E-003 plus cause discriminator incident_1001-E-004 (db_pool_max 20 -> 2; concurrency=120) supported by the coincident pool_waiters=118 symptom (incident_1001-E-005) across changes/configs and metrics, with the competing postgres_connection_exhaustion hypothesis refuted by incident_1001-E-007 and the stale headroom open question resolved.",
+      "tool_event_counts": {
+        "query_logs": 2,
+        "query_metrics": 1,
+        "get_dependencies": 1,
+        "fetch_evidence_by_ids": 2,
+        "query_changes": 1,
+        "get_config_diff": 1,
+        "get_db_connections": 1,
+        "get_db_lock_waits": 1
+      }
+    },
+    {
+      "run": "run-12-incident_1003-single-subagent-01",
+      "support": [],
+      "support_missing_observation": [],
+      "rejected": [],
+      "stop_reason": "Completed sources are exhausted and no genuinely new discriminating check remains: the last reviewed unqueried causal source (postgres ERROR logs) returned 0 records, backend resource/latency metrics returned only a single non-elevated point (request_latency_ms=40 ms), and all change, postgres-database, postgres-metric, and redis/payment log sources returned no records. The candidate backend_resource_saturation lacks its cause-specific discriminator and no independent second source corroborates incident_1003-E-003; no mechanism can be finalized without causal evidence.",
+      "tool_event_counts": {
+        "query_changes": 2,
+        "get_db_connections": 1,
+        "get_db_lock_waits": 1,
+        "query_logs": 6,
+        "fetch_evidence_by_ids": 2,
+        "query_metrics": 2
+      }
+    }
+  ],
+  "input_sha256": {
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-01-incident_1002-full-subagent-01\\trace.json": "2ba7a5be4271f08e2605cc4a9e424d25f9a433c8d07665487a30376af28cb408",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-01-incident_1002-full-subagent-01\\verification.json": "4f37befebc7888ff92ae27f73a72d730e4075aea1a52f840810fc4873ae0e2b3",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-01-incident_1002-full-subagent-01\\result.json": "c1e005dc9c6d7bd0f88ce1e83113fc49a86e8f2024c89c33f6547c6185b9d622",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-01-incident_1002-full-subagent-01\\scope.json": "418aa16d64ac78d39d9b1a85e49b81cd05da2afea25fd133712de630600ce547",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-02-incident_1002-dynamic_no_verifier-subagent-01\\trace.json": "33f729c9c316deaf2ebe8d036f8917539f514e988bc29125310c0920e6872e53",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-02-incident_1002-dynamic_no_verifier-subagent-01\\verification.json": "69f2e762493c3c067dd24f756aa7c6301ee3df6f53ec410dad9fd66cb824ff9a",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-02-incident_1002-dynamic_no_verifier-subagent-01\\result.json": "8df1b6fc96cddd89d1f4d31f3f90981237243fa96cc140e37e50a5da4f1cef95",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-02-incident_1002-dynamic_no_verifier-subagent-01\\scope.json": "d3d841b151c9bd08405ab0b675c6f7fced0ac4381d21efab3cf619ea703248cc",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-03-incident_1001-fixed-subagent-01\\trace.json": "2e10815d7d7bc7c219c7c1a9261f5be501c8d565c213c8d565773ddf18c9059e",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-03-incident_1001-fixed-subagent-01\\verification.json": "bf418f2fcf9944d8ca331a6acd6e1b5688e4a30655aa1e6630466a828cfe1534",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-03-incident_1001-fixed-subagent-01\\result.json": "0cac053f9b649986f9f15e5bb8133544bfaa9e2e50bf47acb47a30b2d8f519e5",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-03-incident_1001-fixed-subagent-01\\scope.json": "33a4cb3b45d25a030bdbd2ec4843b3885acda00b7ebd3851efdabae37780368d",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-04-incident_1003-full-subagent-01-retest-01\\trace.json": "cb653ff749549c981db54fa5cfffb30883e5edffca5fb6f6fde727c4e2808d4c",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-04-incident_1003-full-subagent-01-retest-01\\verification.json": "4d1d775cb94dab209ed87d22a42e99bd3b0ecc8a9130485e151bd11658fba928",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-04-incident_1003-full-subagent-01-retest-01\\result.json": "b78ec741c14ebb16538ef9361b1123c5f7925c401daef966fb22d4438a79c0f0",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-04-incident_1003-full-subagent-01-retest-01\\scope.json": "a9437e797d080e0ab0f51474c0420669bb881f6904b3b00ad93218bb6264173e",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-05-incident_1001-dynamic_no_verifier-subagent-01\\trace.json": "035870e81e250df5df55ff5ff18d8f7c48411d6b7925b56cffc8171c7c5bb959",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-05-incident_1001-dynamic_no_verifier-subagent-01\\verification.json": "21eb0d17064d44ed5437cdc657787a974cdaa99f9cabfe71e83fd52774e8ed88",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-05-incident_1001-dynamic_no_verifier-subagent-01\\result.json": "04daa4b1f806f96834a8dc8ee988c67e036d970a16709e36334cb904a8525808",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-05-incident_1001-dynamic_no_verifier-subagent-01\\scope.json": "73d1cdc2a2e900ab4bd37a84fbb2853d03383dc5bc2680fda3fe5621db84c2eb",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-06-incident_1002-single-subagent-01\\trace.json": "3dcfbbf2f83f049ee378e0a841408f62ba8ed2d160991cab598b116d21134622",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-06-incident_1002-single-subagent-01\\verification.json": "083f13c18a5520d7dd4bbf52ce87e18514aff33521b3d30d1c08c982a8ab8ba8",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-06-incident_1002-single-subagent-01\\result.json": "c814b3c977be16735859792e441f35a44c48b1a25f9e125d1e235570f1de6024",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-06-incident_1002-single-subagent-01\\scope.json": "6d112d22262de0e1b0e848ce63e1ce37135f66142a80a763594d78559734cc7b",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-07-incident_1003-fixed-subagent-01\\trace.json": "451b03977702ba7bfac5d7a43130135c164e35a8498f53004ac17d68be63d422",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-07-incident_1003-fixed-subagent-01\\verification.json": "bc8d9740954c904cc9f92d7407416bbcbdae191f4c7e09f811de3a96dfc7b7e3",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-07-incident_1003-fixed-subagent-01\\result.json": "889cbedc8989e6f1ba8e618e6c05b712f79e970e99b6a36137576ad2f1dd58dd",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-07-incident_1003-fixed-subagent-01\\scope.json": "fe6ce98fa6b7bffb428caf4cdf7aa6b675eb59bbb081bf80283e667825a7f529",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-08-incident_1001-full-subagent-01\\trace.json": "4ac332268b55e8a6995bb26f3954890ae8f879d4d9742cf058627c5ba68aca8e",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-08-incident_1001-full-subagent-01\\verification.json": "5092cf42fd837087cd7b0fd3c6a0fdb60424645fa3d576cdb6e2205e64045048",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-08-incident_1001-full-subagent-01\\result.json": "c685ee0328600a4c7e50398f89a1ce5b105e11bcf676aca3f763e3c5d5aec902",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-08-incident_1001-full-subagent-01\\scope.json": "33a3c700b2503f1469c162b43d1d54c5032ebf4fc62c299dd9579ef1d78dcff9",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-09-incident_1002-fixed-subagent-01\\trace.json": "2f8d3b3f725c4671abb094460260d1535bf0459a46f09455a49e5186747650e1",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-09-incident_1002-fixed-subagent-01\\verification.json": "073acc23c7d2a798ee7b9e23fc06e61206449567d1fefe58c398eb0d910727f3",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-09-incident_1002-fixed-subagent-01\\result.json": "19a7bb93c7b2f9a514d4023f1fa3361cc6cc282087c774abb8c30a8f8d3f3237",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-09-incident_1002-fixed-subagent-01\\scope.json": "791c517aefb347a0d9c5b797cf7698a7f0192258becb2443b265e96a1c6080c8",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-10-incident_1003-dynamic_no_verifier-subagent-03\\trace.json": "dce996366b0a480821d841f6733b7e6b6094b7b7b92f100913c06101bf1e0e07",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-10-incident_1003-dynamic_no_verifier-subagent-03\\verification.json": "b68dfc12dd679a649a62583af32a61a44ddf519e0754515eaf08aa9933d31f05",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-10-incident_1003-dynamic_no_verifier-subagent-03\\result.json": "3f626ec4250af0f637aecd4a6f4a311943fcbacbe4e6b49476459732b6e44093",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-10-incident_1003-dynamic_no_verifier-subagent-03\\scope.json": "90532031fdb70c0d99849db24a0cd325c7cdd06e4d3e758d247ec5a6a297089e",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-11-incident_1001-single-subagent-01-retest-01\\trace.json": "927021068a06861b4899ca3b655b97d5eccdce1f96187bb8b21198ceb318c43a",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-11-incident_1001-single-subagent-01-retest-01\\verification.json": "7071175a18fdab1b452bbc90f944481ec9be4d31675308b6c2275710b2c1da82",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-11-incident_1001-single-subagent-01-retest-01\\result.json": "1bff86571d067610433cc1f7fae009a18eb06f9360ef931a70f7b49e408d0d74",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-11-incident_1001-single-subagent-01-retest-01\\scope.json": "00c9e8e575a122ab5e3a8c0876c8bb08e9c8c8aa27d22631a1c28c0274049e23",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-12-incident_1003-single-subagent-01\\trace.json": "0ebcc129e9df0aea3b5a164c05bc8e3c318cb22c8f7df5da6140cb98d018ad3f",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-12-incident_1003-single-subagent-01\\verification.json": "800cbea314752ca15692c13c4f5f3e65c66c66261382d042b11808cdd979cfb7",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-12-incident_1003-single-subagent-01\\result.json": "af12affa75b0629f3914138f7b7d254401bcd789f6832740bbe5dfd2ed1b7290",
+    "results\\v16\\wp-d\\matrix-bridge-subagent-20261019\\run-12-incident_1003-single-subagent-01\\scope.json": "d16d2203502d4c91bf783f78cd0fb5f62545c4bd2694d9f76e4182a8f5fa38de"
+  },
+  "historical_elapsed_note": "Missing elapsed_ms remains null; operator serving time is not API latency."
+}

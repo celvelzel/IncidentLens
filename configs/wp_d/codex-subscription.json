@@ -1,0 +1,15 @@
+{
+  "transport": "official_codex_exec",
+  "billing_mode": "chatgpt_codex_subscription",
+  "executable": "codex.exe",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "low",
+  "feasibility_timeout_seconds": 180,
+  "investigation_request_timeout_seconds": 1200,
+  "formal_experiment_enabled": false,
+  "api_key_fallback": false,
+  "note": "Uses local official CLI ChatGPT login; not API Platform credits. At most two synthetic feasibility invocations. Model availability depends on the signed-in account.",
+  "model_selection_note": "Owner requested lowest-cost supported model. Official rates favor gpt-6-luna, but current ChatGPT login rejected it. gpt-5.6-luna passed two synthetic probes; fixed model, low reasoning, no fallback.",
+  "readiness_status": "FEASIBLE_FOR_CODEX_SUBSCRIPTION_TRANSPORT",
+  "feasibility_receipt": "results/acceptance/codex-subscription-5.6-luna-feasibility-20261021/feasibility.json"
+}

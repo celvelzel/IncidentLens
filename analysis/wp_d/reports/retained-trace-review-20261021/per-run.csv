@@ -1,0 +1,13 @@
+run,incident,variant,status,requests,repairs,tools,rounds,observed_evidence,reviews,blocking_review_verdicts,finalize_rejections,support_reobserved,elapsed_ms
+run-01-incident_1002-full-subagent-01,incident_1002,full,RESOLVED,22,0,17,4,6,5,3,0,True,
+run-02-incident_1002-dynamic_no_verifier-subagent-01,incident_1002,dynamic_no_verifier,RESOLVED,15,0,10,3,8,0,0,0,True,
+run-03-incident_1001-fixed-subagent-01,incident_1001,fixed,RESOLVED,10,0,8,1,9,0,0,1,True,
+run-04-incident_1003-full-subagent-01-retest-01,incident_1003,full,INCONCLUSIVE,19,2,14,4,3,3,3,0,True,
+run-05-incident_1001-dynamic_no_verifier-subagent-01,incident_1001,dynamic_no_verifier,RESOLVED,16,0,10,3,13,0,0,0,True,
+run-06-incident_1002-single-subagent-01,incident_1002,single,RESOLVED,23,0,20,4,10,4,2,0,True,
+run-07-incident_1003-fixed-subagent-01,incident_1003,fixed,INCONCLUSIVE,7,0,7,1,6,0,0,0,True,
+run-08-incident_1001-full-subagent-01,incident_1001,full,RESOLVED,26,0,20,4,9,5,2,1,True,
+run-09-incident_1002-fixed-subagent-01,incident_1002,fixed,RESOLVED,9,0,8,1,8,0,0,0,True,
+run-10-incident_1003-dynamic_no_verifier-subagent-03,incident_1003,dynamic_no_verifier,INCONCLUSIVE,17,0,14,5,3,0,0,0,True,
+run-11-incident_1001-single-subagent-01-retest-01,incident_1001,single,RESOLVED,13,0,10,2,8,2,1,0,True,
+run-12-incident_1003-single-subagent-01,incident_1003,single,INCONCLUSIVE,16,0,14,4,3,2,2,0,True,

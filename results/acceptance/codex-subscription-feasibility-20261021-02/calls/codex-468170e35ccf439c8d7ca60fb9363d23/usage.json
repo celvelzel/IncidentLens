@@ -1,0 +1,20 @@
+{
+  "source": "model",
+  "model_id": "gpt-6.1-sol",
+  "llm_calls": 1,
+  "logical_structured_calls": 1,
+  "codex_invocations": 1,
+  "actual_http_requests": 0,
+  "underlying_http_requests": null,
+  "transport_retries": 0,
+  "repair_requests": 0,
+  "prompt_tokens": null,
+  "completion_tokens": null,
+  "total_tokens": null,
+  "measured_total_tokens": 0,
+  "tokens_complete": false,
+  "token_usage_basis": "codex_turn_report; underlying HTTP accounting unavailable",
+  "billing_mode": "chatgpt_codex_subscription",
+  "cost_usd": null,
+  "elapsed_ms": 6246.249500021804
+}

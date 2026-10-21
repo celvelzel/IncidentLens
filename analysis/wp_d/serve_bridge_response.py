@@ -7,9 +7,26 @@ never rewrites, trims, or repairs the model output.
 """
 
 import argparse
+import hashlib
 import json
+import math
 import pathlib
+import re
 import time
+
+from incident_lens.evaluation.run_io import atomic_bytes, atomic_json
+
+
+def read_request(path):
+    if path.is_symlink() or getattr(path, "is_junction", lambda: False)():
+        raise ValueError("request must be a regular file")
+    request = json.loads(path.read_bytes())
+    original = {key: value for key, value in request.items() if key != "request_sha256"}
+    actual = hashlib.sha256(json.dumps(original, sort_keys=True, separators=(",", ":"),
+                                      ensure_ascii=False).encode("utf-8")).hexdigest()
+    if actual != request.get("request_sha256"):
+        raise ValueError("request digest mismatch")
+    return request
 
 
 def watch(bridge_dir, seconds, interval):
@@ -17,6 +34,8 @@ def watch(bridge_dir, seconds, interval):
 
     pending entries are (request_id, request_file_size_bytes).
     """
+    if not math.isfinite(seconds) or seconds < 0 or not math.isfinite(interval) or interval <= 0:
+        raise ValueError("watch duration must be finite/nonnegative and interval positive")
     bridge = pathlib.Path(bridge_dir)
     run_dir = bridge.parent
     deadline = time.monotonic() + seconds
@@ -35,6 +54,8 @@ def watch(bridge_dir, seconds, interval):
 
 def _chunks(text, size):
     """Split text into byte-bounded chunks, preferring newline boundaries."""
+    if type(size) is not int or size < 4:
+        raise ValueError("chunk size must allow a complete UTF-8 character (at least 4 bytes)")
     data = text.encode("utf-8")
     chunks = []
     start = 0
@@ -60,7 +81,7 @@ def prepare(request_path, prep_dir, chunk_bytes):
     The request payload is never printed to stdout; only part paths/sizes are.
     """
     path = pathlib.Path(request_path)
-    request = json.loads(path.read_text(encoding="utf-8"))
+    request = read_request(path)
     text = json.dumps(
         request["messages"], ensure_ascii=False, separators=(",", ":")
     )
@@ -69,8 +90,18 @@ def prepare(request_path, prep_dir, chunk_bytes):
     parts = []
     for index, chunk in enumerate(_chunks(text, chunk_bytes)):
         out = prep / (path.stem + ".part-%02d.json" % index)
-        out.write_text(chunk, encoding="utf-8")
+        atomic_bytes(out, chunk.encode("utf-8"))
         parts.append((out, len(chunk.encode("utf-8"))))
+    atomic_json(prep / (path.stem + ".manifest.json"), {
+        "schema_version": 1, "request_id": request["request_id"],
+        "request_sha256": request["request_sha256"],
+        "messages_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "parts": [{"name": p.name, "bytes": size,
+                   "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p, size in parts],
+        "instruction": "Read all parts in order, concatenate literal contents without separators. "
+                       "The concatenated messages array is the entire model input. "
+                       "Serve repair requests by the same procedure. No operator hints or edits.",
+    })
     return parts
 
 
@@ -80,14 +111,17 @@ def build(bridge_dir, serve_dir, request_ids):
     (bridge / "responses").mkdir(parents=True, exist_ok=True)
     report = []
     for request_id in request_ids:
+        if re.fullmatch(r"req-[0-9]{4,}(?:-repair)?", request_id) is None:
+            raise ValueError("invalid request ID")
         request_path = bridge / "requests" / (request_id + ".json")
         raw_path = serve / (request_id + ".raw.json")
         if not request_path.is_file():
             raise SystemExit("missing request file: " + str(request_path))
         if not raw_path.is_file():
             raise SystemExit("missing raw output file: " + str(raw_path))
-        request = json.loads(request_path.read_text(encoding="utf-8"))
-        content = raw_path.read_text(encoding="utf-8").strip()
+        request = read_request(request_path)
+        # read_bytes avoids newline translation; preserve whitespace verbatim.
+        content = raw_path.read_bytes().decode("utf-8")
         envelope = {
             "session_id": request["session_id"],
             "request_id": request["request_id"],
@@ -95,9 +129,13 @@ def build(bridge_dir, serve_dir, request_ids):
             "content": content,
         }
         out_path = bridge / "responses" / (request_id + ".json")
-        out_path.write_text(
-            json.dumps(envelope, ensure_ascii=False), encoding="utf-8"
-        )
+        if out_path.is_symlink() or getattr(out_path, "is_junction", lambda: False)():
+            raise ValueError("response must be a regular file")
+        if out_path.exists():
+            if json.loads(out_path.read_bytes()) != envelope:
+                raise FileExistsError("refusing to replace an already served response")
+        else:
+            atomic_json(out_path, envelope, exclusive=True)
         try:
             json.loads(content)
             valid = "ok"
@@ -134,6 +172,14 @@ def main():
             "WATCH pending=" + json.dumps(pending) + " finished=" + str(finished)
             + " req=" + str(total_req) + " resp=" + str(total_resp)
         )
+        if args.prep_dir:
+            for request_id, size in pending:
+                if size > 60 * 1024:
+                    for part, part_size in prepare(
+                        pathlib.Path(args.bridge_dir) / "requests" / (request_id + ".json"),
+                        args.prep_dir, int(args.chunk_kb * 1024),
+                    ):
+                        print("PART " + str(part) + " bytes=" + str(part_size))
         return
     if not args.serve_dir or not args.requests:
         raise SystemExit("--serve-dir and --requests are required unless --watch is used")

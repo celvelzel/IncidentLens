@@ -1,0 +1,24 @@
+{
+  "status": "BLOCKED_EXACT_MODEL_NOT_AVAILABLE_FOR_CHATGPT_LOGIN",
+  "required_model": "gpt-6-luna-light",
+  "owner_model_override_applied": true,
+  "remote_invocations_after_override": 1,
+  "remote_service_http_status": 400,
+  "service_reason": "The 'gpt-6-luna-light' model is not supported when using Codex with a ChatGPT account.",
+  "model_fallback_allowed": false,
+  "auth_fallback_allowed": false,
+  "formal_tests_started": false,
+  "incident_investigations": 0,
+  "prior_other_model_feasibility": "historical only; explicitly superseded for this experiment, cannot authorize gpt-6-luna-light execution",
+  "platform_api_model_availability": "not tested; not inferred from Codex rejection",
+  "offline_contracts": "11 passed in 0.49s",
+  "ruff": "passed",
+  "ast_parse": "passed",
+  "model_pin": "gpt-6-luna-light; substitutions rejected before CLI launch",
+  "source_sha256": {
+    "src/incident_lens/llm/codex_subscription.py": "8e95c64702174d558dfb642354b731f838021f6f16cc7279d235dfa75a18246a",
+    "scripts/probe_codex_subscription.py": "6f2c3c25b5831e9816280814d7fa2b88946ebfa400509222cfb871e0b74fbb80",
+    "scripts/run_codex_subscription_case.py": "df705b5622a7bace7e6aef4ce6e9224ca58c44a49345552a1e033118d63e9297",
+    "tests/integration/test_codex_subscription_feasibility.py": "7fa661e64fd64107bd7b9cac0881b9372127b93cb86b060f95384bdb6d287118"
+  }
+}

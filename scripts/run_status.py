@@ -11,6 +11,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("out", type=Path, help="Retest output directory")
     args = parser.parse_args()
+    if (args.out / "batch-state.json").is_file():
+        state = json.loads((args.out / "batch-state.json").read_bytes())
+        latest = {slot: attempts[-1] for slot, attempts in state["slots"].items() if attempts}
+        supervisor = args.out / "supervisor-status.json"
+        status = {"scope": "batch status only; no automatic resume or provider calls",
+                  "latest_attempts": latest,
+                  "supervisor": json.loads(supervisor.read_bytes()) if supervisor.is_file() else None,
+                  "stop_requested": (args.out / "STOP_REQUESTED").exists()}
+        print(json.dumps(status, indent=2, ensure_ascii=False))
+        return
     root = args.out / "observability"
     status = json.loads((root / "status.json").read_text(encoding="utf-8"))
     heartbeat = status.get("heartbeat_at", status["started_at"])
@@ -32,6 +42,14 @@ def main():
         status["checkpoint_prefix_valid"] = (
             not remaining and digest.hexdigest() == checkpoint["event_sha256"]
         )
+    bridge = args.out / "_bridge"
+    if bridge.is_dir():
+        pending = []
+        for request in sorted((bridge / "requests").glob("*.json")):
+            if not (bridge / "responses" / request.name).exists():
+                pending.append({"request_id": request.stem, "bytes": request.stat().st_size,
+                                "needs_chunked_read": request.stat().st_size > 60 * 1024})
+        status["pending_bridge_requests"] = pending
     print(json.dumps(status, indent=2, ensure_ascii=False))
 
 

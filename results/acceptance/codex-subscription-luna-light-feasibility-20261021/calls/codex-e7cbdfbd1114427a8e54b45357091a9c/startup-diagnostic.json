@@ -1,0 +1,8 @@
+{
+  "scope": "synthetic probe only",
+  "redacted_text": "2026-10-21T09:36:42.310436Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna-light is used. This will use fallback model metadata.\n2026-10-21T09:36:42.446750Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna-light is used. This will use fallback model metadata.\n2026-10-21T09:36:42.453939Z  WARN codex_models_manager::model_info: Unknown model gpt-6-luna-light is used. This will use fallback model metadata.\n2026-10-21T09:36:43.557575Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: {\"type\":\"error\",\"status\":400,\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The 'gpt-6-luna-light' model is not supported when using Codex with a ChatGPT account.\"}}\n",
+  "redacted_errors": [
+    "{\"type\": \"error\", \"message\": \"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'gpt-6-luna-light' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}",
+    "{\"type\": \"turn.failed\", \"error\": {\"message\": \"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'gpt-6-luna-light' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}}"
+  ]
+}

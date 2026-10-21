@@ -1,0 +1,8 @@
+{
+  "scope": "synthetic probe only",
+  "redacted_text": "2026-10-21T09:28:10.715473Z  WARN codex_models_manager::model_info: Unknown model gpt-6.1-sol is used. This will use fallback model metadata.\n2026-10-21T09:28:10.836203Z  WARN codex_models_manager::model_info: Unknown model gpt-6.1-sol is used. This will use fallback model metadata.\n2026-10-21T09:28:10.841905Z  WARN codex_models_manager::model_info: Unknown model gpt-6.1-sol is used. This will use fallback model metadata.\n2026-10-21T09:28:12.015598Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: {\"type\":\"error\",\"status\":400,\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account.\"}}\n",
+  "redacted_errors": [
+    "{\"type\": \"error\", \"message\": \"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}",
+    "{\"type\": \"turn.failed\", \"error\": {\"message\": \"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}}"
+  ]
+}

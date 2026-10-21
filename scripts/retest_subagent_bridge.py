@@ -24,11 +24,13 @@ from dotenv import load_dotenv
 
 from incident_lens.artifacts import save_run
 from incident_lens.evaluation.retest_provenance import retest_snapshot, snapshot_changes
+from incident_lens.evaluation.run_io import append_json, atomic_bytes, atomic_json
 from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics
 from incident_lens.evaluation.termination import normalize_termination
 from incident_lens.incidentbench.schemas import ExperimentProtocol
 from incident_lens.llm.provider import LLMProvider, ProviderError
 from incident_lens.orchestration.graph import run_investigation
+from incident_lens.orchestration.observability import RunJournal
 from incident_lens.schemas import Budget
 from incident_lens.schemas.workflow import WorkflowOptions
 from incident_lens.tools import EvidenceProvider
@@ -37,9 +39,7 @@ BRIDGE_MODEL_ID = "trae-subagent-bridge-v1"
 
 
 def _atomic_write(path, text):
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
-    tmp.replace(path)
+    atomic_bytes(path, text.encode("utf-8"))
 
 
 def request_digest(request):
@@ -69,13 +69,16 @@ class FileQueueBridgeProvider(LLMProvider):
 
     transport_kind = "file_queue"
 
-    def __init__(self, root, model_id=BRIDGE_MODEL_ID, poll_interval=1.0, call_timeout=180.0):
+    def __init__(self, root, model_id=BRIDGE_MODEL_ID, poll_interval=1.0, call_timeout=180.0,
+                 structured_repair_retries=1):
         import math
         from uuid import uuid4
 
         if any(type(x) not in (int, float) or not math.isfinite(x) or x <= 0
                for x in (poll_interval, call_timeout)):
             raise ValueError("bridge timing must be positive and finite")
+        if type(structured_repair_retries) is not int or structured_repair_retries not in (0, 1):
+            raise ValueError("bridge structured repair retries must be zero or one")
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=False)
         self.session_id = uuid4().hex
@@ -87,6 +90,7 @@ class FileQueueBridgeProvider(LLMProvider):
         self.temperature = 0.0  # requested value, not an enforced external setting
         self.poll_interval = poll_interval
         self.call_timeout = call_timeout
+        self.structured_repair_retries = structured_repair_retries
         self.log_path = self.root / "call_log.jsonl"
         self._counter = {"n": 0}
         self.stop_guard = None
@@ -97,15 +101,15 @@ class FileQueueBridgeProvider(LLMProvider):
             "bridge": "file-queue/development-unverified-servicer",
             "call_timeout_seconds": call_timeout, "session_id": self.session_id,
             "isolation_verified": False,
+            "structured_repair_retries": structured_repair_retries,
         }
 
     def _log(self, **record):
         # Logging failures must be visible: never claim an auditable run without a log.
-        with self.log_path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(dict(
-                timestamp_utc=time.time(), monotonic_seconds=time.monotonic(),
-                session_id=self.session_id, **record,
-            ), ensure_ascii=False) + "\n")
+        append_json(self.log_path, dict(
+            timestamp_utc=time.time(), monotonic_seconds=time.monotonic(),
+            session_id=self.session_id, **record,
+        ))
 
     async def structured_call(self, role, system_prompt, user_payload, output_model):
         from incident_lens.llm.structured_output import output_messages, strict_schema
@@ -123,7 +127,7 @@ class FileQueueBridgeProvider(LLMProvider):
         )
         started = time.monotonic()
         try:
-            for attempt in range(2):
+            for attempt in range(self.structured_repair_retries + 1):
                 if self.stop_guard is not None:
                     self.stop_guard()
                 request_id = base_id if attempt == 0 else base_id + "-repair"
@@ -144,6 +148,7 @@ class FileQueueBridgeProvider(LLMProvider):
                         request, self.responses_dir / f"{request_id}.json",
                     ))
                     self._log(event="REQUEST_WRITTEN", request_id=request_id,
+                              timeout_seconds=self.call_timeout,
                               request_sha256=request["request_sha256"], role=role, attempt=attempt)
                     content = await self._await_response(request, usage)
                 finally:
@@ -153,7 +158,7 @@ class FileQueueBridgeProvider(LLMProvider):
                     result = output_model.model_validate_json(content)
                 except ValueError:
                     self._log(event="RESPONSE_INVALID", request_id=request_id)
-                    if attempt == 0:
+                    if attempt < self.structured_repair_retries:
                         # Match the legacy real adapter's repair prompt and placement.
                         messages.append({"role": "user", "content":
                             "Return valid JSON matching the supplied schema. One repair only."})
@@ -171,16 +176,30 @@ class FileQueueBridgeProvider(LLMProvider):
         request_id = request["request_id"]
         path = self.responses_dir / f"{request_id}.json"
         deadline = time.monotonic() + self.call_timeout
+        next_status = 0.0
         try:
             while True:
                 if self.stop_guard is not None:
                     self.stop_guard()
                 if time.monotonic() >= deadline:
+                    self._log(event="RESPONSE_TIMEOUT", request_id=request_id,
+                              timeout_seconds=self.call_timeout)
                     raise ProviderError("BRIDGE_TIMEOUT", usage)
+                if time.monotonic() >= next_status:
+                    self._log(event="RESPONSE_WAIT", request_id=request_id,
+                              remaining_seconds=max(0, deadline - time.monotonic()),
+                              request_bytes=(self.requests_dir / f"{request_id}.json").stat().st_size)
+                    next_status = time.monotonic() + 30
                 if path.exists():
                     if path.is_symlink() or getattr(path, "is_junction", lambda: False)():
                         raise ProviderError("BRIDGE_RESPONSE_MISMATCH", usage)
-                    raw = path.read_bytes()
+                    try:
+                        raw = path.read_bytes()
+                    except PermissionError:
+                        # A scanner may briefly hold the atomic published file.
+                        # Preserve the deadline; never silently extend it.
+                        await asyncio.sleep(self.poll_interval)
+                        continue
                     # A malformed final file fails immediately; no silent editing window.
                     try:
                         envelope = json.loads(raw)
@@ -208,7 +227,7 @@ class FileQueueBridgeProvider(LLMProvider):
             raise
 
 
-async def run(args):
+async def run_case(args):
     project = Path(__file__).resolve().parents[1]
     load_dotenv(project / ".env", override=False)
     protocol = ExperimentProtocol.model_validate_json(
@@ -219,13 +238,19 @@ async def run(args):
         or protocol.blindness_level != "development_visible"):
 
         raise ValueError("bridge replay is for development pilots only")
-    out = args.out.resolve()
-    out.mkdir(parents=True, exist_ok=False)
     call_timeout = protocol.request_timeout if args.call_timeout is None else args.call_timeout
     if call_timeout != protocol.request_timeout:
         raise ValueError("bridge call timeout must match protocol.request_timeout")
+    import yaml
+
+    config_path = getattr(args, "runtime_config", None)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8")) if config_path else {}
+    poll_interval = args.poll_interval if args.poll_interval is not None else config.get("poll_interval", 1.0)
+    out = args.out.resolve()
+    out.mkdir(parents=True, exist_ok=False)
     bridge = FileQueueBridgeProvider(
-        out / "_bridge", poll_interval=args.poll_interval, call_timeout=call_timeout
+        out / "_bridge", poll_interval=poll_interval, call_timeout=call_timeout,
+        structured_repair_retries=config.get("structured_repair_retries", 1),
     )
     provider = MeasuredProvider(bridge)
     evidence = EvidenceProvider(args.dataset / "rca")
@@ -263,10 +288,11 @@ async def run(args):
         "retest_source_sha256": frozen_sources,
         "effective_model_parameters": provider.model_parameters,
         "dataset_revision": evidence.dataset_revision,
+        "runtime_config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest() if config_path else None,
     }
-    (out / "scope.json").write_text(
-        json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
-    )
+    atomic_json(out / "scope.json", metadata, exclusive=True)
+    args.journal = RunJournal(out / "observability", metadata)
+    investigation_started = time.monotonic()
     state = await run_investigation(
         args.incident,
         provider,
@@ -283,8 +309,10 @@ async def run(args):
             database_equivalent_tools=True,
             benchmark_fixed_four=args.variant == "fixed",
         ),
+        journal=args.journal,
     )
-    save_run(state, out, "real")
+    elapsed_ms = (time.monotonic() - investigation_started) * 1000
+    save_run(state, out, "real", variant=args.variant, elapsed_ms=elapsed_ms)
     raw = state.model_dump(mode="json")
     summary = normalize_termination(raw) | usage_metrics(provider, raw)
     summary["source_drift"] = snapshot_changes(frozen_sources, retest_snapshot(project))
@@ -297,16 +325,45 @@ async def run(args):
     summary["bridge_model_id"] = bridge.model_id
     summary["bridge_requests"] = sum(c["usage"].get("bridge_requests", 0) for c in provider.calls)
     summary["isolation_verified"] = False
-    (out / "verification.json").write_text(
-        json.dumps(summary, indent=2) + "\n", encoding="utf-8"
-    )
+    summary["elapsed_ms"] = elapsed_ms
+    summary["observability"] = args.journal.health()
+    atomic_json(out / "measured-usage.json", {"schema_version": 1, "calls": provider.calls})
+    atomic_json(out / "verification.json", summary, exclusive=True)
     print(json.dumps(summary))
+
+
+async def run_unlocked(args):
+    error = None
+    try:
+        await run_case(args)
+    except BaseException as exc:
+        error = exc
+        raise
+    finally:
+        if getattr(args, "journal", None) is not None:
+            args.journal.close(error)
+            verification = args.out / "verification.json"
+            if verification.is_file():
+                summary = json.loads(verification.read_bytes())
+                summary["observability"] = args.journal.health()
+                atomic_json(verification, summary)
+
+
+async def run(args):
+    from incident_lens.incidentbench.experiment import execution_lock
+
+    lease = getattr(args, "lease_directory", None)
+    if lease is None:
+        return await run_unlocked(args)
+    with execution_lock(lease):
+        return await run_unlocked(args)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", required=True, type=Path)
     parser.add_argument("--protocol", required=True, type=Path)
+    parser.add_argument("--runtime-config", type=Path)
     parser.add_argument("--incident", default="incident_2001")
     parser.add_argument(
         "--variant",
@@ -314,6 +371,7 @@ if __name__ == "__main__":
         default="full",
     )
     parser.add_argument("--out", required=True, type=Path)
-    parser.add_argument("--poll-interval", dest="poll_interval", type=float, default=1.0)
+    parser.add_argument("--lease-directory", type=Path)
+    parser.add_argument("--poll-interval", dest="poll_interval", type=float, default=None)
     parser.add_argument("--call-timeout", dest="call_timeout", type=float, default=None)
     asyncio.run(run(parser.parse_args()))

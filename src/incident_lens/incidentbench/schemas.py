@@ -93,9 +93,9 @@ class ExperimentProtocol(StrictModel):
     max_rounds: int = Field(default=6, ge=1)
     max_tool_calls: int = Field(default=24, ge=1)
     max_llm_calls: int = Field(default=32, ge=1)
-    max_wall_seconds: float = Field(default=600.0, gt=0)
+    max_wall_seconds: float = Field(default=600.0, gt=0, allow_inf_nan=False)
     response_format: Literal["json_schema", "json_object"] = "json_schema"
-    request_timeout: float = 180.0
+    request_timeout: float = Field(default=180.0, gt=0, allow_inf_nan=False)
     blindness_level: Literal["development_visible", "independent_label_owner"] = (
         "development_visible"
     )

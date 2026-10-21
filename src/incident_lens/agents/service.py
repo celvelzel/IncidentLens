@@ -19,7 +19,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v12-evidence-reconciliation-v6"
+PROMPT_VERSION = "roles-v12-evidence-reconciliation-v7-task-acl"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -30,6 +30,11 @@ not merely because optional telemetry is unavailable. Only propose hypotheses wi
 or a concrete evidence-based alternative. open_questions must be material blockers, not a wishlist.
 Do not treat downstream symptoms as the culprit service. Compare causal chronology and config diffs
 with observed effects; a complete causal explanation need not include every possible metric.
+Distinguish a supported leading explanation from direct refutation of an alternative.
+A config change supporting one cause does not alone contradict all other causes. A topology
+record saying a service has no dependencies does not show that service is healthy or fast.
+Absent/empty telemetry is unknown, not observed contrary evidence. Do not reject a candidate
+merely to clear a finalization guard; preserve uncertainty when the observations cannot refute it.
 Return only JSON matching the schema. Do not return hidden reasoning or secrets."""
 ROLE_PROMPTS = {
     "coordinator": "Select one or two specialist tasks from new findings, budget and requested checks. Use only supplied role_tool_acl tool names; never invent tool names. Each investigation task costs a planning call and an analysis call, followed by review and a new decision. Reserve these calls; prioritize a single decisive check when remaining budget is small. Never reuse completed task IDs. INVESTIGATE requires assignments, null selected_hypothesis_id and null stop_reason. FINALIZE/ABSTAIN require empty assignments and a nonempty stop_reason; only FINALIZE selects an existing hypothesis ID. Finalize only with causal support and sufficient review; otherwise abstain.",
@@ -131,7 +136,18 @@ async def decide(provider, state_payload):
         state_payload.get("evidence_index", {})
     )
     reconcile = state_payload.get("benchmark_rca", False) and bool(known)
-    schema = DynamicDecision
+    # Validate role-specific authority inside the structured-output adapter so
+    # its bounded repair can correct a proposal BEFORE any task is dispatched.
+    # Keep the post-generation guard below as defence in depth.
+    @model_validator(mode="after")
+    def task_acl(self):
+        if any(t.role not in acl or not set(t.allowed_tools).issubset(acl[t.role])
+               for t in self.assignments):
+            raise ValueError("assignments must use the supplied role_tool_acl")
+        return self
+
+    schema = create_model("DynamicDecision", __base__=DynamicDecision,
+                          __validators__={"task_acl": task_acl})
     instruction = ""
     if reconcile:
         update_type = create_model(
@@ -142,7 +158,7 @@ async def decide(provider, state_payload):
             against_ids=(list[Literal[tuple(sorted(observed))]] if observed else list[str],
                          Field(default_factory=list) if observed else Field(default_factory=list, max_length=0)),
         )
-        schema = create_model("DynamicDecision", __base__=DynamicDecision,
+        schema = create_model("DynamicDecision", __base__=schema,
                               hypothesis_updates=(list[update_type], Field(default_factory=list)))
         instruction = (
             "\nReconcile existing hypotheses using shared findings before FINALIZE. "
@@ -269,6 +285,17 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
     context, task = json_payload(context), json_payload(task)
     if context["role"] not in (task["role"], "single"):
         raise ProviderError("ROLE_IDENTITY_MISMATCH")
+    allowed = (
+        set(context["allowed_tools"])
+        if context["role"] == "single"
+        else set(context["allowed_tools"]) & set(task["allowed_tools"])
+    )
+    # The task is narrower than the role in many investigations. Advertise and
+    # constrain the same intersection; never grant authority or trim a proposal.
+    call_type = create_model("TaskToolCall", __base__=ToolCall,
+                             tool_name=(Literal[tuple(sorted(allowed))], ...)) if allowed else ToolCall
+    schema = create_model("InvestigatorPlan", __base__=InvestigatorPlan,
+                          calls=(list[call_type], Field(max_length=2 if allowed else 0)))
     result, usage = await provider.structured_call(
         context["role"],
         prompt("single") + "\n" + "\n".join(ROLE_PROMPTS[r] for r in ("logs", "metrics", "changes"))
@@ -280,14 +307,10 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
             public_summary=json_payload(public_summary),
             available_services=json_payload(public_summary).get("services", []),
             minimal_facts=json_payload(minimal_facts),
-            tool_argument_schemas=tool_schemas(context["allowed_tools"]),
+            effective_allowed_tools=sorted(allowed),
+            tool_argument_schemas=tool_schemas(sorted(allowed)),
         ),
-        InvestigatorPlan,
-    )
-    allowed = (
-        set(context["allowed_tools"])
-        if context["role"] == "single"
-        else set(context["allowed_tools"]) & set(task["allowed_tools"])
+        schema,
     )
     if any(c.tool_name not in allowed for c in result.calls):
         raise ProviderError("ROLE_TOOL_PROPOSAL_FORBIDDEN", usage)

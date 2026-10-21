@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
 
 import yaml
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 
 from incident_lens.artifacts import save_run
 from incident_lens.evaluation.retest_provenance import retest_snapshot, snapshot_changes
+from incident_lens.evaluation.run_io import atomic_json
 from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics
 from incident_lens.evaluation.termination import normalize_termination
 from incident_lens.incidentbench.schemas import ExperimentProtocol
@@ -36,14 +38,23 @@ async def run_case(args):
         raise ValueError("matching real provider configuration required")
     if protocol.formal or protocol.provider_id != "real":
         raise ValueError("this replay is for real development pilots only")
+    if getattr(args, "readiness", None) is not None:
+        readiness = json.loads(args.readiness.read_text(encoding="utf-8-sig"))
+        if (readiness.get("model_id") != model
+            or readiness.get("response_format") != protocol.response_format
+            or readiness.get("provider_compatible") is not True):
+            raise ValueError("provider readiness must match model and response format")
     args.out.mkdir(parents=True, exist_ok=False)
     evidence = EvidenceProvider(args.dataset / "rca")
-    config = yaml.safe_load((project / "configs/system.yaml").read_text(encoding="utf-8"))
+    config_path = getattr(args, "runtime_config", None) or project / "configs/system.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    if getattr(args, "readiness", None) is not None and readiness.get("thinking") != config.get("thinking"):
+        raise ValueError("provider readiness does not match thinking mode")
     provider = MeasuredProvider(RealChatProvider(
         endpoint, key, model, temperature=protocol.temperature,
         structured_repair_retries=config.get("structured_repair_retries", 1),
         recovery=config.get("provider_recovery", {}),
-        **provider_options(protocol.response_format, None, protocol.request_timeout),
+        **provider_options(protocol.response_format, config.get("thinking"), protocol.request_timeout),
     ))
     frozen_sources = retest_snapshot(project)
     metadata = {
@@ -57,10 +68,12 @@ async def run_case(args):
         "retest_source_sha256": frozen_sources,
         "effective_model_parameters": provider.model_parameters,
         "dataset_revision": evidence.dataset_revision,
+        "runtime_config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
         "dispatch_policy": "collect-siblings; bounded-provider-retry; public-change-discovery; bounded-diff-fetch",
     }
     (args.out / "scope.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     args.journal = RunJournal(args.out / "observability", metadata)
+    investigation_started = time.monotonic()
     state = await run_investigation(
         args.incident, provider, data_root=args.dataset / "rca", variant=args.variant,
         budget=Budget(
@@ -71,7 +84,8 @@ async def run_case(args):
                                  benchmark_fixed_four=args.variant == "fixed"),
         journal=args.journal,
     )
-    save_run(state, args.out, "real", variant=args.variant)
+    elapsed_ms = (time.monotonic() - investigation_started) * 1000
+    save_run(state, args.out, "real", variant=args.variant, elapsed_ms=elapsed_ms)
     raw = state.model_dump(mode="json")
     summary = normalize_termination(raw) | usage_metrics(provider, raw)
     (args.out / "measured-usage.json").write_text(
@@ -82,19 +96,18 @@ async def run_case(args):
     )
     summary["source_drift"] = snapshot_changes(frozen_sources, retest_snapshot(project))
     summary["source_unchanged"] = not summary["source_drift"]
+    summary["elapsed_ms"] = elapsed_ms
     summary["observability"] = args.journal.health()
     summary["query_gap_count"] = sum(e.event_type == "TOOL_DATA_GAP" for e in state.events)
     summary["fatal_dispatch"] = any(
         e.event_type == "RUNTIME_ERROR" and e.details.get("stage") == "dispatch"
         for e in state.events
     )
-    (args.out / "verification.json").write_text(
-        json.dumps(summary, indent=2) + "\n", encoding="utf-8",
-    )
+    atomic_json(args.out / "verification.json", summary, exclusive=True)
     print(json.dumps(summary))
 
 
-async def run(args):
+async def run_unlocked(args):
     error = None
     try:
         await run_case(args)
@@ -104,14 +117,32 @@ async def run(args):
     finally:
         if getattr(args, "journal", None) is not None:
             args.journal.close(error)
+            verification = args.out / "verification.json"
+            if verification.is_file():
+                summary = json.loads(verification.read_bytes())
+                summary["observability"] = args.journal.health()
+                atomic_json(verification, summary)
+
+
+async def run(args):
+    from incident_lens.incidentbench.experiment import execution_lock
+
+    lease = getattr(args, "lease_directory", None)
+    if lease is None:
+        return await run_unlocked(args)
+    with execution_lock(lease):
+        return await run_unlocked(args)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", required=True, type=Path)
     parser.add_argument("--protocol", required=True, type=Path)
+    parser.add_argument("--runtime-config", type=Path)
+    parser.add_argument("--readiness", type=Path)
     parser.add_argument("--incident", default="incident_2001")
     parser.add_argument("--variant", choices=("full", "dynamic_no_verifier", "single", "fixed"),
                         default="full")
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--lease-directory", type=Path)
     asyncio.run(run(parser.parse_args()))

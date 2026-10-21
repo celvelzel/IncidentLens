@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "TaskToolCall": {
+      "additionalProperties": false,
+      "properties": {
+        "tool_name": {
+          "const": "query_metrics",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        }
+      },
+      "required": [
+        "tool_name",
+        "args"
+      ],
+      "title": "TaskToolCall",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "calls": {
+      "items": {
+        "$ref": "#/$defs/TaskToolCall"
+      },
+      "maxItems": 2,
+      "title": "Calls",
+      "type": "array"
+    }
+  },
+  "required": [
+    "calls"
+  ],
+  "title": "InvestigatorPlan",
+  "type": "object"
+}

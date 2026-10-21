@@ -1667,7 +1667,9 @@ class InvestigationRun:
     async def run(self):
         result = await self.compile().ainvoke(
             {"investigation": self.state, "local_results": [], "route": "coordinate"},
-            config={"recursion_limit": 40},
+            # Graph supersteps are not investigation rounds: merge/review/stop
+            # need headroom even when a long-run round budget is increased.
+            config={"recursion_limit": max(40, 12 * self.state.budgets.max_rounds + 20)},
         )
         return result["investigation"]
 

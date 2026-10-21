@@ -1,0 +1,43 @@
+{
+  "call_id": "codex-d437d68e5847447c8b7d3fd360d1dbf5",
+  "role": "coordinator",
+  "payload_sha256": "d3ad881d4281e296f2e2e3a52fea2729086abc6ef5b68e7e799cee3440311012",
+  "system_sha256": "08e4baa969961c141bcbe57e316d0b8b962144b9e23d74700db1dd80fcda07b6",
+  "parameters": {
+    "transport": "official_codex_exec",
+    "billing_mode": "chatgpt_codex_subscription",
+    "requested_model": "gpt-6-astra",
+    "model_identity_verified": false,
+    "temperature_verified": false,
+    "reasoning_effort": "low",
+    "fresh_ephemeral_session_per_call": true,
+    "request_timeout_seconds": 180,
+    "tools_requested_disabled": [
+      "shell_tool",
+      "unified_exec",
+      "shell_snapshot",
+      "multi_agent",
+      "multi_agent_v2",
+      "apps",
+      "plugins",
+      "hooks",
+      "computer_use",
+      "browser_use",
+      "browser_use_external",
+      "in_app_browser",
+      "image_generation",
+      "view_image",
+      "sleep_tool",
+      "skill_search",
+      "goals",
+      "workspace_dependencies",
+      "code_mode_host",
+      "unbounded_connection_retries"
+    ],
+    "tool_event_audit": "reject_non_message_items",
+    "os_level_oracle_isolation_verified": false,
+    "platform_api_equivalent": false,
+    "underlying_http_attempts": null,
+    "automatic_provider_fallback": false
+  }
+}

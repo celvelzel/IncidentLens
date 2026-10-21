@@ -1,0 +1,4 @@
+# Proposed bridge-only controls; no transport retry or network I/O.
+# Bound identical controls across every architecture in a batch.
+structured_repair_retries: 1
+poll_interval: 1.0

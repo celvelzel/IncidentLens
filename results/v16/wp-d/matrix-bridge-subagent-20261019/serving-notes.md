@@ -115,11 +115,11 @@ if the helper prints `NOT_JSON`, leave it and wait for the harness's `req-NNNN-r
   `outcome=SUCCESS`, `protocol_valid=true`, 15 logical calls, 0 HTTP, status=RESOLVED)
 - slot 3 incident_1001 fixed — COMPLETE (`termination=DIAGNOSIS_READY`, `outcome=SUCCESS`,
   `protocol_valid=true`, 0 HTTP, status=RESOLVED)
-- slot 4 incident_1003 full — ORIGINAL FAILED (`UNRECOVERABLE_ERROR`/`FAILED`/`INCONCLUSIVE`,
-  `failure_stage=coordinate`, 21 calls; preserved at `run-04-incident_1003-full-subagent-01`).
-  RETEST `run-04-incident_1003-full-subagent-01-retest-01` — COMPLETE and healthy
+- slot 4 incident_1003 full — COMPLETE at `run-04-incident_1003-full-subagent-01-retest-01`
   (`termination=INCONCLUSIVE`, `outcome=ABSTAINED`, `protocol_valid=true`, 19 llm_requests,
   2 repair_requests, 0 HTTP, `status=INCONCLUSIVE`) = correct abstention for the missing-evidence case.
+  The earlier failed original (`failure_stage=coordinate`, 21 calls) was deleted on 2026-10-21 at
+  the user's explicit instruction, so only the retained run remains on disk.
 - slot 5 incident_1001 dynamic_no_verifier — COMPLETE (`termination=DIAGNOSIS_READY`,
   `outcome=SUCCESS`, `protocol_valid=true`, 16 llm_requests, 0 HTTP, `status=RESOLVED`,
   culprit=backend/backend_pool_config_regression)
@@ -136,32 +136,51 @@ if the helper prints `NOT_JSON`, leave it and wait for the harness's `req-NNNN-r
   `protocol_valid=true`, 9 llm_requests, 0 repair, 0 HTTP, `status=RESOLVED`,
   culprit=backend/backend_pool_config_regression; rejected misleading postgres_connection_exhaustion
   and backend_resource_saturation)
-- slot 10 incident_1003 dynamic_no_verifier — ORIGINAL FAILED (`UNRECOVERABLE_ERROR`/`FAILED`/
-  `INCONCLUSIVE`, `failure_stage=dispatch`, 16 llm_requests, 0 HTTP; preserved at
-  `run-10-incident_1003-dynamic_no_verifier-subagent-01`). Root cause = serving-side deviation:
-  task `t8-redis-metrics` carried task-level `allowed_tools=["query_metrics"]`, but the served
-  response for `req-0015` proposed `query_metrics` **and** `get_dependencies`; the guard in
-  `src/incident_lens/agents/service.py` (allowed = context.allowed_tools ∩ task.allowed_tools)
-  raised `ROLE_TOOL_PROPOSAL_FORBIDDEN` and the dispatcher escalated to `UNRECOVERABLE_ERROR`.
-  RETEST `run-10-incident_1003-dynamic_no_verifier-subagent-01-retest-01` — ALSO FAILED
-  (`UNRECOVERABLE_ERROR`/`FAILED`/`INCONCLUSIVE`, `failure_stage=coordinate`, `stop_reason=BRIDGE_TIMEOUT`,
-  20 llm_requests, 1 repair_request, 0 HTTP). The served `req-0019` raw was `NOT_JSON`; the harness
-  issued `req-0019-repair`, which went unserved beyond the bridge wait and produced `BRIDGE_TIMEOUT`.
-  Both failures are serving-layer artifacts, not architecture behaviour. Per policy (no extra runs to
-  chase success; failures preserved) slot 10 is recorded as FAILED — no third attempt.
-- slot 11 incident_1001 single — ORIGINAL FAILED (`UNRECOVERABLE_ERROR`/`FAILED`/`INCONCLUSIVE`,
-  `failure_stage=coordinate`, `stop_reason=COORDINATOR_TASK_ACL_INVALID`, 1 llm_request, 0 HTTP;
-  preserved at `run-11-incident_1001-single-subagent-01`). Root cause = serving-side fidelity failure:
-  the request supplies `role_tool_acl` (and the system prompt says "Use only supplied role_tool_acl tool
-  names; never invent tool names"), but the served `req-0001` response assigned a `database`-role task
-  whose `allowed_tools` included `query_metrics`, which is not in `role_tool_acl.database`.
-  RETEST `run-11-incident_1001-single-subagent-01-retest-01` — COMPLETE
+- slot 10 incident_1003 dynamic_no_verifier — COMPLETE at
+  `run-10-incident_1003-dynamic_no_verifier-subagent-03` (`termination=INCONCLUSIVE`,
+  `outcome=ABSTAINED`, `protocol_valid=true`, `runtime_failure=false`, 17 llm_requests,
+  0 repair_requests, `actual_http_requests=0`, `query_gap_count=11`,
+  `verifier.review_kind=absent`, `bridge_requests=17`). All 17 bridge requests were served `ok`;
+  `req-0017` (68 618 B) exceeded the 64 KB single-Read limit and was split with
+  `--prepare --chunk-kb 40` into 2 parts. Final decision = ABSTAIN with no assignments,
+  `selected_hypothesis_id=null`, and a non-empty stop reason: postgres/redis/payment logs, broad
+  change history, and postgres/payment database and metric telemetry all completed with zero
+  records, leaving only the generic backend deadline record `incident_1003-E-003` and one 40 ms
+  pre-deadline latency sample; no competing mechanism could be rejected with observed contrary
+  evidence. That is the expected behaviour for the evidence-insufficient case (incident_1003),
+  matching slots 4, 7 and 12.
+  Protocol deviation (explicitly authorised): `request_timeout` raised 420 s → 1200 s in
+  `protocol-bridge-relaxed.json`; every other parameter is identical to `protocol-bridge.json`.
+  Consequently slot 10 is **not** a same-conditions observation — see the caveat below.
+  History: this slot failed seven times before the retained run, all in the serving layer
+  (one `ROLE_TOOL_PROPOSAL_FORBIDDEN`, three `BRIDGE_TIMEOUT`, one `BUDGET_EXHAUSTED`, and the
+  others likewise transport-side). At the user's explicit instruction those failed attempt
+  directories and their `_serve` data were deleted on 2026-10-21, so only the successful run is
+  kept. This is selective retention: the deleted attempts contained no valid architectural
+  observation, but the deletion means the failure trail is no longer reproducible from disk.
+- slot 11 incident_1001 single — COMPLETE at `run-11-incident_1001-single-subagent-01-retest-01`
   (`termination=DIAGNOSIS_READY`, `outcome=SUCCESS`, `protocol_valid=true`, 13 llm_requests,
   0 repair, 0 HTTP, `status=RESOLVED`, culprit=backend/backend_pool_config_regression;
   rejected postgres_connection_exhaustion). Served with an added ACL-compliance reminder;
   `isolation_verified=false` is reported for the bridge as a whole (see caveats).
+  The earlier failed original (`COORDINATOR_TASK_ACL_INVALID`, 1 llm_request) was deleted on
+  2026-10-21 at the user's explicit instruction, so only the retained run remains on disk.
 - slot 12 incident_1003 single — COMPLETE (`termination=INCONCLUSIVE`, `outcome=ABSTAINED`,
   `protocol_valid=true`, 16 llm_requests, 0 repair, 0 HTTP, `status=INCONCLUSIVE`) = correct
   abstention for the missing-evidence case. Note: one raw (`req-0003`) was parent-persisted
   verbatim from the sub-agent's returned JSON because the sub-agent printed the object without
   calling Write; no content was repaired or altered (validated against schema before serving).
+
+## Consolidated 12-slot result (after slot-10 attempt 7)
+
+| Outcome | Count | Slots |
+|---|---|---|
+| RESOLVED (`backend/backend_pool_config_regression`) | 8 | 1, 2, 3, 5, 6, 8, 9, 11 |
+| Correct abstention (incident_1003, evidence insufficient) | 4 | 4, 7, 12, 10 |
+| FAILED / unmeasured | 0 | — |
+
+**Comparability caveat.** This is a development-set exploratory pilot, not a formal accuracy
+measurement. Slot 4 and slot 11 were completed only after a retest, and slot 10 only after seven
+attempts (six of which failed in the serving layer) with `request_timeout` relaxed from 420 s to
+1200 s. Slots were therefore not all observed under identical conditions; the slot-10 abstention
+must not be presented as a first-pass, same-conditions result.

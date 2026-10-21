@@ -1,0 +1,68 @@
+{
+  "status": "SUBSCRIPTION_CODEX_FEASIBLE_NOT_PLATFORM_API",
+  "cli_version": "codex-cli 0.154.0",
+  "actual_supported_model_in_probe": "gpt-6-astra",
+  "auth_method": "ChatGPT cached official CLI login",
+  "credential_cache_read": false,
+  "api_keys_removed_from_child_environment": true,
+  "successful_synthetic_calls": 2,
+  "offline_contracts": "9 passed in 0.59s",
+  "formal_cases_run": 0,
+  "formal_matrix_started": false,
+  "platform_api_credit_sharing_verified": false,
+  "remote_transport_verified_by": "official CLI returned completed turns, schema-conforming JSON and reported usage; no tool event items",
+  "underlying_http_requests": null,
+  "subscription_credit_debit": null,
+  "code_files_sha256": {
+    "src/incident_lens/llm/codex_subscription.py": "0f5900b7c2e8ad3bdb33a2a894c0934649dea532996369e0513835b5a72fa054",
+    "scripts/probe_codex_subscription.py": "6f2c3c25b5831e9816280814d7fa2b88946ebfa400509222cfb871e0b74fbb80",
+    "scripts/run_codex_subscription_case.py": "df705b5622a7bace7e6aef4ce6e9224ca58c44a49345552a1e033118d63e9297",
+    "configs/wp_d/codex-subscription.json": "edf0d87d1d68d073f16a2c712a3abbc180109147dc10e697dd4631a664c13f6d",
+    "configs/wp_d/codex-subscription-protocol.json": "2823460c016cba28419915334a3e58d1cc7e9fe76ab8386e0a2678a8543dcc88",
+    "tests/integration/test_codex_subscription_feasibility.py": "0ddc4696e25ce781113495376b9f6a561f101cfb2ce0fb7d1df18f4532287c83"
+  },
+  "iterations": [
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_PROCESS_FAILED"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-02",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_PROCESS_FAILED"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-03",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_PROCESS_FAILED"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-04",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_UNEXPECTED_TOOL_ACTIVITY"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-05",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_UNEXPECTED_TOOL_ACTIVITY"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-06",
+      "status": "FEASIBILITY_FAILED",
+      "invocations_attempted": 1,
+      "error_code": "CODEX_UNEXPECTED_TOOL_ACTIVITY"
+    },
+    {
+      "path": "results/acceptance/codex-subscription-feasibility-20261021-07",
+      "status": "FEASIBLE_FOR_CODEX_SUBSCRIPTION_TRANSPORT",
+      "invocations_attempted": 2,
+      "error_code": null
+    }
+  ]
+}

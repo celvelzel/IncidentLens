@@ -1,0 +1,17 @@
+{
+  "scope": "synthetic subscription feasibility only; not API Platform or G1a",
+  "auth": {
+    "auth_method": "chatgpt",
+    "verified_by": "codex login status",
+    "account_identity_read": false,
+    "credential_cache_read": false
+  },
+  "formal_test_started": false,
+  "incident_investigations": 0,
+  "attempted_codex_invocations": 1,
+  "probes": [],
+  "status": "FEASIBILITY_FAILED",
+  "platform_api_quota_shared": false,
+  "error_type": "ProviderError",
+  "error_code": "CODEX_PROCESS_FAILED"
+}

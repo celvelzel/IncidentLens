@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-21",
+  "validation_level": "STATIC_ONLY",
+  "ast_parse": {
+    "files": [
+      "src/incident_lens/agents/service.py",
+      "src/incident_lens/incidentbench/schemas.py",
+      "src/incident_lens/evaluation/run_io.py",
+      "src/incident_lens/evaluation/retest_provenance.py",
+      "src/incident_lens/orchestration/graph.py",
+      "scripts/retest_subagent_bridge.py",
+      "scripts/retest_live_provider_fix.py",
+      "scripts/run_wpd_batch.py",
+      "scripts/run_status.py",
+      "analysis/wp_d/serve_bridge_response.py",
+      "analysis/wp_d/review_retained.py",
+      "tests/integration/test_wpd_run_preparation.py"
+    ],
+    "status": "passed"
+  },
+  "ruff_check": "passed on all 12 changed/new Python files",
+  "configuration_json_parse": "passed",
+  "runtime_tests_executed": false,
+  "fault_injection_executed": false,
+  "bridge_model_calls": 0,
+  "real_api_calls": 0,
+  "read_only_analysis": "12 saved traces, 48 hashed artifacts",
+  "existing_user_changes": "310 preexisting tracked deletions and serving-notes changes preserved; no cleanup/restoration",
+  "pending": "offline regressions/fault injection, genuine current API readiness, actual execution freeze and approved runs; stage closure/demo deferred"
+}
