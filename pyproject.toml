@@ -15,6 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dspy = ["dspy==3.0.4"]
 dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.17.0"]
 
 [project.scripts]

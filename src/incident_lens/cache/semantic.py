@@ -7,6 +7,7 @@ from time import perf_counter, time
 
 from incident_lens.agents.service import PROMPT_VERSION, AnalysisOutput
 from incident_lens.cache.policy import CacheNamespace, CachePolicy
+from incident_lens.prompts.resolver import resolver_for
 from incident_lens.schemas import EvidenceRecord
 from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL
 
@@ -71,7 +72,7 @@ class SemanticCacheAdapter:
             task_type=task_type,
             evidence_snapshot_sha256=snapshot,
             dataset_revision=self.dataset_revision,
-            prompt_version=self.prompt_version,
+            prompt_version="prompt-" + digest([self.prompt_version, resolver_for(provider).bundle_hash]),
             model_id=model_id,
             model_parameters_hash=digest(parameters),
             output_schema_version=self.output_schema_version,

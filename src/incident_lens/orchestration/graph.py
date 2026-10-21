@@ -435,10 +435,10 @@ class InvestigationRun:
     def update_usage(self, state, usage, role):
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens
-        from incident_lens.agents.service import PROMPT_VERSION
+        from incident_lens.prompts.resolver import resolver_for
 
         details = {key: value for key, value in usage.items() if key != "source"}
-        details["prompt_version"] = PROMPT_VERSION
+        details.update(resolver_for(self.provider).metadata())
         details["model_parameters"] = getattr(
             self.provider, "model_parameters", {"temperature": self.provider.temperature}
         )

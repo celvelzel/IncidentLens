@@ -11,10 +11,10 @@ import time
 from contextvars import ContextVar
 from pathlib import Path
 
-from incident_lens.agents.service import PROMPT_VERSION
 from incident_lens.llm import LLMProvider, MockProvider
 from incident_lens.llm.usage import aggregate_usage
 from incident_lens.orchestration.graph import run_investigation
+from incident_lens.prompts.resolver import resolver_for
 from incident_lens.schemas import Budget
 from incident_lens.tools import EvidenceProvider
 
@@ -87,6 +87,8 @@ class MeasuredProvider(LLMProvider):
 
     def __init__(self, delegate):
         self.delegate = delegate
+        self.prompt_resolver = resolver_for(delegate)
+        self.snapshot_observer = getattr(delegate, "snapshot_observer", None)
         self.model_id = delegate.model_id
         self.temperature = delegate.temperature
         self.model_parameters = getattr(
@@ -277,7 +279,7 @@ async def evaluate_split(
             model_id=provider.model_id,
             temperature=provider.temperature,
             model_parameters=copy.deepcopy(provider.model_parameters),
-            prompt_version=PROMPT_VERSION,
+            **resolver_for(provider).metadata(),
             output_schema_version="schema-v1",
             source_sha256=source_sha256,
             budget=budget.model_dump(mode="json"),

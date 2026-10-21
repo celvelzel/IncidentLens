@@ -425,3 +425,7 @@ null。紧预算仍可能在后续工作流调用中耗尽。Seed Mock 只验证
 ```
 
 代码风格遵循 Ruff（`line-length = 100`、`py311`）。新增角色应同步维护公共契约、只读工具权限和对应测试；不要提交本地密钥。
+
+## DSPy offline optimization
+
+[Implementation, reproduction and acceptance](docs/dspy/README.md): optional offline optimization with the existing LangGraph runtime. Engineering validation is complete; real-model quality improvement remains unestablished.

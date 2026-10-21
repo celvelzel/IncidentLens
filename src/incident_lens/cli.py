@@ -80,6 +80,8 @@ def main(argv=None):
     run.add_argument("--config", type=Path, default=Path("configs/system.yaml"))
     run.add_argument("--cache-mode", choices=["off", "exact", "semantic"], default=None)
     run.add_argument("--cache-db", type=Path, default=None)
+    run.add_argument("--prompt-bundle", type=Path, help="Reviewed task bundle; omit to roll back")
+    run.add_argument("--record-decisions", type=Path, help="Opt-in public decision events JSONL")
     run.add_argument("--max-rounds", type=int)
     run.add_argument("--max-tool-calls", type=int)
     run.add_argument("--max-llm-calls", type=int)
@@ -218,6 +220,14 @@ def main(argv=None):
                     ),
                 )
             )
+            if args.prompt_bundle:
+                from incident_lens.prompts.resolver import PromptResolver
+
+                provider.prompt_resolver = PromptResolver.load(args.prompt_bundle)
+            if args.record_decisions:
+                from incident_lens.prompts.snapshots import SnapshotRecorder
+
+                provider.snapshot_observer = SnapshotRecorder(args.record_decisions)
             cache = None
             if cache_mode != "off":
                 from incident_lens.cache.embeddings import SentenceTransformerBackend

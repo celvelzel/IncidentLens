@@ -20,3 +20,9 @@ results/**/*.sqlite*
 
 local_oracles/
 node_modules/
+
+# DSPy raw captures and mock runs are reproducible local experiment outputs.
+results/acceptance/dspy/*
+!results/acceptance/dspy/README.md
+!results/acceptance/dspy/validation.json
+!results/acceptance/dspy/retained-audit/
