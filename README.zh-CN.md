@@ -415,7 +415,9 @@ null。紧预算仍可能在后续工作流调用中耗尽。Seed Mock 只验证
 - **提交 Pull Request** —— 保持 PR 聚焦于单一改动;保持离线 Mock 路径可用;
   当行为或命令变化时,同步更新 `README.md` 与 `README.zh-CN.md` 中对应的
   章节。
-- **开发检查** —— 提交前请运行:
+- **开发检查** —— Push / PR 会自动执行 Ruff、Ubuntu/Windows 全量离线 Python
+  测试、JS 测试和 Mock 浏览器验收。安装步骤、运行命令与覆盖边界见
+  [离线 CI 说明](docs/offline-ci.md)。提交前请运行:
 
 ```powershell
 .venv\Scripts\python.exe -m pytest -q

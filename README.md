@@ -473,7 +473,10 @@ easiest to review.
 - **Submit a pull request** — keep PRs focused on one change; keep the offline
   Mock path working; update the matching section in both `README.md` and
   `README.zh-CN.md` when behavior or commands change.
-- **Development checks** — before submitting, run:
+- **Development checks** — Push and PR checks run Ruff, the full offline Python
+  suite on Ubuntu/Windows, JS tests and Mock browser acceptance. See
+  [offline CI](docs/offline-ci.md) for setup, commands and coverage boundaries.
+  Before submitting, run:
 
 ```powershell
 .venv\Scripts\python.exe -m pytest -q

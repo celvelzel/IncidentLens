@@ -1,0 +1,11 @@
+{
+  "name": "incident-lens-tests",
+  "private": true,
+  "scripts": {
+    "test": "node --experimental-default-type=module --test tests/web/*.test.mjs",
+    "test:browser": "node tests/web/browser.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

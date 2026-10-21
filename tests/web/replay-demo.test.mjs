@@ -68,8 +68,8 @@ test('metadata and new panels escape untrusted fields and disclose drift and unk
  assert.equal(eventCategory(event('REVIEW')),'review');
 });
 
-test('optional real recorded artifact: every prefix is deterministic, committed, and observation/report gated',{skip:!process.env.WP_C_REAL_TRACE},()=>{
- const t=JSON.parse(readFileSync(process.env.WP_C_REAL_TRACE));const es=t.state.events;
+test('saved artifact: every prefix is deterministic, committed, and observation/report gated',()=>{
+ const t=JSON.parse(readFileSync(process.env.WP_C_REAL_TRACE || new URL('./fixtures/mock-success.json',import.meta.url)));const es=t.state.events;
  let priorTime=-Infinity,previous=initialReplay(t);
  for(let n=0;n<=es.length;n++) {
    const s=replayPrefix(t,n);assert.deepEqual(s,previous);
