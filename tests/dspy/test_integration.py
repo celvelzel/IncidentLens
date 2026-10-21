@@ -3,6 +3,7 @@
 import asyncio
 import copy
 import json
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,16 @@ from incident_lens.agents.service import analyze, verify
 from incident_lens.llm import MockProvider
 from incident_lens.prompts.resolver import PromptResolver, digest
 from incident_lens.prompts.snapshots import SnapshotRecorder
+
+
+def require_dspy():
+    # Pytest can expose tests/dspy as a namespace package. Import success alone
+    # does not establish that the optional DSPy SDK distribution is installed.
+    try:
+        version("dspy")
+    except PackageNotFoundError:
+        pytest.skip("requires the optional DSPy SDK; install incident-lens[dspy]")
+    return pytest.importorskip("dspy", minversion="3.0.4")
 
 
 def context(incident="opaque"):
@@ -148,8 +159,7 @@ def test_no_oracle_or_family_leakage(tmp_path):
 
 @pytest.mark.parametrize("optimizer", ["manual", "LabeledFewShot", "BootstrapFewShot", "MIPROv2"])
 def test_dspy_compiler_and_exact_export_parity(tmp_path, optimizer):
-    pytest.importorskip("dspy")
-    import dspy
+    dspy = require_dspy()
 
     from experiments.dspy.optimize import (
         IncidentAdapter,
@@ -213,7 +223,7 @@ def test_prompt_bundles_partition_the_real_cache_namespace(tmp_path):
 
 
 def test_compiler_refuses_pending_labels_outside_explicit_fixture_mode(tmp_path):
-    pytest.importorskip("dspy")
+    require_dspy()
     from experiments.dspy.optimize import compile_bundle
 
     with pytest.raises(ValueError, match="two reviewers"):

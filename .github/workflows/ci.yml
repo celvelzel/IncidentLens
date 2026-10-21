@@ -102,4 +102,5 @@ jobs:
       - run: python -m pip install -r experiments/dspy/requirements.lock
       - run: python -m pip install -e '.[dev,dspy]'
       - run: python -m pip check
+      - run: python -c "from dspy import Signature; print(Signature)"
       - run: python -m pytest -q tests/dspy
