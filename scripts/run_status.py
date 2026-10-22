@@ -19,6 +19,10 @@ def main():
                   "latest_attempts": latest,
                   "supervisor": json.loads(supervisor.read_bytes()) if supervisor.is_file() else None,
                   "stop_requested": (args.out / "STOP_REQUESTED").exists()}
+        if isinstance(status["supervisor"], dict):
+            status["batch_state"] = status["supervisor"].get("state")
+            status["active_worker_count"] = len(status["supervisor"].get("active", []))
+            status["batch_counts"] = status["supervisor"].get("counts")
         print(json.dumps(status, indent=2, ensure_ascii=False))
         return
     root = args.out / "observability"

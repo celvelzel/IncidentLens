@@ -26,7 +26,7 @@ from incident_lens.incidentbench.schemas import ExperimentProtocol
 PROJECT = Path(__file__).resolve().parents[1]
 VARIANTS = ["single", "fixed", "dynamic_no_verifier", "full"]
 # Local supervisor bounds, not service-side concurrency entitlements.
-CONCURRENCY_LIMITS = {"bridge": 4, "api": 8, "subscription": 8}
+CONCURRENCY_LIMITS = {"bridge": 8, "api": 8, "subscription": 8}
 
 
 def validate_concurrency(mode, jobs):

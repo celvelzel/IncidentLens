@@ -9,7 +9,7 @@ from incident_lens.incidentbench.schemas import ExperimentProtocol
 from scripts import run_wpd_batch as batch
 
 
-@pytest.mark.parametrize("mode,cap", [("bridge", 4), ("api", 8), ("subscription", 8)])
+@pytest.mark.parametrize("mode,cap", [("bridge", 8), ("api", 8), ("subscription", 8)])
 def test_mode_caps(mode, cap):
     for jobs in range(1, cap + 1):
         assert batch.validate_concurrency(mode, jobs) == jobs
@@ -68,7 +68,7 @@ def harness(tmp_path, monkeypatch, mode, cap, fail=False, stop=False):
     return args, manifest, processes, peak
 
 
-@pytest.mark.parametrize("mode,cap", [("bridge", 4), ("api", 8), ("subscription", 8)])
+@pytest.mark.parametrize("mode,cap", [("bridge", 8), ("api", 8), ("subscription", 8)])
 def test_parallel_pool_out_of_order_and_resume(tmp_path, monkeypatch, mode, cap):
     args, manifest, processes, peak = harness(tmp_path, monkeypatch, mode, cap)
     assert batch.execute(args, manifest) == 0
@@ -90,7 +90,7 @@ def test_parallel_pool_out_of_order_and_resume(tmp_path, monkeypatch, mode, cap)
     assert len(processes) == cap + 3  # Completed receipts never start another worker.
 
 
-@pytest.mark.parametrize("mode,cap", [("bridge", 4), ("api", 8), ("subscription", 8)])
+@pytest.mark.parametrize("mode,cap", [("bridge", 8), ("api", 8), ("subscription", 8)])
 def test_failure_drains_siblings_without_dispatch(tmp_path, monkeypatch, mode, cap):
     args, manifest, processes, peak = harness(tmp_path, monkeypatch, mode, cap, fail=True)
     assert batch.execute(args, manifest) == 1

@@ -39,13 +39,13 @@ SUPPORTED/MIXED/UNSUPPORTED/UNKNOWN，不能以 ID 存在替代支持。不要�
 | plan | configs/wp_d/bridge-plan.json | configs/wp_d/api-plan.json |
 | protocol | bridge-protocol.json | api-protocol.json |
 | runtime config | bridge-runtime.yaml | api-runtime.yaml |
-| 模型 | trae-subagent-bridge-v1，外部身份未验证 | deepseek-v4-flash-0731，沿用既有模型提案，执行前匹配配置及真实 readiness |
+| 模型 | trae-subagent-bridge-v1，外部身份未验证 | deepseek-v4.1-flash-1017，执行前匹配配置及该模型的真实 readiness |
 | 请求等待 | 全组 1200 秒 | 全组 1200 秒 |
 | 结构修复 | 每逻辑调用最多 1 次 | 每逻辑调用最多 1 次 |
 | 传输重试 | 无网络，不自动重发等待中的请求 | 可重试超时/网络/408/429/5xx，最多 2 次，逻辑调用最多 4 个物理尝试 |
 | 退避 | 不适用 | 2–20 秒，尊重 Retry-After，受剩余 wall/request 预算约束 |
 
-共同提案：8 轮、40 工具、64 请求许可、7200 秒 wall、cache off、jobs=1、temperature=0、
+共同提案：8 轮、40 工具、64 请求许可、7200 秒 wall、cache off、桥接/API jobs=8、temperature=0、
 run_order_seed=14100。同一版本内所有架构使用相同参数及服务规则，不临时增加提示。
 这些值是针对 1200 秒等待及既有最大 26 请求/20 工具观察的保守容量提案，尚未校准。
 64 个许可包含 adapter 的请求重试和修复；40 槽位的许可上界为 2560，wall 上界和为 80 小时，
