@@ -86,7 +86,8 @@ class ExperimentProtocol(StrictModel):
     model_id: Text = "mock"
     temperature: float = 0.0
     cache_mode: Literal["off"] = "off"
-    jobs: Literal[1] = 1
+    # WP-D supervisor enforces mode-specific caps: bridge 4, API/subscription 8.
+    jobs: int = Field(default=1, ge=1, le=8, strict=True)
     run_order_seed: int = 14100
     repeats: int = Field(default=1, ge=1)
     variants: list[Text] = Field(default_factory=lambda: list(VARIANTS))

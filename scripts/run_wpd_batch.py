@@ -1,4 +1,4 @@
-"""Prepare or explicitly execute a resumable, serial development matrix.
+"""Prepare or explicitly execute a resumable, bounded-parallel development matrix.
 
 Preparation never constructs a provider. Resume is batch-level only: it verifies
 completed artifacts and continues unstarted slots. Interrupted investigations
@@ -25,6 +25,17 @@ from incident_lens.incidentbench.schemas import ExperimentProtocol
 
 PROJECT = Path(__file__).resolve().parents[1]
 VARIANTS = ["single", "fixed", "dynamic_no_verifier", "full"]
+# Local supervisor bounds, not service-side concurrency entitlements.
+CONCURRENCY_LIMITS = {"bridge": 4, "api": 8, "subscription": 8}
+
+
+def validate_concurrency(mode, jobs):
+    limit = CONCURRENCY_LIMITS.get(mode)
+    if limit is None or type(jobs) is not int or not 1 <= jobs <= limit:
+        raise ValueError(f"{mode} concurrency must be an integer from 1 to {limit}")
+    return jobs
+
+
 OUTPUT_FILES = ("scope.json", "trace.json", "result.json", "report.md", "verification.json",
                 "measured-usage.json", "observability/status.json")
 
@@ -47,7 +58,7 @@ def rooted(value):
 
 def frozen_inputs(plan_path, readiness=None):
     plan = read(plan_path)
-    if plan["mode"] not in {"bridge", "api"}:
+    if plan["mode"] not in CONCURRENCY_LIMITS:
         raise ValueError("unsupported mode")
     protocol = ExperimentProtocol.model_validate(read(rooted(plan["protocol"])))
     if protocol.formal or protocol.provider_id != "real" or protocol.blindness_level != "development_visible":
@@ -55,6 +66,7 @@ def frozen_inputs(plan_path, readiness=None):
     bridge = protocol.model_id == "trae-subagent-bridge-v1"
     if bridge != (plan["mode"] == "bridge") or "SET_" in protocol.model_id:
         raise ValueError("select the actual API model before preparing; bridge identity must match mode")
+    validate_concurrency(plan["mode"], protocol.jobs)
     dataset = rooted(plan["dataset"])
     index = read(dataset / "public_case_index.json")
     ids = plan["case_ids"]
@@ -69,8 +81,33 @@ def frozen_inputs(plan_path, readiness=None):
     for path in paths:
         safe_path(path)
     hashes = retest_snapshot(PROJECT)
+    extra_inputs = []
+    if plan["mode"] == "subscription":
+        from incident_lens.llm.codex_subscription import REQUIRED_MODEL
+
+        config = read(rooted(plan["subscription_config"]))
+        receipt_path = rooted(plan["feasibility"])
+        receipt = read(receipt_path)
+        if (config.get("model") != REQUIRED_MODEL
+            or protocol.model_id != config["model"]
+            or config.get("reasoning_effort") != "low"
+            or config.get("api_key_fallback") is not False
+            or config.get("formal_experiment_enabled") is not False
+            or config.get("transport") != "official_codex_exec"
+            or config.get("billing_mode") != "chatgpt_codex_subscription"
+            or config.get("investigation_request_timeout_seconds") != protocol.request_timeout):
+            raise ValueError("subscription requires fixed supported model, low reasoning, no fallback and matching timeout")
+        if (receipt.get("status") != "FEASIBLE_FOR_CODEX_SUBSCRIPTION_TRANSPORT"
+            or not receipt.get("probes")
+            or any(p.get("matched") is not True
+                   or p.get("usage", {}).get("model_id") != protocol.model_id
+                   for p in receipt["probes"])):
+            raise ValueError("subscription requires matching successful feasibility receipt")
+        extra_inputs = [rooted(plan["subscription_config"]), receipt_path]
+    else:
+        extra_inputs = [rooted(plan["runtime_config"])]
     for p in [*paths, Path(plan_path).resolve(), rooted(plan["protocol"]),
-              rooted(plan["runtime_config"]), PROJECT / "analysis/wp_d/serve_bridge_response.py"]:
+              *extra_inputs, PROJECT / "analysis/wp_d/serve_bridge_response.py"]:
         hashes[str(p.relative_to(PROJECT))] = digest(p)
     external = None
     if plan["mode"] == "api":
@@ -109,6 +146,11 @@ def frozen_inputs(plan_path, readiness=None):
                 installed[name] = None
     return {"schema_version": 1, "plan": plan, "protocol": protocol.model_dump(mode="json"),
             "hashes": hashes, "external": external, "order": order,
+            "max_concurrency": protocol.jobs,
+            "concurrency": {"max_concurrent_slots": protocol.jobs,
+                            "mode": plan["mode"],
+                            "scope": f"{plan['mode']}_development_batch",
+                            "per_slot_workflow_unchanged": True},
             "python": sys.version, "platform": sys.platform, "installed_dependencies": installed,
             "resume_policy": "verify_completed_continue_unstarted; explicit_new_attempt_for_interrupt"}
 
@@ -180,6 +222,18 @@ def stop_child(process):
         process.send_signal(signal.CTRL_BREAK_EVENT if os.name == "nt" else signal.SIGINT)
         process.wait(timeout=15)
     except (OSError, subprocess.TimeoutExpired):
+        if os.name == "nt":
+            # A subscription worker owns Codex descendants. Stop its tree before
+            # terminating the Python parent, otherwise those calls can outlive it.
+            try:
+                result = subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                        timeout=10, check=False)
+                if result.returncode == 0:
+                    process.wait(timeout=10)
+                    return
+            except (OSError, subprocess.TimeoutExpired):
+                pass
         process.terminate()
         try:
             process.wait(timeout=10)
@@ -193,13 +247,18 @@ def execute(args, manifest):
     state_path = out / "batch-state.json"
     state = read(state_path)
     plan = manifest["plan"]
-    expected_slots = [f"slot-{index + 1:03d}" for index in range(len(manifest["order"]))]
+    concurrency = manifest.get("max_concurrency", 1)
+    validate_concurrency(plan["mode"], concurrency)
+    if "jobs" in manifest.get("protocol", {}) and concurrency != manifest["protocol"]["jobs"]:
+        raise ValueError("frozen concurrency does not match protocol jobs")
+    planned = len(manifest["order"])
+    expected_slots = [f"slot-{index + 1:03d}" for index in range(planned)]
     if list(state["slots"]) != expected_slots[:len(state["slots"])]:
         raise ValueError("batch state must be a prefix of the frozen schedule")
+    # Verify every saved attempt, including those completed out of schedule order.
     for index, key in enumerate(manifest["order"]):
-        slot = f"slot-{index + 1:03d}"
-        attempts = state["slots"].setdefault(slot, [])
-        # Verify every previously committed receipt, even failed ones.
+        slot = expected_slots[index]
+        attempts = state["slots"].get(slot, [])
         for prior in attempts:
             if prior["status"] not in {"running", "completed", "failed", "interrupted"}:
                 raise ValueError("unknown saved attempt status")
@@ -227,22 +286,81 @@ def execute(args, manifest):
                     prior["status"] = "interrupted"
                 event(out, "WORKER_RECONCILED", slot=slot, status=prior["status"])
                 atomic_json(state_path, state)
+    pending = []
+    for index, key in enumerate(manifest["order"]):
+        slot = expected_slots[index]
+        attempts = state["slots"].get(slot, [])
         if attempts:
             latest = attempts[-1]
             if latest["status"] == "completed":
                 continue
             if latest["status"] == "failed":
                 # Finished failures are retained and not retried by resume.
-                if not args.retry_failed:
+                if not getattr(args, "retry_failed", False):
                     continue
-            elif not args.retry_interrupted:
+            elif not getattr(args, "retry_interrupted", False):
                 raise RuntimeError("interrupted slot requires explicit --retry-interrupted; new attempt only")
-        if (out / "STOP_REQUESTED").exists():
-            event(out, "BATCH_STOPPED_BEFORE_SLOT", slot=slot)
-            return 130
+        pending.append({"slot": slot, "key": key})
+    execution = {"started_at_utc": time.time(), "max_concurrency": concurrency,
+                 "resume": bool(getattr(args, "resume", False)),
+                 "planned_slots": planned, "pending_slots": len(pending)}
+    state["max_concurrency"] = concurrency
+    state["execution_started_at_utc"] = state.get("execution_started_at_utc",
+                                                  execution["started_at_utc"])
+    state.setdefault("executions", []).append(execution)
+    atomic_json(state_path, state)
+    batch_started = time.monotonic()
+    limit = manifest["protocol"]["max_wall_seconds"] + 120
+    active = {}
+    paused = False
+    interrupted = False
+    stop_cause = None
+
+    def latest_counts():
+        latest = {slot: attempts[-1] for slot, attempts in state["slots"].items() if attempts}
+        return {
+            "planned": planned,
+            "started_slots": len(latest),
+            "completed_slots": sum(a["status"] == "completed" for a in latest.values()),
+            "failed_slots": sum(a["status"] == "failed" for a in latest.values()),
+            "interrupted_slots": sum(a["status"] == "interrupted" for a in latest.values()),
+            "active_slots": len(active),
+        }
+
+    def write_status(name):
+        now_wall = time.time()
+        entries = []
+        for slot in expected_slots:
+            entry = active.get(slot)
+            if entry is None:
+                continue
+            entries.append({
+                "slot": slot,
+                "attempt": entry["relative"],
+                "worker_pid": entry["process"].pid,
+                "incident": entry["key"]["incident"],
+                "variant": entry["key"]["variant"],
+                "repeat": entry["key"]["repeat"],
+                "started_at_utc": entry["started_at_utc"],
+                "worker_elapsed_seconds": time.monotonic() - entry["started_monotonic"],
+                "heartbeat_utc": now_wall,
+            })
+        atomic_json(out / "supervisor-status.json", {
+            "schema_version": 2, "state": name, "parent_pid": os.getpid(),
+            "max_concurrency": concurrency, "heartbeat_utc": now_wall,
+            "batch_started_at_utc": execution["started_at_utc"],
+            "counts": latest_counts(), "active": entries,
+            "note": "Supervisor heartbeat is not investigation progress; active lists every live worker."})
+
+    def start(item):
+        # Input freeze is re-checked before every dispatch; drift stops all lanes.
+        if frozen_inputs(args.plan, args.readiness) != manifest:
+            raise ValueError("input drift during execution; refusing next slot")
+        slot, key = item["slot"], item["key"]
+        attempts = state["slots"].setdefault(slot, [])
         relative = f"runs/{slot}/attempt-{len(attempts) + 1:03d}"
-        attempt = {"path": relative, "status": "running", "pid": None,
-                   "key": key, "started_at_utc": time.time(),
+        attempt = {"path": relative, "status": "running", "pid": None, "key": key,
+                   "started_at_utc": time.time(),
                    "parent_attempt": attempts[-1]["path"] if attempts else None}
         attempts.append(attempt)
         atomic_json(state_path, state)
@@ -253,73 +371,153 @@ def execute(args, manifest):
         # from executing concurrently, including the parent-startup crash window.
         lease = out / "worker-leases" / slot
         lease.mkdir(parents=True, exist_ok=True)
-        script = "retest_subagent_bridge.py" if plan["mode"] == "bridge" else "retest_live_provider_fix.py"
+        script = {"bridge": "retest_subagent_bridge.py", "api": "retest_live_provider_fix.py",
+                  "subscription": "run_codex_subscription_case.py"}[plan["mode"]]
         command = [sys.executable, "-B", "-u", str(PROJECT / "scripts" / script),
                    "--dataset", str(rooted(plan["dataset"])),
                    "--protocol", str(rooted(plan["protocol"])),
                    "--incident", key["incident"], "--variant", key["variant"],
                    "--out", str(directory), "--lease-directory", str(lease)]
-        command += ["--runtime-config", str(rooted(plan["runtime_config"]))]
+        if plan["mode"] == "subscription":
+            command += ["--config", str(rooted(plan["subscription_config"])),
+                        "--feasibility", str(rooted(plan["feasibility"])),
+                        "--execute-development-case"]
+        else:
+            command += ["--runtime-config", str(rooted(plan["runtime_config"]))]
         if plan["mode"] == "api":
             command += ["--readiness", str(args.readiness.resolve())]
         env = dict(os.environ, PYTHONPATH=str(PROJECT / "src"), PYTHONUTF8="1")
         logs = out / "supervisor" / slot / f"attempt-{len(attempts):03d}"
         logs.mkdir(parents=True, exist_ok=False)
-        interrupted = False
-        process = None
+        stdout = (logs / "stdout.log").open("xb")
+        stderr = (logs / "stderr.log").open("xb")
         try:
-            with (logs / "stdout.log").open("xb") as stdout, (logs / "stderr.log").open("xb") as stderr:
-                process = subprocess.Popen(command, cwd=PROJECT, env=env, stdout=stdout, stderr=stderr,
-                                           creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0)
-                attempt["pid"] = process.pid
-                atomic_json(state_path, state)
-                limit = manifest["protocol"]["max_wall_seconds"] + 120
-                started = time.monotonic()
-                while process.poll() is None:
-                    atomic_json(out / "supervisor-status.json", {
-                        "schema_version": 1, "parent_pid": os.getpid(), "worker_pid": process.pid,
-                        "slot": slot, "attempt": relative, "heartbeat_utc": time.time(),
-                        "worker_elapsed_seconds": time.monotonic() - started,
-                        "state": "worker_running", "note": "Supervisor heartbeat is not investigation progress."})
-                    if (out / "STOP_REQUESTED").exists() or time.monotonic() - started > limit:
-                        interrupted = True
-                        stop_child(process)
-                        break
-                    time.sleep(2)
+            process = subprocess.Popen(command, cwd=PROJECT, env=env, stdout=stdout, stderr=stderr,
+                                       creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0)
         except BaseException as exc:
-            interrupted = True
-            if process is not None:
-                stop_child(process)
-            event(out, "SUPERVISOR_EXCEPTION", slot=slot, error_type=type(exc).__name__)
-            raise
-        finally:
-            attempt["ended_at_utc"] = time.time()
-            attempt["exit_code"] = process.poll() if process is not None else None
-            try:
-                attempt["status"] = assess(directory, key, manifest)
-                attempt["artifacts"] = artifact_hashes(directory)
-            except (OSError, ValueError, KeyError):
-                attempt["status"] = "interrupted" if interrupted else "failed"
-            if attempt["exit_code"] != 0 and attempt["status"] == "completed":
-                attempt["status"] = "failed"
-            atomic_json(logs / "exit.json", {"exit_code": attempt["exit_code"],
-                        "status": attempt["status"], "interrupted": interrupted})
+            stdout.close()
+            stderr.close()
+            attempt.update(status="failed", ended_at_utc=time.time(), exit_code=None, artifacts={})
             atomic_json(state_path, state)
-            event(out, "SLOT_ENDED", slot=slot, status=attempt["status"], path=relative)
-        if interrupted:
-            return 130
-        if frozen_inputs(args.plan, args.readiness) != manifest:
-            raise ValueError("input drift during execution; refusing next slot")
-        if attempt["status"] != "completed" and plan.get("stop_on_failure", True):
-            event(out, "BATCH_PAUSED_AFTER_FAILURE", slot=slot)
-            return 1
-    unfinished = [slot for slot, attempts in state["slots"].items()
-                  if attempts[-1]["status"] != "completed"]
-    event(out, "BATCH_FINISHED", slots=len(manifest["order"]), noncompleted_slots=unfinished)
-    atomic_json(out / "supervisor-status.json", {
-        "state": "batch_finished_with_errors" if unfinished else "batch_finished",
-        "noncompleted_slots": unfinished, "heartbeat_utc": time.time()})
-    return 1 if unfinished else 0
+            event(out, "WORKER_START_FAILED", slot=slot, attempt=relative,
+                  error_type=type(exc).__name__)
+            raise
+        attempt["pid"] = process.pid
+        active[slot] = {"slot": slot, "key": key, "attempt": attempt, "directory": directory,
+                        "relative": relative, "logs": logs, "process": process,
+                        "stdout": stdout, "stderr": stderr,
+                        "started_monotonic": time.monotonic(),
+                        "started_at_utc": attempt["started_at_utc"]}
+        atomic_json(state_path, state)
+
+    def finish(slot, cause=None):
+        entry = active.pop(slot)
+        process, attempt = entry["process"], entry["attempt"]
+        attempt["ended_at_utc"] = time.time()
+        attempt["exit_code"] = process.poll()
+        attempt["interrupted"] = cause is not None
+        if cause:
+            attempt["stop_cause"] = cause
+        try:
+            attempt["status"] = assess(entry["directory"], entry["key"], manifest)
+            attempt["artifacts"] = artifact_hashes(entry["directory"])
+        except (OSError, ValueError, KeyError):
+            attempt["status"] = "interrupted" if cause else "failed"
+        if attempt["exit_code"] != 0 and attempt["status"] == "completed":
+            attempt["status"] = "failed"
+        for stream in (entry["stdout"], entry["stderr"]):
+            try:
+                stream.close()
+            except OSError:
+                pass
+        atomic_json(entry["logs"] / "exit.json", {
+            "exit_code": attempt["exit_code"], "status": attempt["status"],
+            "interrupted": cause is not None, "stop_cause": cause})
+        atomic_json(state_path, state)
+        event(out, "SLOT_ENDED", slot=slot, status=attempt["status"],
+              path=entry["relative"], stop_cause=cause)
+        return attempt["status"]
+
+    try:
+        write_status("batch_running")
+        while True:
+            if (out / "STOP_REQUESTED").exists():
+                interrupted, stop_cause = True, "stop_requested"
+                event(out, "BATCH_STOP_REQUESTED", active=sorted(active))
+                break
+            now = time.monotonic()
+            overdue = [slot for slot, entry in active.items()
+                       if entry["process"].poll() is None
+                       and now - entry["started_monotonic"] > limit]
+            if overdue:
+                interrupted, stop_cause = True, "wall_timeout"
+                event(out, "BATCH_WALL_TIMEOUT", slots=sorted(overdue))
+                break
+            # Reap exits before filling free lanes, so observed failures stop dispatch.
+            finished = [slot for slot, entry in active.items()
+                        if entry["process"].poll() is not None]
+            for slot in finished:
+                status = finish(slot)
+                if status != "completed" and plan.get("stop_on_failure", True):
+                    paused = True
+            while not paused and len(active) < concurrency and pending:
+                if (out / "STOP_REQUESTED").exists():
+                    break
+                # A worker may have exited while freezing inputs for another launch.
+                if any(entry["process"].poll() is not None for entry in active.values()):
+                    break
+                start(pending[0])
+                pending.pop(0)
+                write_status("batch_running")
+            if not active:
+                if pending and not paused:
+                    continue
+                break
+            write_status("batch_paused_after_failure" if paused else "batch_running")
+            if finished:
+                continue
+            time.sleep(2)
+    except BaseException as exc:
+        event(out, "SUPERVISOR_EXCEPTION", error_type=type(exc).__name__, active=sorted(active))
+        for slot in list(active):
+            stop_child(active[slot]["process"])
+        for slot in list(active):
+            finish(slot, cause="supervisor_exception")
+        write_status("batch_stopped")
+        execution["ended_at_utc"] = time.time()
+        execution["outcome"] = "batch_stopped"
+        execution["stop_cause"] = "supervisor_exception"
+        execution["counts"] = latest_counts()
+        atomic_json(state_path, state)
+        raise
+    if interrupted:
+        for slot in list(active):
+            stop_child(active[slot]["process"])
+        for slot in list(active):
+            finish(slot, cause=stop_cause)
+        write_status("batch_stopped")
+        execution["ended_at_utc"] = time.time()
+        execution["outcome"] = "batch_stopped"
+        execution["stop_cause"] = stop_cause
+        execution["elapsed_seconds"] = time.monotonic() - batch_started
+        execution["counts"] = latest_counts()
+        atomic_json(state_path, state)
+        event(out, "BATCH_STOPPED", stop_cause=stop_cause)
+        return 130
+    latest = {slot: attempts[-1] for slot, attempts in state["slots"].items() if attempts}
+    unfinished = [slot for slot in expected_slots
+                  if slot not in latest or latest[slot]["status"] != "completed"]
+    final_state = "batch_paused_after_failure" if paused else (
+        "batch_finished" if not unfinished else "batch_finished_with_errors")
+    write_status(final_state)
+    execution["ended_at_utc"] = time.time()
+    execution["outcome"] = final_state
+    execution["elapsed_seconds"] = time.monotonic() - batch_started
+    execution["counts"] = latest_counts()
+    atomic_json(state_path, state)
+    event(out, "BATCH_PAUSED_AFTER_FAILURE" if paused else "BATCH_FINISHED",
+          slots=planned, noncompleted_slots=unfinished)
+    return 1 if (paused or unfinished) else 0
 
 
 def main():
@@ -340,7 +538,9 @@ def main():
             raise ValueError("prepare cannot resume/retry")
         args.out.mkdir(parents=True, exist_ok=False)
         atomic_json(args.out / "batch-manifest.json", manifest, exclusive=True)
-        atomic_json(args.out / "batch-state.json", {"schema_version": 1, "slots": {}})
+        atomic_json(args.out / "batch-state.json",
+                    {"schema_version": 1, "slots": {},
+                     "max_concurrency": manifest["max_concurrency"]})
         event(args.out, "PREPARED_NOT_EXECUTED", slots=len(manifest["order"]))
         print("Prepared only; zero model/tool calls.")
         return 0

@@ -1,4 +1,4 @@
-"""Explicit future development-case entry point; no automatic matrix execution.
+"""Explicit development-case worker, also dispatched by the subscription batch.
 
 Uses official Codex subscription transport. It is distinct from Platform API and
 file-queue bridge runs. This entry point has not been exercised on an incident.
@@ -16,6 +16,7 @@ from incident_lens.evaluation.retest_provenance import retest_snapshot, snapshot
 from incident_lens.evaluation.run_io import atomic_json
 from incident_lens.evaluation.runner import MeasuredProvider, usage_metrics
 from incident_lens.evaluation.termination import normalize_termination
+from incident_lens.incidentbench.experiment import execution_lock
 from incident_lens.incidentbench.schemas import ExperimentProtocol
 from incident_lens.llm.codex_subscription import CodexSubscriptionProvider
 from incident_lens.orchestration.graph import run_investigation
@@ -107,5 +108,10 @@ if __name__ == "__main__":
     parser.add_argument("--incident", required=True)
     parser.add_argument("--variant", choices=("single", "fixed", "dynamic_no_verifier", "full"), required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--lease-directory", type=Path)
     parser.add_argument("--execute-development-case", action="store_true")
-    asyncio.run(run(parser.parse_args()))
+    args = parser.parse_args()
+    lease = args.lease_directory or args.out.parent / (args.out.name + ".lease")
+    lease.mkdir(parents=True, exist_ok=True)
+    with execution_lock(lease):
+        asyncio.run(run(args))
