@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install ruff==0.17.0
-      - run: python -m ruff check src tests scripts
+      - run: python -m ruff check src tests scripts experiments
 
   python:
     name: Python / ${{ matrix.os }}
@@ -89,3 +89,18 @@ jobs:
           name: mock-browser
           path: results/ci/browser/
           retention-days: 7
+
+  dspy-offline:
+    name: DSPy optimizer contracts / Python 3.12
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r experiments/dspy/requirements.lock
+      - run: python -m pip install -e '.[dev,dspy]'
+      - run: python -m pip check
+      - run: python -c "from dspy import Signature; print(Signature)"
+      - run: python -m pytest -q tests/dspy

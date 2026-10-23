@@ -485,3 +485,7 @@ easiest to review.
 
 Code style follows Ruff (`line-length = 100`, `py311`). New roles should update public
 contracts, read-only tool permissions and corresponding tests. Never commit local secrets
+
+## DSPy offline optimization
+
+[Implementation, reproduction and acceptance](docs/dspy/README.md): optional offline optimization with the existing LangGraph runtime. Engineering validation is complete; real-model quality improvement remains unestablished.
