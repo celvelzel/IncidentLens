@@ -1,0 +1,25 @@
+{
+  "run_id": "run-f2704b5c86ce4df0876fbc8ae1f9df78",
+  "incident_id": "incident_3008",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Investigation exhausted the available evidence sources without observing any causal mechanism. Every candidate hypothesis (backend_resource_saturation, backend_pool_config_regression, postgres_connection_exhaustion, redis_unavailable, payment_external_timeout, and gateway-side variants) remains open with zero cause-specific discriminator records. The observed evidence establishes only a downstream symptom chronology (backend latency baseline, a generic backend deadline error, and a gateway 5xx spike) with no resource, connection-pool, dependency, log, or change evidence identifying a culprit service or failure mode. Empty completed telemetry scopes are unknown rather than contrary evidence, so no hypothesis can be supported or refuted. Selecting any candidate would require inferring root cause from a generic error string alone, which the investigation rules prohibit.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

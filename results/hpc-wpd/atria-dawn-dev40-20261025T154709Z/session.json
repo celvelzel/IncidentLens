@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "atria-dawn-dev40-20261025T154709Z",
+  "source_commit": "1c6b9e69d344356fa89011d55769c3d7fa7c6a96",
+  "model_id": "Atria-Dawn",
+  "jobs": 2,
+  "slots": 40,
+  "hashes": {
+    "results/hpc-wpd/atria-dawn-dev40-20261025T154709Z/inputs/protocol.json": "cd6d2912abc0179551d900076c31255958f7d78715f9bca366e00d63747e0f08",
+    "results/hpc-wpd/atria-dawn-dev40-20261025T154709Z/inputs/runtime.yaml": "8fe65b9e6eee1e2d9da748b74974e67007248d51d4314ed465491aa381644b5d",
+    "results/hpc-wpd/atria-dawn-dev40-20261025T154709Z/inputs/plan.json": "593ffa0c92ef2b0863faad6a44b771eb97e28c3f71eb6c58aa441d43205ed020",
+    "hpc/run_wpd.py": "96df60c1c015c9e5430e28414b83ae0ad026de1a45d462e63d9f959602fbf644"
+  },
+  "comparison": "new model and HPC environment; separate development experiment"
+}

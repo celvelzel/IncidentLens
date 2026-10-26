@@ -1,0 +1,25 @@
+{
+  "run_id": "run-8bb12aa9b0a94302901398d6ae49799b",
+  "incident_id": "incident_3004",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "FINDING_IDENTITY_MISMATCH",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "dispatch",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

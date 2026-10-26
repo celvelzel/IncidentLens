@@ -1,0 +1,80 @@
+{
+  "run_id": "run-ed58b0c305db416a9b84b6a8452c45fe",
+  "incident_id": "incident_3002",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+      "culprit_service": "gateway",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3002-E-002"
+      ],
+      "predicted_observations": [
+        "Gateway logs would show Redis connection or cache lookup errors before or at the observed deadline.",
+        "Gateway metrics would show elevated cache error rates or increased request latency."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "The only gateway evidence is a successful HTTP 200 response, which does not support a gateway-side cache failure; no cache error log is available."
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3002-E-007"
+      ],
+      "predicted_observations": [
+        "application pool_in_use at its pool_limit while database connections remain below the server limit",
+        "connection or pool timeout errors in backend logs",
+        "connection_count approaching or exceeding connection_limit"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "The single connection sample does not cover the full incident window, so peak connection pressure remains unknown."
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+      "culprit_service": "gateway",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [
+        "incident_3002-E-010"
+      ],
+      "against_ids": [
+        "incident_3002-E-010"
+      ],
+      "predicted_observations": [
+        "A rollback of assets-2 would change presentation or routing behavior without improving backend database connection behavior.",
+        "If the gateway deployment were causal, failures would begin after 09:01:06Z and appear as routing or static asset errors rather than database pool exhaustion."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No observed evidence links the gateway asset deployment to backend behavior; a concrete routing or backend-adjacent config delta would be required to keep this candidate viable."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

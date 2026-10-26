@@ -1,0 +1,1265 @@
+{
+  "schema_version": 1,
+  "slots": {
+    "slot-001": [
+      {
+        "path": "runs/slot-001/attempt-001",
+        "status": "completed",
+        "pid": 1872439,
+        "key": {
+          "incident": "incident_3010",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792944203.0055194,
+        "parent_attempt": null,
+        "ended_at_utc": 1792945754.5221362,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "e825116a0c0f6c0f5d70793ed76689147d67541768724b5be3dca6c4a2a237de",
+          "trace.json": "6885ef168fcfb4252813f3099ef3a129ee13f9fd4b75e8db12c2a5d9b4e9ca7a",
+          "result.json": "60b9ef1966eda90042629c05035563c55b24f6cca646291f461aabe60ec8bea2",
+          "report.md": "e11187aed2313e47c11a2fd69c05c102b4ffcf244db26a98d7e51e6ca08ed4d1",
+          "verification.json": "cd0d7e89acd27e7a727e85b17feca2b1465a4e2e9fe77bd823de555019198d1c",
+          "measured-usage.json": "b44e56a8f895d9d2150442ca13f3a15bb5ce633be5df892920493fafc626c2cb",
+          "observability/status.json": "db47cab5520f784fc20dc4eceadc17a2ac262c44da27c31b9d00129e4bccd2cb"
+        }
+      }
+    ],
+    "slot-002": [
+      {
+        "path": "runs/slot-002/attempt-001",
+        "status": "completed",
+        "pid": 1872440,
+        "key": {
+          "incident": "incident_3004",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792944203.9870203,
+        "parent_attempt": null,
+        "ended_at_utc": 1792945387.6845965,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "2c367e702f1d87d2badeda48f37735eb72a0ccfc7db1adc14fa2bf30f5a760b4",
+          "trace.json": "f7d925364c4eb340f615f82857c0d154ee6f9666dcb1da505dde175bf6573320",
+          "result.json": "c29fd15efd4c8a42089307a09f8c24f4d5b716b05fdb5b3e1720c7c1c1284b9c",
+          "report.md": "5f33dd5d20928078989252b449ec889393b2f3708c53f763cfaf6198746e7f16",
+          "verification.json": "2da3b7d12e2eb586a683857b77267cb056ab19f02d2fcb4b51881d40c6de0fc2",
+          "measured-usage.json": "9f345ee962a421f13ca4e6bb7c6380eaf7b75a57c4ce9723bab47f082e38dfa7",
+          "observability/status.json": "caf3f1b9792b02c48fbe0eada73a368377f83f68d0d9c56d4aa4e0016d1e86d0"
+        }
+      }
+    ],
+    "slot-003": [
+      {
+        "path": "runs/slot-003/attempt-001",
+        "status": "completed",
+        "pid": 1873669,
+        "key": {
+          "incident": "incident_3008",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792945389.323264,
+        "parent_attempt": null,
+        "ended_at_utc": 1792945559.0997095,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "1a09d0e422adb321ca046e1f1623170193b360f6973f2f2ab9c424ad6407bce8",
+          "trace.json": "d22b9eea663f7b0cd6b2d5090dfd73f32ab072487ffc68cf2c02a002b33dd702",
+          "result.json": "542d11ee0e84d98a11d82f1c83eb41dbf02c4e8bbe322bc373b3f780bc4c28b9",
+          "report.md": "7f2ccf375bd67acef002bdac847b293bc58c7c5b3a2fca60f0ec18b45d83575b",
+          "verification.json": "ed2f1f6a65d276817c8a66271def3ac98d820339ed29d37726ac838490b6ac81",
+          "measured-usage.json": "7fba01295cd9dcebc8ea00d1a86955f077fac45c42929cddf9b328666b989f50",
+          "observability/status.json": "c4558f0f10ac3e1c1fdc9bd1160e54d12be7f33b4736f8c06c94c7d8635bee7d"
+        }
+      }
+    ],
+    "slot-004": [
+      {
+        "path": "runs/slot-004/attempt-001",
+        "status": "failed",
+        "pid": 1874218,
+        "key": {
+          "incident": "incident_3010",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792945560.8314047,
+        "parent_attempt": null,
+        "ended_at_utc": 1792946073.1997085,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "b27dd392c25c274a0a781758f84f6b31bb18f7c9994b31c234b5ff1c1867baee",
+          "trace.json": "53545865d45fd67b6ce6f15d4a53cb39f7c76dd62c613036c24e597803a78433",
+          "result.json": "82a159fa33cf52dd3ff1b628d1a0e67d621408bd71372d7159593af269ca8f22",
+          "report.md": "09739db0ed9a8792fd8cf6d4bf6f60611468f59b3375de4de78ce41b10a21a22",
+          "verification.json": "9cd6d44cc32bc13e59f23826b9d34704ac083b34e12e3433013a78b305a81285",
+          "measured-usage.json": "a8d3a1a62c263dd6b7c0430417800c5f460f381d96e9470f81546aaf11baba97",
+          "observability/status.json": "0507c7c230a2fda369a43feddd269b49846d8f55900b2c2dfb41cf648a4af147"
+        }
+      }
+    ],
+    "slot-005": [
+      {
+        "path": "runs/slot-005/attempt-001",
+        "status": "completed",
+        "pid": 1874541,
+        "key": {
+          "incident": "incident_3008",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792945756.3790874,
+        "parent_attempt": null,
+        "ended_at_utc": 1792946667.3619268,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "8039a8d546d159b045b4b264fad107045ceff95b301964acd38f5b652e85beab",
+          "trace.json": "8061908b22aae8fbf0dfb080f5970fc5ff65e24d572b40afd3c8bd6035188fec",
+          "result.json": "895d84e3499b26338e12cec960dae19bdb9cc4439544e054387507ecb18a8e77",
+          "report.md": "6caafe34958b91d7b772ec963d97752d7b386ba893f00feb36cb6956d47d29ea",
+          "verification.json": "d6b78a3be0a146e49a92a9fdb47be284042645251bea05f1dbfe4ce3b77c855d",
+          "measured-usage.json": "18597aaa625aad74ad27bb851b614d42edbf71c27de7b1a2d4450dd6ae982b51",
+          "observability/status.json": "c6ba6db92c88a7e7f3a9d61ed311fb5f41f64e0d2ca0a691213b884312e692cf"
+        }
+      }
+    ],
+    "slot-006": [
+      {
+        "path": "runs/slot-006/attempt-001",
+        "status": "failed",
+        "pid": 1178166,
+        "key": {
+          "incident": "incident_3005",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792980975.3296878,
+        "parent_attempt": null,
+        "ended_at_utc": 1792981733.6750708,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "c0b23f2420edc80f3c2ccec9acbca306615384ff80c721833def8a73dac4d192",
+          "trace.json": "8f6cc2584f604092fb65afc75159f336e2bf4deefc1ec93c4d8d20f494ce7420",
+          "result.json": "6adf0566b356d3074200f04097fab985524c4f09d12c83ba30ce0e5b8b1a7a38",
+          "report.md": "a33f69696b8b724346eea412719a6216d501f543e2ff522251bd5f798df06808",
+          "verification.json": "37c1415d762c3d0ccf41f150692e65406ff2d87f352a9a9668fa29c06accd1be",
+          "measured-usage.json": "40ad8b0ee4b0b84967152e3284b33d7862a164ea0482c8ee6f277f5e1ccb57ab",
+          "observability/status.json": "bb37f34c56f8acd07c59335b0d559ff3fde0afcafbc588abe95f9523219e06f7"
+        }
+      }
+    ],
+    "slot-007": [
+      {
+        "path": "runs/slot-007/attempt-001",
+        "status": "failed",
+        "pid": 1178167,
+        "key": {
+          "incident": "incident_3010",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792980976.4320407,
+        "parent_attempt": null,
+        "ended_at_utc": 1792981080.2274384,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "13bc798166a5d5ed0a344493dc717986333d0ce159605080cc07f51df70d9a0b",
+          "trace.json": "36d782bff97c991deb45b5f55be16cf874503a887fe8e4975f3228e90b5637fd",
+          "result.json": "b969f8aae6c231e76e4e8c325be4cc3f27fce01f07b7b03e56ea6d55e940a06f",
+          "report.md": "67278ecb3e88477d190d43af6e667e9060e81736461d32a9aacccf1693ef06e0",
+          "verification.json": "7f7ca323dd1a4fc7b931a601db251b6a378ffe4bf7959f4b145f730be406445b",
+          "measured-usage.json": "00f6888dbd467322189004fe72e66885b0bcd864ec534c15448bbb525cfc52a5",
+          "observability/status.json": "653a735d18efc0ce09e84308e703dcb59f58aaf59406c8fed1b493c52fe2b64c"
+        }
+      }
+    ],
+    "slot-008": [
+      {
+        "path": "runs/slot-008/attempt-001",
+        "status": "completed",
+        "pid": 1181169,
+        "key": {
+          "incident": "incident_3009",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792983302.5228918,
+        "parent_attempt": null,
+        "ended_at_utc": 1792985936.9381053,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "2e70b28c72d34b81609c4344e228002b97e997f98f8ffac2e208e24dc15791af",
+          "trace.json": "80882ecac2f604c7cd676d1f84b79fc4206e2bf2f92a66f54b00224cf981758c",
+          "result.json": "0cd2a1af110c9319c2aa1f8279b4d272479df9881225d5c89925dff757ad7783",
+          "report.md": "8f8a56d4e2f4a0377002b8e262c09f13fad42a50ce7a687f88f99f7a8745f266",
+          "verification.json": "a61a404ff4429de450e208ad25243fada4947e92fa3d0b56697554cab7bdfa97",
+          "measured-usage.json": "9bb2689bc8e9ace807677d2bbce3d6f476f6a72cd62bacf262583d86ad6e354e",
+          "observability/status.json": "483816049f8150fa7de2aef780f3741088ad256a8888df8c93c425f8b5177fec"
+        }
+      }
+    ],
+    "slot-009": [
+      {
+        "path": "runs/slot-009/attempt-001",
+        "status": "failed",
+        "pid": 1181178,
+        "key": {
+          "incident": "incident_3003",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792983303.494094,
+        "parent_attempt": null,
+        "ended_at_utc": 1792984681.4430737,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "700b3b68977f67ac8effc436e7d998dc16fed54aa96fedc767e6c8cf64077cdd",
+          "trace.json": "a0d0904fb1038d51cffd465346f6cca59c1ee948bbbf92c2b4b23775993ab0a1",
+          "result.json": "603899b3687526fcdb34d8e5ab94859f40c9f5a197455af52edc3ab69441e667",
+          "report.md": "6225668de1f0dc80d0cd14753a53404ba36e4142f846feabc0a56a292379fd39",
+          "verification.json": "a18c252cf63753928595809e109af738018d1d7d3576a8c273479e96e68c903c",
+          "measured-usage.json": "8124f45f8bb12f64ba353427c1bff19b8b735716ccabcaa25cb2033e6373fc3f",
+          "observability/status.json": "3dcb7af8cabb427da0a34473e51102b4014721fd7baa7601cb6b8d15f0aa6e46"
+        }
+      }
+    ],
+    "slot-010": [
+      {
+        "path": "runs/slot-010/attempt-001",
+        "status": "failed",
+        "pid": 1184690,
+        "key": {
+          "incident": "incident_3004",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792986376.5344973,
+        "parent_attempt": null,
+        "ended_at_utc": 1792987881.2086885,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "d0252edcb9f8d4f376bd49b74ba1a1b5a18edc7f939d83a7e7d0e2e2f9dcee83",
+          "trace.json": "69e6f3076a1c01e2b8eaf260a97cb881119c811df04e92153b8f9a8988edabb3",
+          "result.json": "549307f03a26232428d954629244dfa1fd291ffd6b65b02a20d73d8124d1dc0f",
+          "report.md": "fbe306d3f053932f9f4a12aacc7f6db3a184544604bbc851b9b844e3e7e02b2f",
+          "verification.json": "8eec6113331cfffaedc3aa3765722e96a08202a9a2117a2ec468b2443ffa8523",
+          "measured-usage.json": "792484e3273327b208d23d1fca37132088fe5ce3a42b6049e32e2459d6e737ce",
+          "observability/status.json": "410b06bdb40539d3c803add7b7cb4359d637fb1f071ef1ac3c49f69fbc587eb3"
+        }
+      }
+    ],
+    "slot-011": [
+      {
+        "path": "runs/slot-011/attempt-001",
+        "status": "completed",
+        "pid": 1184691,
+        "key": {
+          "incident": "incident_3002",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792986377.5305157,
+        "parent_attempt": null,
+        "ended_at_utc": 1792987609.6471436,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "fd48636459d70ad4ccab12a2ee379c93253f546cfe0ec5133fffd3eb5540ba25",
+          "trace.json": "cc9feee28e184618ef712b64ab894c505e08312dfc5fc1ce4ec05a9a28e6b186",
+          "result.json": "0857201cf7d84818a1e735078b3f50c0b331800535e0a3f5f8966aed3f5c8992",
+          "report.md": "d84ddc06bcd9180fae8e26caf790daa6eb6660349a41aded08306448f21c13c5",
+          "verification.json": "dbb7fec93212fae192cf7bf2f1080aaac90d90fe0d6a59993c79e13796c433cd",
+          "measured-usage.json": "e6b817fab498ab1a1371f5c26899a5fe918b21d221947b7368cb231027bed9fa",
+          "observability/status.json": "02e2780144e1bc113b8be135f30bbd4b6a3542f4c1deb6352f9b7d547f7fedd8"
+        }
+      }
+    ],
+    "slot-012": [
+      {
+        "path": "runs/slot-012/attempt-001",
+        "status": "failed",
+        "pid": 1186199,
+        "key": {
+          "incident": "incident_3005",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792987610.7590506,
+        "parent_attempt": null,
+        "ended_at_utc": 1792987705.8534474,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "7fff6952420b08339ce3cc31dd6dc2718603af7383d03b0a4a54547b2691ebaa",
+          "trace.json": "c2365a04ba39f4251eec5f56b8b1ae7c6c34512cf28cc311e086384f650d2323",
+          "result.json": "92971fe9eaea6ec1faf5b08f38d0a91c3e58790c488de9470affd6e2e8516bae",
+          "report.md": "1df7907fa37ae11c7266b2a1c5215204cd06ec9d8afdb928baf68d1f3832a9ce",
+          "verification.json": "002f6f30aeeecfb97b9fd50c979dec6d4fa2f68b8caff4d8587548461d8007eb",
+          "measured-usage.json": "90099d7631d478cf14c8bd235bc5967816fab316c421b9f1b7c3014447652949",
+          "observability/status.json": "23b4e28bcab3688c995fe941bb773121a699e5d66495b716ba61d43617479545"
+        }
+      }
+    ],
+    "slot-013": [
+      {
+        "path": "runs/slot-013/attempt-001",
+        "status": "failed",
+        "pid": 1187125,
+        "key": {
+          "incident": "incident_3001",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792988317.6289032,
+        "parent_attempt": null,
+        "ended_at_utc": 1792988501.7007482,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "b8841994fcc28e4c4cc5a978f3095a07fab2a364acef300794baa4341cc36ffe",
+          "trace.json": "74810e327ddcc1f8576f5517b50ba694d1a18416e17874c06373175ac3b106e4",
+          "result.json": "ba8f716c3bcfb3bc444ddce4478bdf9c541358cd96d244586a5f028e44e4fb6c",
+          "report.md": "6e610ad150a5e2d92a8e4ceaea5793293e26afbb2d3948b369993620e0bd7be5",
+          "verification.json": "6949418e9702e765f3d0d7c513feef3fd75cb9d76880fbdc952aaa8b3ce1b1a9",
+          "measured-usage.json": "9c1216dabd464b7240a10f7f2706ae819c106ac211f027866d04720910e99a8d",
+          "observability/status.json": "949d31e498390348e5136a815fa9fd9dfd91eac9494973eb4be5e5a05b7846be"
+        }
+      }
+    ],
+    "slot-014": [
+      {
+        "path": "runs/slot-014/attempt-001",
+        "status": "failed",
+        "pid": 1187126,
+        "key": {
+          "incident": "incident_3003",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792988321.0863757,
+        "parent_attempt": null,
+        "ended_at_utc": 1792989336.3047369,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "c80fc12aa9ea54e776b4d46f203c1da9f72871a81181160373438153eaf65ef3",
+          "trace.json": "eccb37f027bcc030f388f6916c6e3daec2b3cebb79488ff48ed71a64154b8bd0",
+          "result.json": "f9fb3d0ecd7fc9a6d812ae305fc9499c9079134777bb103a67f058ec8c4c004b",
+          "report.md": "244a4fb623c26fb7a3ea0ef0d175e936c38d336d2f4e3439eb72b1030556cc43",
+          "verification.json": "93c19c5d5dca106e371a28e81932cacaedb7e2df268c53d68a9c874ada6e290b",
+          "measured-usage.json": "45f53364650d75aa229a14d8e89bdf4ec41908e667a2296dfd8202a26fba88b2",
+          "observability/status.json": "ddea9bba5b426ae7b222fdb22a816d80c8105152ccc1cb15ebe92d628b25a539"
+        }
+      }
+    ],
+    "slot-015": [
+      {
+        "path": "runs/slot-015/attempt-001",
+        "status": "failed",
+        "pid": 1189150,
+        "key": {
+          "incident": "incident_3002",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792989611.7535176,
+        "parent_attempt": null,
+        "ended_at_utc": 1792989747.2297366,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "238015cc48f31eaace1fced2354bdbe0156617f3e5c9ce68506c41267a2ee34f",
+          "trace.json": "6cfc0a7d32290d4906b54de6aec7e3b4f0755bf10c8d0beb705408b6229ee4ba",
+          "result.json": "0559fe20a2b5027e660ab89e20eec7ff7ffaba6999c28dbffe5887f62db6e2b2",
+          "report.md": "ca1395db7ff4cf94875f6143f8b529eaad414ec13cc30bbbf32ab40da70c2fb4",
+          "verification.json": "6b7fa270d080f6840b0e85f902dd47cc6c259d0552f5d46dd197a54556b21436",
+          "measured-usage.json": "d6064d46d2d380272edee9593c4615b5c1e14e8216791639ffd39b3e3eb3e214",
+          "observability/status.json": "3972aac5ec0231ac1ec7943bf84c6380d7d55f822c396146bc6abc75cd13d4e1"
+        }
+      }
+    ],
+    "slot-016": [
+      {
+        "path": "runs/slot-016/attempt-001",
+        "status": "failed",
+        "pid": 1189153,
+        "key": {
+          "incident": "incident_3005",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792989612.784444,
+        "parent_attempt": null,
+        "ended_at_utc": 1792990655.0098202,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "fbfe14d6e9aff8116b79d4bfc15b5d5b2476b3cef75e5f0d3ca155f6f204644e",
+          "trace.json": "122791ca36ec23ddbea460d4687a9e6adef506adcc7395700be26a3bf830d0e9",
+          "result.json": "52a9b76245453e9bc0cacd310337692aecb66c0ef07f8497b2d6a6594f1eabb0",
+          "report.md": "14bcf60f09e370dc28377f7f5c8bc6b6b4d7bc8d7bb5714f2cb7b7e1e9fda552",
+          "verification.json": "aaa3e57a2d1464ca31808df72585cac99513ea44970599b8f6ab9939b312de45",
+          "measured-usage.json": "394bc4693c8d14b1e6fd8bba995ae6bf042f70f1bab720d46e5174dbba4e8a57",
+          "observability/status.json": "d05aac3f064a56898f1103de36ced8bfaa7ce3523107deae6852cf206a9412f6"
+        }
+      }
+    ],
+    "slot-017": [
+      {
+        "path": "runs/slot-017/attempt-001",
+        "status": "failed",
+        "pid": 1191071,
+        "key": {
+          "incident": "incident_3007",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792990817.476882,
+        "parent_attempt": null,
+        "ended_at_utc": 1792992013.6582,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "9333aef6cd3bb82239f1448575e3443e37428ae4e704d1144fc1605769a6d661",
+          "trace.json": "0da67a8c1523211dddbc971f9c7b99f027a9ec7e084178e71ccc48e3fa9c4f2b",
+          "result.json": "1e1c9b73a7c8af4f9167003690048f0d97fbea9ec767afeda0414e6f01e3cf5a",
+          "report.md": "14ef3686bd4bb98ce2d7f0007698205b3afd87b7bf2759d445a0b7590ee69221",
+          "verification.json": "6ce5c5f986aa6a77f5f6714e91408c26cedbb4a46e8aa3ec421fd332ea94c1b8",
+          "measured-usage.json": "b22fcf6fc685d4d3099398288422981e8e0f9d377698e12914476842b5e4c27e",
+          "observability/status.json": "20268d05db4d56b011f0d68b5803de2b597e7205ea39b555053f785a89c97159"
+        }
+      }
+    ],
+    "slot-018": [
+      {
+        "path": "runs/slot-018/attempt-001",
+        "status": "completed",
+        "pid": 1191072,
+        "key": {
+          "incident": "incident_3006",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1792990818.4279792,
+        "parent_attempt": null,
+        "ended_at_utc": 1792993722.1826487,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "c4aa5a67ccb67fe6eff1252e3e98d1026d6e13ccf4370c34d24a5bde5ef273de",
+          "trace.json": "62d558e2d1c75aa430dbb9b36403aea36d9b3ef9b6f10774e474725160b271e3",
+          "result.json": "dd24053d188f7dda57a072b6561a4e7725397d4fe2863ceac89b549a0956ffc7",
+          "report.md": "fb65ec8cde0c24d825270eb1311fbfe28ac59d5a1058c9ace3f8a2bf6f1dab84",
+          "verification.json": "d931da4242d93faf689c0e7df2ed9d95481d201e4d94692c69ec9f86093d06c8",
+          "measured-usage.json": "6f5b3ee8c24334270d722e780eacda424b9e7cba97b25d1bad69c9e15f22b16f",
+          "observability/status.json": "46915264dd18c3aa4a7bf90d1dc9e1b5935b1e90a19d9aa32a6b10304568b4c7"
+        }
+      }
+    ],
+    "slot-019": [
+      {
+        "path": "runs/slot-019/attempt-001",
+        "status": "completed",
+        "pid": 1194275,
+        "key": {
+          "incident": "incident_3001",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792993827.8339128,
+        "parent_attempt": null,
+        "ended_at_utc": 1792993974.188406,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "377abfe623324fb1e3c949b59ea9d0e86fc1b9f2b932921c45e9e3a8afa9bb88",
+          "trace.json": "7899a988a76b65dcd7184b9a54008fd4900422e09b37f065f69bccb7dd0261a4",
+          "result.json": "836f34d6f34cef0390020684f98c0066f5865da2aaebe2eaf97e13bf9cd526fe",
+          "report.md": "cfe27fe2bafa5ad9e0f6ff020ed32a7b1dd74128a04bdead9426612eb972d828",
+          "verification.json": "35494d460c08fc50315664468141225376118ac6627114bdd81892197c48d450",
+          "measured-usage.json": "7e028f918c45675788a11dc01e1dba218837ea1b0228828d79706abd39cc057a",
+          "observability/status.json": "7df0cec5fa44a8b8a3e58dab8a5570d546131929b4488048dae3a1af1ddb85dc"
+        }
+      }
+    ],
+    "slot-020": [
+      {
+        "path": "runs/slot-020/attempt-001",
+        "status": "failed",
+        "pid": 1194276,
+        "key": {
+          "incident": "incident_3008",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792993828.8892229,
+        "parent_attempt": null,
+        "ended_at_utc": 1792994332.9367583,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "4cbb5539c1350c4c7c876431ae20e0005aed592e7a6b02a5b2dcaab9ca693bb2",
+          "trace.json": "f2cf434bf0513956213c213f351e4f862919b79471c4fcc3e98aa754174c6b73",
+          "result.json": "c901adf9e4b229d1e0e1859a21541a1a71d3bab60fac9bff2748fd98f825766a",
+          "report.md": "c911d2d961cef79d64d2be2151225a5e18140004250ca791794099bf046a09d3",
+          "verification.json": "871bddb70eb3b80c352f9d0e322064fa4ba59a756d14adb3297cca350e59d7d4",
+          "measured-usage.json": "d033dbc37bee5d601bee652c0b85c2feba8b722b0f9938fa429ffaf2fd8c4a92",
+          "observability/status.json": "ddd6aa995f3ff1d6a5246443889e36d1573356758b3152de52aec53603e30b0d"
+        }
+      }
+    ],
+    "slot-021": [
+      {
+        "path": "runs/slot-021/attempt-001",
+        "status": "completed",
+        "pid": 1194372,
+        "key": {
+          "incident": "incident_3007",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792993975.2260754,
+        "parent_attempt": null,
+        "ended_at_utc": 1792994077.8954403,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "972f5b84ec004b6e646a5fa6b74f531ae38e78a0611e03624db95309bc2e3cc6",
+          "trace.json": "b32338c1caa438786d87f8565b3a552dd5a15009d951738889af0f07661daac2",
+          "result.json": "d2a868d50e40a9a61854abe68c5bc6824a8a4144ac3e5865fcc6527e019760aa",
+          "report.md": "014c386b6ffcab76a6440a7ded60cf7b70f9707bfe6e77c90bc11c5a703fd8fb",
+          "verification.json": "62820ac5ee086ac0501610171d204ba2ecb14132caa7ff1f7ccdf3eb45c232b7",
+          "measured-usage.json": "5f9dcae7e67e0c35f6e117a092f14f9841829ade06a2493219f16eb7dc03ec1a",
+          "observability/status.json": "9e53c130d7c64b76ffda75702bec59246ed2cc8fbf01e801061344d43119da68"
+        }
+      }
+    ],
+    "slot-022": [
+      {
+        "path": "runs/slot-022/attempt-001",
+        "status": "completed",
+        "pid": 1194478,
+        "key": {
+          "incident": "incident_3003",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792994079.255544,
+        "parent_attempt": null,
+        "ended_at_utc": 1792995068.1820667,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "4fb4d511b026b01108108d9c600bbaf7569f844869f17eca0625baba0f970cb8",
+          "trace.json": "3fdcd3563698d8af4d6d260ffa469ddb27f97f805b3182c31742e3439d092ec2",
+          "result.json": "0e20f726861ecf7f4f769e96efd5115971a3d28ec3d5a4d58bdabe5cb6919c7e",
+          "report.md": "05ebf070dc3fc05706799273514dcc1b0c0dea9de506c239ba64e97bb3090132",
+          "verification.json": "9704ddeef62d407e86a095556cb856a014d5abf16094c4555eee3e4ff0ee005b",
+          "measured-usage.json": "04c96f64968bc508f1c1cb9ec3f3a61da326563a695d8f97deaf3ea39e4e9f8a",
+          "observability/status.json": "624228f6bd257f817dd14d03673155d63025c7a11e1601e4e04ba3a36eef749a"
+        }
+      }
+    ],
+    "slot-023": [
+      {
+        "path": "runs/slot-023/attempt-001",
+        "status": "failed",
+        "pid": 1196658,
+        "key": {
+          "incident": "incident_3009",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792995634.7073202,
+        "parent_attempt": null,
+        "ended_at_utc": 1792998228.3845358,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "8f26d239cf3439f87159d8cc9c9cf200411022e46905dddc5434539d8d455d24",
+          "trace.json": "b906adb09bb1d0ce7466511a90ba7e8e28c81dd4ed92da79a07f9ee02343df96",
+          "result.json": "5b2609e0ea31b3f68d5695ee5e6e70df56145ba8633811b3ed4d67c6dfe08c8e",
+          "report.md": "70541f24c4f54d50fffe3fa62c42674678334b9a46158d04dbc63aba10da1d9e",
+          "verification.json": "c88158e702e2e580b9c17514ad78950085e6955e8489aaa490db45509c613ca9",
+          "measured-usage.json": "442b5f01073b187e8b93b75d13fdcb47238a8978e2940b4cb3e008d725347012",
+          "observability/status.json": "60b87e0eafbcfabae4a199dcde1c026a38cf564a86106bae17ec6937f12ae583"
+        }
+      }
+    ],
+    "slot-024": [
+      {
+        "path": "runs/slot-024/attempt-001",
+        "status": "completed",
+        "pid": 1196659,
+        "key": {
+          "incident": "incident_3003",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792995635.8159854,
+        "parent_attempt": null,
+        "ended_at_utc": 1792995812.6484308,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "69236ac21ffa2db909fbce6e05cb3290fa6441e179439a978fe0665181973c61",
+          "trace.json": "3d49f19ae3efee1d0bf1921cf65119f14c5e3433b3d826ba733fef9f89e14c13",
+          "result.json": "2074190d6790d16ab5b2549e09cf21e4b21ccef2b5ea6b6e1d9c356fd9b41894",
+          "report.md": "16c84c1806798de286c28539c357d2c58822f44f2278fac4305c359bb5a1c4ad",
+          "verification.json": "07be8245b73f70c0cf9092c1cc6fcc76e4bef2fcec9d6f921db5937ac813162a",
+          "measured-usage.json": "a7fd179bdbc0759b8eee78f0d334b218e60a3c71ccbaeb9900be618a6a97db85",
+          "observability/status.json": "d307c23fda49493fc193fe21cff04fd6548abef4018918e5e0cf67dc0ce59c02"
+        }
+      }
+    ],
+    "slot-025": [
+      {
+        "path": "runs/slot-025/attempt-001",
+        "status": "completed",
+        "pid": 1196821,
+        "key": {
+          "incident": "incident_3010",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792995813.8823671,
+        "parent_attempt": null,
+        "ended_at_utc": 1792997397.2428427,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "5444a219875fca27198bf6dd7e637d328e480f2337522bb11089f78bbf8f9781",
+          "trace.json": "d30c00db27953f2e609427c8e39a4fb140694f512064e5fee4c7c276adcb5892",
+          "result.json": "5aa5ae81f807d0f7ce52d424c34cb62b4cad11d689192502881353c8dc929d6d",
+          "report.md": "63fbaab1aa9017dbd2d048b36beba08e176fe1d3d00351c3b3470ed66522b401",
+          "verification.json": "a3c8a57256f9f66e2b10fb933eedb1f21bc2e4a420474ebcd22d540ce1a01f1a",
+          "measured-usage.json": "f564bc3ac74c50648ef3c0faab48305effd6d976478aea06be26b3c2ac1b2e67",
+          "observability/status.json": "d6e0423cac8a519250fee8f4d1af55101307f56a778a4ee006dd53a56eea38e3"
+        }
+      }
+    ],
+    "slot-026": [
+      {
+        "path": "runs/slot-026/attempt-001",
+        "status": "failed",
+        "pid": 1198591,
+        "key": {
+          "incident": "incident_3009",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792997408.6301155,
+        "parent_attempt": null,
+        "ended_at_utc": 1792999221.779746,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "930d3ee5ba0a91c777ee1985bdb22aed8d3d3951fa19ac715a83389a5c1939ff",
+          "trace.json": "ced3f4de448cfdbbf107df5d2c15f1d6b475c20e69976eef922eb15df69e78e7",
+          "result.json": "60e700868ea486c5803bcf010f7fd498688b5a5b4d11ecdc6e5b1dd1e23c7319",
+          "report.md": "4f92a1abc1630b8a0fe9f8ce50daa539423e194f1836788de368ef048e711ebf",
+          "verification.json": "899e34c27f692670e27a0d12d43a9f2c8b0b81d9340fd5caf7d1cb18b0e5d9ba",
+          "measured-usage.json": "4c29b84b9b08b4d81bd92fbbc4588b75b88ec0a6af5ef8f544e3625a9ffc623e",
+          "observability/status.json": "c17b98177aac85f75ad843c997c529837d70480c703a5314fcb5dc97ed4cf176"
+        }
+      }
+    ],
+    "slot-027": [
+      {
+        "path": "runs/slot-027/attempt-001",
+        "status": "completed",
+        "pid": 1201628,
+        "key": {
+          "incident": "incident_3004",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1792999540.9222214,
+        "parent_attempt": null,
+        "ended_at_utc": 1792999743.7791483,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "fa33e4798eb02a25882262c1228da8dc6eca219fe3c1e841a81a4be33c5980b5",
+          "trace.json": "05a610ea65bc0ca817113470b67c23381b9682ee5e05804685b1b1d450a01c7c",
+          "result.json": "90eaffdeb05fa260cf5cb5edcb6467e010a5ffb763f718d139b34fcc0c44b842",
+          "report.md": "a9bdeef175c72b62604d30a1bd1446fbb39c949eff1ca65bd81e94b786d3099e",
+          "verification.json": "74b7f28a5477a4949ccc8b09e8eb65aeef5bafe5de6bc16a532f14ab195acc1a",
+          "measured-usage.json": "6ef59d782d0bdaab4fa8165431d9da589e8d1581d931f9e73471e377b78ccccf",
+          "observability/status.json": "fddcc060b660dc3cc1a715fc93233f5ca8054e3e59d0d4a2b289fff43527ab06"
+        }
+      }
+    ],
+    "slot-028": [
+      {
+        "path": "runs/slot-028/attempt-001",
+        "status": "failed",
+        "pid": 1201629,
+        "key": {
+          "incident": "incident_3006",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1792999542.0220306,
+        "parent_attempt": null,
+        "ended_at_utc": 1793000356.6227825,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "6ae0246b2dd7277b945b730912b3b38e402d03d9465004dcc1ffd608599952aa",
+          "trace.json": "56b2c2e74e55eed7874b8bef711200407a852877163d12ea461e7f852205842f",
+          "result.json": "9a4e602f06b3e32920b7d3f4204249b7a70abc85186a3cb22a701539e3594917",
+          "report.md": "407cf571d3ae3c618ae5ac8575f8711f17effb1455f4d29401b438f49aeeb7af",
+          "verification.json": "a685af4040bb25ed9ae0922ca5455f2e9f681c4649e47355c135158a2f02cda8",
+          "measured-usage.json": "5a196c04f83a4ab89f2b0a32f8592cda3aec75cae9565f6f3c8b3fedb899b812",
+          "observability/status.json": "ec660a8fed6ed401c3b21246af02be61132efa3cff4ad8966364756504a1d648"
+        }
+      }
+    ],
+    "slot-029": [
+      {
+        "path": "runs/slot-029/attempt-001",
+        "status": "completed",
+        "pid": 1201975,
+        "key": {
+          "incident": "incident_3007",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1792999744.839345,
+        "parent_attempt": null,
+        "ended_at_utc": 1793002209.4113061,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "766da9dfb20fa9f3253854fd8f2fb018ea87d4ba1adbdfe3951967f98e37ec81",
+          "trace.json": "886ae57d9db0d95bf9df84899b51ec13870a6456a2b236998f02a36a1c2ed110",
+          "result.json": "96166f62507e20ae23fccb113fae5af6825e28c5828a8dbb44f4b45f12e2e5cb",
+          "report.md": "0a3082e962e107cc52892353f3cdf670c6cc766295c09e2d19b150f8eda7da7f",
+          "verification.json": "ddfcae1212184187f1cccbeaa6f0635af95ffec1e542be87062ff2510ac364ab",
+          "measured-usage.json": "58f37303532eb329a68cef183f29b5034ad680e87d54d1ba3feb30a5572bfb1a",
+          "observability/status.json": "2ac98eaf24d59a68d5181a603c19126f8e56e4b583603a1edc56126002406d01"
+        }
+      }
+    ],
+    "slot-030": [
+      {
+        "path": "runs/slot-030/attempt-001",
+        "status": "completed",
+        "pid": 1204903,
+        "key": {
+          "incident": "incident_3002",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1793002455.7371638,
+        "parent_attempt": null,
+        "ended_at_utc": 1793002627.9018822,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "2b710de0729edcbdd8d1783e6378c138aaf3843a9fa3fe57a36d9c3b2419eb32",
+          "trace.json": "0cb33cf978dcf392914ef9a2c482cb45c7fa39c876c778bc105a46a8e03f620e",
+          "result.json": "5a07d17f4163c3975ad8458b357107e4ce756b0c171c506ca3074f04cf2457d4",
+          "report.md": "462602e40ddcd64cfcbc4637ea9fbc3b06d5e9f97441653d0ccb85c79c472b10",
+          "verification.json": "3dbc8240437a53e57a24444ea6d16919beafb07b6bfce154b14a2ab5580ec521",
+          "measured-usage.json": "0ed673b20b3ce1792019d6d5c280b1a6751c0fab686e15b13307416c029d4415",
+          "observability/status.json": "0a1b378365f85f0efb0e3237ed3d8a79312b779a529c5c286773dad43beb5499"
+        }
+      }
+    ],
+    "slot-031": [
+      {
+        "path": "runs/slot-031/attempt-001",
+        "status": "completed",
+        "pid": 1204904,
+        "key": {
+          "incident": "incident_3008",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1793002457.0680218,
+        "parent_attempt": null,
+        "ended_at_utc": 1793003855.155905,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "9daaa24b7721f58b1b764286cfc553ea96d46ffd634f45ed7a16fd1031ef9b8e",
+          "trace.json": "7e372272702b0697717de637784f74f63f415ae551d6d9f9fc70c990aca7da6d",
+          "result.json": "24c8c13e4826bd894776a2b0ce4370185ae69ef3e16ea4d05db0bfc544a47012",
+          "report.md": "0f5392be372b92b3b36003aa91425153ffe8985c849f6561fe7da7605147439c",
+          "verification.json": "9a5722a8bb8671c5ff3de26b5adac3fc059e6993b8a918b1176804928ae1efce",
+          "measured-usage.json": "30279411e8a95779137b25e83369517f168b78fd312c8e3575527d829d5c8617",
+          "observability/status.json": "2f2fd27e33417111408fc6f76912690c89467494cab500d25d9fc794f04eb603"
+        }
+      }
+    ],
+    "slot-032": [
+      {
+        "path": "runs/slot-032/attempt-001",
+        "status": "completed",
+        "pid": 1205008,
+        "key": {
+          "incident": "incident_3007",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1793002629.0778096,
+        "parent_attempt": null,
+        "ended_at_utc": 1793004139.849432,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "c9b73219c23c7860661b11ba881c704ec61ffef481a5ae65f0555dda14fc772a",
+          "trace.json": "d321b352227c53670ae7f590279f4103c99d66ee74ac7535438e65152b4f9107",
+          "result.json": "b0fc35cbf9bbde73ceca9b08fbd9497bde95094dd29cbe1f36f7350b11b9a8bb",
+          "report.md": "0b8c06eb40a431bf982bdbd89ab7d8d7755a4f7a9d46debabc05532a2a5bc007",
+          "verification.json": "51c4eb0d9c9d031a00b65143ec7d416a9e2d83dd80aa24a71711062dd32c7c7e",
+          "measured-usage.json": "1ba1f5c5ca13afbdf1e735f75bb71204112f95e2d7bd9d96c3e1913209950431",
+          "observability/status.json": "75a81501faceab3b94c408a323d4893944a978782c3320190788175fdd4da3e1"
+        }
+      }
+    ],
+    "slot-033": [
+      {
+        "path": "runs/slot-033/attempt-001",
+        "status": "completed",
+        "pid": 1206528,
+        "key": {
+          "incident": "incident_3006",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1793003856.3996472,
+        "parent_attempt": null,
+        "ended_at_utc": 1793005024.116121,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "63064a352ace9187852b8585aae562e64ed3a49356868d347442dc8119630d8f",
+          "trace.json": "cf6e00f31cdb45c8ca5268eb65bcaffa1bf22778f4ed3d1b01d61093ec728158",
+          "result.json": "360a92452362fc4dc7cd1291648436f2c559afee69f0aa38a9333ea4aeec2ed0",
+          "report.md": "1910e39f6ce0d07c955d83577994b9e3a652bc6b518e01615990488adbc9cf89",
+          "verification.json": "5eb3770540dd0a8abbfbbd6486a9ad8652bf542627c23ba1d7d217d7ace13c2e",
+          "measured-usage.json": "b94f10a670ca43ef0bd1ead7bd888e4f615ed0301e829cd0429c72528e7d6856",
+          "observability/status.json": "5a41722e73a86b4c8bd95f546bc76636a7b086a0426d975f03a7698cf896b7b1"
+        }
+      }
+    ],
+    "slot-034": [
+      {
+        "path": "runs/slot-034/attempt-001",
+        "status": "completed",
+        "pid": 1206777,
+        "key": {
+          "incident": "incident_3005",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1793004141.2476804,
+        "parent_attempt": null,
+        "ended_at_utc": 1793007680.2636766,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "099578cf8739ec1f1670695c4e15c1a310f704e5756cb111c1f3ec274da2b38f",
+          "trace.json": "87aa69c2657e80bfa4bca274d1e5f578f191178829e348fc85316bafe1fc2afb",
+          "result.json": "665cd83dd9b76736b4d76cbab2929ae40cd219bb567b417024696a0b39ce64c4",
+          "report.md": "484b9287a83916d7cc475ef3b5b7e7672e96d067deed54a2267cf1e80874c66a",
+          "verification.json": "93f61dae4aae1f3616c2bba79dac0b874efcfe4d81a698d1606f46d7a5affb6e",
+          "measured-usage.json": "ad28bf39e1664b541b45c4e16e2361bab1db237f71d33434de3c2f9a81559579",
+          "observability/status.json": "aa42e16234b1039ba95be31eaf808c97f0de6481bb31ee21b4da5bdfb5cfbf21"
+        }
+      }
+    ],
+    "slot-035": [
+      {
+        "path": "runs/slot-035/attempt-001",
+        "status": "failed",
+        "pid": 1207858,
+        "key": {
+          "incident": "incident_3002",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1793005025.3577967,
+        "parent_attempt": null,
+        "ended_at_utc": 1793006794.160753,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "a943f4120dead6aa0a2b7f068efc92139e41cb8014e39d44961c26c4447c5d28",
+          "trace.json": "220cf6120d7347d372fdd916d3650a42e08a126e7df5d52e5d1b4506375e4e4e",
+          "result.json": "277f21783aaca1dc2b2278e6ca3d5d7a5596915b6a34b1adad387024dbded1ec",
+          "report.md": "2aa585d0cf3bef313bb3491e3131ee42e2fb1ca7808b550d196d60567bcf3c65",
+          "verification.json": "06c9345abd61b99054a916e608214ff82808915faa2f69965c6278b460a56169",
+          "measured-usage.json": "a262d7963d51cc580f98dc56207ff5573ad16e3e1e63613c00d95000ef3bdfd4",
+          "observability/status.json": "6896c6dfe0413042329a3f84dc3f633cfb06336abdb5e441096cc086f14a6df1"
+        }
+      }
+    ],
+    "slot-036": [
+      {
+        "path": "runs/slot-036/attempt-001",
+        "status": "completed",
+        "pid": 1211117,
+        "key": {
+          "incident": "incident_3004",
+          "variant": "single",
+          "repeat": 0
+        },
+        "started_at_utc": 1793007734.754065,
+        "parent_attempt": null,
+        "ended_at_utc": 1793009210.1079273,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "6e716486219ad95153df0c8510e180c5a4829384343888202690ed29cdf713e1",
+          "trace.json": "519a998c987b12cfb10648dd245a875b7b50132703cda07a91f42fc7148f80b0",
+          "result.json": "77eb5db0b2f6d9426ce1d84e4c8664bad75edbdf2bb03c65eb96aa2e5d94760e",
+          "report.md": "06058014ce5fd14ddcd5ade1a07f8a72b2e32fd5b315e112de9cf6d335b09ad4",
+          "verification.json": "e4af03515d63a1c163f8f6ae9ca582311c336c4d6da83a4a6f996e08ac109138",
+          "measured-usage.json": "89cf3b4ac3d5e8b2b01ac5847a0d474a183f92c5dba8112c480d98e3fdf247ec",
+          "observability/status.json": "a9886fcbe2145c18cced1821beb93072f91c0e4897197ae9fcacd04ee323f9a1"
+        }
+      }
+    ],
+    "slot-037": [
+      {
+        "path": "runs/slot-037/attempt-001",
+        "status": "completed",
+        "pid": 1211119,
+        "key": {
+          "incident": "incident_3006",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1793007735.8380296,
+        "parent_attempt": null,
+        "ended_at_utc": 1793007856.4163485,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "5dcec59dbce1026dfd1cd7a88ec870ef5508c9d78e4f55d2154d3f8dfda272cc",
+          "trace.json": "3d7888dd16c47aafe7b74c8c5e39e3e5b66b09d4e9798f5e23e4747bd00b9b69",
+          "result.json": "cc7aefd6d0f7cf449271f8507e2686088a40ab923d5f55cdaf68340f829b6182",
+          "report.md": "dbd3eb85fb21adfa5a03cb155d7d6ef1625ab9f02907a11813203f9fb8fd361b",
+          "verification.json": "406e6254fb1cfaf3107542740ba066a51ef12c7eff94fbe1af53d80ed7ded126",
+          "measured-usage.json": "10483f50c78651b0f47e48a612468e40305e8a1d80b8ace543098a7d826fd4b1",
+          "observability/status.json": "1853a59ebd23f98bf7f6009be71829ba748e16b22b4903ea5a4265e7ae344d03"
+        }
+      }
+    ],
+    "slot-038": [
+      {
+        "path": "runs/slot-038/attempt-001",
+        "status": "completed",
+        "pid": 1211232,
+        "key": {
+          "incident": "incident_3001",
+          "variant": "dynamic_no_verifier",
+          "repeat": 0
+        },
+        "started_at_utc": 1793007857.6881058,
+        "parent_attempt": null,
+        "ended_at_utc": 1793009649.4452183,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "e24ebb2dec42fa7dc3ab85acbc7abde372b50d53fa02ec70c9b6edb434d9f771",
+          "trace.json": "0af2da6c4a3eb25a48c92cb62175f5f7a0aaeaedc760b44ac88ec17dd76c5fce",
+          "result.json": "2866aac421e207419cc93fcbddf80ab29f317426dc03a7912bade9ab0e68b9e8",
+          "report.md": "19dac113d55008204e1f4f620def11acc58d78af352cb429a765fcbd5a270bb1",
+          "verification.json": "ad2758cd01525eae842d1a9acff6b9a0e914eeb3c193ab37022995a1a2044cfe",
+          "measured-usage.json": "0ed2748bd5bf587baf8d47c851c032fa9f71f1c1b4223806163ca7e96c658d7a",
+          "observability/status.json": "3099c5d87b7e257fb03b763fdba6429b6a3be30fd2412d5eaaf3ed72d31a9817"
+        }
+      }
+    ],
+    "slot-039": [
+      {
+        "path": "runs/slot-039/attempt-001",
+        "status": "completed",
+        "pid": 1212808,
+        "key": {
+          "incident": "incident_3001",
+          "variant": "full",
+          "repeat": 0
+        },
+        "started_at_utc": 1793009211.4232476,
+        "parent_attempt": null,
+        "ended_at_utc": 1793010155.1906507,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "2c095ab8c50fba49f5cc9f13ee1ee413550d48a8f64ead0bedc211af98aeecc0",
+          "trace.json": "676b503c34ccb9e4960c0c91d26f66c226c40aa94584d03b7e4a5fa2d71bb4a3",
+          "result.json": "89c8c5beee7c1332c7dee56da2b098a9bb5c8d6b4c2f6c718900b6114f68d429",
+          "report.md": "d6f56f16f709e2c425696d666f17bba52bb9a7a1ea5e44448dc96945ff968574",
+          "verification.json": "a3f51c77dda79b08c8fdec7a55eab11b5b7571230f9eecdca0807570556b3dc2",
+          "measured-usage.json": "495599f3ab1ec218d5fb22eb1ef1342b6a1f94b2faea55b4ffb389d9545142c4",
+          "observability/status.json": "9008bb21e8e1738a8e6b6f698d8f77db46facab34c3636d62f43c733a09f633e"
+        }
+      }
+    ],
+    "slot-040": [
+      {
+        "path": "runs/slot-040/attempt-001",
+        "status": "completed",
+        "pid": 1213135,
+        "key": {
+          "incident": "incident_3009",
+          "variant": "fixed",
+          "repeat": 0
+        },
+        "started_at_utc": 1793009650.7658052,
+        "parent_attempt": null,
+        "ended_at_utc": 1793009861.793653,
+        "exit_code": 0,
+        "interrupted": false,
+        "artifacts": {
+          "scope.json": "11d49b81d2926bead5c1e98f6534fff64210f26831aac51a507ded33288a3fa8",
+          "trace.json": "bcd05a830c6ec66cdf43f76cb4f040ba3d8930a147e1d3ad66105a3099f02602",
+          "result.json": "469c5c05788028000f73f8d866af5f97e93a7f6f0e148f774ef15f816eea3fcf",
+          "report.md": "18507e3aebd6aa7e45826006b6865c5040faa99fb0d053ac704cdf133df9e911",
+          "verification.json": "6fff22250aaeff0bd22a2a5f0755136dada5871243a5f605ada36cd8209f94e7",
+          "measured-usage.json": "1b62e060e8a92a8e847fd71560a401f3904e478bd03278c9fcabfe02570a7e95",
+          "observability/status.json": "1363df4e5145d1b8c9b3340833d995247ab8fc1f976736d28b3f315105011017"
+        }
+      }
+    ]
+  },
+  "max_concurrency": 2,
+  "execution_started_at_utc": 1792944201.3495424,
+  "executions": [
+    {
+      "started_at_utc": 1792944201.3495424,
+      "max_concurrency": 2,
+      "resume": false,
+      "planned_slots": 40,
+      "pending_slots": 40,
+      "ended_at_utc": 1792946667.513572,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 2466.1584158577025,
+      "counts": {
+        "planned": 40,
+        "started_slots": 5,
+        "completed_slots": 4,
+        "failed_slots": 1,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792980974.2570784,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 35,
+      "ended_at_utc": 1792981734.1216292,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 759.8581463620067,
+      "counts": {
+        "planned": 40,
+        "started_slots": 7,
+        "completed_slots": 4,
+        "failed_slots": 3,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792983301.5871854,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 33,
+      "ended_at_utc": 1792985937.0078552,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 2635.415010422468,
+      "counts": {
+        "planned": 40,
+        "started_slots": 9,
+        "completed_slots": 5,
+        "failed_slots": 4,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792986375.5596862,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 31,
+      "ended_at_utc": 1792987881.3653693,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 1505.7996956724674,
+      "counts": {
+        "planned": 40,
+        "started_slots": 12,
+        "completed_slots": 6,
+        "failed_slots": 6,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792988315.598463,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 28,
+      "ended_at_utc": 1792989336.3546293,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 1020.7507356647402,
+      "counts": {
+        "planned": 40,
+        "started_slots": 14,
+        "completed_slots": 6,
+        "failed_slots": 8,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792989610.8215826,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 26,
+      "ended_at_utc": 1792990655.4900305,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 1044.6624290980399,
+      "counts": {
+        "planned": 40,
+        "started_slots": 16,
+        "completed_slots": 6,
+        "failed_slots": 10,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792990813.1557333,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 24,
+      "ended_at_utc": 1792993722.2424135,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 2909.0325900483876,
+      "counts": {
+        "planned": 40,
+        "started_slots": 18,
+        "completed_slots": 7,
+        "failed_slots": 11,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792993826.816648,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 22,
+      "ended_at_utc": 1792995068.240248,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 1241.4178198296577,
+      "counts": {
+        "planned": 40,
+        "started_slots": 22,
+        "completed_slots": 10,
+        "failed_slots": 12,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792995633.7190287,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 18,
+      "ended_at_utc": 1792999221.8478813,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 3588.122665923089,
+      "counts": {
+        "planned": 40,
+        "started_slots": 26,
+        "completed_slots": 12,
+        "failed_slots": 14,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1792999539.8758292,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 14,
+      "ended_at_utc": 1793002209.4930608,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 2669.6085309013724,
+      "counts": {
+        "planned": 40,
+        "started_slots": 29,
+        "completed_slots": 14,
+        "failed_slots": 15,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1793002454.3825643,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 11,
+      "ended_at_utc": 1793007680.328524,
+      "outcome": "batch_paused_after_failure",
+      "elapsed_seconds": 5225.938687754795,
+      "counts": {
+        "planned": 40,
+        "started_slots": 35,
+        "completed_slots": 19,
+        "failed_slots": 16,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    },
+    {
+      "started_at_utc": 1793007733.7038686,
+      "max_concurrency": 2,
+      "resume": true,
+      "planned_slots": 40,
+      "pending_slots": 5,
+      "ended_at_utc": 1793010155.2566533,
+      "outcome": "batch_finished_with_errors",
+      "elapsed_seconds": 2421.5461205393076,
+      "counts": {
+        "planned": 40,
+        "started_slots": 40,
+        "completed_slots": 24,
+        "failed_slots": 16,
+        "interrupted_slots": 0,
+        "active_slots": 0
+      }
+    }
+  ]
+}

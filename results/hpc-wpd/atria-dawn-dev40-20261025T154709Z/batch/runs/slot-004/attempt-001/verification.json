@@ -1,0 +1,169 @@
+{
+  "scoring_version": "2",
+  "termination_source": "v2",
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "dispatch",
+    "stop_completed": true,
+    "runtime_failure": true
+  },
+  "termination_reason": "UNRECOVERABLE_ERROR",
+  "termination_outcome": "FAILED",
+  "protocol_valid": true,
+  "protocol_errors": [],
+  "runtime_failure": true,
+  "diagnosis_failure": true,
+  "stop_completion": true,
+  "recovered_model_failure_count": 0,
+  "unrecovered_model_failure_count": 0,
+  "llm_requests": 14,
+  "actual_http_requests": 14,
+  "logical_structured_calls": 14,
+  "task_retries": 0,
+  "transport_retries": 0,
+  "repair_requests": 0,
+  "prompt_tokens": 91968,
+  "measured_prompt_tokens": 91968,
+  "completion_tokens": 9152,
+  "measured_completion_tokens": 9152,
+  "total_tokens": 101120,
+  "measured_total_tokens": 101120,
+  "tokens_complete": true,
+  "requests_with_token_usage": 14,
+  "requests_without_token_usage": 0,
+  "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete",
+  "token_usage_by_role": {
+    "single": {
+      "prompt_tokens": 91968,
+      "measured_prompt_tokens": 91968,
+      "completion_tokens": 9152,
+      "measured_completion_tokens": 9152,
+      "total_tokens": 101120,
+      "measured_total_tokens": 101120,
+      "tokens_complete": true,
+      "requests_with_token_usage": 14,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    }
+  },
+  "verifier": {
+    "review_kind": "self_review",
+    "completed_reviews": 2,
+    "sufficient_reviews": 0,
+    "blocking_reviews": 2,
+    "requested_checks": 7,
+    "optional_checks": 4,
+    "repeated_requested_checks": 0,
+    "reviews_discharge_gate": 0,
+    "reviews_add_blockers": 0,
+    "reused_reviews": 0,
+    "skipped_reviews": 0,
+    "citation_validation_events": 0,
+    "requested_check_followups": [
+      {
+        "review_event_id": "event-37",
+        "requested_task_id": "check_postgres_connection_state",
+        "completed_task_ids": [
+          "check_postgres_connection_state"
+        ],
+        "new_evidence_ids": [
+          "incident_3010-E-005"
+        ]
+      }
+    ],
+    "followups_with_new_evidence": 1,
+    "llm_requests": 2,
+    "http_requests": 2,
+    "usage": {
+      "prompt_tokens": 24183,
+      "measured_prompt_tokens": 24183,
+      "completion_tokens": 3192,
+      "measured_completion_tokens": 3192,
+      "total_tokens": 27375,
+      "measured_total_tokens": 27375,
+      "tokens_complete": true,
+      "requests_with_token_usage": 2,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "effects": [
+      {
+        "review_event_id": "event-37",
+        "target_hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+        "board_sha256": "3ba468f5137e127f1d5e9f594551f32af84ff75ce75bb72e112c53411238fab9",
+        "gate_errors_before": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "No supported discriminating investigation",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_errors_after": [
+          "Need at least two supporting records from different sources",
+          "No observed cause-specific discriminator for the candidate",
+          "No supported discriminating investigation",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [
+          "The only two observations are a normal backend latency sample (40 ms at 09:00:00Z) and a gateway 5xx spike (0.35 at 09:00:58Z); the backend sample predates the error and shows no degradation, so it neither supports nor localizes a backend cause.",
+          "query_changes with omitted time and service filters returned no records for the entire supplied pack, so no config or deployment mechanism has been observed for any candidate; this is a causal evidence gap, not evidence that no change occurred."
+        ],
+        "blocking_check_count": 3,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      },
+      {
+        "review_event_id": "event-78",
+        "target_hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+        "board_sha256": "4325e662c87c76d58efa999eb1835ac8c6c75e93176ad13cdb123c90a926f7ce",
+        "gate_errors_before": [
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_errors_after": [
+          "No observed cause-specific discriminator for the candidate",
+          "Candidate has unresolved questions or contradictory evidence",
+          "Competing hypothesis remains unresolved"
+        ],
+        "gate_discharged": false,
+        "added_blockers": false,
+        "repeated_requested_checks": 0,
+        "contradictions": [
+          "Backend request latency is observed at 40 ms at 09:00:00Z (incident_3010-E-001), while the gateway 5xx spike occurs later at 09:00:58Z (incident_3010-E-007); the only backend symptom is a generic request-processing deadline at 09:00:58Z (incident_3010-E-006) with no named resource, pool, or dependency failure, so backend_resource_saturation has no observed mechanism.",
+          "The unfiltered query_changes scan returned no records for the supplied pack, so no config or deployment mechanism has been observed for any candidate; this is a causal evidence gap, not evidence that no change occurred.",
+          "Postgres connections were healthy at 30/100 at 09:00:46Z (incident_3010-E-005), which weighs against postgres_connection_exhaustion but does not exclude lock contention or slow queries; active-session, lock-wait, and slow-query telemetry for the window returned empty and therefore remain unknown."
+        ],
+        "blocking_check_count": 4,
+        "optional_check_count": 2,
+        "benefit_assessment": "pending_manual_or_paired_evaluation"
+      }
+    ],
+    "benefit_assessment": "pending_manual_or_paired_evaluation",
+    "caveat": "Gate changes and new evidence do not establish corrected diagnosis or causal benefit."
+  },
+  "provider_failure_details": [],
+  "cost_usd": null,
+  "failed_calls": 1,
+  "provider_failures": 0,
+  "cancelled_model_calls": 0,
+  "failed_model_calls": 0,
+  "failed_tool_calls": 1,
+  "source_drift": [],
+  "source_unchanged": true,
+  "elapsed_ms": 497646.6002743691,
+  "observability": {
+    "degraded": false,
+    "io_failures": 0,
+    "events_complete": true,
+    "active_io_errors": {}
+  },
+  "query_gap_count": 5,
+  "fatal_dispatch": true
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "run-59502bb4efd646eea9d87308b28f5cd0",
+  "incident_id": "incident_3006",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Insufficient causal evidence: a single isolated transaction_lock wait plus one postgres latency sample is the only cause-specific support for postgres_lock_contention. Every completed discriminating scope after 09:00:46Z (lock waits, active sessions, slow queries, health metrics, postgres logs, backend timeout-filtered logs, and the unfiltered changes window) returned no further records, so recurrence/persistence, the blocker session's state, and any backend-local or redis/payment mechanism remain unobserved. The evidence supports postgres lock contention as leading but cannot refute the open alternatives, so no hypothesis meets the causal-support bar for finalization.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

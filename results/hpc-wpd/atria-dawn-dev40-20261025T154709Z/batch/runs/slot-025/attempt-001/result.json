@@ -1,0 +1,49 @@
+{
+  "run_id": "run-57e8e7dca980411a87ef2e7fd585e86b",
+  "incident_id": "incident_3010",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_3010-E-004",
+        "incident_3010-E-007",
+        "incident_3010-T-backend",
+        "incident_3010-T-gateway"
+      ],
+      "against_ids": [
+        "incident_3010-E-003",
+        "incident_3010-E-005"
+      ],
+      "predicted_observations": [
+        "Connection count near the 100 limit with rising connection wait time around 09:00:46Z",
+        "Active-session counts rising in step with the latency increase while the slow query continues."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Was the backend application pool saturated even while Postgres remained below its server cap?"
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Evidence is insufficient to finalize any hypothesis. postgres_slow_query is the leading explanation with a two-source upstream observation (incident_3010-E-003 and incident_3010-E-004) and correct chronology to the backend deadline and gateway 5xx spike, but onset/recurrence of select-shape-7 before 09:00:46Z, the mechanism producing the CPU-bound 7700 ms run, and a dependency-specific propagation record were never observed. All enabled postgres sources (slow queries both windows, connections, active sessions, lock waits, health metrics), both log services, backend metrics, backend changes, and redis metrics completed with no further records, so no discriminating check remains in the supplied pack. Competing causes remain unrefuted because empty telemetry is unknown rather than observed contrary evidence; they cannot be rejected on the available data.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

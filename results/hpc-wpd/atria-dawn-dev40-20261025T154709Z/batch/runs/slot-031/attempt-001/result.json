@@ -1,0 +1,25 @@
+{
+  "run_id": "run-bd19acc7ec2547249fb4ff61fe9330d5",
+  "incident_id": "incident_3008",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Causal mechanism unidentified after exhaustive available-scope investigation: no cause-specific evidence exists for any hypothesis, all discriminating telemetry scopes returned empty (unknown, not healthy), and no remaining untried check could separate the open backend-local, gateway-local, postgres, redis, or payment candidates.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

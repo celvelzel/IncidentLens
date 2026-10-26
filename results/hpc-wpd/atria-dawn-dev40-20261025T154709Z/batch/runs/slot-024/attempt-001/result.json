@@ -1,0 +1,45 @@
+{
+  "run_id": "run-97ee5d27187144a1a56c4874e502edb0",
+  "incident_id": "incident_3003",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+      "culprit_service": "gateway",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3003-E-003"
+      ],
+      "predicted_observations": [
+        "Gateway or Redis logs showing connection failures, timeouts, or cache errors before the backend deadline breach.",
+        "Gateway responses returning errors or degraded latency while Redis is unreachable.",
+        "No backend processing-deadline errors if the failure were purely gateway-side."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No Redis connection, timeout, or cache-miss evidence exists, and the only gateway observation is a successful HTTP 200 response.",
+        "The backend deadline breach points to backend-side processing rather than a gateway-visible cache failure."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "run_id": "run-4723ffc94bbb41dc9e02d4b3393329b0",
+  "incident_id": "incident_3004",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+      "culprit_service": "gateway",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3004-E-002"
+      ],
+      "predicted_observations": [
+        "Backend deadline messages should be absent or secondary to gateway cache failures.",
+        "Gateway logs should show Redis connection errors and elevated gateway-side failures."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "Do gateway logs show Redis connection failures after the observed HTTP 200 response?"
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3004-E-007"
+      ],
+      "predicted_observations": [
+        "Connection count approaching or exceeding the 100-connection limit with corresponding client connection errors or timeouts."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No observed application pool or client-side timeout evidence is available, so an upstream backend pool configuration fault remains untested."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

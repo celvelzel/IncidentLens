@@ -1,0 +1,25 @@
+{
+  "run_id": "run-de400ffb723a4e3db2a120eed723a67d",
+  "incident_id": "incident_3003",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "No causal evidence is available to select a culprit: all completed scopes (metrics for backend/gateway/postgres/redis/payment, all postgres database telemetry, changes, and full-window backend/gateway logs) contain no cause-specific observation, leaving all nine hypotheses open and mutually indistinguishable. Repeated zero-record results are unknown, not observed health, so no candidate can be supported or refuted.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

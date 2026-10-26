@@ -1,0 +1,25 @@
+{
+  "run_id": "run-2a21815836804eaf932a45b21d2aeb24",
+  "incident_id": "incident_3009",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Causal evidence is insufficient to select any hypothesis: the only observed mechanism is one isolated postgres transaction_lock wait (incident_3009-E-003) with no recurrence, no blocker-side state, no slow-query corroboration, no component-specific backend log linkage, and no backend resource/pool telemetry; all independent corroboration scopes were queried successfully and returned empty, and the competing backend, redis, payment, and postgres connection/slow-query explanations remain unrefuted rather than contradicted.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

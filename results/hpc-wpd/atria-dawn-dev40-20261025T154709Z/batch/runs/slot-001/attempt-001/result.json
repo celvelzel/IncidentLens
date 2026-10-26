@@ -1,0 +1,49 @@
+{
+  "run_id": "run-0b824c5eb6d5453a8ae004795c8abebc",
+  "incident_id": "incident_3010",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_3010-E-004",
+        "incident_3010-T-backend",
+        "incident_3010-T-postgres"
+      ],
+      "against_ids": [
+        "incident_3010-E-005"
+      ],
+      "predicted_observations": [
+        "Application pool_in_use at/near pool_limit with queued requests.",
+        "Connection count at/near 100 with few idle connections and increasing max_wait around 09:00:46Z.",
+        "New connection errors or refusals in postgres logs",
+        "connection_count near connection_limit during the incident window"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "30/100 observed connections is far below cap and no connection rejection or max_wait increase is observed, so this mechanism lacks observed support."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Causal support is incomplete for every candidate. postgres_slow_query has the only cause-specific discriminator (incident_3010-E-003 with incident_3010-E-004), but the propagation link from the 09:00:46Z spike to the backend deadline error (incident_3010-E-006) and gateway http_5xx (incident_3010-E-007) is unobserved: backend/gateway logs contain no dependency-named error, postgres logs are empty for the window, backend latency is sampled only at 09:00:00Z before the spike, and redis/payment metric scopes are empty. Competing redis/payment/backend causes are untested rather than refuted, and no untried discriminating evidence source remains in the completed scopes.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

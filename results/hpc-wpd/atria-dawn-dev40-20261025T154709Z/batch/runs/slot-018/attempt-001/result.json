@@ -1,0 +1,47 @@
+{
+  "run_id": "run-289ddd3a13b9429ba416a848bb284228",
+  "incident_id": "incident_3006",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_slow_query",
+      "support_ids": [
+        "incident_3006-E-004",
+        "incident_3006-T-backend",
+        "incident_3006-T-gateway"
+      ],
+      "against_ids": [
+        "incident_3006-E-003"
+      ],
+      "predicted_observations": [
+        "A slow-query record for select-shape-7 with execution time near 7700 ms independent of any wait event.",
+        "Postgres slow-query or latency telemetry increases before the backend deadline log."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "The observed lock-wait record attributes the 7700 ms to a transaction_lock wait rather than independent execution time, and no slow-query record was returned."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Cannot finalize with an unresolved competitor gate and an incomplete observed causal chain. postgres_lock_contention is the supported leading explanation (incident_3006-E-003 and incident_3006-E-004 match at 7700 ms, with topology incident_3006-T-backend/incident_3006-T-gateway and downstream incidents incident_3006-E-006/incident_3006-E-007), but the backend latency series contains only a pre-event 40 ms point at 09:00:00Z (incident_3006-E-001) with no post-09:00:46Z sample, and the backend deadline log names no dependency, so propagation to the backend is not observed and redis/payment/backend-internal alternatives remain unobserved rather than refuted. Every available scope has been queried completely: backend metrics/logs, postgres connections/active sessions/lock waits/slow queries, redis/payment metrics, topology, and full-pack changes; the only remaining checks are narrower filters inside already exhausted unfiltered scopes and cannot yield new records.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

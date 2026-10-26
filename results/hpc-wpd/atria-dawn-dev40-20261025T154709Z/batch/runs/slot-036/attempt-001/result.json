@@ -1,0 +1,61 @@
+{
+  "run_id": "run-d5bb16be1032406480e4fbf93ff1530f",
+  "incident_id": "incident_3004",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_3004-T-backend"
+      ],
+      "against_ids": [
+        "incident_3004-E-007"
+      ],
+      "predicted_observations": [
+        "Postgres connections at or near the 100-connection limit during the backend pool_waiters spike.",
+        "Backend errors indicating refused or failed database connections rather than queueing behind a client-side pool cap."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-9afcba485a9308dfd49121b2635ea8fa9026c45f543be4d2ede00163d0a67df5",
+      "culprit_service": "backend",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_3004-E-008"
+      ],
+      "against_ids": [
+        "incident_3004-E-004",
+        "incident_3004-E-007"
+      ],
+      "predicted_observations": [
+        "Backend logs showing database connection acquisition failures or timeouts against Postgres.",
+        "Database connections or active sessions approaching configured maximums after 09:00:27Z."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Competing hypothesis remains unresolved",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

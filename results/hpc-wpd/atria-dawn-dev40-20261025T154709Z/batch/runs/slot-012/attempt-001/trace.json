@@ -1,0 +1,1769 @@
+{
+  "schema_version": "v1",
+  "provider": "real",
+  "variant": "fixed",
+  "cache_mode": "off",
+  "elapsed_ms": 81374.81291033328,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_3005",
+    "run_id": "run-0b2e155782f2462ab224b504536b3026",
+    "public_summary": {
+      "incident_id": "incident_3005",
+      "title": "Service observation window",
+      "started_at": "2026-10-11T09:00:00Z",
+      "observed_symptoms": [
+        "Request latency and error rate observation window"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 8,
+      "max_tool_calls": 40,
+      "max_llm_calls": 64,
+      "max_wall_seconds": 7200.0,
+      "max_tokens": null
+    },
+    "round_index": 1,
+    "findings": [],
+    "evidence_index": {},
+    "hypotheses": [],
+    "tasks": [
+      {
+        "task_id": "fixed-logs",
+        "role": "logs",
+        "question": "Investigate logs evidence for the incident",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-metrics",
+        "role": "metrics",
+        "question": "Investigate metrics evidence for the incident",
+        "allowed_tools": [
+          "query_metrics",
+          "get_dependencies"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-database",
+        "role": "database",
+        "question": "Investigate database evidence for the incident",
+        "allowed_tools": [
+          "get_db_connections",
+          "get_db_active_sessions",
+          "get_db_lock_waits",
+          "get_db_slow_queries",
+          "get_db_health_metrics"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-changes",
+        "role": "changes",
+        "question": "Investigate changes evidence for the incident",
+        "allowed_tools": [
+          "query_changes",
+          "get_config_diff"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      }
+    ],
+    "reviews": [],
+    "decisions": [
+      {
+        "action": "INVESTIGATE",
+        "reason": "Fixed schedule",
+        "assignments": [
+          {
+            "task_id": "fixed-logs",
+            "role": "logs",
+            "question": "Investigate logs evidence for the incident",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-metrics",
+            "role": "metrics",
+            "question": "Investigate metrics evidence for the incident",
+            "allowed_tools": [
+              "query_metrics",
+              "get_dependencies"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-database",
+            "role": "database",
+            "question": "Investigate database evidence for the incident",
+            "allowed_tools": [
+              "get_db_connections",
+              "get_db_active_sessions",
+              "get_db_lock_waits",
+              "get_db_slow_queries",
+              "get_db_health_metrics"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-changes",
+            "role": "changes",
+            "question": "Investigate changes evidence for the incident",
+            "allowed_tools": [
+              "query_changes",
+              "get_config_diff"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          }
+        ],
+        "hypothesis_updates": [],
+        "selected_hypothesis_id": null,
+        "stop_reason": null
+      }
+    ],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.103479Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Fixed schedule",
+        "details": {
+          "decision": {
+            "action": "INVESTIGATE",
+            "reason": "Fixed schedule",
+            "assignments": [
+              {
+                "task_id": "fixed-logs",
+                "role": "logs",
+                "question": "Investigate logs evidence for the incident",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-metrics",
+                "role": "metrics",
+                "question": "Investigate metrics evidence for the incident",
+                "allowed_tools": [
+                  "query_metrics",
+                  "get_dependencies"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-database",
+                "role": "database",
+                "question": "Investigate database evidence for the incident",
+                "allowed_tools": [
+                  "get_db_connections",
+                  "get_db_active_sessions",
+                  "get_db_lock_waits",
+                  "get_db_slow_queries",
+                  "get_db_health_metrics"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-changes",
+                "role": "changes",
+                "question": "Investigate changes evidence for the incident",
+                "allowed_tools": [
+                  "query_changes",
+                  "get_config_diff"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              }
+            ],
+            "hypothesis_updates": [],
+            "selected_hypothesis_id": null,
+            "stop_reason": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.116636Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.124660Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.131746Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-5",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.139006Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-6",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.148100Z",
+        "event_type": "TASK_RUNNING",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-7",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.163126Z",
+        "event_type": "TASK_RUNNING",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-8",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.180972Z",
+        "event_type": "TASK_RUNNING",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-9",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.197105Z",
+        "event_type": "TASK_RUNNING",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-10",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.660706Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-11",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.905420Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-4af16fe440344eb7acbad424c300ec1d-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-12",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.939174Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-57d46c5849814413aa2a969ce6692d26-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-13",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:06:59.971186Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "changes",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-3907347ccde1405a850a0d8a760e1227-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-14",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:06.361673Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "changes",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-15",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:06.378805Z",
+        "event_type": "LLM_CALL",
+        "role": "changes",
+        "task_id": null,
+        "call_id": "model-call-4",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1244,
+          "completion_tokens": 17,
+          "total_tokens": 1261,
+          "measured_total_tokens": 1261,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-3907347ccde1405a850a0d8a760e1227-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1244,
+              "completion_tokens": 17,
+              "total_tokens": 1261,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1244,
+          "measured_completion_tokens": 17,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 6421.561354771256,
+          "stage": "diagnosis",
+          "call_id": "model-call-4",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-16",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:06.392546Z",
+        "event_type": "TOOL_CALL",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_changes",
+          "args": {},
+          "result": {
+            "call_id": "call-300c14da914946c096a94bd45257889a",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 6.9406963884830475,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-changes"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-17",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:06.398950Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": "call-300c14da914946c096a94bd45257889a",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "call_id": "call-300c14da914946c096a94bd45257889a",
+          "tool_name": "query_changes",
+          "args": {},
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-18",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:06.405810Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-19",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.011908Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-20",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.026163Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-1",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1049,
+          "completion_tokens": 127,
+          "total_tokens": 1176,
+          "measured_total_tokens": 1176,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1049,
+              "completion_tokens": 127,
+              "total_tokens": 1176,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1049,
+          "measured_completion_tokens": 127,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 13791.831174865365,
+          "stage": "diagnosis",
+          "call_id": "model-call-1",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-21",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.040775Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "end_ts": "2026-10-11T09:00:00Z",
+            "limit": 50,
+            "service": "gateway",
+            "start_ts": "2026-10-11T00:00:00Z"
+          },
+          "result": {
+            "call_id": "call-aa6081a5c76348eba702b2edcf43e89a",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3005-E-002",
+                "incident_id": "incident_3005",
+                "source_type": "logs",
+                "service": "gateway",
+                "observed_at": "2026-10-11T09:00:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "Request completed with HTTP 200",
+                "metadata": {}
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 7.691081613302231,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-22",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.052503Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "end_ts": "2026-10-11T09:00:00Z",
+            "limit": 50,
+            "service": "backend",
+            "start_ts": "2026-10-11T00:00:00Z"
+          },
+          "result": {
+            "call_id": "call-209fecb85acf450fb579e559010bb8a3",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 5.117814987897873,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-23",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.058849Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": "call-209fecb85acf450fb579e559010bb8a3",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "call_id": "call-209fecb85acf450fb579e559010bb8a3",
+          "tool_name": "query_logs",
+          "args": {
+            "end_ts": "2026-10-11T09:00:00Z",
+            "limit": 50,
+            "service": "backend",
+            "start_ts": "2026-10-11T00:00:00Z"
+          },
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-24",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:13.102712Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-439d59a617194a69ab0da359c0ebd992-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-25",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:15.962796Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-26",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:15.979081Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-3",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1882,
+          "completion_tokens": 120,
+          "total_tokens": 2002,
+          "measured_total_tokens": 2002,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-57d46c5849814413aa2a969ce6692d26-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1882,
+              "completion_tokens": 120,
+              "total_tokens": 2002,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1882,
+          "measured_completion_tokens": 120,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 16055.551888421178,
+          "stage": "diagnosis",
+          "call_id": "model-call-3",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-27",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:15.992728Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_connections",
+          "args": {
+            "end_ts": "2026-10-11T10:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-11T09:00:00Z"
+          },
+          "result": {
+            "call_id": "call-8898ee7b67a9461dbea45387d0e0bb7a",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3005-E-004",
+                "incident_id": "incident_3005",
+                "source_type": "database",
+                "service": "postgres",
+                "observed_at": "2026-10-11T09:00:27Z",
+                "source_path": "public/database.jsonl",
+                "excerpt": "Connection admission rejected at server cap",
+                "metadata": {
+                  "category": "connections",
+                  "connection_count": 155,
+                  "connection_limit": 100
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 7.1833934634923935,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-28",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:16.005521Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "end_ts": "2026-10-11T10:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-11T09:00:00Z"
+          },
+          "result": {
+            "call_id": "call-04580edad578451bbce39a9b68061e45",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 5.623487755656242,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-29",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:16.011222Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": "call-04580edad578451bbce39a9b68061e45",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "call_id": "call-04580edad578451bbce39a9b68061e45",
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "end_ts": "2026-10-11T10:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-11T09:00:00Z"
+          },
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-30",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:16.050412Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-b67106270b674447b6ae07bc7226b239-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-31",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:20.930849Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-32",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:20.952949Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": "model-call-2",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1150,
+          "completion_tokens": 89,
+          "total_tokens": 1239,
+          "measured_total_tokens": 1239,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-4af16fe440344eb7acbad424c300ec1d-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1150,
+              "completion_tokens": 89,
+              "total_tokens": 1239,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1150,
+          "measured_completion_tokens": 89,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 21056.66001699865,
+          "stage": "diagnosis",
+          "call_id": "model-call-2",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-33",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:20.961703Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_dependencies",
+          "args": {
+            "service": null,
+            "tool_name": "get_dependencies"
+          },
+          "result": {
+            "call_id": "call-249550a7188e42c0ac309eace56afe17",
+            "ok": false,
+            "records": [],
+            "error_code": "BAD_ARGS",
+            "elapsed_ms": 0.22814050316810608,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-metrics"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-34",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:20.970931Z",
+        "event_type": "TASK_FAILED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "FAILED",
+          "error_code": "Tool failed: BAD_ARGS"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-35",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:41.006178Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-36",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:41.019047Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-5",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1958,
+          "completion_tokens": 440,
+          "total_tokens": 2398,
+          "measured_total_tokens": 2398,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-439d59a617194a69ab0da359c0ebd992-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1958,
+              "completion_tokens": 440,
+              "total_tokens": 2398,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1958,
+          "measured_completion_tokens": 440,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 27933.02839808166,
+          "stage": "diagnosis",
+          "call_id": "model-call-5",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-37",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:07:41.024863Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-38",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:19.632713Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-39",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:19.921219Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-6",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 2137,
+          "completion_tokens": 1149,
+          "total_tokens": 3286,
+          "measured_total_tokens": 3286,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-b67106270b674447b6ae07bc7226b239-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 2137,
+              "completion_tokens": 1149,
+              "total_tokens": 3286,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 2137,
+          "measured_completion_tokens": 1149,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 63856.407303363085,
+          "stage": "diagnosis",
+          "call_id": "model-call-6",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-40",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:19.950856Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-41",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:19.980563Z",
+        "event_type": "RUNTIME_ERROR",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Tool failed: BAD_ARGS",
+        "details": {
+          "stage": "dispatch",
+          "error_code": "",
+          "transport_error": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-42",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:20.019233Z",
+        "event_type": "WORKFLOW_STOP_REQUESTED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_3005",
+          "run_id": "run-0b2e155782f2462ab224b504536b3026",
+          "stop_reason": "UNRECOVERABLE_ERROR",
+          "message_type": "WORKFLOW_STOP_REQUESTED",
+          "protocol_version": "2",
+          "required_roles": [],
+          "stage": "dispatch"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-43",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:20.052380Z",
+        "event_type": "RUNTIME_FAILURE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-44",
+        "run_id": "run-0b2e155782f2462ab224b504536b3026",
+        "incident_id": "incident_3005",
+        "timestamp": "2026-10-26T04:08:20.333726Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-0b2e155782f2462ab224b504536b3026",
+            "incident_id": "incident_3005",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "Tool failed: BAD_ARGS",
+            "diagnosis_status": null,
+            "remediation_status": "NOT_STARTED",
+            "workflow_status": "FAILED",
+            "remediation_plan": null,
+            "termination": {
+              "protocol_version": "2",
+              "reason": "UNRECOVERABLE_ERROR",
+              "outcome": "FAILED",
+              "failure_stage": "dispatch",
+              "stop_completed": true,
+              "runtime_failure": true
+            }
+          },
+          "variant": "fixed",
+          "tokens_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-0b2e155782f2462ab224b504536b3026",
+      "incident_id": "incident_3005",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "Tool failed: BAD_ARGS",
+      "diagnosis_status": null,
+      "remediation_status": "NOT_STARTED",
+      "workflow_status": "FAILED",
+      "remediation_plan": null,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    "stop_reason": "Tool failed: BAD_ARGS",
+    "open_questions": [],
+    "requested_checks": [],
+    "completed_task_ids": [],
+    "tool_calls_used": 5,
+    "llm_calls_used": 6,
+    "tokens_used": 11362,
+    "incident_alert": null,
+    "task_records": [
+      {
+        "task_id": "fixed-logs",
+        "attempt_id": "attempt-1",
+        "role": "logs",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-metrics",
+        "attempt_id": "attempt-2",
+        "role": "metrics",
+        "attempt": 1,
+        "status": "FAILED",
+        "error_code": "Tool failed: BAD_ARGS"
+      },
+      {
+        "task_id": "fixed-database",
+        "attempt_id": "attempt-3",
+        "role": "database",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-changes",
+        "attempt_id": "attempt-4",
+        "role": "changes",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      }
+    ],
+    "workflow_status": "FAILED",
+    "termination": {
+      "protocol_version": "2",
+      "reason": "UNRECOVERABLE_ERROR",
+      "outcome": "FAILED",
+      "failure_stage": "dispatch",
+      "stop_completed": true,
+      "runtime_failure": true
+    }
+  },
+  "model_id": "Atria-Dawn",
+  "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl"
+}

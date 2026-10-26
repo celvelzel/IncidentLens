@@ -1,0 +1,43 @@
+{
+  "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+  "incident_id": "incident_3006",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3006-E-005"
+      ],
+      "predicted_observations": [
+        "application pool_in_use at its pool_limit while database connections remain available",
+        "connection_count rising toward or above connection_limit"
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "The single connection observation does not cover the full incident window, so a later spike cannot be excluded."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

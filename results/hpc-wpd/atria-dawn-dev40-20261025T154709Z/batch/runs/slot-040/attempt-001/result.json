@@ -1,0 +1,44 @@
+{
+  "run_id": "run-5e10b59ceaca45ae891c0add70a664ad",
+  "incident_id": "incident_3009",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3009-E-005"
+      ],
+      "predicted_observations": [
+        "Backend would show increasing database wait or connection-acquisition latency.",
+        "Connection count near the 100 limit with waiting or rejected acquisitions during the incident window.",
+        "Postgres active connections would approach or reach max_connections."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No observed application pool or database timeout evidence is available, so exhaustion at another layer cannot be excluded."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

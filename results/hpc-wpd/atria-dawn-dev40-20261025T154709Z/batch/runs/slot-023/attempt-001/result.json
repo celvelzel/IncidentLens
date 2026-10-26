@@ -1,0 +1,26 @@
+{
+  "run_id": "run-67bebb958ed84a9d81fd66e08617b82b",
+  "incident_id": "incident_3009",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Candidate has unresolved questions or contradictory evidence",
+    "Competing hypothesis remains unresolved"
+  ],
+  "stop_reason": "Cannot finalize with sufficient causal confidence: postgres_lock_contention is the leading explanation with the only observed cause-specific discriminator (E-003), but its mechanism remains unconfirmed because blocker session-2's state/query/transaction start and the wait-clear timestamp are unavailable (get_db_active_sessions and post-window get_db_lock_waits returned no rows), and every competing hypothesis lacks any observed cause-specific discriminator (their telemetry sources returned no records, which is unknown rather than refutation). All available discriminating scopes have been queried successfully and exhausted within budget, so no further check can resolve the remaining material questions.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "BUDGET_EXHAUSTED",
+    "outcome": "FAILED",
+    "failure_stage": "runtime",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

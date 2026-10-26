@@ -1,0 +1,91 @@
+{
+  "run_id": "run-17687fbc00f345428325069b59ada915",
+  "incident_id": "incident_3001",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_3001-E-003",
+      "incident_3001-E-004",
+      "incident_3001-E-005",
+      "incident_3001-E-007",
+      "incident_3001-E-008"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "A backend config change reducing db_pool_max precedes queue buildup.",
+      "pool_waiters rises to approximately concurrency minus db_pool_max after the change.",
+      "Request deadline warnings first appear only after the config deployment.",
+      "Postgres connections remain well below max_connections during the waiter spike."
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-11T09:00:27+00:00 [incident_3001-E-003] backend: Runtime settings deployment applied",
+    "2026-10-11T09:00:27+00:00 [incident_3001-E-004] backend: db_pool_max 20 -> 2; concurrency=155",
+    "2026-10-11T09:00:27+00:00 [incident_3001-E-005] backend: pool_waiters=153 requests",
+    "2026-10-11T09:00:27+00:00 [incident_3001-E-007] postgres: Server connections below limit",
+    "2026-10-11T09:00:36+00:00 [incident_3001-E-008] backend: Request processing exceeded deadline"
+  ],
+  "supporting_evidence_ids": [
+    "incident_3001-E-003",
+    "incident_3001-E-004",
+    "incident_3001-E-005",
+    "incident_3001-E-007",
+    "incident_3001-E-008"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3001-E-005",
+        "incident_3001-E-007"
+      ],
+      "predicted_observations": [
+        "Postgres active+idle connections approach or exceed max_connections.",
+        "Postgres logs show too many clients or connection limit errors."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_3001-E-001",
+        "incident_3001-E-005"
+      ],
+      "against_ids": [
+        "incident_3001-E-003",
+        "incident_3001-E-004"
+      ],
+      "predicted_observations": [
+        "Backend CPU or memory spikes to saturation before or concurrent with the latency rise.",
+        "Deadline warnings begin before the 09:00:27Z deployment."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Causal support and chronology are established from two independent source types (changes/config and backend metrics) plus corroborating log chronology and postgres connection state; competing hypotheses are contradicted or lack any observed cause discriminator, and the most recent review verdict is sufficient with no remaining blocking checks.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

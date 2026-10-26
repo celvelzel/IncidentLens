@@ -1,0 +1,25 @@
+{
+  "run_id": "run-eb777178923e483aa13817b7426f6c5a",
+  "incident_id": "incident_3009",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Causal evidence is insufficient to finalize any hypothesis. The only observed mechanism is a single isolated 7.7s Postgres transaction_lock wait (incident_3009-E-003) with no recurrence across all completed lock-wait scopes, no active-session record of the blocker, and no backend metric point at or after 09:00:46Z to corroborate datastore-induced queuing; competing backend-local mechanisms remain unobserved rather than refuted. All available discriminating scopes have been queried and returned no further records, so no concrete evidence-based check remains within budget.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "BUDGET_EXHAUSTED",
+    "outcome": "FAILED",
+    "failure_stage": "runtime",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

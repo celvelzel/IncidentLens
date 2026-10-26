@@ -1,0 +1,209 @@
+{
+  "run_id": "run-c0af0f1df71f44d5aec97b40581eba3d",
+  "incident_id": "incident_3002",
+  "status": "RESOLVED",
+  "root_cause": {
+    "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+    "culprit_service": "backend",
+    "failure_mode": "backend_pool_config_regression",
+    "support_ids": [
+      "incident_3002-E-001",
+      "incident_3002-E-003",
+      "incident_3002-E-004",
+      "incident_3002-E-005",
+      "incident_3002-E-007",
+      "incident_3002-E-008",
+      "incident_3002-T-backend"
+    ],
+    "against_ids": [],
+    "predicted_observations": [
+      "Backend metrics after 09:00:27Z show db connection checkout/wait latency rising while pool size is capped at 2.",
+      "Backend request latency and errors increase under concurrency near 155, consistent with pool starvation rather than an external dependency timeout.",
+      "Postgres connections remain well below the 100-connection limit (observed 30) while backend pool_waiters spikes, because the bottleneck is the backend's reduced pool cap.",
+      "Backend logs contain pool acquisition timeout or connection wait errors after 09:00:27Z rather than postgres too_many_clients, redis connection failure, or payment timeout signatures."
+    ],
+    "status": "SUPPORTED",
+    "open_questions": []
+  },
+  "causal_chain": [
+    "2026-10-11T09:00:00+00:00 [incident_3002-E-001] backend: request_latency_ms=40 ms",
+    "2026-10-11T09:00:00+00:00 [incident_3002-T-backend] backend: backend depends on: postgres, redis, payment",
+    "2026-10-11T09:00:27+00:00 [incident_3002-E-003] backend: Runtime settings deployment applied",
+    "2026-10-11T09:00:27+00:00 [incident_3002-E-004] backend: db_pool_max 20 -> 2; concurrency=155",
+    "2026-10-11T09:00:27+00:00 [incident_3002-E-005] backend: pool_waiters=153 requests",
+    "2026-10-11T09:00:27+00:00 [incident_3002-E-007] postgres: Server connections below limit",
+    "2026-10-11T09:00:36+00:00 [incident_3002-E-008] backend: Request processing exceeded deadline"
+  ],
+  "supporting_evidence_ids": [
+    "incident_3002-E-001",
+    "incident_3002-E-003",
+    "incident_3002-E-004",
+    "incident_3002-E-005",
+    "incident_3002-E-007",
+    "incident_3002-E-008",
+    "incident_3002-T-backend"
+  ],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-9afcba485a9308dfd49121b2635ea8fa9026c45f543be4d2ede00163d0a67df5",
+      "culprit_service": "backend",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3002-E-004",
+        "incident_3002-E-007"
+      ],
+      "predicted_observations": [
+        "Backend errors contain connection acquisition timeouts or pool exhaustion messages rather than Postgres-level too_many_clients errors.",
+        "Postgres connection metrics do not approach the server limit because the backend can hold at most 2 connections per pool instance."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+      "culprit_service": "gateway",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [
+        "incident_3002-E-010"
+      ],
+      "against_ids": [
+        "incident_3002-E-010"
+      ],
+      "predicted_observations": [
+        "Gateway errors, if present, are downstream consequences of backend latency rather than caused by the asset deployment.",
+        "Gateway route/upstream settings remain identical before and after assets-2, so gateway latency symptoms should trace to backend behavior."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_3002-E-006",
+        "incident_3002-T-backend"
+      ],
+      "against_ids": [
+        "incident_3002-E-007"
+      ],
+      "predicted_observations": [
+        "Postgres connections_active saturates at a configured maximum before 09:00:27Z.",
+        "Backend errors or timeouts attributable to postgres connection acquisition increase around the same time.",
+        "If the bottleneck is the backend pool cap, postgres connection counts stay low and no postgres connection refusals appear."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_slow_query",
+      "support_ids": [
+        "incident_3002-E-005",
+        "incident_3002-T-backend"
+      ],
+      "against_ids": [
+        "incident_3002-E-004"
+      ],
+      "predicted_observations": [
+        "Postgres slow-query duration or count rises before backend latency degradation.",
+        "Backend pool_waiters growth follows database query duration growth.",
+        "If no slow queries precede the spike, the pool_waiters growth is better explained by the reduced backend pool cap."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-b645caa41a50357eeef8b5b0ddf65d66b43af94981a3be3ade6e10acfdcb3147",
+      "culprit_service": "redis",
+      "failure_mode": "redis_unavailable",
+      "support_ids": [
+        "incident_3002-T-backend",
+        "incident_3002-E-005"
+      ],
+      "against_ids": [
+        "incident_3002-E-004"
+      ],
+      "predicted_observations": [
+        "Redis error rate or unavailability increases near 09:00:00Z.",
+        "Backend pool_waiters rises after redis errors begin.",
+        "Redis latency elevated while postgres connection usage stays normal."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-08846516798c9ee4cb79fb1d1babf88c17c611c83e83c3e9ba21b1c768a0f030",
+      "culprit_service": "payment",
+      "failure_mode": "payment_external_timeout",
+      "support_ids": [
+        "incident_3002-T-backend",
+        "incident_3002-E-005"
+      ],
+      "against_ids": [
+        "incident_3002-E-004"
+      ],
+      "predicted_observations": [
+        "Payment latency or timeout rate increases before 09:00:27Z.",
+        "Backend error rate includes payment timeout signatures.",
+        "Backend pool_waiters rises while postgres and redis remain healthy."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+      "culprit_service": "backend",
+      "failure_mode": "backend_resource_saturation",
+      "support_ids": [
+        "incident_3002-E-001",
+        "incident_3002-E-005",
+        "incident_3002-E-008"
+      ],
+      "against_ids": [
+        "incident_3002-E-004"
+      ],
+      "predicted_observations": [
+        "Backend logs would show saturation indicators such as event-loop lag, thread pool exhaustion, CPU throttling, or queue depth messages rather than pool acquisition wording.",
+        "Saturation signatures would appear across unrelated request types, not only db-dependent paths."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    },
+    {
+      "hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_lock_contention",
+      "support_ids": [
+        "incident_3002-E-005",
+        "incident_3002-T-backend"
+      ],
+      "against_ids": [
+        "incident_3002-E-004"
+      ],
+      "predicted_observations": [
+        "Postgres lock wait count or wait duration increases near 09:00:27Z.",
+        "Backend requests pile up waiting on database sessions rather than on a shrunken local pool.",
+        "If no lock waits precede the spike, the pool_waiters growth is better explained by the reduced backend pool cap."
+      ],
+      "status": "REJECTED",
+      "open_questions": []
+    }
+  ],
+  "unresolved": [],
+  "stop_reason": "Finalized backend_pool_config_regression on backend: runtime-1 reduced db_pool_max from 20 to 2 at 09:00:27Z, followed by pool_waiters=153 at concurrency 155 and latency degradation, with postgres capacity observed healthy at 30/100 and no observed dependency-side or resource-saturation discriminator.",
+  "diagnosis_status": "RESOLVED",
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "DIAGNOSIS_READY",
+    "outcome": "SUCCESS",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

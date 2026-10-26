@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "calls": [
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 1244,
+        "completion_tokens": 17,
+        "total_tokens": 1261,
+        "measured_total_tokens": 1261,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-3907347ccde1405a850a0d8a760e1227-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-3907347ccde1405a850a0d8a760e1227",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 1244,
+            "completion_tokens": 17,
+            "total_tokens": 1261,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 1244,
+        "measured_completion_tokens": 17,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 6421.561354771256
+      },
+      "role": "changes",
+      "failed": false
+    },
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 1049,
+        "completion_tokens": 127,
+        "total_tokens": 1176,
+        "measured_total_tokens": 1176,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-bf53e9da57b04dd2b084d3d4efb28b82",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 1049,
+            "completion_tokens": 127,
+            "total_tokens": 1176,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 1049,
+        "measured_completion_tokens": 127,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 13791.831174865365
+      },
+      "role": "logs",
+      "failed": false
+    },
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 1882,
+        "completion_tokens": 120,
+        "total_tokens": 2002,
+        "measured_total_tokens": 2002,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-57d46c5849814413aa2a969ce6692d26-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-57d46c5849814413aa2a969ce6692d26",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 1882,
+            "completion_tokens": 120,
+            "total_tokens": 2002,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 1882,
+        "measured_completion_tokens": 120,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 16055.551888421178
+      },
+      "role": "database",
+      "failed": false
+    },
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 1150,
+        "completion_tokens": 89,
+        "total_tokens": 1239,
+        "measured_total_tokens": 1239,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-4af16fe440344eb7acbad424c300ec1d-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-4af16fe440344eb7acbad424c300ec1d",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 1150,
+            "completion_tokens": 89,
+            "total_tokens": 1239,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 1150,
+        "measured_completion_tokens": 89,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 21056.66001699865
+      },
+      "role": "metrics",
+      "failed": false
+    },
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 1958,
+        "completion_tokens": 440,
+        "total_tokens": 2398,
+        "measured_total_tokens": 2398,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-439d59a617194a69ab0da359c0ebd992-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-439d59a617194a69ab0da359c0ebd992",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 1958,
+            "completion_tokens": 440,
+            "total_tokens": 2398,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 1958,
+        "measured_completion_tokens": 440,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 27933.02839808166
+      },
+      "role": "logs",
+      "failed": false
+    },
+    {
+      "usage": {
+        "source": "model",
+        "model_id": "Atria-Dawn",
+        "llm_calls": 1,
+        "actual_http_requests": 1,
+        "logical_structured_calls": 1,
+        "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+        "transport_retries": 0,
+        "repair_requests": 0,
+        "prompt_tokens": 2137,
+        "completion_tokens": 1149,
+        "total_tokens": 3286,
+        "measured_total_tokens": 3286,
+        "tokens_complete": true,
+        "provider_recovery_enabled": true,
+        "provider_attempts": [
+          {
+            "event_type": "PROVIDER_ATTEMPT",
+            "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+            "http_attempt_index": 1,
+            "http_attempt_id": "logical-b67106270b674447b6ae07bc7226b239-1",
+            "repair_index": 0
+          },
+          {
+            "event_type": "PROVIDER_CALL_COMPLETED",
+            "logical_call_id": "logical-b67106270b674447b6ae07bc7226b239",
+            "http_attempt_index": 1,
+            "usage_complete": true
+          }
+        ],
+        "request_usage": [
+          {
+            "http_attempt_index": 1,
+            "prompt_tokens": 2137,
+            "completion_tokens": 1149,
+            "total_tokens": 3286,
+            "total_tokens_basis": "provider_total"
+          }
+        ],
+        "measured_prompt_tokens": 2137,
+        "measured_completion_tokens": 1149,
+        "requests_with_token_usage": 1,
+        "requests_without_token_usage": 0,
+        "elapsed_ms": 63856.407303363085
+      },
+      "role": "database",
+      "failed": false
+    }
+  ],
+  "token_usage_by_role": {
+    "changes": {
+      "prompt_tokens": 1244,
+      "measured_prompt_tokens": 1244,
+      "completion_tokens": 17,
+      "measured_completion_tokens": 17,
+      "total_tokens": 1261,
+      "measured_total_tokens": 1261,
+      "tokens_complete": true,
+      "requests_with_token_usage": 1,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "database": {
+      "prompt_tokens": 4019,
+      "measured_prompt_tokens": 4019,
+      "completion_tokens": 1269,
+      "measured_completion_tokens": 1269,
+      "total_tokens": 5288,
+      "measured_total_tokens": 5288,
+      "tokens_complete": true,
+      "requests_with_token_usage": 2,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "logs": {
+      "prompt_tokens": 3007,
+      "measured_prompt_tokens": 3007,
+      "completion_tokens": 567,
+      "measured_completion_tokens": 567,
+      "total_tokens": 3574,
+      "measured_total_tokens": 3574,
+      "tokens_complete": true,
+      "requests_with_token_usage": 2,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    },
+    "metrics": {
+      "prompt_tokens": 1150,
+      "measured_prompt_tokens": 1150,
+      "completion_tokens": 89,
+      "measured_completion_tokens": 89,
+      "total_tokens": 1239,
+      "measured_total_tokens": 1239,
+      "tokens_complete": true,
+      "requests_with_token_usage": 1,
+      "requests_without_token_usage": 0,
+      "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+    }
+  },
+  "token_usage_basis": "provider_reported; measured_* are lower bounds when incomplete"
+}

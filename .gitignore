@@ -12,6 +12,8 @@ dist/
 results/*
 !results/.gitkeep
 !results/acceptance/
+!results/hpc-wpd/
+results/hpc-wpd/**/observability/
 results/**/environment/
 results/**/wheels/
 results/**/*.sqlite*

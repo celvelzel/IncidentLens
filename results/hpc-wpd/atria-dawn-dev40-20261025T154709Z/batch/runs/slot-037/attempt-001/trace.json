@@ -1,0 +1,2881 @@
+{
+  "schema_version": "v1",
+  "provider": "real",
+  "variant": "fixed",
+  "cache_mode": "off",
+  "elapsed_ms": 110125.39361231029,
+  "state": {
+    "workspace_id": "incident-lens",
+    "incident_id": "incident_3006",
+    "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+    "public_summary": {
+      "incident_id": "incident_3006",
+      "title": "Service observation window",
+      "started_at": "2026-10-12T09:00:00Z",
+      "observed_symptoms": [
+        "Request latency and error rate observation window"
+      ],
+      "services": [
+        "gateway",
+        "backend",
+        "postgres",
+        "redis",
+        "payment"
+      ]
+    },
+    "budgets": {
+      "max_rounds": 8,
+      "max_tool_calls": 40,
+      "max_llm_calls": 64,
+      "max_wall_seconds": 7200.0,
+      "max_tokens": null
+    },
+    "round_index": 1,
+    "findings": [
+      {
+        "finding_id": "finding-3f831c621d7be99f99552dc34d95acefcf3221ddd4ceef9e06d5129e9bf93e27",
+        "task_id": "fixed-logs",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "role": "logs",
+        "claim": "Gateway logged a successful HTTP 200 response at 09:00:00Z, while the backend logged a request-processing deadline exceedance 58 seconds later at 09:00:58Z; the two observations are not yet causally linked.",
+        "evidence_ids": [
+          "incident_3006-E-002",
+          "incident_3006-E-006"
+        ],
+        "relation": "neutral",
+        "confidence_qualifier": "unknown",
+        "followup_question": "What is the full backend error chronology and are there gateway errors after 09:00:58Z?"
+      },
+      {
+        "finding_id": "finding-725dcbcadf1f7a6eb4bc032b1f5a7a5ce76cc7d7383f61609414928bfdcf51a9",
+        "task_id": "fixed-metrics",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "role": "metrics",
+        "claim": "Metrics show a gateway-side 5xx error rate of 0.35 at 09:00:58Z while the backend's request_latency_ms was only 40 ms at 09:00:00Z; the two records do not identify which service is the causal origin.",
+        "evidence_ids": [
+          "incident_3006-E-007",
+          "incident_3006-E-001"
+        ],
+        "relation": "neutral",
+        "confidence_qualifier": "supported",
+        "followup_question": "Do gateway 5xx errors correlate with elevated latency or errors in an upstream dependency rather than the backend's normal latency?"
+      },
+      {
+        "finding_id": "finding-f834eb443c3a4e0748f3028badad1e964ee7ce5a6e8208c54b02119c8727d6cb",
+        "task_id": "fixed-database",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "role": "database",
+        "claim": "Postgres connection count was 30 against a connection limit of 100, so database connection capacity was not exhausted at the observed time. Data gaps (not evidence of health): [{\"call_id\": \"call-5cfc371891f14bbf80559332a89096fd\", \"tool_name\": \"get_db_health_metrics\", \"args\": {\"end_ts\": \"2026-10-12T11:00:00Z\", \"service\": \"postgres\", \"start_ts\": \"2026-10-12T09:00:00Z\"}, \"outcome\": \"NO_DATA\"}]",
+        "evidence_ids": [
+          "incident_3006-E-005"
+        ],
+        "relation": "refutes",
+        "confidence_qualifier": "supported",
+        "followup_question": "Do active sessions, lock waits, slow queries, or health metrics show a different postgres failure mode during the incident window?"
+      },
+      {
+        "finding_id": "gap-9ca92dd121bba79f450dc8130ab22acc4a22a112f78144932ad5420274a5618c",
+        "task_id": "fixed-changes",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "role": "changes",
+        "claim": "No evidence for this query; this is not proof of healthy behavior. [{\"call_id\": \"call-f58cfa5d344e4f67b12f36c19b9002cf\", \"tool_name\": \"query_changes\", \"args\": {}, \"outcome\": \"NO_DATA\"}]",
+        "evidence_ids": [],
+        "relation": "neutral",
+        "confidence_qualifier": "unknown",
+        "followup_question": "Choose an available service, window or evidence source."
+      }
+    ],
+    "evidence_index": {
+      "incident_3006-E-002": {
+        "evidence_id": "incident_3006-E-002",
+        "incident_id": "incident_3006",
+        "source_type": "logs",
+        "service": "gateway",
+        "observed_at": "2026-10-12T09:00:00Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "Request completed with HTTP 200",
+        "metadata": {}
+      },
+      "incident_3006-E-006": {
+        "evidence_id": "incident_3006-E-006",
+        "incident_id": "incident_3006",
+        "source_type": "logs",
+        "service": "backend",
+        "observed_at": "2026-10-12T09:00:58Z",
+        "source_path": "public/logs.jsonl",
+        "excerpt": "Request processing exceeded deadline",
+        "metadata": {}
+      },
+      "incident_3006-E-007": {
+        "evidence_id": "incident_3006-E-007",
+        "incident_id": "incident_3006",
+        "source_type": "metrics",
+        "service": "gateway",
+        "observed_at": "2026-10-12T09:00:58Z",
+        "source_path": "public/metrics.csv",
+        "excerpt": "http_5xx_rate=0.35 ratio",
+        "metadata": {
+          "metric_name": "http_5xx_rate",
+          "value": 0.35,
+          "unit": "ratio"
+        }
+      },
+      "incident_3006-E-001": {
+        "evidence_id": "incident_3006-E-001",
+        "incident_id": "incident_3006",
+        "source_type": "metrics",
+        "service": "backend",
+        "observed_at": "2026-10-12T09:00:00Z",
+        "source_path": "public/metrics.csv",
+        "excerpt": "request_latency_ms=40 ms",
+        "metadata": {
+          "metric_name": "request_latency_ms",
+          "value": 40.0,
+          "unit": "ms"
+        }
+      },
+      "incident_3006-E-005": {
+        "evidence_id": "incident_3006-E-005",
+        "incident_id": "incident_3006",
+        "source_type": "database",
+        "service": "postgres",
+        "observed_at": "2026-10-12T09:00:46Z",
+        "source_path": "public/database.jsonl",
+        "excerpt": "Connections healthy below server cap",
+        "metadata": {
+          "category": "connections",
+          "connection_count": 30,
+          "connection_limit": 100
+        }
+      }
+    },
+    "hypotheses": [
+      {
+        "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+        "culprit_service": "backend",
+        "failure_mode": "backend_resource_saturation",
+        "support_ids": [
+          "incident_3006-E-006",
+          "incident_3006-E-007"
+        ],
+        "against_ids": [
+          "incident_3006-E-001"
+        ],
+        "predicted_observations": [
+          "Backend CPU, memory, worker, or connection utilization spikes while latency remains near 40 ms.",
+          "Backend logs would show repeated deadline exceedances or resource pressure near 09:00:58Z",
+          "Gateway 5xx rate tracks backend saturation rather than an independent gateway fault.",
+          "Gateway errors or latency increases would follow the backend deadline exceedance"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "Are backend CPU, memory, worker, or connection metrics elevated enough to explain the gateway errors despite normal latency?",
+          "No saturation metric or resource-related log line is present, so the deadline exceedance has no observed mechanism yet."
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+        "culprit_service": "gateway",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [],
+        "against_ids": [
+          "incident_3006-E-002"
+        ],
+        "predicted_observations": [
+          "Backend deadline errors would begin only after a gateway config change",
+          "Gateway would show routing or pool configuration errors before backend degradation"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "The only gateway observation is a success, and no config or routing evidence is available."
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [
+          "incident_3006-E-007"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Backend error or connection-pool metrics deviate from the prior baseline around the incident start.",
+          "Backend pool_limit reduced or pool_in_use saturated while postgres connection_count stays well below the server cap",
+          "Gateway 5xx rate increases for backend-served routes while backend latency or pool utilization changes materially."
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "Does gateway 5xx rate rise only for routes served by the backend, and does backend connection-pool or capacity telemetry change at the same time?",
+          "No backend pool or change evidence is available in this database-scoped task."
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+        "culprit_service": "gateway",
+        "failure_mode": "redis_unavailable",
+        "support_ids": [
+          "incident_3006-E-007",
+          "incident_3006-E-001"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "Dependency telemetry shows the gateway relies on Redis or another cache/session store.",
+          "Redis unavailability or cache-error metrics rise while the backend remains healthy."
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "Does the gateway depend on Redis, and do Redis availability or gateway Redis-error metrics degrade at the incident time?"
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [],
+        "against_ids": [
+          "incident_3006-E-005"
+        ],
+        "predicted_observations": [
+          "application pool_in_use at its pool_limit while database connections remain available",
+          "connection_count rising toward or above connection_limit"
+        ],
+        "status": "REJECTED",
+        "open_questions": [
+          "The single connection observation does not cover the full incident window, so a later spike cannot be excluded."
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_lock_contention",
+        "support_ids": [],
+        "against_ids": [],
+        "predicted_observations": [
+          "Measured blocking sessions and lock wait duration during the incident window"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "No lock-wait or blocking-session evidence has been supplied, so this remains unevaluated."
+        ]
+      },
+      {
+        "hypothesis_id": "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_slow_query",
+        "support_ids": [],
+        "against_ids": [],
+        "predicted_observations": [
+          "Slow queries with duration exceeding the normal baseline during the incident window"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "No slow-query duration evidence has been supplied, so this remains unevaluated."
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "task_id": "fixed-logs",
+        "role": "logs",
+        "question": "Investigate logs evidence for the incident",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-metrics",
+        "role": "metrics",
+        "question": "Investigate metrics evidence for the incident",
+        "allowed_tools": [
+          "query_metrics",
+          "get_dependencies"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-database",
+        "role": "database",
+        "question": "Investigate database evidence for the incident",
+        "allowed_tools": [
+          "get_db_connections",
+          "get_db_active_sessions",
+          "get_db_lock_waits",
+          "get_db_slow_queries",
+          "get_db_health_metrics"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      },
+      {
+        "task_id": "fixed-changes",
+        "role": "changes",
+        "question": "Investigate changes evidence for the incident",
+        "allowed_tools": [
+          "query_changes",
+          "get_config_diff"
+        ],
+        "filters": {},
+        "reason": "Fixed once-only baseline",
+        "expected_discriminator": "distinguish service failure from downstream symptom"
+      }
+    ],
+    "reviews": [],
+    "decisions": [
+      {
+        "action": "INVESTIGATE",
+        "reason": "Fixed schedule",
+        "assignments": [
+          {
+            "task_id": "fixed-logs",
+            "role": "logs",
+            "question": "Investigate logs evidence for the incident",
+            "allowed_tools": [
+              "query_logs"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-metrics",
+            "role": "metrics",
+            "question": "Investigate metrics evidence for the incident",
+            "allowed_tools": [
+              "query_metrics",
+              "get_dependencies"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-database",
+            "role": "database",
+            "question": "Investigate database evidence for the incident",
+            "allowed_tools": [
+              "get_db_connections",
+              "get_db_active_sessions",
+              "get_db_lock_waits",
+              "get_db_slow_queries",
+              "get_db_health_metrics"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          },
+          {
+            "task_id": "fixed-changes",
+            "role": "changes",
+            "question": "Investigate changes evidence for the incident",
+            "allowed_tools": [
+              "query_changes",
+              "get_config_diff"
+            ],
+            "filters": {},
+            "reason": "Fixed once-only baseline",
+            "expected_discriminator": "distinguish service failure from downstream symptom"
+          }
+        ],
+        "hypothesis_updates": [],
+        "selected_hypothesis_id": null,
+        "stop_reason": null
+      },
+      {
+        "action": "ABSTAIN",
+        "reason": "Baseline evidence leaves every candidate open: postgres connection exhaustion is the only refuted mode, and no cause-specific discriminator exists for backend saturation, backend/gateway pool config regression, redis_unavailable, or postgres lock/slow-query causes. Prioritize the topology plus backend capacity-metric check and the full backend log chronology because they can discriminate backend-origin failure from gateway-side or non-backend dependency causes and can reveal a mechanism for the observed deadline exceedance.",
+        "assignments": [],
+        "hypothesis_updates": [],
+        "selected_hypothesis_id": null,
+        "stop_reason": "Fixed schedule completed with unresolved causal gaps"
+      }
+    ],
+    "events": [
+      {
+        "event_id": "event-1",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.183763Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Fixed schedule",
+        "details": {
+          "decision": {
+            "action": "INVESTIGATE",
+            "reason": "Fixed schedule",
+            "assignments": [
+              {
+                "task_id": "fixed-logs",
+                "role": "logs",
+                "question": "Investigate logs evidence for the incident",
+                "allowed_tools": [
+                  "query_logs"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-metrics",
+                "role": "metrics",
+                "question": "Investigate metrics evidence for the incident",
+                "allowed_tools": [
+                  "query_metrics",
+                  "get_dependencies"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-database",
+                "role": "database",
+                "question": "Investigate database evidence for the incident",
+                "allowed_tools": [
+                  "get_db_connections",
+                  "get_db_active_sessions",
+                  "get_db_lock_waits",
+                  "get_db_slow_queries",
+                  "get_db_health_metrics"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              },
+              {
+                "task_id": "fixed-changes",
+                "role": "changes",
+                "question": "Investigate changes evidence for the incident",
+                "allowed_tools": [
+                  "query_changes",
+                  "get_config_diff"
+                ],
+                "filters": {},
+                "reason": "Fixed once-only baseline",
+                "expected_discriminator": "distinguish service failure from downstream symptom"
+              }
+            ],
+            "hypothesis_updates": [],
+            "selected_hypothesis_id": null,
+            "stop_reason": null
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-2",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.196537Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-3",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.204644Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-4",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.212707Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-5",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.220493Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-6",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.229394Z",
+        "event_type": "TASK_RUNNING",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-7",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.244874Z",
+        "event_type": "TASK_RUNNING",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-8",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.260589Z",
+        "event_type": "TASK_RUNNING",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-9",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.276503Z",
+        "event_type": "TASK_RUNNING",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-10",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:25.747738Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-06c4465aef0b4948a7005dbc0b333429",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-06c4465aef0b4948a7005dbc0b333429-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-11",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:26.009564Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-59638d2b9e524635b5bc6f2c8dc01787",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-59638d2b9e524635b5bc6f2c8dc01787-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-12",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:26.038593Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-d60efbe5737d461ab1ac8835fcbe6134",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-d60efbe5737d461ab1ac8835fcbe6134-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-13",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:26.066643Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "changes",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-0c8e27230ac346f0b77233ae8fb80336",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-0c8e27230ac346f0b77233ae8fb80336-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-14",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:32.294891Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "changes",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-0c8e27230ac346f0b77233ae8fb80336",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-15",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:32.313491Z",
+        "event_type": "LLM_CALL",
+        "role": "changes",
+        "task_id": null,
+        "call_id": "model-call-4",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-0c8e27230ac346f0b77233ae8fb80336",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1240,
+          "completion_tokens": 17,
+          "total_tokens": 1257,
+          "measured_total_tokens": 1257,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-0c8e27230ac346f0b77233ae8fb80336",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-0c8e27230ac346f0b77233ae8fb80336-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-0c8e27230ac346f0b77233ae8fb80336",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1240,
+              "completion_tokens": 17,
+              "total_tokens": 1257,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1240,
+          "measured_completion_tokens": 17,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 6256.430357694626,
+          "stage": "diagnosis",
+          "call_id": "model-call-4",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-16",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:32.331319Z",
+        "event_type": "TOOL_CALL",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_changes",
+          "args": {},
+          "result": {
+            "call_id": "call-f58cfa5d344e4f67b12f36c19b9002cf",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 9.116236120462418,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-changes"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-17",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:32.339411Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": "call-f58cfa5d344e4f67b12f36c19b9002cf",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "call_id": "call-f58cfa5d344e4f67b12f36c19b9002cf",
+          "tool_name": "query_changes",
+          "args": {},
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-18",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:32.347612Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "changes",
+        "task_id": "fixed-changes",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-changes",
+          "attempt_id": "attempt-4",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-19",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.191802Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-d60efbe5737d461ab1ac8835fcbe6134",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-20",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.211065Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-3",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-d60efbe5737d461ab1ac8835fcbe6134",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1878,
+          "completion_tokens": 118,
+          "total_tokens": 1996,
+          "measured_total_tokens": 1996,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-d60efbe5737d461ab1ac8835fcbe6134",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-d60efbe5737d461ab1ac8835fcbe6134-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-d60efbe5737d461ab1ac8835fcbe6134",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1878,
+              "completion_tokens": 118,
+              "total_tokens": 1996,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1878,
+          "measured_completion_tokens": 118,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 9180.747540667653,
+          "stage": "diagnosis",
+          "call_id": "model-call-3",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-21",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.233804Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_connections",
+          "args": {
+            "end_ts": "2026-10-12T11:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-12T09:00:00Z"
+          },
+          "result": {
+            "call_id": "call-78f0d774b7fa4a79b5873ac1c0c993f2",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3006-E-005",
+                "incident_id": "incident_3006",
+                "source_type": "database",
+                "service": "postgres",
+                "observed_at": "2026-10-12T09:00:46Z",
+                "source_path": "public/database.jsonl",
+                "excerpt": "Connections healthy below server cap",
+                "metadata": {
+                  "category": "connections",
+                  "connection_count": 30,
+                  "connection_limit": 100
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 11.883426457643509,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-22",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.253573Z",
+        "event_type": "TOOL_CALL",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "end_ts": "2026-10-12T11:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-12T09:00:00Z"
+          },
+          "result": {
+            "call_id": "call-5cfc371891f14bbf80559332a89096fd",
+            "ok": true,
+            "records": [],
+            "error_code": null,
+            "elapsed_ms": 9.79740358889103,
+            "record_count": 0,
+            "next_cursor": null
+          },
+          "task_id": "fixed-database"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-23",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.261775Z",
+        "event_type": "TOOL_DATA_GAP",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": "call-5cfc371891f14bbf80559332a89096fd",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "call_id": "call-5cfc371891f14bbf80559332a89096fd",
+          "tool_name": "get_db_health_metrics",
+          "args": {
+            "end_ts": "2026-10-12T11:00:00Z",
+            "service": "postgres",
+            "start_ts": "2026-10-12T09:00:00Z"
+          },
+          "outcome": "NO_DATA"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-24",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:35.320729Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-38158100f4184041854e331db27f534f",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-38158100f4184041854e331db27f534f-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-25",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:38.346957Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-59638d2b9e524635b5bc6f2c8dc01787",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-26",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:38.365710Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": "model-call-2",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-59638d2b9e524635b5bc6f2c8dc01787",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1146,
+          "completion_tokens": 125,
+          "total_tokens": 1271,
+          "measured_total_tokens": 1271,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-59638d2b9e524635b5bc6f2c8dc01787",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-59638d2b9e524635b5bc6f2c8dc01787-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-59638d2b9e524635b5bc6f2c8dc01787",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1146,
+              "completion_tokens": 125,
+              "total_tokens": 1271,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1146,
+          "measured_completion_tokens": 125,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 12365.718202665448,
+          "stage": "diagnosis",
+          "call_id": "model-call-2",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-27",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:38.383238Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "gateway",
+            "metric_names": [],
+            "start_ts": "2026-10-12T08:00:00Z",
+            "end_ts": "2026-10-12T11:00:00Z"
+          },
+          "result": {
+            "call_id": "call-4513d8f793db4aedbe07846dad33be69",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3006-E-007",
+                "incident_id": "incident_3006",
+                "source_type": "metrics",
+                "service": "gateway",
+                "observed_at": "2026-10-12T09:00:58Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "http_5xx_rate=0.35 ratio",
+                "metadata": {
+                  "metric_name": "http_5xx_rate",
+                  "value": 0.35,
+                  "unit": "ratio"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 9.476391598582268,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-metrics"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-28",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:38.399993Z",
+        "event_type": "TOOL_CALL",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_metrics",
+          "args": {
+            "service": "backend",
+            "metric_names": [],
+            "start_ts": "2026-10-12T08:00:00Z",
+            "end_ts": "2026-10-12T11:00:00Z"
+          },
+          "result": {
+            "call_id": "call-126822be95bb49c6830f6871addc556e",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3006-E-001",
+                "incident_id": "incident_3006",
+                "source_type": "metrics",
+                "service": "backend",
+                "observed_at": "2026-10-12T09:00:00Z",
+                "source_path": "public/metrics.csv",
+                "excerpt": "request_latency_ms=40 ms",
+                "metadata": {
+                  "metric_name": "request_latency_ms",
+                  "value": 40.0,
+                  "unit": "ms"
+                }
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 8.017370477318764,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-metrics"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-29",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:38.446279Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-3b204bd3bc844d9e8747eacf38067491",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-3b204bd3bc844d9e8747eacf38067491-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-30",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:39.164272Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-06c4465aef0b4948a7005dbc0b333429",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-31",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:39.182589Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-1",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-06c4465aef0b4948a7005dbc0b333429",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 1045,
+          "completion_tokens": 127,
+          "total_tokens": 1172,
+          "measured_total_tokens": 1172,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-06c4465aef0b4948a7005dbc0b333429",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-06c4465aef0b4948a7005dbc0b333429-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-06c4465aef0b4948a7005dbc0b333429",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 1045,
+              "completion_tokens": 127,
+              "total_tokens": 1172,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 1045,
+          "measured_completion_tokens": 127,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 13869.747335091233,
+          "stage": "diagnosis",
+          "call_id": "model-call-1",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-32",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:39.198778Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "start_ts": "2026-10-12T09:00:00Z",
+            "end_ts": "2026-10-12T09:30:00Z",
+            "service": "gateway",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-0626509856f04613a97b532bd43ef49f",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3006-E-002",
+                "incident_id": "incident_3006",
+                "source_type": "logs",
+                "service": "gateway",
+                "observed_at": "2026-10-12T09:00:00Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "Request completed with HTTP 200",
+                "metadata": {}
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 7.7743083238601685,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-33",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:39.214926Z",
+        "event_type": "TOOL_CALL",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "tool_name": "query_logs",
+          "args": {
+            "start_ts": "2026-10-12T09:00:00Z",
+            "end_ts": "2026-10-12T09:30:00Z",
+            "service": "backend",
+            "limit": 50
+          },
+          "result": {
+            "call_id": "call-26218871013c4f4f871fdeb839d86ae7",
+            "ok": true,
+            "records": [
+              {
+                "evidence_id": "incident_3006-E-006",
+                "incident_id": "incident_3006",
+                "source_type": "logs",
+                "service": "backend",
+                "observed_at": "2026-10-12T09:00:58Z",
+                "source_path": "public/logs.jsonl",
+                "excerpt": "Request processing exceeded deadline",
+                "metadata": {}
+              }
+            ],
+            "error_code": null,
+            "elapsed_ms": 7.698828354477882,
+            "record_count": 1,
+            "next_cursor": null
+          },
+          "task_id": "fixed-logs"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-34",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:42:39.259465Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-531566e98e034bbabb65a43373fd3a43",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-531566e98e034bbabb65a43373fd3a43-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-35",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:24.821804Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "logs",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-531566e98e034bbabb65a43373fd3a43",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-36",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:24.837281Z",
+        "event_type": "LLM_CALL",
+        "role": "logs",
+        "task_id": null,
+        "call_id": "model-call-7",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-531566e98e034bbabb65a43373fd3a43",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 2076,
+          "completion_tokens": 762,
+          "total_tokens": 2838,
+          "measured_total_tokens": 2838,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-531566e98e034bbabb65a43373fd3a43",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-531566e98e034bbabb65a43373fd3a43-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-531566e98e034bbabb65a43373fd3a43",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 2076,
+              "completion_tokens": 762,
+              "total_tokens": 2838,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 2076,
+          "measured_completion_tokens": 762,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 45594.45722401142,
+          "stage": "diagnosis",
+          "call_id": "model-call-7",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-37",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:24.843919Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "logs",
+        "task_id": "fixed-logs",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-logs",
+          "attempt_id": "attempt-1",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-38",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:25.347824Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "database",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-38158100f4184041854e331db27f534f",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-39",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:25.365569Z",
+        "event_type": "LLM_CALL",
+        "role": "database",
+        "task_id": null,
+        "call_id": "model-call-5",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-38158100f4184041854e331db27f534f",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 2132,
+          "completion_tokens": 793,
+          "total_tokens": 2925,
+          "measured_total_tokens": 2925,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-38158100f4184041854e331db27f534f",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-38158100f4184041854e331db27f534f-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-38158100f4184041854e331db27f534f",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 2132,
+              "completion_tokens": 793,
+              "total_tokens": 2925,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 2132,
+          "measured_completion_tokens": 793,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 50064.99579362571,
+          "stage": "diagnosis",
+          "call_id": "model-call-5",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-40",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:25.373763Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "database",
+        "task_id": "fixed-database",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-database",
+          "attempt_id": "attempt-3",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-41",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.805364Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-3b204bd3bc844d9e8747eacf38067491",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-42",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.823324Z",
+        "event_type": "LLM_CALL",
+        "role": "metrics",
+        "task_id": null,
+        "call_id": "model-call-6",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-3b204bd3bc844d9e8747eacf38067491",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 2171,
+          "completion_tokens": 1107,
+          "total_tokens": 3278,
+          "measured_total_tokens": 3278,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-3b204bd3bc844d9e8747eacf38067491",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-3b204bd3bc844d9e8747eacf38067491-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-3b204bd3bc844d9e8747eacf38067491",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 2171,
+              "completion_tokens": 1107,
+              "total_tokens": 3278,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 2171,
+          "measured_completion_tokens": 1107,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 66392.95919239521,
+          "stage": "diagnosis",
+          "call_id": "model-call-6",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-43",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.831631Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "metrics",
+        "task_id": "fixed-metrics",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "fixed-metrics",
+          "attempt_id": "attempt-2",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-44",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.847278Z",
+        "event_type": "MERGE",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "findings": [
+            {
+              "finding_id": "finding-3f831c621d7be99f99552dc34d95acefcf3221ddd4ceef9e06d5129e9bf93e27",
+              "task_id": "fixed-logs",
+              "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+              "incident_id": "incident_3006",
+              "role": "logs",
+              "claim": "Gateway logged a successful HTTP 200 response at 09:00:00Z, while the backend logged a request-processing deadline exceedance 58 seconds later at 09:00:58Z; the two observations are not yet causally linked.",
+              "evidence_ids": [
+                "incident_3006-E-002",
+                "incident_3006-E-006"
+              ],
+              "relation": "neutral",
+              "confidence_qualifier": "unknown",
+              "followup_question": "What is the full backend error chronology and are there gateway errors after 09:00:58Z?"
+            },
+            {
+              "finding_id": "finding-725dcbcadf1f7a6eb4bc032b1f5a7a5ce76cc7d7383f61609414928bfdcf51a9",
+              "task_id": "fixed-metrics",
+              "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+              "incident_id": "incident_3006",
+              "role": "metrics",
+              "claim": "Metrics show a gateway-side 5xx error rate of 0.35 at 09:00:58Z while the backend's request_latency_ms was only 40 ms at 09:00:00Z; the two records do not identify which service is the causal origin.",
+              "evidence_ids": [
+                "incident_3006-E-007",
+                "incident_3006-E-001"
+              ],
+              "relation": "neutral",
+              "confidence_qualifier": "supported",
+              "followup_question": "Do gateway 5xx errors correlate with elevated latency or errors in an upstream dependency rather than the backend's normal latency?"
+            },
+            {
+              "finding_id": "finding-f834eb443c3a4e0748f3028badad1e964ee7ce5a6e8208c54b02119c8727d6cb",
+              "task_id": "fixed-database",
+              "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+              "incident_id": "incident_3006",
+              "role": "database",
+              "claim": "Postgres connection count was 30 against a connection limit of 100, so database connection capacity was not exhausted at the observed time. Data gaps (not evidence of health): [{\"call_id\": \"call-5cfc371891f14bbf80559332a89096fd\", \"tool_name\": \"get_db_health_metrics\", \"args\": {\"end_ts\": \"2026-10-12T11:00:00Z\", \"service\": \"postgres\", \"start_ts\": \"2026-10-12T09:00:00Z\"}, \"outcome\": \"NO_DATA\"}]",
+              "evidence_ids": [
+                "incident_3006-E-005"
+              ],
+              "relation": "refutes",
+              "confidence_qualifier": "supported",
+              "followup_question": "Do active sessions, lock waits, slow queries, or health metrics show a different postgres failure mode during the incident window?"
+            },
+            {
+              "finding_id": "gap-9ca92dd121bba79f450dc8130ab22acc4a22a112f78144932ad5420274a5618c",
+              "task_id": "fixed-changes",
+              "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+              "incident_id": "incident_3006",
+              "role": "changes",
+              "claim": "No evidence for this query; this is not proof of healthy behavior. [{\"call_id\": \"call-f58cfa5d344e4f67b12f36c19b9002cf\", \"tool_name\": \"query_changes\", \"args\": {}, \"outcome\": \"NO_DATA\"}]",
+              "evidence_ids": [],
+              "relation": "neutral",
+              "confidence_qualifier": "unknown",
+              "followup_question": "Choose an available service, window or evidence source."
+            }
+          ],
+          "hypotheses": [
+            {
+              "hypothesis_id": "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+              "culprit_service": "backend",
+              "failure_mode": "backend_resource_saturation",
+              "support_ids": [
+                "incident_3006-E-006",
+                "incident_3006-E-007"
+              ],
+              "against_ids": [
+                "incident_3006-E-001"
+              ],
+              "predicted_observations": [
+                "Backend CPU, memory, worker, or connection utilization spikes while latency remains near 40 ms.",
+                "Backend logs would show repeated deadline exceedances or resource pressure near 09:00:58Z",
+                "Gateway 5xx rate tracks backend saturation rather than an independent gateway fault.",
+                "Gateway errors or latency increases would follow the backend deadline exceedance"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Are backend CPU, memory, worker, or connection metrics elevated enough to explain the gateway errors despite normal latency?",
+                "No saturation metric or resource-related log line is present, so the deadline exceedance has no observed mechanism yet."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+              "culprit_service": "gateway",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [],
+              "against_ids": [
+                "incident_3006-E-002"
+              ],
+              "predicted_observations": [
+                "Backend deadline errors would begin only after a gateway config change",
+                "Gateway would show routing or pool configuration errors before backend degradation"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "The only gateway observation is a success, and no config or routing evidence is available."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+              "culprit_service": "backend",
+              "failure_mode": "backend_pool_config_regression",
+              "support_ids": [
+                "incident_3006-E-007"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Backend error or connection-pool metrics deviate from the prior baseline around the incident start.",
+                "Backend pool_limit reduced or pool_in_use saturated while postgres connection_count stays well below the server cap",
+                "Gateway 5xx rate increases for backend-served routes while backend latency or pool utilization changes materially."
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Does gateway 5xx rate rise only for routes served by the backend, and does backend connection-pool or capacity telemetry change at the same time?",
+                "No backend pool or change evidence is available in this database-scoped task."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+              "culprit_service": "gateway",
+              "failure_mode": "redis_unavailable",
+              "support_ids": [
+                "incident_3006-E-007",
+                "incident_3006-E-001"
+              ],
+              "against_ids": [],
+              "predicted_observations": [
+                "Dependency telemetry shows the gateway relies on Redis or another cache/session store.",
+                "Redis unavailability or cache-error metrics rise while the backend remains healthy."
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "Does the gateway depend on Redis, and do Redis availability or gateway Redis-error metrics degrade at the incident time?"
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_connection_exhaustion",
+              "support_ids": [],
+              "against_ids": [
+                "incident_3006-E-005"
+              ],
+              "predicted_observations": [
+                "application pool_in_use at its pool_limit while database connections remain available",
+                "connection_count rising toward or above connection_limit"
+              ],
+              "status": "REJECTED",
+              "open_questions": [
+                "The single connection observation does not cover the full incident window, so a later spike cannot be excluded."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_lock_contention",
+              "support_ids": [],
+              "against_ids": [],
+              "predicted_observations": [
+                "Measured blocking sessions and lock wait duration during the incident window"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "No lock-wait or blocking-session evidence has been supplied, so this remains unevaluated."
+              ]
+            },
+            {
+              "hypothesis_id": "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3",
+              "culprit_service": "postgres",
+              "failure_mode": "postgres_slow_query",
+              "support_ids": [],
+              "against_ids": [],
+              "predicted_observations": [
+                "Slow queries with duration exceeding the normal baseline during the incident window"
+              ],
+              "status": "OPEN",
+              "open_questions": [
+                "No slow-query duration evidence has been supplied, so this remains unevaluated."
+              ]
+            }
+          ]
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-45",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.867155Z",
+        "event_type": "TASK_ASSIGNED",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "ASSIGNED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-46",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.874512Z",
+        "event_type": "TASK_RUNNING",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "RUNNING",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-47",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:43:44.927650Z",
+        "event_type": "PROVIDER_ATTEMPT",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-06741617c8f14eaebd220157a72eef9b",
+          "http_attempt_index": 1,
+          "http_attempt_id": "logical-06741617c8f14eaebd220157a72eef9b-1",
+          "repair_index": 0
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-48",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.140723Z",
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "logical_call_id": "logical-06741617c8f14eaebd220157a72eef9b",
+          "http_attempt_index": 1,
+          "usage_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-49",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.157426Z",
+        "event_type": "TASK_COMPLETED",
+        "role": "coordinator",
+        "task_id": "coordinate-2",
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "task_id": "coordinate-2",
+          "attempt_id": "attempt-5",
+          "attempt": 1,
+          "status": "COMPLETED",
+          "error_code": null
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-50",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.164988Z",
+        "event_type": "LLM_CALL",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": "model-call-8",
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "model_id": "Atria-Dawn",
+          "llm_calls": 1,
+          "actual_http_requests": 1,
+          "logical_structured_calls": 1,
+          "logical_call_id": "logical-06741617c8f14eaebd220157a72eef9b",
+          "transport_retries": 0,
+          "repair_requests": 0,
+          "prompt_tokens": 12176,
+          "completion_tokens": 523,
+          "total_tokens": 12699,
+          "measured_total_tokens": 12699,
+          "tokens_complete": true,
+          "provider_recovery_enabled": true,
+          "provider_attempts": [
+            {
+              "event_type": "PROVIDER_ATTEMPT",
+              "logical_call_id": "logical-06741617c8f14eaebd220157a72eef9b",
+              "http_attempt_index": 1,
+              "http_attempt_id": "logical-06741617c8f14eaebd220157a72eef9b-1",
+              "repair_index": 0
+            },
+            {
+              "event_type": "PROVIDER_CALL_COMPLETED",
+              "logical_call_id": "logical-06741617c8f14eaebd220157a72eef9b",
+              "http_attempt_index": 1,
+              "usage_complete": true
+            }
+          ],
+          "request_usage": [
+            {
+              "http_attempt_index": 1,
+              "prompt_tokens": 12176,
+              "completion_tokens": 523,
+              "total_tokens": 12699,
+              "total_tokens_basis": "provider_total"
+            }
+          ],
+          "measured_prompt_tokens": 12176,
+          "measured_completion_tokens": 523,
+          "requests_with_token_usage": 1,
+          "requests_without_token_usage": 0,
+          "elapsed_ms": 30247.17592075467,
+          "stage": "coordinate",
+          "call_id": "model-call-8",
+          "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl",
+          "model_parameters": {
+            "temperature": 0.0,
+            "response_format": "json_schema",
+            "thinking": "disabled",
+            "structured_repair_retries": 1,
+            "request_timeout_seconds": 1200.0,
+            "provider_recovery": {
+              "enabled": true,
+              "max_transport_retries": 2,
+              "max_structured_repairs": 1,
+              "max_physical_attempts_per_call": 4,
+              "initial_backoff_seconds": 2.0,
+              "max_backoff_seconds": 20.0,
+              "jitter_mode": "none",
+              "retry_http_statuses": [
+                408,
+                429,
+                500,
+                502,
+                503,
+                504
+              ],
+              "reserve_verifier_requests": 0,
+              "min_request_time_seconds": 30.0,
+              "safety_margin_seconds": 10.0,
+              "format_capability": "json_schema"
+            },
+            "targeted_structured_repair": true,
+            "capability_profile": {
+              "response_format": "json_schema",
+              "supports_output_cap": false,
+              "supports_retry_after": true,
+              "capability_source": "explicit_config"
+            }
+          },
+          "review_stage": false
+        },
+        "source": "model",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-51",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.173239Z",
+        "event_type": "DECISION",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "Baseline evidence leaves every candidate open: postgres connection exhaustion is the only refuted mode, and no cause-specific discriminator exists for backend saturation, backend/gateway pool config regression, redis_unavailable, or postgres lock/slow-query causes. Prioritize the topology plus backend capacity-metric check and the full backend log chronology because they can discriminate backend-origin failure from gateway-side or non-backend dependency causes and can reveal a mechanism for the observed deadline exceedance.",
+        "details": {
+          "decision": {
+            "action": "ABSTAIN",
+            "reason": "Baseline evidence leaves every candidate open: postgres connection exhaustion is the only refuted mode, and no cause-specific discriminator exists for backend saturation, backend/gateway pool config regression, redis_unavailable, or postgres lock/slow-query causes. Prioritize the topology plus backend capacity-metric check and the full backend log chronology because they can discriminate backend-origin failure from gateway-side or non-backend dependency causes and can reveal a mechanism for the observed deadline exceedance.",
+            "assignments": [],
+            "hypothesis_updates": [],
+            "selected_hypothesis_id": null,
+            "stop_reason": "Fixed schedule completed with unresolved causal gaps"
+          }
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-52",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.193019Z",
+        "event_type": "ABSTENTION_ASSESSMENT",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "candidate_assessments": {
+            "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d": {
+              "finalize_errors": [
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23": {
+              "finalize_errors": [
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e": {
+              "finalize_errors": [
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e": {
+              "finalize_errors": [
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b": {
+              "finalize_errors": [
+                "Rejected hypothesis cannot be finalized",
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b": {
+              "finalize_errors": [
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3"
+              ],
+              "cause_discriminator_ids": []
+            },
+            "hyp-fa54443c13fbc99829780b65cb92a778117e548031b9ae28d162dc620361a0f3": {
+              "finalize_errors": [
+                "Need at least two supporting records from different sources",
+                "No observed cause-specific discriminator for the candidate",
+                "Candidate has unresolved questions or contradictory evidence",
+                "Competing hypothesis remains unresolved"
+              ],
+              "competing_hypothesis_ids": [
+                "hyp-32a63ad13f743388bf95b6fc388791fe4b2369f6ac15c6a4124f9cf3b94a479d",
+                "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+                "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+                "hyp-44783def3637d015c31419e4067c40075b7d6b8f772637b4db6ce29d46c3055e",
+                "hyp-e48a4fbb7ee5490e91fea1c2655f523977fa78863281d5805607cefd92a1641b"
+              ],
+              "cause_discriminator_ids": []
+            }
+          },
+          "shared_open_questions": [],
+          "reason": "Fixed schedule completed with unresolved causal gaps"
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-53",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.202630Z",
+        "event_type": "WORKFLOW_STOP_REQUESTED",
+        "role": "coordinator",
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "incident_id": "incident_3006",
+          "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+          "stop_reason": "INCONCLUSIVE",
+          "message_type": "WORKFLOW_STOP_REQUESTED",
+          "protocol_version": "2",
+          "required_roles": []
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-54",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.210708Z",
+        "event_type": "NORMAL_TERMINATION",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "protocol_version": "2",
+          "reason": "INCONCLUSIVE",
+          "outcome": "ABSTAINED",
+          "failure_stage": null,
+          "stop_completed": true,
+          "runtime_failure": false
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      },
+      {
+        "event_id": "event-55",
+        "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+        "incident_id": "incident_3006",
+        "timestamp": "2026-10-26T09:44:15.219284Z",
+        "event_type": "REPORT",
+        "role": null,
+        "task_id": null,
+        "call_id": null,
+        "evidence_ids": [],
+        "message": "",
+        "details": {
+          "report": {
+            "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+            "incident_id": "incident_3006",
+            "status": "INCONCLUSIVE",
+            "root_cause": null,
+            "causal_chain": [],
+            "supporting_evidence_ids": [],
+            "rejected_hypotheses": [
+              {
+                "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+                "culprit_service": "postgres",
+                "failure_mode": "postgres_connection_exhaustion",
+                "support_ids": [],
+                "against_ids": [
+                  "incident_3006-E-005"
+                ],
+                "predicted_observations": [
+                  "application pool_in_use at its pool_limit while database connections remain available",
+                  "connection_count rising toward or above connection_limit"
+                ],
+                "status": "REJECTED",
+                "open_questions": [
+                  "The single connection observation does not cover the full incident window, so a later spike cannot be excluded."
+                ]
+              }
+            ],
+            "unresolved": [
+              "Need additional discriminating evidence"
+            ],
+            "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+            "diagnosis_status": null,
+            "remediation_status": "NOT_STARTED",
+            "workflow_status": "FINISHED",
+            "remediation_plan": null,
+            "termination": {
+              "protocol_version": "2",
+              "reason": "INCONCLUSIVE",
+              "outcome": "ABSTAINED",
+              "failure_stage": null,
+              "stop_completed": true,
+              "runtime_failure": false
+            }
+          },
+          "variant": "fixed",
+          "tokens_complete": true
+        },
+        "source": "runtime",
+        "elapsed_ms": null
+      }
+    ],
+    "report": {
+      "run_id": "run-b3dcb22c57d74f34bfe43ecceddab0a3",
+      "incident_id": "incident_3006",
+      "status": "INCONCLUSIVE",
+      "root_cause": null,
+      "causal_chain": [],
+      "supporting_evidence_ids": [],
+      "rejected_hypotheses": [
+        {
+          "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+          "culprit_service": "postgres",
+          "failure_mode": "postgres_connection_exhaustion",
+          "support_ids": [],
+          "against_ids": [
+            "incident_3006-E-005"
+          ],
+          "predicted_observations": [
+            "application pool_in_use at its pool_limit while database connections remain available",
+            "connection_count rising toward or above connection_limit"
+          ],
+          "status": "REJECTED",
+          "open_questions": [
+            "The single connection observation does not cover the full incident window, so a later spike cannot be excluded."
+          ]
+        }
+      ],
+      "unresolved": [
+        "Need additional discriminating evidence"
+      ],
+      "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+      "diagnosis_status": null,
+      "remediation_status": "NOT_STARTED",
+      "workflow_status": "FINISHED",
+      "remediation_plan": null,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "INCONCLUSIVE",
+        "outcome": "ABSTAINED",
+        "failure_stage": null,
+        "stop_completed": true,
+        "runtime_failure": false
+      }
+    },
+    "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+    "open_questions": [],
+    "requested_checks": [
+      {
+        "task_id": "fixed-logs-check-1",
+        "role": "logs",
+        "question": "Retrieve all backend log lines around the incident window without severity filtering to establish the error chronology and check for repeated deadline exceedances.",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "end_ts": "2026-10-12T10:00:00Z",
+          "service": "backend",
+          "start_ts": "2026-10-12T08:30:00Z"
+        },
+        "reason": "The single deadline exceedance lacks a mechanism; surrounding backend logs can show whether it was isolated or part of a sustained failure.",
+        "expected_discriminator": "Whether backend deadline messages repeat or are isolated, and whether any gateway errors appear after 09:00:58Z"
+      },
+      {
+        "task_id": "fixed-logs-check-2",
+        "role": "logs",
+        "question": "Retrieve gateway log lines after 09:00:58Z to determine whether the successful 200 observation is followed by client-facing failures.",
+        "allowed_tools": [
+          "query_logs"
+        ],
+        "filters": {
+          "end_ts": "2026-10-12T10:00:00Z",
+          "service": "gateway",
+          "start_ts": "2026-10-12T08:30:00Z"
+        },
+        "reason": "The current gateway evidence is a success at 09:00:00Z; later gateway logs are needed to avoid treating an early success as evidence against gateway involvement.",
+        "expected_discriminator": "Presence or absence of gateway failures after the backend deadline exceedance, which distinguishes culprit from downstream symptom"
+      },
+      {
+        "task_id": "check-gateway-metric-catalog",
+        "role": "metrics",
+        "question": "What metric names are available for the gateway around the incident, and do any show latency, upstream failure, or dependency errors alongside the 5xx increase?",
+        "allowed_tools": [
+          "query_metrics"
+        ],
+        "filters": {
+          "end_ts": "2026-10-12T09:30:00Z",
+          "metric_names": [],
+          "service": "gateway",
+          "start_ts": "2026-10-12T08:30:00Z"
+        },
+        "reason": "The only gateway evidence is a 5xx ratio; discovering the actual metric names is required before attributing the errors to the backend or another dependency.",
+        "expected_discriminator": "A full gateway metric list reveals whether 5xx errors are isolated or accompanied by upstream latency, dependency, or circuit-breaker anomalies."
+      },
+      {
+        "task_id": "check-gateway-dependencies-and-backend-metrics",
+        "role": "metrics",
+        "question": "What services does the gateway depend on, and what backend metrics exist besides request_latency_ms that could explain the gateway 5xx errors?",
+        "allowed_tools": [
+          "get_dependencies",
+          "query_metrics"
+        ],
+        "filters": {
+          "end_ts": "2026-10-12T09:30:00Z",
+          "metric_names": [],
+          "service": "backend",
+          "start_ts": "2026-10-12T08:30:00Z"
+        },
+        "reason": "The topology and backend metric catalog are needed to test whether the observed 5xx rate originates upstream of the gateway or in backend capacity/configuration.",
+        "expected_discriminator": "Dependency topology plus backend capacity metrics distinguishes backend-origin failure from a gateway-side or non-backend dependency issue."
+      },
+      {
+        "task_id": "check-db-locks-sessions",
+        "role": "database",
+        "question": "Were there blocking sessions or lock waits on postgres during the incident window?",
+        "allowed_tools": [
+          "get_db_active_sessions",
+          "get_db_lock_waits"
+        ],
+        "filters": {
+          "service": "postgres"
+        },
+        "reason": "The supplied evidence only rules out connection exhaustion; lock contention requires measured blocking sessions and wait duration.",
+        "expected_discriminator": "Presence of measured blocking sessions and lock wait duration would support lock contention; absence leaves it unknown."
+      },
+      {
+        "task_id": "check-db-slow-queries-health",
+        "role": "database",
+        "question": "Did postgres slow-query duration and health metrics deviate from baseline during the incident window?",
+        "allowed_tools": [
+          "get_db_slow_queries",
+          "get_db_health_metrics"
+        ],
+        "filters": {
+          "service": "postgres"
+        },
+        "reason": "A slow-query hypothesis needs measured query duration and health evidence rather than the single connection observation.",
+        "expected_discriminator": "Slow queries with elevated duration would support a slow-query cause; normal durations plus healthy metrics would weaken it."
+      }
+    ],
+    "completed_task_ids": [
+      "fixed-logs",
+      "fixed-metrics",
+      "fixed-database",
+      "fixed-changes"
+    ],
+    "tool_calls_used": 7,
+    "llm_calls_used": 8,
+    "tokens_used": 27436,
+    "incident_alert": null,
+    "task_records": [
+      {
+        "task_id": "fixed-logs",
+        "attempt_id": "attempt-1",
+        "role": "logs",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-metrics",
+        "attempt_id": "attempt-2",
+        "role": "metrics",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-database",
+        "attempt_id": "attempt-3",
+        "role": "database",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "fixed-changes",
+        "attempt_id": "attempt-4",
+        "role": "changes",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      },
+      {
+        "task_id": "coordinate-2",
+        "attempt_id": "attempt-5",
+        "role": "coordinator",
+        "attempt": 1,
+        "status": "COMPLETED",
+        "error_code": null
+      }
+    ],
+    "workflow_status": "FINISHED",
+    "termination": {
+      "protocol_version": "2",
+      "reason": "INCONCLUSIVE",
+      "outcome": "ABSTAINED",
+      "failure_stage": null,
+      "stop_completed": true,
+      "runtime_failure": false
+    }
+  },
+  "model_id": "Atria-Dawn",
+  "prompt_version": "roles-v12-evidence-reconciliation-v7-task-acl"
+}

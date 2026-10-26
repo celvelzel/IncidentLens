@@ -1,0 +1,62 @@
+{
+  "run_id": "run-1412fbc54418403db0c06bbdbb1443dc",
+  "incident_id": "incident_3001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-fceb878b9e4d9ff57ade89c75d8206915ba175c4dbaf7945683f210d7762af23",
+      "culprit_service": "gateway",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [
+        "incident_3001-E-002"
+      ],
+      "against_ids": [
+        "incident_3001-E-008"
+      ],
+      "predicted_observations": [
+        "Backend logs should remain normal while gateway connection attempts fail.",
+        "Gateway errors should appear before backend deadline messages.",
+        "Gateway logs or change records should show a pool, routing, timeout, or retry configuration change before 09:00:36Z."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No gateway configuration change or error evidence is present; the only gateway log observation is a successful request."
+      ]
+    },
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3001-E-007"
+      ],
+      "predicted_observations": [
+        "Connection count at or near the 100 limit with corresponding refused or timed-out acquisition attempts during the incident window."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "The single 30/100 connection observation does not cover the full incident window, so server-side saturation is not refuted for every timestamp."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Fixed schedule completed with unresolved causal gaps",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

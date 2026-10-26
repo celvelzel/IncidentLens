@@ -1,0 +1,93 @@
+{"time_utc": 1792943950.4229825, "event": "PREPARED_NOT_EXECUTED", "slots": 40}
+{"time_utc": 1792944203.011362, "event": "SLOT_START_INTENT", "slot": "slot-001", "attempt": "runs/slot-001/attempt-001"}
+{"time_utc": 1792944203.99207, "event": "SLOT_START_INTENT", "slot": "slot-002", "attempt": "runs/slot-002/attempt-001"}
+{"time_utc": 1792945387.7452657, "event": "SLOT_ENDED", "slot": "slot-002", "status": "completed", "path": "runs/slot-002/attempt-001", "stop_cause": null}
+{"time_utc": 1792945389.3290837, "event": "SLOT_START_INTENT", "slot": "slot-003", "attempt": "runs/slot-003/attempt-001"}
+{"time_utc": 1792945559.1415906, "event": "SLOT_ENDED", "slot": "slot-003", "status": "completed", "path": "runs/slot-003/attempt-001", "stop_cause": null}
+{"time_utc": 1792945560.8369184, "event": "SLOT_START_INTENT", "slot": "slot-004", "attempt": "runs/slot-004/attempt-001"}
+{"time_utc": 1792945754.6084065, "event": "SLOT_ENDED", "slot": "slot-001", "status": "completed", "path": "runs/slot-001/attempt-001", "stop_cause": null}
+{"time_utc": 1792945756.3847654, "event": "SLOT_START_INTENT", "slot": "slot-005", "attempt": "runs/slot-005/attempt-001"}
+{"time_utc": 1792946073.254121, "event": "SLOT_ENDED", "slot": "slot-004", "status": "failed", "path": "runs/slot-004/attempt-001", "stop_cause": null}
+{"time_utc": 1792946667.5019991, "event": "SLOT_ENDED", "slot": "slot-005", "status": "completed", "path": "runs/slot-005/attempt-001", "stop_cause": null}
+{"time_utc": 1792946667.5190933, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-008", "slot-009", "slot-010", "slot-011", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792980975.336416, "event": "SLOT_START_INTENT", "slot": "slot-006", "attempt": "runs/slot-006/attempt-001"}
+{"time_utc": 1792980976.4384584, "event": "SLOT_START_INTENT", "slot": "slot-007", "attempt": "runs/slot-007/attempt-001"}
+{"time_utc": 1792981080.2689898, "event": "SLOT_ENDED", "slot": "slot-007", "status": "failed", "path": "runs/slot-007/attempt-001", "stop_cause": null}
+{"time_utc": 1792981734.0644841, "event": "SLOT_ENDED", "slot": "slot-006", "status": "failed", "path": "runs/slot-006/attempt-001", "stop_cause": null}
+{"time_utc": 1792981734.1578517, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-008", "slot-009", "slot-010", "slot-011", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792983302.5283446, "event": "SLOT_START_INTENT", "slot": "slot-008", "attempt": "runs/slot-008/attempt-001"}
+{"time_utc": 1792983303.4995198, "event": "SLOT_START_INTENT", "slot": "slot-009", "attempt": "runs/slot-009/attempt-001"}
+{"time_utc": 1792984681.4897459, "event": "SLOT_ENDED", "slot": "slot-009", "status": "failed", "path": "runs/slot-009/attempt-001", "stop_cause": null}
+{"time_utc": 1792985936.9957013, "event": "SLOT_ENDED", "slot": "slot-008", "status": "completed", "path": "runs/slot-008/attempt-001", "stop_cause": null}
+{"time_utc": 1792985937.013862, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-011", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792986376.540845, "event": "SLOT_START_INTENT", "slot": "slot-010", "attempt": "runs/slot-010/attempt-001"}
+{"time_utc": 1792986377.5368521, "event": "SLOT_START_INTENT", "slot": "slot-011", "attempt": "runs/slot-011/attempt-001"}
+{"time_utc": 1792987609.69347, "event": "SLOT_ENDED", "slot": "slot-011", "status": "completed", "path": "runs/slot-011/attempt-001", "stop_cause": null}
+{"time_utc": 1792987610.7650468, "event": "SLOT_START_INTENT", "slot": "slot-012", "attempt": "runs/slot-012/attempt-001"}
+{"time_utc": 1792987706.18877, "event": "SLOT_ENDED", "slot": "slot-012", "status": "failed", "path": "runs/slot-012/attempt-001", "stop_cause": null}
+{"time_utc": 1792987881.3495884, "event": "SLOT_ENDED", "slot": "slot-010", "status": "failed", "path": "runs/slot-010/attempt-001", "stop_cause": null}
+{"time_utc": 1792987881.3771749, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792988317.856696, "event": "SLOT_START_INTENT", "slot": "slot-013", "attempt": "runs/slot-013/attempt-001"}
+{"time_utc": 1792988321.1076288, "event": "SLOT_START_INTENT", "slot": "slot-014", "attempt": "runs/slot-014/attempt-001"}
+{"time_utc": 1792988501.7357588, "event": "SLOT_ENDED", "slot": "slot-013", "status": "failed", "path": "runs/slot-013/attempt-001", "stop_cause": null}
+{"time_utc": 1792989336.3452299, "event": "SLOT_ENDED", "slot": "slot-014", "status": "failed", "path": "runs/slot-014/attempt-001", "stop_cause": null}
+{"time_utc": 1792989336.360338, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792989611.7605138, "event": "SLOT_START_INTENT", "slot": "slot-015", "attempt": "runs/slot-015/attempt-001"}
+{"time_utc": 1792989612.790943, "event": "SLOT_START_INTENT", "slot": "slot-016", "attempt": "runs/slot-016/attempt-001"}
+{"time_utc": 1792989747.268689, "event": "SLOT_ENDED", "slot": "slot-015", "status": "failed", "path": "runs/slot-015/attempt-001", "stop_cause": null}
+{"time_utc": 1792990655.43199, "event": "SLOT_ENDED", "slot": "slot-016", "status": "failed", "path": "runs/slot-016/attempt-001", "stop_cause": null}
+{"time_utc": 1792990655.522404, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-018", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792990817.4826317, "event": "SLOT_START_INTENT", "slot": "slot-017", "attempt": "runs/slot-017/attempt-001"}
+{"time_utc": 1792990818.4336407, "event": "SLOT_START_INTENT", "slot": "slot-018", "attempt": "runs/slot-018/attempt-001"}
+{"time_utc": 1792992013.715037, "event": "SLOT_ENDED", "slot": "slot-017", "status": "failed", "path": "runs/slot-017/attempt-001", "stop_cause": null}
+{"time_utc": 1792993722.2316413, "event": "SLOT_ENDED", "slot": "slot-018", "status": "completed", "path": "runs/slot-018/attempt-001", "stop_cause": null}
+{"time_utc": 1792993722.2499762, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-019", "slot-020", "slot-021", "slot-022", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792993827.8410192, "event": "SLOT_START_INTENT", "slot": "slot-019", "attempt": "runs/slot-019/attempt-001"}
+{"time_utc": 1792993828.8953402, "event": "SLOT_START_INTENT", "slot": "slot-020", "attempt": "runs/slot-020/attempt-001"}
+{"time_utc": 1792993974.2377887, "event": "SLOT_ENDED", "slot": "slot-019", "status": "completed", "path": "runs/slot-019/attempt-001", "stop_cause": null}
+{"time_utc": 1792993975.2320232, "event": "SLOT_START_INTENT", "slot": "slot-021", "attempt": "runs/slot-021/attempt-001"}
+{"time_utc": 1792994077.9436722, "event": "SLOT_ENDED", "slot": "slot-021", "status": "completed", "path": "runs/slot-021/attempt-001", "stop_cause": null}
+{"time_utc": 1792994079.2705574, "event": "SLOT_START_INTENT", "slot": "slot-022", "attempt": "runs/slot-022/attempt-001"}
+{"time_utc": 1792994332.978274, "event": "SLOT_ENDED", "slot": "slot-020", "status": "failed", "path": "runs/slot-020/attempt-001", "stop_cause": null}
+{"time_utc": 1792995068.2296638, "event": "SLOT_ENDED", "slot": "slot-022", "status": "completed", "path": "runs/slot-022/attempt-001", "stop_cause": null}
+{"time_utc": 1792995068.2475219, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-020", "slot-023", "slot-024", "slot-025", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792995634.7137213, "event": "SLOT_START_INTENT", "slot": "slot-023", "attempt": "runs/slot-023/attempt-001"}
+{"time_utc": 1792995635.8222592, "event": "SLOT_START_INTENT", "slot": "slot-024", "attempt": "runs/slot-024/attempt-001"}
+{"time_utc": 1792995812.6950507, "event": "SLOT_ENDED", "slot": "slot-024", "status": "completed", "path": "runs/slot-024/attempt-001", "stop_cause": null}
+{"time_utc": 1792995813.89007, "event": "SLOT_START_INTENT", "slot": "slot-025", "attempt": "runs/slot-025/attempt-001"}
+{"time_utc": 1792997397.8403175, "event": "SLOT_ENDED", "slot": "slot-025", "status": "completed", "path": "runs/slot-025/attempt-001", "stop_cause": null}
+{"time_utc": 1792997408.6605284, "event": "SLOT_START_INTENT", "slot": "slot-026", "attempt": "runs/slot-026/attempt-001"}
+{"time_utc": 1792998228.7749245, "event": "SLOT_ENDED", "slot": "slot-023", "status": "failed", "path": "runs/slot-023/attempt-001", "stop_cause": null}
+{"time_utc": 1792999221.8386343, "event": "SLOT_ENDED", "slot": "slot-026", "status": "failed", "path": "runs/slot-026/attempt-001", "stop_cause": null}
+{"time_utc": 1792999221.8551726, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-020", "slot-023", "slot-026", "slot-027", "slot-028", "slot-029", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1792999540.929294, "event": "SLOT_START_INTENT", "slot": "slot-027", "attempt": "runs/slot-027/attempt-001"}
+{"time_utc": 1792999542.028936, "event": "SLOT_START_INTENT", "slot": "slot-028", "attempt": "runs/slot-028/attempt-001"}
+{"time_utc": 1792999743.8177485, "event": "SLOT_ENDED", "slot": "slot-027", "status": "completed", "path": "runs/slot-027/attempt-001", "stop_cause": null}
+{"time_utc": 1792999744.847629, "event": "SLOT_START_INTENT", "slot": "slot-029", "attempt": "runs/slot-029/attempt-001"}
+{"time_utc": 1793000356.6647325, "event": "SLOT_ENDED", "slot": "slot-028", "status": "failed", "path": "runs/slot-028/attempt-001", "stop_cause": null}
+{"time_utc": 1793002209.4789317, "event": "SLOT_ENDED", "slot": "slot-029", "status": "completed", "path": "runs/slot-029/attempt-001", "stop_cause": null}
+{"time_utc": 1793002209.501419, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-020", "slot-023", "slot-026", "slot-028", "slot-030", "slot-031", "slot-032", "slot-033", "slot-034", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1793002455.7491465, "event": "SLOT_START_INTENT", "slot": "slot-030", "attempt": "runs/slot-030/attempt-001"}
+{"time_utc": 1793002457.0742393, "event": "SLOT_START_INTENT", "slot": "slot-031", "attempt": "runs/slot-031/attempt-001"}
+{"time_utc": 1793002627.94757, "event": "SLOT_ENDED", "slot": "slot-030", "status": "completed", "path": "runs/slot-030/attempt-001", "stop_cause": null}
+{"time_utc": 1793002629.0857582, "event": "SLOT_START_INTENT", "slot": "slot-032", "attempt": "runs/slot-032/attempt-001"}
+{"time_utc": 1793003855.2106647, "event": "SLOT_ENDED", "slot": "slot-031", "status": "completed", "path": "runs/slot-031/attempt-001", "stop_cause": null}
+{"time_utc": 1793003856.4098604, "event": "SLOT_START_INTENT", "slot": "slot-033", "attempt": "runs/slot-033/attempt-001"}
+{"time_utc": 1793004139.908228, "event": "SLOT_ENDED", "slot": "slot-032", "status": "completed", "path": "runs/slot-032/attempt-001", "stop_cause": null}
+{"time_utc": 1793004141.2573502, "event": "SLOT_START_INTENT", "slot": "slot-034", "attempt": "runs/slot-034/attempt-001"}
+{"time_utc": 1793005024.1708746, "event": "SLOT_ENDED", "slot": "slot-033", "status": "completed", "path": "runs/slot-033/attempt-001", "stop_cause": null}
+{"time_utc": 1793005025.3667736, "event": "SLOT_START_INTENT", "slot": "slot-035", "attempt": "runs/slot-035/attempt-001"}
+{"time_utc": 1793006794.2130444, "event": "SLOT_ENDED", "slot": "slot-035", "status": "failed", "path": "runs/slot-035/attempt-001", "stop_cause": null}
+{"time_utc": 1793007680.3183181, "event": "SLOT_ENDED", "slot": "slot-034", "status": "completed", "path": "runs/slot-034/attempt-001", "stop_cause": null}
+{"time_utc": 1793007680.3358145, "event": "BATCH_PAUSED_AFTER_FAILURE", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-020", "slot-023", "slot-026", "slot-028", "slot-035", "slot-036", "slot-037", "slot-038", "slot-039", "slot-040"]}
+{"time_utc": 1793007734.7611396, "event": "SLOT_START_INTENT", "slot": "slot-036", "attempt": "runs/slot-036/attempt-001"}
+{"time_utc": 1793007735.845466, "event": "SLOT_START_INTENT", "slot": "slot-037", "attempt": "runs/slot-037/attempt-001"}
+{"time_utc": 1793007856.466328, "event": "SLOT_ENDED", "slot": "slot-037", "status": "completed", "path": "runs/slot-037/attempt-001", "stop_cause": null}
+{"time_utc": 1793007857.698017, "event": "SLOT_START_INTENT", "slot": "slot-038", "attempt": "runs/slot-038/attempt-001"}
+{"time_utc": 1793009210.1621597, "event": "SLOT_ENDED", "slot": "slot-036", "status": "completed", "path": "runs/slot-036/attempt-001", "stop_cause": null}
+{"time_utc": 1793009211.4319649, "event": "SLOT_START_INTENT", "slot": "slot-039", "attempt": "runs/slot-039/attempt-001"}
+{"time_utc": 1793009649.4996953, "event": "SLOT_ENDED", "slot": "slot-038", "status": "completed", "path": "runs/slot-038/attempt-001", "stop_cause": null}
+{"time_utc": 1793009650.7746906, "event": "SLOT_START_INTENT", "slot": "slot-040", "attempt": "runs/slot-040/attempt-001"}
+{"time_utc": 1793009861.8359194, "event": "SLOT_ENDED", "slot": "slot-040", "status": "completed", "path": "runs/slot-040/attempt-001", "stop_cause": null}
+{"time_utc": 1793010155.243768, "event": "SLOT_ENDED", "slot": "slot-039", "status": "completed", "path": "runs/slot-039/attempt-001", "stop_cause": null}
+{"time_utc": 1793010155.2652454, "event": "BATCH_FINISHED", "slots": 40, "noncompleted_slots": ["slot-004", "slot-006", "slot-007", "slot-009", "slot-010", "slot-012", "slot-013", "slot-014", "slot-015", "slot-016", "slot-017", "slot-020", "slot-023", "slot-026", "slot-028", "slot-035"]}

@@ -1,0 +1,43 @@
+{
+  "run_id": "run-3b4c2886b7d447d5a9a0217026750deb",
+  "incident_id": "incident_3007",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [],
+      "against_ids": [
+        "incident_3007-E-005"
+      ],
+      "predicted_observations": [
+        "Postgres connection_count approaching or exceeding connection_limit before 09:00:58Z.",
+        "Backend pool_in_use saturating while postgres connections remain below the server cap."
+      ],
+      "status": "REJECTED",
+      "open_questions": [
+        "No measured active-session, lock-wait, slow-query, or broader health observations are available, so non-capacity postgres degradation remains unassessed."
+      ]
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Tool failed: BAD_ARGS",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "dispatch",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "run_id": "run-5c44828344ce49cd865d22023550316e",
+  "incident_id": "incident_3005",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Causal chronology cannot be established from the supplied pack: every completed metric, log, database, topology, and change scope returns at most one record per service, so there is no baseline, no postgres connections_active rise toward 155, and no backend/gateway symptom onset that could order postgres saturation before downstream degradation. postgres_connection_exhaustion remains the best supported candidate (incident_3005-E-003 and incident_3005-E-004 plus observed topology and downstream symptoms), but the causal ordering is unobserved and all discriminating scopes are exhausted, so no hypothesis can be finalized with causal support.",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

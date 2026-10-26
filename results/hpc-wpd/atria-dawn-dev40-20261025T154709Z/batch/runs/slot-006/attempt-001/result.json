@@ -1,0 +1,25 @@
+{
+  "run_id": "run-b5a3a41e8eff4c84a26f3eeac0736799",
+  "incident_id": "incident_3005",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Tool failed: BAD_ARGS",
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FAILED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "UNRECOVERABLE_ERROR",
+    "outcome": "FAILED",
+    "failure_stage": "dispatch",
+    "stop_completed": true,
+    "runtime_failure": true
+  }
+}
