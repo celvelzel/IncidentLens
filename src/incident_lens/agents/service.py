@@ -19,7 +19,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v12-evidence-reconciliation-v7-task-acl"
+PROMPT_VERSION = "roles-v12-evidence-reconciliation-v8-empty-update-guard"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -172,6 +172,18 @@ async def decide(provider, state_payload):
             "Remove stale against_ids when chronology or new evidence resolves them. "
             "Updates replace the assessment, so include all still-relevant citations. "
             "If the assessment already matches, omit updates. Full mode will refresh review after changes."
+        )
+    else:
+        # Match the post-generation guard before a provider generates/repairs
+        # output. Updates revise existing hypotheses; they never create them.
+        schema = create_model(
+            "DynamicDecision", __base__=schema,
+            hypothesis_updates=(list[Hypothesis], Field(default_factory=list, max_length=0)),
+        )
+        instruction = (
+            "\nFor this decision, hypothesis_updates must be an empty array []. "
+            "Never create new hypotheses through hypothesis_updates. "
+            "When no hypotheses exist, assign evidence investigation tasks first."
         )
     if state_payload.get("fixed_schedule_completed"):
         instruction += "\nThe fixed investigation schedule is complete. Reconcile the shared board, then FINALIZE or ABSTAIN; never assign more tools or tasks."

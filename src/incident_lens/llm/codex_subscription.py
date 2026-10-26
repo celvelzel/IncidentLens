@@ -24,13 +24,63 @@ from incident_lens.llm.provider import LLMProvider, ProviderError, json_payload
 from incident_lens.llm.structured_output import strict_schema
 
 REQUIRED_MODEL = "gpt-5.6-luna"
-
 DISABLED_FEATURES = (
     "shell_tool", "unified_exec", "shell_snapshot", "multi_agent", "multi_agent_v2",
     "apps", "plugins", "hooks", "computer_use", "browser_use", "browser_use_external",
     "in_app_browser", "image_generation", "view_image", "sleep_tool", "skill_search",
-    "goals", "workspace_dependencies", "code_mode", "code_mode_only", "unbounded_connection_retries",
+    "goals", "workspace_dependencies", "code_mode", "code_mode_only", "code_mode_host",
+    "code_mode_interrupt", "tool_suggest", "remote_plugin", "in_app_local_automation",
+    "unbounded_connection_retries",
 )
+
+
+def subscription_command(executable, model, directory, reasoning_effort, catalog):
+    """Disable tool providers before execution; event auditing is a second guard.
+
+    code_mode_host is distinct from code_mode in current CLI releases and can
+    expose tools even when shell/apps features are disabled. Do not depend on
+    the model obeying a no-tools prompt to isolate an investigation call.
+    """
+    directory = Path(directory).resolve()
+    command = [executable, "exec", "--ignore-user-config", "--ephemeral",
+               "--skip-git-repo-check", "--sandbox", "read-only", "--json",
+               "--color", "never", "--model", model,
+               "--output-schema", str(directory / "output-schema.json"),
+               "--output-last-message", str(directory / "output.json")]
+    overrides = {
+        "model_provider": "openai", "forced_login_method": "chatgpt",
+        "approval_policy": "never", "project_doc_max_bytes": 0,
+        "web_search": "disabled", "model_reasoning_effort": reasoning_effort,
+        "hide_agent_reasoning": True, "model_reasoning_summary": "none",
+        "model_instructions_file": str(directory / "instructions.txt"),
+        "mcp_servers": {}, "agents.enabled": False,
+        "model_catalog_json": str(Path(catalog).resolve()),
+    }
+    for key, value in overrides.items():
+        command += ["--config", key + "=" + json.dumps(value)]
+    for feature in DISABLED_FEATURES:
+        command += ["--disable", feature]
+    return command + ["-"]
+
+
+def write_inference_catalog(executable, model, path):
+    """Keep the bundled model unchanged except its local tool presentation.
+
+    Some models mandate code_mode_only regardless of disabled tool features.
+    Use the documented local-catalog override rather than enabling its executor
+    or accepting unexpected tool events. This command is local, not inference.
+    """
+    try:
+        result = subprocess.run([executable, "debug", "models", "--bundled"],
+                                env=account_environment(), capture_output=True, timeout=20, check=False)
+        models = json.loads(result.stdout)["models"]
+        matches = [entry for entry in models if entry.get("slug") == model]
+        if result.returncode != 0 or len(matches) != 1:
+            raise ValueError("model missing or ambiguous")
+        entry = dict(matches[0], tool_mode="direct", node_repl_disabled=True)
+    except (OSError, subprocess.TimeoutExpired, ValueError, KeyError, TypeError, AttributeError):
+        raise ProviderError("CODEX_INFERENCE_CATALOG_UNAVAILABLE") from None
+    atomic_json(path, {"models": [entry]}, exclusive=True)
 
 
 def safe_diagnostic(payload):
@@ -49,6 +99,10 @@ def account_environment():
         "OPENAI_API_KEY", "CODEX_API_KEY", "OPENAI_BASE_URL", "OPENAI_ORG_ID",
         "OPENAI_PROJECT_ID", "CODEX_ACCESS_TOKEN", "CODEX_THREAD_ID",
         "CODEX_INTERNAL_ORIGINATOR_OVERRIDE",
+        # The desktop injects its tool transport independently of config.toml
+        # and feature switches. Never attach an inference worker to that host.
+        "CODEX_APP_TOOLS_PIPE_PATH", "CODEX_SESSION_ID", "CODEX_TOOL_CALL_ID",
+        "CODEX_TASK_WORKSPACE_VERIFYING_IDENTITY", "BROWSER_USE_ACCESS_VERIFYING_IDENTITY",
     }
     # Never pass the IncidentLens endpoint credentials into another process.
     return {key: value for key, value in os.environ.items()
@@ -139,6 +193,8 @@ class CodexSubscriptionProvider(LLMProvider):
             "temperature_verified": False, "reasoning_effort": reasoning_effort,
             "fresh_ephemeral_session_per_call": True, "request_timeout_seconds": timeout,
             "tools_requested_disabled": list(DISABLED_FEATURES),
+            "mcp_servers_requested": {}, "desktop_tool_transport_inherited": False,
+            "local_tool_mode": "direct", "local_node_repl_disabled": True,
             "tool_event_audit": "reject_non_message_items",
             "os_level_oracle_isolation_verified": False,
             "platform_api_equivalent": False, "underlying_http_attempts": None,
@@ -179,6 +235,8 @@ class CodexSubscriptionProvider(LLMProvider):
         try:
             if self.stop_guard is not None:
                 self.stop_guard()
+            catalog = directory / "inference-model-catalog.json"
+            await asyncio.to_thread(write_inference_catalog, self.executable, self.model_id, catalog)
             auth = await asyncio.to_thread(inspect_auth, self.executable)
             atomic_json(directory / "auth-status.json", auth)
             schema = strict_schema(output_model)
@@ -192,23 +250,9 @@ class CodexSubscriptionProvider(LLMProvider):
                         "system_sha256": hashlib.sha256(system_prompt.encode()).hexdigest(),
                         "parameters": self.model_parameters})
             with tempfile.TemporaryDirectory(prefix="incidentlens-codex-") as temporary:
-                command = [self.executable, "exec", "--ignore-user-config", "--ephemeral",
-                           "--skip-git-repo-check", "--sandbox", "read-only", "--json",
-                           "--color", "never", "--model", self.model_id,
-                           "--output-schema", str((directory / "output-schema.json").resolve()),
-                           "--output-last-message", str((directory / "output.json").resolve())]
-                overrides = {
-                    "model_provider": "openai", "forced_login_method": "chatgpt",
-                    "approval_policy": "never", "project_doc_max_bytes": 0,
-                    "web_search": "disabled", "model_reasoning_effort": self.reasoning_effort,
-                    "hide_agent_reasoning": True, "model_reasoning_summary": "none",
-                    "model_instructions_file": str((directory / "instructions.txt").resolve()),
-                }
-                for key, value in overrides.items():
-                    command += ["--config", key + "=" + json.dumps(value)]
-                for feature in DISABLED_FEATURES:
-                    command += ["--disable", feature]
-                command.append("-")
+                command = subscription_command(
+                    self.executable, self.model_id, directory, self.reasoning_effort, catalog,
+                )
                 if self.stop_guard is not None:
                     self.stop_guard()
                 permit = self.request_guard() if self.request_guard is not None else None
@@ -234,21 +278,24 @@ class CodexSubscriptionProvider(LLMProvider):
                 # to bounded redacted diagnostics through a separate CLI check.
                 atomic_json(directory / "process.json", {"exit_code": process.returncode,
                             "stderr_bytes": len(stderr), "stderr_sha256": hashlib.sha256(stderr).hexdigest()})
-                if process.returncode != 0:
-                    # Do not store arbitrary remote response errors. Startup
-                    # errors (no JSON event stream) are local CLI diagnostics.
-                    if self.diagnostic_mode:
-                        errors = []
-                        for line in stdout.splitlines():
-                            try:
-                                entry = json.loads(line)
-                            except ValueError:
-                                continue
-                            if entry.get("type") in {"error", "turn.failed"}:
-                                errors.append(safe_diagnostic(json.dumps(entry).encode()))
+                # A CLI may exit 0 while reporting turn.failed in its event
+                # stream. Synthetic diagnostics must cover that path as well.
+                if self.diagnostic_mode:
+                    errors = []
+                    for line in stdout.splitlines():
+                        try:
+                            entry = json.loads(line)
+                        except ValueError:
+                            continue
+                        if entry.get("type") in {"error", "turn.failed"}:
+                            errors.append(safe_diagnostic(json.dumps(entry).encode()))
+                    if errors or process.returncode != 0:
                         atomic_json(directory / "startup-diagnostic.json", {
                             "scope": "synthetic probe only", "redacted_text": safe_diagnostic(stderr),
                             "redacted_errors": errors[:5]})
+                if process.returncode != 0:
+                    # Do not store arbitrary remote response errors. Startup
+                    # errors (no JSON event stream) are local CLI diagnostics.
                     unavailable = b"not supported when using Codex with a ChatGPT account"
                     if unavailable in stdout or unavailable in stderr:
                         raise ProviderError("CODEX_MODEL_NOT_AVAILABLE_FOR_CHATGPT", usage)

@@ -252,6 +252,102 @@ async def test_reconciliation_rejects_unobserved_ids_and_changed_cause():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("variant", ["single", "full", "dynamic_no_verifier", "fixed"])
+@pytest.mark.parametrize("benchmark_rca", [False, True])
+async def test_no_existing_hypotheses_forbids_updates_in_provider_schema(variant, benchmark_rca):
+    from pydantic import ValidationError
+
+    from incident_lens.llm.structured_output import strict_schema
+    from incident_lens.schemas import Hypothesis
+
+    initial, _ = await decide(MockProvider(), {})
+    good = initial.model_dump(mode="json")
+    bad = dict(good, hypothesis_updates=[Hypothesis(
+        hypothesis_id="H1", culprit_service="backend", failure_mode="fixture-cause",
+    ).model_dump(mode="json")])
+
+    class CheckSchema:
+        async def structured_call(self, role, system, payload, schema):
+            assert strict_schema(schema)["properties"]["hypothesis_updates"]["maxItems"] == 0
+            assert "hypothesis_updates must be an empty array []" in system
+            with pytest.raises(ValidationError, match="hypothesis_updates"):
+                schema.model_validate(bad)
+            return schema.model_validate(good), {}
+
+    result, _ = await decide(CheckSchema(), dict(
+        variant=variant, benchmark_rca=benchmark_rca, hypotheses=[], evidence_index={},
+    ))
+    assert result.action == "INVESTIGATE" and result.assignments
+    assert result.hypothesis_updates == []
+
+
+@pytest.mark.asyncio
+async def test_empty_board_invalid_updates_repair_before_runtime_guard():
+    import json
+
+    import httpx
+
+    from incident_lens.llm import RealChatProvider
+    from incident_lens.schemas import Hypothesis
+
+    good = (await decide(MockProvider(), {}))[0].model_dump(mode="json")
+    bad = dict(good, hypothesis_updates=[Hypothesis(
+        hypothesis_id="H1", culprit_service="backend", failure_mode="fixture-cause",
+    ).model_dump(mode="json")])
+    requests = []
+
+    async def respond(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(200, json={
+            "choices": [{"message": {"content": json.dumps(bad if len(requests) == 1 else good)}}],
+            "usage": {"prompt_tokens": 10, "completion_tokens": 2, "total_tokens": 12},
+        })
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        provider = RealChatProvider("https://fixture.invalid", "fixture-secret", "fixture", client=client)
+        result, usage = await decide(provider, dict(benchmark_rca=True, hypotheses=[]))
+    assert result.action == "INVESTIGATE" and result.hypothesis_updates == []
+    assert len(requests) == usage["llm_calls"] == 2
+    assert usage["total_tokens"] == 24
+    assert requests[0]["response_format"]["json_schema"]["schema"]["properties"]["hypothesis_updates"]["maxItems"] == 0
+
+
+@pytest.mark.asyncio
+async def test_registered_hypotheses_can_still_be_reconciled():
+    from incident_lens.schemas import Hypothesis
+
+    old = Hypothesis(hypothesis_id="known", culprit_service="backend", failure_mode="fixture-cause")
+    initial = (await decide(MockProvider(), {}))[0]
+    revised = old.model_copy(update={"status": "SUPPORTED", "support_ids": ["observed"]})
+
+    class UpdateExisting:
+        async def structured_call(self, role, system, payload, schema):
+            return schema.model_validate(dict(initial.model_dump(mode="json"),
+                                               hypothesis_updates=[revised.model_dump(mode="json")])), {}
+
+    result, _ = await decide(UpdateExisting(), dict(
+        benchmark_rca=True, hypotheses=[old.model_dump()], evidence_catalog={"observed": {}},
+    ))
+    assert result.hypothesis_updates[0].model_dump() == revised.model_dump()
+
+
+@pytest.mark.asyncio
+async def test_bypassing_empty_board_schema_still_fails_closed():
+    from incident_lens.schemas import Hypothesis
+
+    initial = (await decide(MockProvider(), {}))[0]
+
+    class BypassSchema:
+        async def structured_call(self, *args):
+            return initial.model_copy(update={"hypothesis_updates": [Hypothesis(
+                hypothesis_id="H1", culprit_service="backend", failure_mode="fixture-cause",
+            )]}), {}
+
+    with pytest.raises(ProviderError, match="COORDINATOR_HYPOTHESIS_UPDATE_INVALID"):
+        await decide(BypassSchema(), dict(benchmark_rca=True, hypotheses=[]))
+
+
+@pytest.mark.asyncio
 async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metrics():
     from incident_lens.agents.service import InvestigatorPlan
 
