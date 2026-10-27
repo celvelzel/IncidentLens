@@ -93,6 +93,7 @@ def merge_results(state: InvestigationState, results: list, registry) -> Investi
         combined["predicted_observations"] = sorted(
             {observation for h in batch for observation in h.predicted_observations}
         )
+        combined["optional_questions"] = sorted({q for h in batch for q in h.optional_questions})
     payload["hypotheses"] = list(hypotheses.values())
     # This final validation is performed atomically, before a new graph snapshot.
     validated = InvestigationState.model_validate_json(__import__("json").dumps(payload))

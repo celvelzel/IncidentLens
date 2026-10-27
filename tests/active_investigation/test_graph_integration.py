@@ -248,7 +248,7 @@ def test_measured_provider_cost_adapter_uses_delegate_recovery():
     assert budget_projection(run).physical_request_multiplier == 4
 
 
-@pytest.mark.parametrize("physical_reserve,logical_reserve,selected", [(3, 1, 1), (9, 3, 0)])
+@pytest.mark.parametrize("physical_reserve,logical_reserve,selected", [(3, 2, 1), (9, 3, 0)])
 def test_recovery_physical_reserve_normalized_once(physical_reserve, logical_reserve, selected):
     from incident_lens.orchestration.active_investigation.policy import apply_policy
     from incident_lens.orchestration.recovery import RecoveryConfig
@@ -285,7 +285,22 @@ def test_recovery_physical_reserve_normalized_once(physical_reserve, logical_res
     result = apply_policy(run, run.state, proposal)
     details = next(e.details for e in run.state.events if e.event_type == "ACTION_SELECTED")
     assert details["config"]["reserve_verifier_requests"] == logical_reserve
-    # Physical 3 is covered by one logical reserve (4), never multiplied to 12.
+    # Physical 3 fits one logical retry bound (4), while the graph additionally
+    # needs a final decision and review: reserve two logical calls (8), not 12.
     # Physical 9 conservatively rounds to 12: one task 8 + reserve12 exceeds18.
     assert len(result.assignments) == selected
     assert run.call_budget.snapshot().remaining_request_permits == 18
+
+
+async def test_selector_reserves_both_final_decision_and_review_before_publishing_tasks():
+    state = await run_investigation(
+        "incident_001", MockProvider(), ROOT / "data",
+        budget=Budget(max_llm_calls=4),
+        workflow=WorkflowOptions(selection_policy="active_evidence"),
+    )
+    selected = [e.details for e in state.events if e.event_type == "ACTION_SELECTED"]
+    assert selected and selected[0]["config"]["reserve_verifier_requests"] == 2
+    assert all(not d["selector_executed_tasks"] for d in selected)
+    assert state.tasks == []
+    assert not state.termination.runtime_failure
+    assert not any(e.event_type == "RUNTIME_ERROR" for e in state.events)

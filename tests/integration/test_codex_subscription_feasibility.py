@@ -90,9 +90,10 @@ async def test_old_model_receipt_cannot_start_new_model_investigation(tmp_path):
     assert not args.out.exists()
 
 
-@pytest.mark.parametrize("tool_event", [False, True, "remote_error"])
+@pytest.mark.parametrize("tool_event", [False, True, "remote_error", "recovered"])
+@pytest.mark.parametrize("diagnostic_mode", [False, True])
 async def test_transport_disables_tool_providers_and_still_rejects_tool_events(
-    tmp_path, monkeypatch, tool_event,
+    tmp_path, monkeypatch, tool_event, diagnostic_mode,
 ):
     """Exercise actual launch arguments and audit, without a remote model call."""
     from pydantic import BaseModel
@@ -116,9 +117,11 @@ async def test_transport_disables_tool_providers_and_still_rejects_tool_events(
         async def communicate(self, payload):
             if tool_event == "remote_error":
                 return (b'{"type":"turn.failed","error":{"message":"Bearer fixture-secret https://example.org/private"}}', b"")
-            item = {"type": "mcp_tool_call" if tool_event else "agent_message"}
+            item = {"type": "mcp_tool_call" if tool_event is True else "agent_message"}
             events = [{"type": "item.completed", "item": item},
                       {"type": "turn.completed", "usage": {"input_tokens": 2, "output_tokens": 3}}]
+            if tool_event == "recovered":
+                events.insert(0, {"type": "error", "message": "Reconnecting... 1/5 (stream disconnected)"})
             return b"\n".join(json.dumps(e).encode() for e in events), b""
 
     async def launch(*command, **kwargs):
@@ -138,21 +141,28 @@ async def test_transport_disables_tool_providers_and_still_rejects_tool_events(
         return Process()
 
     monkeypatch.setattr(transport.asyncio, "create_subprocess_exec", launch)
-    provider = CodexSubscriptionProvider("gpt-5.6-luna", tmp_path / "calls", diagnostic_mode=True)
+    provider = CodexSubscriptionProvider("gpt-5.6-luna", tmp_path / "calls", diagnostic_mode=diagnostic_mode)
     if tool_event == "remote_error":
         with pytest.raises(ProviderError, match="CODEX_REMOTE_TURN_FAILED"):
             await provider.structured_call("single", "Return JSON only", {}, Answer)
-        diagnostic = next((tmp_path / "calls").glob("*/startup-diagnostic.json")).read_text()
+        diagnostic = next((tmp_path / "calls").glob("*/remote-diagnostic.json")).read_text()
         assert "fixture-secret" not in diagnostic and "example.org" not in diagnostic
         assert "turn.failed" in diagnostic
-    elif tool_event:
+        assert next((tmp_path / "calls").glob("*/events.json")).exists()
+    elif tool_event is True:
         with pytest.raises(ProviderError, match="CODEX_UNEXPECTED_TOOL_ACTIVITY"):
             await provider.structured_call("single", "Return JSON only", {}, Answer)
         failure = next((tmp_path / "calls").glob("*/failure.json"))
         assert json.loads(failure.read_text())["unexpected_item_type"] == "mcp_tool_call"
     else:
-        answer, _ = await provider.structured_call("single", "Return JSON only", {}, Answer)
+        answer, usage = await provider.structured_call("single", "Return JSON only", {}, Answer)
         assert answer.value == 5
+        assert usage["measured_total_tokens"] == 5
+        assert usage["codex_invocations"] == 1
+        assert usage["underlying_http_requests"] is None
+        if tool_event == "recovered":
+            diagnostic = json.loads(next((tmp_path / "calls").glob("*/remote-diagnostic.json")).read_text())
+            assert diagnostic["errors"][0]["category"] == "reconnecting"
     assert len(launches) == 1
 
 
@@ -182,3 +192,42 @@ def test_catalog_preserves_model_and_prompts_but_removes_code_mode_only(tmp_path
     with pytest.raises(ProviderError, match="CATALOG_UNAVAILABLE"):
         transport.write_inference_catalog("fixture-codex", "missing-model", tmp_path / "bad.json")
     assert not (tmp_path / "bad.json").exists()
+
+
+def test_reconnected_turn_uses_final_completion_usage():
+    events = [{"type": "error", "message": "Reconnecting... 1/5 (stream disconnected before completion)"},
+              {"type": "item.completed", "item": {"type": "agent_message", "text": "{}"}},
+              {"type": "turn.completed", "usage": {"input_tokens": 7, "output_tokens": 2}}]
+    usage, safe = decode_events(b"\n".join(json.dumps(e).encode() for e in events))
+    assert usage == {"input_tokens": 7, "output_tokens": 2}
+    assert safe[0] == {"type": "error", "item_type": None}
+
+
+@pytest.mark.parametrize("events,code", [
+    ([{"type": "error", "message": "Reconnecting... 1/5"}], "COMPLETION_MISSING"),
+    ([{"type": "error", "message": "server rejected request"}, {"type": "turn.completed"}], "REMOTE_TURN_FAILED"),
+    ([{"type": "error", "message": "Reconnecting... 1/5"}, {"type": "turn.failed"},
+      {"type": "turn.completed"}], "REMOTE_TURN_FAILED"),
+    ([{"type": "turn.completed"}, {"type": "error", "message": "Reconnecting... 1/5"}], "REMOTE_TURN_FAILED"),
+    ([{"type": "error", "message": "Reconnecting... 1/5"},
+      {"type": "item.completed", "item": {"type": "mcp_tool_call"}},
+      {"type": "turn.completed"}], "UNEXPECTED_TOOL_ACTIVITY"),
+    ([{"type": "turn.completed"}, {"type": "turn.completed"}], "COMPLETION_MISSING"),
+])
+def test_reconnect_does_not_bypass_failure_or_isolation(events, code):
+    with pytest.raises(ProviderError, match=code):
+        decode_events(b"\n".join(json.dumps(e).encode() for e in events))
+
+
+def test_event_diagnostics_retains_metadata_without_response_or_secret_text():
+    from incident_lens.llm.codex_subscription import event_diagnostics
+
+    stream = b'\n'.join([b'not json', b'[]',
+        b'{"type":"item.completed","item":{"type":"agent_message","text":"private incident evidence"}}',
+        b'{"type":"turn.failed","error":{"message":"Bearer fixture-secret https://example.org/private"}}'])
+    diagnostic = event_diagnostics(stream)
+    assert diagnostic["invalid_lines"] == 2
+    assert diagnostic["errors"][0]["category"] == "unclassified"
+    assert len(diagnostic["errors"][0]["message_sha256"]) == 64
+    assert not any(secret in json.dumps(diagnostic) for secret in
+                   ["fixture-secret", "example.org", "private incident evidence"])

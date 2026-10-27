@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "value": {
+      "title": "Value",
+      "type": "integer"
+    },
+    "available_tools": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Available Tools",
+      "type": "array"
+    }
+  },
+  "required": [
+    "value",
+    "available_tools"
+  ],
+  "title": "Answer",
+  "type": "object"
+}

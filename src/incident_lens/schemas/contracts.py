@@ -135,6 +135,7 @@ class Hypothesis(StrictModel):
     predicted_observations: list[Text] = Field(default_factory=list)
     status: Literal["OPEN", "SUPPORTED", "REJECTED"] = "OPEN"
     open_questions: list[Text] = Field(default_factory=list)
+    optional_questions: list[Text] = Field(default_factory=list)
 
 
 class Review(StrictModel):
@@ -186,6 +187,12 @@ class RCAReport(StrictModel):
     rejected_hypotheses: list[Hypothesis] = Field(default_factory=list)
     unresolved: list[Text] = Field(default_factory=list)
     stop_reason: Text
+    assessment_level: Literal["CONFIRMED", "LIKELY", "INSUFFICIENT"] | None = None
+    provisional_hypotheses: list[Hypothesis] = Field(default_factory=list, max_length=3)
+    provisional_observations: list[Text] = Field(default_factory=list)
+    assessment_basis: list[Text] = Field(default_factory=list)
+    next_steps: list[Text] = Field(default_factory=list)
+    optional_questions: list[Text] = Field(default_factory=list)
     diagnosis_status: Literal["RESOLVED", "INCONCLUSIVE"] | None = None
     remediation_status: Literal["NOT_STARTED", "PLAN_READY", "PLAN_FAILED", "SKIPPED"] = (
         "NOT_STARTED"
@@ -196,6 +203,20 @@ class RCAReport(StrictModel):
 
     @model_validator(mode="after")
     def resolution_semantics(self):
+        if self.assessment_level == "CONFIRMED" and self.status != "RESOLVED":
+            raise ValueError("CONFIRMED assessment requires a resolved report")
+        if self.status == "RESOLVED" and self.assessment_level not in (None, "CONFIRMED"):
+            raise ValueError("resolved assessment must be CONFIRMED")
+        if self.status == "RESOLVED" and self.provisional_hypotheses:
+            raise ValueError("resolved reports must not contain provisional diagnoses")
+        if self.assessment_level == "LIKELY" and (
+            self.status != "INCONCLUSIVE" or not self.provisional_hypotheses
+        ):
+            raise ValueError("LIKELY requires an inconclusive report with an evidence-backed provisional hypothesis")
+        if self.provisional_observations and not self.provisional_hypotheses:
+            raise ValueError("provisional observations require provisional hypotheses")
+        if any(h.status != "OPEN" or not h.support_ids for h in self.provisional_hypotheses):
+            raise ValueError("provisional hypotheses must remain OPEN with cited support")
         if self.diagnosis_status is not None and self.diagnosis_status != (
             "RESOLVED" if self.status == "RESOLVED" else "INCONCLUSIVE"
         ):
@@ -320,6 +341,8 @@ class InvestigationState(StrictModel):
             ]
             if self.report.root_cause is not None:
                 cited_ids += self.report.root_cause.support_ids + self.report.root_cause.against_ids
+            cited_ids += [eid for h in self.report.provisional_hypotheses
+                          for eid in h.support_ids + h.against_ids]
         if not set(cited_ids).issubset(self.evidence_index):
             raise ValueError("all shared citations must exist in current incident evidence_index")
         return self

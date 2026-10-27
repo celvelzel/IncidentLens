@@ -192,9 +192,10 @@ class ToolRegistry:
                     finally:
                         executor.shutdown(wait=False, cancel_futures=True)
                 limit = getattr(parsed, "limit", 50)
-                if len(records) > limit:
-                    cursor = str(limit)
-                records = records[:limit]
+                offset = getattr(parsed, "offset", 0)
+                if len(records) > offset + limit:
+                    cursor = str(offset + limit)
+                records = records[offset:offset + limit]
                 with self._lock:
                     if self._frozen:
                         raise PermissionError("registry is stopped")

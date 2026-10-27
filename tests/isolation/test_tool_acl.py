@@ -86,6 +86,37 @@ def test_issued_context_positive_query_and_stable_ids(registry, provider):
     assert all(item.source_path == "public/logs.jsonl" for item in first.records)
 
 
+def test_optional_offset_pages_are_reachable_and_only_returned_rows_are_observed(
+    registry, provider, monkeypatch,
+):
+    from pydantic import Field
+
+    from incident_lens.tools.arguments import ARGUMENT_MODELS, LogsArgs
+    from incident_lens.tools.registry import HANDLERS
+
+    class PagedLogs(LogsArgs):
+        offset: int = Field(default=0, ge=0)
+
+    first = provider._records("incident_001", "logs")[0]
+    rows = [first.model_copy(update={"evidence_id": f"incident_001-page-{i}"}) for i in range(7)]
+    monkeypatch.setitem(ARGUMENT_MODELS, "query_logs", PagedLogs)
+    monkeypatch.setitem(HANDLERS, "query_logs", lambda *args: rows)
+    context = registry.create_context("logs")
+    observed = []
+    offset = 0
+    for expected_cursor in ("3", "6", None):
+        result = registry.execute(context, "query_logs", log_args(provider, offset=offset, limit=3))
+        assert result.ok and result.next_cursor == expected_cursor
+        observed.extend(r.evidence_id for r in result.records)
+        assert registry.observed_ids(context) == set(observed)
+        if result.next_cursor:
+            offset = int(result.next_cursor)
+    assert observed == [r.evidence_id for r in rows]
+    before = registry.call_count
+    bad = registry.execute(context, "query_logs", log_args(provider, offset=-1))
+    assert bad.error_code == "BAD_ARGS" and registry.call_count == before
+
+
 @pytest.mark.parametrize("role", list(ROLE_TOOL_ACL))
 def test_every_role_denies_tools_outside_acl(registry, provider, role):
     context = registry.create_context(role)

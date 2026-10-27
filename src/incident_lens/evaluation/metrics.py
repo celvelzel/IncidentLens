@@ -9,7 +9,8 @@ def report_citations(report):
     if not report:
         return []
     ids = list(report.get("supporting_evidence_ids", []))
-    for hypothesis in [report.get("root_cause"), *report.get("rejected_hypotheses", [])]:
+    for hypothesis in [report.get("root_cause"), *report.get("rejected_hypotheses", []),
+                       *report.get("provisional_hypotheses", [])]:
         if hypothesis:
             ids.extend(hypothesis.get("support_ids", []))
             ids.extend(hypothesis.get("against_ids", []))

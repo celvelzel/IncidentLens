@@ -135,6 +135,8 @@ export function evidenceContext(state) {
     findings:state.findings.filter(f => f.evidence_ids?.includes(id)).map(f => ({finding_id:f.finding_id,role:f.role,relation:f.relation,claim:f.claim})),
     hypotheses:state.hypotheses.filter(h => h.support_ids?.includes(id) || h.against_ids?.includes(id)).map(h => ({failure_mode:h.failure_mode,status:h.status,relation:h.against_ids?.includes(id)?'against':'supports'})),
     report_references:state.report ? { supporting:state.report.supporting_evidence_ids?.includes(id) || false,
-      causal_chain:(state.report.causal_chain || []).filter(line => line.includes(`[${id}]`)) } : null,
+      provisional:(state.report.provisional_hypotheses || []).some(h => h.support_ids?.includes(id) || h.against_ids?.includes(id)),
+      causal_chain:(state.report.causal_chain || []).filter(line => line.includes(`[${id}]`)),
+      provisional_observations:(state.report.provisional_observations || []).filter(line => line.includes(`[${id}]`)) } : null,
   }]));
 }

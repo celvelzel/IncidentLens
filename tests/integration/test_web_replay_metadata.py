@@ -66,6 +66,16 @@ def test_mismatched_scope_or_result_is_not_displayed_as_verified(recorded):
     assert "protocol" not in meta
 
 
+def test_changed_additive_assessment_is_not_accepted_as_matching_companion(recorded):
+    client, run = recorded
+    result = json.loads((run / "result.json").read_text())
+    result["assessment_basis"] = ["Altered companion assessment"]
+    (run / "result.json").write_text(json.dumps(result))
+    meta = client.post("/api/replay", json={"path": "results/recorded/trace.json"}).json()["replay_metadata"]
+    assert "verification" not in meta
+    assert meta["warnings"]
+
+
 @pytest.mark.parametrize("content", ["{", "[]", "null", "{}"])
 def test_missing_or_corrupt_trace_is_a_controlled_error(recorded, content):
     client, run = recorded

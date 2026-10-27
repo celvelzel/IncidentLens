@@ -1,0 +1,23 @@
+[
+  {
+    "type": "thread.started",
+    "item_type": null
+  },
+  {
+    "type": "item.completed",
+    "item_type": "error",
+    "isolation_notice": "code_mode_host_disabled"
+  },
+  {
+    "type": "turn.started",
+    "item_type": null
+  },
+  {
+    "type": "item.completed",
+    "item_type": "agent_message"
+  },
+  {
+    "type": "turn.completed",
+    "item_type": null
+  }
+]

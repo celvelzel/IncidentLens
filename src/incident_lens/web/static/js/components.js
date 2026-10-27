@@ -138,7 +138,7 @@ export function evidenceDrawerHtml(record, observation = null) {
       <h3>关联 Finding / Hypothesis</h3>
       ${(observation.findings || []).map(f=>`<p><strong>${escapeHtml(f.role)} · ${escapeHtml(f.relation)}</strong><br>${escapeHtml(f.claim)}<br><span class="tag-id">${escapeHtml(f.finding_id)}</span></p>`).join('') || '<p class="text-muted">当前前缀没有关联 Finding。</p>'}
       ${(observation.hypotheses || []).map(h=>`<p>${escapeHtml(h.failure_mode)} · ${escapeHtml(h.relation)} · ${escapeHtml(h.status)}</p>`).join('')}
-      <h3>报告引用</h3>${observation.report_references ? `<p>${observation.report_references.supporting ? '最终报告支持证据' : '未列为最终报告支持证据'}</p>${(observation.report_references.causal_chain || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}` : '<p class="text-muted">当前前缀尚未生成报告。</p>'}` : ""}
+      <h3>报告引用</h3>${observation.report_references ? `<p>${observation.report_references.supporting ? '最终报告支持证据' : observation.report_references.provisional ? '用于待确认解释，尚未支持最终诊断' : '未列为最终报告支持证据'}</p>${(observation.report_references.causal_chain || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}${(observation.report_references.provisional_observations || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}` : '<p class="text-muted">当前前缀尚未生成报告。</p>'}` : ""}
       <div class="field">
         <span class="field-label">原始摘录</span>
         <pre class="json-block" style="white-space:pre-wrap">${escapeHtml(record.excerpt)}</pre>

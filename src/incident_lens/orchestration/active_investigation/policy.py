@@ -129,6 +129,13 @@ def apply_policy(run, state, proposal):
     budget = budget_projection(run)
     acl = role_acl(run.workflow)
     config = run.workflow.active_evidence_config
+    # Match coordinate()'s final-decision + review reservation before selecting
+    # tasks. Otherwise a selection can be published as executable and rejected
+    # moments later by the graph for insufficient finishing-call budget.
+    config = PolicyConfig.model_validate(config.model_dump() | {
+        "reserve_verifier_requests": max(
+            config.reserve_verifier_requests, 1 + int(run.variant in {"full", "single"})),
+    })
     recovery = getattr(getattr(run.provider, "delegate", run.provider), "recovery", None)
     if recovery and recovery.enabled:
         config = PolicyConfig.model_validate(
