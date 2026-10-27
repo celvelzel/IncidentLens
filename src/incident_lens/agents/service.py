@@ -20,7 +20,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v12-evidence-reconciliation-v8-empty-update-guard"
+PROMPT_VERSION = "roles-v12-evidence-reconciliation-v9-material-blockers"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -36,6 +36,15 @@ A config change supporting one cause does not alone contradict all other causes.
 record saying a service has no dependencies does not show that service is healthy or fast.
 Absent/empty telemetry is unknown, not observed contrary evidence. Do not reject a candidate
 merely to clear a finalization guard; preserve uncertainty when the observations cannot refute it.
+Separate blocking open_questions from optional_questions. A blocking question must identify a
+causal gap whose plausible answers would change the selected cause, not merely make the report
+more complete. Put additional baseline trends, persistence, severity labels or corroboration in
+optional_questions unless their absence leaves a concrete competing mechanism unresolved.
+Generic timeouts, business rejections and unrelated background errors do not by themselves
+establish a competing failure mechanism. Do not demand proof that every imaginable alternative
+is false. Keep untested alternatives OPEN without claiming they are refuted; consult the runtime's
+alternative_assessments to distinguish material competitors from unsupported possibilities.
+Never hide a real contradiction or relabel a necessary attribution check as optional to pass a gate.
 Return only JSON matching the schema. Do not return hidden reasoning or secrets."""
 ROLE_PROMPTS = {
     "coordinator": "Select one or two specialist tasks from new findings, budget and requested checks. Use only supplied role_tool_acl tool names; never invent tool names. Each investigation task costs a planning call and an analysis call, followed by review and a new decision. Reserve these calls; prioritize a single decisive check when remaining budget is small. Never reuse completed task IDs. INVESTIGATE requires assignments, null selected_hypothesis_id and null stop_reason. FINALIZE/ABSTAIN require empty assignments and a nonempty stop_reason; only FINALIZE selects an existing hypothesis ID. Finalize only with causal support and sufficient review; otherwise abstain.",
@@ -44,7 +53,7 @@ ROLE_PROMPTS = {
     "database": DATABASE_PROMPT
     + " Submit structured requested_checks (RequestCheck) for additional discriminating tasks where necessary.",
     "changes": "Compare changes before AND during the observation window and actual config diffs against observed symptoms. started_at is the start of observation, not a proven failure onset; do not use it as the query end by default. For initial discovery omit optional time/type filters unless a justified narrower window is supplied. Omitted query_changes time bounds cover the entire supplied evidence pack; they are not an invalid or incomplete window. A successful empty broad query is a causal evidence gap, never proof of health. Allowed query_changes(service?,start_ts?,end_ts?,change_type?); get_config_diff(change_id). A change_id is metadata.change_id from an observed change record, NEVER its evidence_id. Consult minimal_facts.evidence_index for published metadata. If no actual change_id is available, query_changes first; runtime can use a spare tool slot to fetch the discovered diff. Never guess a diff ID.",
-    "verifier": "Check only shared observations. Demand two independent sources and a cause discriminator, challenge contradictions with concrete requested tasks. Do not manufacture objections. Distinguish missing causal evidence from optional corroboration. A config mechanism followed by matching service symptoms can be sufficient; missing unrelated service metrics, percentiles or severity labels alone is not a causal contradiction. requested_checks are BLOCKING causal gaps. Put nonblocking corroboration in optional_checks. A sufficient verdict requires empty requested_checks and contradictions. Request the unobserved causal source before repeating unavailable telemetry. In query_history, successful completed query_changes with omitted time bounds covers the entire supplied pack for its service/type filters. Do not request time bounds merely because they were omitted. An empty result remains a causal evidence gap, not proof of health; abstain if no new discriminating scope is available.",
+    "verifier": "Check only shared observations. Demand two independent sources and a cause discriminator, challenge contradictions with concrete requested tasks. Do not manufacture objections. Distinguish missing causal evidence from optional corroboration. A config mechanism followed by matching service symptoms can be sufficient; missing unrelated service metrics, percentiles or severity labels alone is not a causal contradiction. requested_checks are BLOCKING causal gaps: expected_discriminator must explain which plausible result changes attribution and which result supports it. Put nonblocking corroboration in optional_checks. Do not block solely on a hypothetical alternative without its own observed mechanism. Do not require a complete time series or exclusion of unrelated business errors when existing observations already discriminate the mechanism. A sufficient verdict requires empty requested_checks and contradictions. Request the unobserved causal source before repeating unavailable telemetry. In query_history, successful completed query_changes with omitted time bounds covers the entire supplied pack for its service/type filters. Do not request time bounds merely because they were omitted. An empty result remains a causal evidence gap, not proof of health; abstain if a material causal gap remains and no new discriminating scope is available.",
     "single": "Plan, investigate and self-reflect under a single runtime identity. Distinguish self-reflection from independent review.",
 }
 
@@ -193,9 +202,12 @@ async def decide(provider, state_payload):
         instruction += "\nThe fixed investigation schedule is complete. Reconcile the shared board, then FINALIZE or ABSTAIN; never assign more tools or tasks."
     instruction += (
         "\nRead candidate_assessments before deciding: these are deterministic gate diagnostics, "
-        "not truth labels. Reconcile EVERY listed competing hypothesis, not just the chosen one. "
-        "A generic symptom alone does not distinguish mechanisms. Keep a competitor open when "
-        "there is a material causal gap; reject it only with observed contrary evidence. "
+        "not truth labels. Reconcile observed material competitors, not every imaginable alternative. "
+        "alternative_assessments identifies which OPEN alternatives actually block and why. "
+        "Generic symptoms or unanswered optional questions alone do not give a rival veto power. "
+        "Keep untested alternatives OPEN without rejecting them merely to finalize. "
+        "Use optional_questions for nonblocking corroboration and open_questions only for material causal gaps. "
+        "Reject an alternative only with observed contrary evidence. "
         "Follow investigation_budget: reserve final decision and review calls. Prefer the check "
         "that distinguishes supported mechanisms. A narrower or keyword-filtered query cannot "
         "discover new records inside an already successful, complete, unfiltered scope; do not "

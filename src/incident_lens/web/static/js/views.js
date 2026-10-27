@@ -1033,32 +1033,45 @@ function renderFindings(panel, state, evidenceIndex) {
 
 /* ---------------- Report ---------------- */
 
-function renderReport(panel, state, reportMd) {
+export function renderReport(panel, state, reportMd) {
   const report = state.report;
   const status = STATUS_META[report.status] || { tone: "neutral", label: report.status };
   const evidenceIndex = state.evidence_index || {};
   const rootCause = report.root_cause;
+  const provisional = report.provisional_hypotheses || [];
+  const assessmentLabel = { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
   panel.innerHTML = `
     <div class="report-hero" data-status="${escapeHtml(report.status)}">
       <div style="flex:1;min-width:220px">
-        <div class="chip-row" style="margin-bottom:8px">${badge(status.label, status.tone, true)}</div>
-        <div class="report-hero-title">${escapeHtml(rootCause ? rootCause.failure_mode : "无受支持的根因")}</div>
+        <div class="chip-row" style="margin-bottom:8px">${badge(status.label, status.tone, true)}${assessmentLabel ? badge(assessmentLabel, rootCause ? "success" : "neutral") : ""}</div>
+        <div class="report-hero-title">${escapeHtml(rootCause ? rootCause.failure_mode : "尚未确认根因")}</div>
         <div class="report-hero-sub">${
           rootCause
             ? `责任服务 <span class="mono">${escapeHtml(rootCause.culprit_service)}</span> · 假设 <span class="mono">${escapeHtml(rootCause.hypothesis_id)}</span>`
-            : "证据不足以定位根因，系统选择明确存疑而非猜测。"
+            : provisional.length
+              ? "尚未确认根因；以下保留已调查的解释、观察和关键缺口。"
+              : "目前没有足够证据支持具体的根因解释。"
         }</div>
       </div>
     </div>
 
-    ${workflowReportHtml(state, evidenceIndex)}
+    ${provisional.length ? `<div class="report-section"><h3>待确认的解释</h3>
+      <p class="text-secondary">按已观察到的机制与来源支持排列，顺序不是正确概率。</p>
+      <div class="stack">${provisional.map((h, index) => `<div class="assign-item">
+        <div class="q">${index + 1}. ${escapeHtml(h.culprit_service)} · ${escapeHtml(h.failure_mode)}</div>
+        <div class="cite-wrap">${evidenceChips(h.support_ids, evidenceIndex)}</div>
+        ${h.against_ids?.length ? `<p class="text-secondary">尚待解释的反对证据</p><div class="cite-wrap">${evidenceChips(h.against_ids, evidenceIndex)}</div>` : ""}
+      </div>`).join("")}</div></div>` : ""}
+
+    ${report.provisional_observations?.length ? `<div class="report-section"><h3>已有观察（归因尚未确认）</h3>
+      <ul class="symptom-list">${report.provisional_observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     ${report.causal_chain?.length ? `<div class="report-section"><h3>因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 
-    <div class="report-section">
+    ${report.supporting_evidence_ids?.length ? `<div class="report-section">
       <h3>支持证据</h3>
       <div class="cite-wrap">${evidenceChips(report.supporting_evidence_ids, evidenceIndex)}</div>
-    </div>
+    </div>` : ""}
 
     ${report.rejected_hypotheses?.length ? `<div class="report-section"><h3>已排除假设</h3>
       <div class="stack" style="gap:var(--sp-3)">
@@ -1073,12 +1086,20 @@ function renderReport(panel, state, reportMd) {
           .join("")}
       </div></div>` : ""}
 
-    ${report.unresolved?.length ? `<div class="report-section"><h3>未决问题</h3><ul class="symptom-list">${report.unresolved.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${report.unresolved?.length ? `<div class="report-section"><h3>关键缺口</h3><ul class="symptom-list">${report.unresolved.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${report.next_steps?.length ? `<div class="report-section"><h3>建议下一步</h3><p class="text-secondary">以下检查尚未执行，可能需要补采新数据。</p>
+      <ul class="symptom-list">${report.next_steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${report.optional_questions?.length ? `<div class="report-section"><h3>可选补充（不阻止作答）</h3>
+      <ul class="symptom-list">${report.optional_questions.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${report.assessment_basis?.length ? `<div class="report-section"><h3>判断依据</h3>
+      <ul class="symptom-list">${report.assessment_basis.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     <div class="report-section">
       <h3>停止原因</h3>
       <p class="text-secondary">${escapeHtml(report.stop_reason)}</p>
     </div>
+
+    ${workflowReportHtml(state, evidenceIndex)}
 
     <details style="margin-top:var(--sp-4)">
       <summary style="cursor:pointer;color:var(--text-3);font-size:var(--text-sm)">查看 Markdown 原文</summary>

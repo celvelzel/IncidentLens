@@ -1,0 +1,14 @@
+{
+  "status": "VERIFIED_ON_INSTALLED_CLI",
+  "cli_version": "0.164.0-alpha.11.1",
+  "offline_tests_passed": 42,
+  "live_canary_passed": true,
+  "structured_probes_passed": true,
+  "unexpected_live_tool_events": 0,
+  "four_variant_experiment_rerun": false,
+  "source_sha256": {
+    "src/incident_lens/llm/codex_subscription.py": "a1d9685d3b6086559cfca0bdb830517a1ebedc37527081b8aa3ad060378b56d6",
+    "tests/integration/test_codex_subscription_feasibility.py": "f69a67e6467c09f0c44ea616511aad66284702e0583f6fc838ade4202a420844"
+  },
+  "prior_failed_attempts_retained": true
+}

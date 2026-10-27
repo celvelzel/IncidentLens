@@ -1,0 +1,62 @@
+{
+  "answer": {
+    "value": 5,
+    "available_tools": [
+      "functions.wait",
+      "functions.request_user_input",
+      "functions.exec"
+    ]
+  },
+  "usage": {
+    "source": "model",
+    "model_id": "gpt-5.6-luna",
+    "llm_calls": 1,
+    "logical_structured_calls": 1,
+    "codex_invocations": 1,
+    "actual_http_requests": 0,
+    "underlying_http_requests": null,
+    "transport_retries": 0,
+    "repair_requests": 0,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "measured_total_tokens": 3610,
+    "tokens_complete": false,
+    "token_usage_basis": "codex_turn_report; underlying HTTP accounting unavailable",
+    "billing_mode": "chatgpt_codex_subscription",
+    "cost_usd": null,
+    "codex_reported_prompt_tokens": 3457,
+    "codex_reported_completion_tokens": 153,
+    "codex_reported_total_tokens": 3610,
+    "cached_input_tokens": 0,
+    "measured_prompt_tokens": 3457,
+    "measured_completion_tokens": 153,
+    "elapsed_ms": 20617.165083000145
+  },
+  "events": [
+    [
+      {
+        "type": "thread.started",
+        "item_type": null
+      },
+      {
+        "type": "item.completed",
+        "item_type": "error",
+        "isolation_notice": "code_mode_host_disabled"
+      },
+      {
+        "type": "turn.started",
+        "item_type": null
+      },
+      {
+        "type": "item.completed",
+        "item_type": "agent_message"
+      },
+      {
+        "type": "turn.completed",
+        "item_type": null
+      }
+    ]
+  ],
+  "passed": false
+}

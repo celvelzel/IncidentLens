@@ -15,13 +15,14 @@ from langgraph.graph import END, START, StateGraph
 from incident_lens.orchestration.budget import BudgetExceeded, CallBudget
 from incident_lens.orchestration.guards import (
     cause_discriminator,
+    competitor_assessments,
     evidence_fingerprint,
     finalize_errors,
     review_fingerprint,
     reviewed_finalization_ready,
 )
 from incident_lens.orchestration.merge import merge_results
-from incident_lens.orchestration.report import observed_chain
+from incident_lens.orchestration.report import observed_chain, populate_assessment
 from incident_lens.schemas import (
     Budget,
     CoordinatorDecision,
@@ -400,11 +401,9 @@ class InvestigationRun:
         return {
             h.hypothesis_id: {
                 "finalize_errors": finalize_errors(state, h, self.variant),
-                "competing_hypothesis_ids": [
-                    other.hypothesis_id for other in state.hypotheses
-                    if other.hypothesis_id != h.hypothesis_id and other.status != "REJECTED"
-                    and (other.support_ids or other.open_questions)
-                ],
+                "competing_hypothesis_ids": [other_id for other_id, assessment in
+                                             competitor_assessments(state, h).items() if assessment["blocking"]],
+                "alternative_assessments": competitor_assessments(state, h),
                 "cause_discriminator_ids": [
                     eid for eid in h.support_ids if eid in state.evidence_index
                     and cause_discriminator(h, state.evidence_index[eid])
@@ -1602,6 +1601,7 @@ class InvestigationRun:
                 workflow_status=state.workflow_status,
                 termination=state.termination,
             )
+        populate_assessment(state)
         state.tool_calls_used = self.registry.call_count
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens

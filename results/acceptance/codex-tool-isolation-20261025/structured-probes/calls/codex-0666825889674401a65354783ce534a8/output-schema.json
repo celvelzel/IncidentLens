@@ -1,0 +1,19 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "marker": {
+      "title": "Marker",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "marker",
+    "value"
+  ],
+  "title": "ProbeAnswer",
+  "type": "object"
+}

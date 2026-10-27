@@ -106,16 +106,35 @@ def grounding_errors(state: InvestigationState, hypothesis: Hypothesis) -> list[
     return errors
 
 
+def competitor_assessments(state: InvestigationState, hypothesis: Hypothesis) -> dict:
+    """Retain untested alternatives without giving generic symptoms veto power.
+
+    An alternative needs an observed mechanism discriminator to block. No rival
+    is marked rejected here. Unobserved citations stay blocking as an integrity
+    failure; absence of telemetry never proves an alternative false.
+    """
+    assessments = {}
+    for other in state.hypotheses:
+        if other.hypothesis_id == hypothesis.hypothesis_id or other.status == "REJECTED":
+            continue
+        missing = sorted(set(other.support_ids + other.against_ids) - set(state.evidence_index))
+        matches = [eid for eid in other.support_ids if eid in state.evidence_index
+                   and cause_discriminator(other, state.evidence_index[eid])]
+        assessments[other.hypothesis_id] = {
+            "blocking": bool(missing or matches),
+            "reason": "unobserved_citations" if missing else
+                      "observed_competing_mechanism" if matches else "no_observed_competing_mechanism",
+            "cause_discriminator_ids": matches,
+            "missing_evidence_ids": missing,
+        }
+    return assessments
+
+
 def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="full") -> list[str]:
     errors = grounding_errors(state, hypothesis)
     if state.open_questions:
         errors.append("Unresolved shared questions prevent finalization")
-    if any(
-        h.hypothesis_id != hypothesis.hypothesis_id
-        and h.status != "REJECTED"
-        and (h.support_ids or h.open_questions)
-        for h in state.hypotheses
-    ):
+    if any(a["blocking"] for a in competitor_assessments(state, hypothesis).values()):
         errors.append("Competing hypothesis remains unresolved")
     if variant == "full":
         review = next(

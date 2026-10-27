@@ -136,6 +136,56 @@ def inspect_auth(executable):
             "account_identity_read": False, "credential_cache_read": False}
 
 
+def recoverable_reconnect(event):
+    """Only explicit CLI reconnect notices may precede a successful terminal."""
+    message = event.get("message")
+    return (event.get("type") == "error" and isinstance(message, str)
+            and re.match(r"^Reconnecting\.\.\. (?:[1-9][0-9]*/[1-9][0-9]*|waiting for network)(?:\s|$)",
+                         message) is not None)
+
+
+def event_diagnostics(payload):
+    """Persist bounded metadata even when parsing/terminal validation fails.
+
+    Never retain agent text, reasoning, raw stderr, or arbitrary error messages.
+    Unknown messages retain a fingerprint; known transport categories retain a
+    fixed label so diagnostics cannot accidentally copy incident evidence.
+    """
+    events, errors = [], []
+    invalid_lines = 0
+    for line in payload.splitlines():
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except (ValueError, RecursionError):
+            invalid_lines += 1
+            continue
+        if not isinstance(event, dict):
+            invalid_lines += 1
+            continue
+        kind = event.get("type")
+        def clean(value):
+            return re.sub(r"[^A-Za-z0-9_.-]", "?", str(value))[:80]
+        events.append({"type": clean(kind),
+                       "item_type": clean(event.get("item", {}).get("type"))
+                       if isinstance(event.get("item"), dict) else None})
+        if kind in {"error", "turn.failed"}:
+            error = event.get("error")
+            message = event.get("message") or (error.get("message") if isinstance(error, dict) else error)
+            message = message if isinstance(message, str) else ""
+            category = "reconnecting" if recoverable_reconnect(event) else "unclassified"
+            for needle, label in (("invalid_json_schema", "invalid_json_schema"),
+                                  ("rate_limit", "rate_limit"), ("stream disconnected", "stream_disconnected"),
+                                  ("error sending request", "request_send_failed")):
+                if category == "unclassified" and needle in message.lower():
+                    category = label
+            if len(errors) < 20:
+                errors.append({"event_index": len(events) - 1, "type": kind, "category": category,
+                               "message_sha256": hashlib.sha256(message.encode()).hexdigest()})
+    return {"events": events, "errors": errors, "invalid_lines": invalid_lines}
+
+
 def decode_events(payload):
     """Accept only schema output without tool use and a completed turn."""
     events = []
@@ -148,8 +198,8 @@ def decode_events(payload):
             if not isinstance(event, dict):
                 raise ProviderError("CODEX_EVENT_STREAM_INVALID")
             events.append(event)
-    for event in events:
-        if event.get("type", "").startswith("item."):
+    for index, event in enumerate(events):
+        if str(event.get("type", "")).startswith("item."):
             kind = event.get("item", {}).get("type")
             if kind not in {"agent_message", "reasoning"}:
                 error = ProviderError("CODEX_UNEXPECTED_TOOL_ACTIVITY")
@@ -157,8 +207,12 @@ def decode_events(payload):
                 if kind == "error":
                     error.cli_warning = safe_diagnostic(json.dumps(event.get("item", {})).encode())
                 raise error
-        if event.get("type") in {"turn.failed", "error"}:
+        if event.get("type") == "turn.failed":
             raise ProviderError("CODEX_REMOTE_TURN_FAILED")
+        if event.get("type") == "error":
+            completed_before = any(e.get("type") == "turn.completed" for e in events[:index])
+            if not recoverable_reconnect(event) or completed_before:
+                raise ProviderError("CODEX_REMOTE_TURN_FAILED")
     completed = [event for event in events if event.get("type") == "turn.completed"]
     if len(completed) != 1:
         raise ProviderError("CODEX_TURN_COMPLETION_MISSING")
@@ -347,6 +401,12 @@ class CodexSubscriptionProvider(LLMProvider):
                 # to bounded redacted diagnostics through a separate CLI check.
                 atomic_json(directory / "process.json", {"exit_code": process.returncode,
                             "stderr_bytes": len(stderr), "stderr_sha256": hashlib.sha256(stderr).hexdigest()})
+                diagnostic = event_diagnostics(stdout)
+                atomic_json(directory / "events.json", diagnostic["events"])
+                atomic_json(directory / "remote-diagnostic.json", {
+                    **diagnostic, "exit_code": process.returncode,
+                    "http_attempts_observed": False,
+                })
                 # A CLI may exit 0 while reporting turn.failed in its event
                 # stream. Synthetic diagnostics must cover that path as well.
                 if self.diagnostic_mode:

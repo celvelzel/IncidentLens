@@ -30,6 +30,14 @@ async def test_rejected_competing_questions_and_stale_review_block_resolution():
     competitor = next(h for h in state.hypotheses if h.status == "REJECTED")
     competitor.status = "OPEN"
     competitor.open_questions = ["Check independent competing cause"]
+    positive = next(iter(state.evidence_index.values())).model_copy(update={
+        "evidence_id": "incident_001-competing-cap", "service": "postgres",
+        "source_type": "database", "source_path": "public/database.jsonl",
+        "excerpt": "Connection admission rejected at server cap",
+        "metadata": {"category": "connections", "connection_count": 155, "connection_limit": 100},
+    })
+    state.evidence_index[positive.evidence_id] = positive
+    competitor.support_ids = [positive.evidence_id]
     assert any("Competing hypothesis" in error for error in finalize_errors(state, candidate))
 
 

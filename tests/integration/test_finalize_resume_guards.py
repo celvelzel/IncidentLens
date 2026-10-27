@@ -57,6 +57,14 @@ async def test_resume_never_bypasses_acceptance_guards(pending, fault):
         rival = next(h for h in state.hypotheses if h.hypothesis_id != candidate.hypothesis_id)
         rival.status = "OPEN"
         rival.open_questions = ["Unresolved competing cause"]
+        positive = next(iter(state.evidence_index.values())).model_copy(update={
+            "evidence_id": "incident_001-competing-cap", "service": "postgres",
+            "source_type": "database", "source_path": "public/database.jsonl",
+            "excerpt": "Connection admission rejected at server cap",
+            "metadata": {"category": "connections", "connection_count": 155, "connection_limit": 100},
+        })
+        state.evidence_index[positive.evidence_id] = positive
+        rival.support_ids = [positive.evidence_id]
     elif fault == "stopped":
         state.workflow_status = "STOPPING"
     elif fault == "terminal":

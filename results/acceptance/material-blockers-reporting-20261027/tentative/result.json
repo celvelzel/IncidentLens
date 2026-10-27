@@ -1,0 +1,82 @@
+{
+  "run_id": "run-5ee85933a5de407481ee814c39ec8016",
+  "incident_id": "incident_001",
+  "status": "INCONCLUSIVE",
+  "root_cause": null,
+  "causal_chain": [],
+  "supporting_evidence_ids": [],
+  "rejected_hypotheses": [
+    {
+      "hypothesis_id": "hyp-51bd04666262ef67528352206d8217fe26919d211c65863ee2740d9edeef0a3b",
+      "culprit_service": "postgres",
+      "failure_mode": "postgres_connection_exhaustion",
+      "support_ids": [
+        "incident_001-L001",
+        "incident_001-L002",
+        "incident_001-L022",
+        "incident_001-L025"
+      ],
+      "against_ids": [
+        "incident_001-M004"
+      ],
+      "predicted_observations": [
+        "Database capacity should be exhausted",
+        "Database sessions reach server connection capacity",
+        "New database sessions are rejected and backend requests fail"
+      ],
+      "status": "REJECTED",
+      "open_questions": [],
+      "optional_questions": []
+    }
+  ],
+  "unresolved": [
+    "Need additional discriminating evidence"
+  ],
+  "stop_reason": "Leading explanation retained; final attribution not confirmed",
+  "assessment_level": "LIKELY",
+  "provisional_hypotheses": [
+    {
+      "hypothesis_id": "hyp-2354bf4d3f473cedacf9117199ff63a5928dab8fb231824dd4f90ea588ae234e",
+      "culprit_service": "backend",
+      "failure_mode": "backend_pool_config_regression",
+      "support_ids": [
+        "incident_001-C001",
+        "incident_001-D001",
+        "incident_001-M009"
+      ],
+      "against_ids": [],
+      "predicted_observations": [
+        "Acquisition deadlines fail while database capacity remains available",
+        "Reduced backend pool capacity causes local acquisition contention"
+      ],
+      "status": "OPEN",
+      "open_questions": [],
+      "optional_questions": []
+    }
+  ],
+  "provisional_observations": [
+    "2026-10-01T14:00:00+00:00 [incident_001-C001] backend: runtime environment update applied",
+    "2026-10-01T14:00:00+00:00 [incident_001-D001] backend: DB_POOL_MAX: 64 -> 2; instance_concurrency: 60 -> 60; acquire_timeout_ms: 1000 -> 1000",
+    "2026-10-01T14:04:00+00:00 [incident_001-M009] backend: pool_waiters=58 requests"
+  ],
+  "assessment_basis": [
+    "Unconfirmed explanations are ordered by observed mechanism support, source diversity, then unresolved evidence; this is not a probability or an accepted diagnosis.",
+    "One candidate has cross-source mechanism support without recorded causal blockers; the workflow has not accepted a final diagnosis."
+  ],
+  "next_steps": [
+    "Obtain evidence linking backend/backend_pool_config_regression to the reported failures and distinguishing material alternatives."
+  ],
+  "optional_questions": [],
+  "diagnosis_status": null,
+  "remediation_status": "NOT_STARTED",
+  "workflow_status": "FINISHED",
+  "remediation_plan": null,
+  "termination": {
+    "protocol_version": "2",
+    "reason": "INCONCLUSIVE",
+    "outcome": "ABSTAINED",
+    "failure_stage": null,
+    "stop_completed": true,
+    "runtime_failure": false
+  }
+}

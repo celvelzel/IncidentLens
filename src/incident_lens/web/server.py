@@ -282,7 +282,16 @@ def _replay_metadata(path, trace, state):
 
     scope = companion("scope.json")
     result = companion("result.json")
-    verified_result = result == state.report.model_dump(mode="json")
+    # Old saved reports lack additive assessment fields. Validate both reports
+    # under the same contract before comparing; never discard unknown fields or
+    # accept a changed diagnosis/assessment as a matching companion.
+    from incident_lens.schemas import RCAReport
+
+    try:
+        verified_result = (RCAReport.model_validate_json(json.dumps(result)).model_dump(mode="json")
+                           == state.report.model_dump(mode="json"))
+    except (ValueError, TypeError):
+        verified_result = False
     if scope and scope.get("incident_id") == state.incident_id and scope.get("variant") == trace.get("variant"):
         protocol = scope.get("protocol")
         if isinstance(protocol, dict) and protocol.get("provider_id") == trace.get("provider") and protocol.get("model_id") == trace.get("model_id"):
