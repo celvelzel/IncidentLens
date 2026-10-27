@@ -5,6 +5,7 @@ import json
 from typing import Any, Literal
 
 from pydantic import Field, create_model, model_validator
+from pydantic_core import PydanticCustomError
 
 from incident_lens.agents.database import DATABASE_PROMPT
 from incident_lens.llm.provider import ProviderError, json_payload
@@ -143,7 +144,10 @@ async def decide(provider, state_payload):
     def task_acl(self):
         if any(t.role not in acl or not set(t.allowed_tools).issubset(acl[t.role])
                for t in self.assignments):
-            raise ValueError("assignments must use the supplied role_tool_acl")
+            raise PydanticCustomError(
+                "task_tool_acl",
+                "Each assignment must use only tools permitted for its role by role_tool_acl",
+            )
         return self
 
     schema = create_model("DynamicDecision", __base__=DynamicDecision,
