@@ -62,7 +62,8 @@ async def test_optional_questions_do_not_block_but_review_snapshot_is_still_requ
     assert not finalize_errors(state, candidate, "single")
     assert any("snapshot" in error for error in finalize_errors(state, candidate, "full"))
     candidate.open_questions = ["Which service originated the failing operation?"]
-    assert any("unresolved questions" in error for error in finalize_errors(state, candidate, "single"))
+    assert not finalize_errors(state, candidate, "single")
+    assert any("snapshot" in error for error in finalize_errors(state, candidate, "full"))
 
 
 async def test_true_contradictions_and_unobserved_rival_citations_are_not_ignored(supported):

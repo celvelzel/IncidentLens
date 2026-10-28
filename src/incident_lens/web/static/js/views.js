@@ -1039,7 +1039,7 @@ export function renderReport(panel, state, reportMd) {
   const evidenceIndex = state.evidence_index || {};
   const rootCause = report.root_cause;
   const provisional = report.provisional_hypotheses || [];
-  const assessmentLabel = { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
+  const assessmentLabel = report.acceptance_standard === "BEST_SUPPORTED_AVAILABLE" ? "已确定：现有证据最支持" : { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
   panel.innerHTML = `
     <div class="report-hero" data-status="${escapeHtml(report.status)}">
       <div style="flex:1;min-width:220px">
@@ -1065,6 +1065,9 @@ export function renderReport(panel, state, reportMd) {
 
     ${report.provisional_observations?.length ? `<div class="report-section"><h3>已有观察（归因尚未确认）</h3>
       <ul class="symptom-list">${report.provisional_observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+
+    ${report.causal_limitations?.length ? `<div class="report-section"><h3>结论的证据边界</h3>
+      <ul class="symptom-list">${report.causal_limitations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     ${report.causal_chain?.length ? `<div class="report-section"><h3>因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 

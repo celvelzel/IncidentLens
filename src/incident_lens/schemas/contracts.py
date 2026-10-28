@@ -146,6 +146,8 @@ class Review(StrictModel):
     optional_checks: list[InvestigationTask] = Field(default_factory=list)
     cited_evidence_ids: list[Identifier] = Field(default_factory=list)
     rationale: Text
+    likely_hypothesis_supported: bool = False
+    likely_blockers: list[Text] = Field(default_factory=list)
 
 
 class CoordinatorDecision(StrictModel):
@@ -154,10 +156,13 @@ class CoordinatorDecision(StrictModel):
     assignments: list[InvestigationTask] = Field(default_factory=list)
     hypothesis_updates: list[Hypothesis] = Field(default_factory=list)
     selected_hypothesis_id: Identifier | None = None
+    proposed_hypothesis_id: Identifier | None = None
     stop_reason: str | None = None
 
     @model_validator(mode="after")
     def action_semantics(self):
+        if self.proposed_hypothesis_id is not None and self.action != "ABSTAIN":
+            raise ValueError("only ABSTAIN may nominate an unconfirmed leading explanation")
         if self.action == "INVESTIGATE":
             if (
                 not self.assignments
@@ -188,6 +193,9 @@ class RCAReport(StrictModel):
     unresolved: list[Text] = Field(default_factory=list)
     stop_reason: Text
     assessment_level: Literal["CONFIRMED", "LIKELY", "INSUFFICIENT"] | None = None
+    acceptance_standard: Literal["BEST_SUPPORTED_AVAILABLE"] | None = None
+    causal_limitations: list[Text] = Field(default_factory=list)
+    proposed_hypothesis_id: Identifier | None = None
     provisional_hypotheses: list[Hypothesis] = Field(default_factory=list, max_length=3)
     provisional_observations: list[Text] = Field(default_factory=list)
     assessment_basis: list[Text] = Field(default_factory=list)
@@ -203,6 +211,14 @@ class RCAReport(StrictModel):
 
     @model_validator(mode="after")
     def resolution_semantics(self):
+        if self.acceptance_standard is not None and self.status != "RESOLVED":
+            raise ValueError("an acceptance standard requires an accepted root cause")
+        if self.proposed_hypothesis_id is not None and (
+            self.assessment_level != "LIKELY"
+            or not self.provisional_hypotheses
+            or self.provisional_hypotheses[0].hypothesis_id != self.proposed_hypothesis_id
+        ):
+            raise ValueError("proposed hypothesis requires a matching first LIKELY provisional candidate")
         if self.assessment_level == "CONFIRMED" and self.status != "RESOLVED":
             raise ValueError("CONFIRMED assessment requires a resolved report")
         if self.status == "RESOLVED" and self.assessment_level not in (None, "CONFIRMED"):

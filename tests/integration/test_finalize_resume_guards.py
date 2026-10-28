@@ -20,8 +20,8 @@ async def pending():
 
 @pytest.mark.parametrize("fault", [
     "no_decision", "investigate", "abstain", "other_target", "unknown_target",
-    "insufficient", "contradiction", "blocking_check", "no_citations",
-    "candidate_drift", "evidence_drift", "missing_review_event", "shared_question",
+    "insufficient", "contradiction", "leading_blocker", "no_citations",
+    "candidate_drift", "evidence_drift", "missing_review_event",
     "competitor", "stopped", "terminal",
 ])
 async def test_resume_never_bypasses_acceptance_guards(pending, fault):
@@ -41,8 +41,8 @@ async def test_resume_never_bypasses_acceptance_guards(pending, fault):
         review.verdict = "insufficient"
     elif fault == "contradiction":
         review.contradictions = ["Contradiction"]
-    elif fault == "blocking_check":
-        review.requested_checks = [state.tasks[0]]
+    elif fault == "leading_blocker":
+        review.likely_blockers = ["Observed competing mechanism remains unresolved"]
     elif fault == "no_citations":
         review.cited_evidence_ids = []
     elif fault == "candidate_drift":
@@ -51,8 +51,6 @@ async def test_resume_never_bypasses_acceptance_guards(pending, fault):
         next(iter(state.evidence_index.values())).excerpt = "Changed"
     elif fault == "missing_review_event":
         state.events = [e for e in state.events if e.event_type != "REVIEW"]
-    elif fault == "shared_question":
-        state.open_questions = ["Unresolved"]
     elif fault == "competitor":
         rival = next(h for h in state.hypotheses if h.hypothesis_id != candidate.hypothesis_id)
         rival.status = "OPEN"
@@ -97,3 +95,9 @@ async def test_resume_event_after_stop_is_a_protocol_violation():
     summary = normalize_termination(raw)
     assert not summary["protocol_valid"]
     assert "publication or execution after stop request" in summary["protocol_errors"]
+
+
+async def test_confirmation_questions_do_not_block_current_best_supported_review(pending):
+    pending.open_questions = ["Exact request/session linkage is unavailable"]
+    pending.reviews[-1].requested_checks = [pending.tasks[0]]
+    assert reviewed_finalization_ready(pending)

@@ -45,7 +45,7 @@ def evidence_index():
             service="backend",
             observed_at=NOW,
             source_path="public/configs/pool.yaml",
-            excerpt="db_pool_max: 8 -> 2 to reduce concurrency",
+            excerpt="db_pool_max: 8 -> 2; concurrency=7",
         ),
         "ev-change": EvidenceRecord(
             evidence_id="ev-change",

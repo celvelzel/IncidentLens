@@ -231,7 +231,7 @@ class CodexSubscriptionProvider(LLMProvider):
             or type(timeout) not in (float, int) or not math.isfinite(timeout) or timeout <= 0):
             raise ValueError("explicit model and positive finite timeout required")
         if model != REQUIRED_MODEL:
-            raise ValueError("This experiment is pinned to gpt-5.6-luna; model substitution is forbidden")
+            raise ValueError(f"This experiment is pinned to {REQUIRED_MODEL}; model substitution is forbidden")
         if reasoning_effort not in {"low", "medium", "high", "xhigh", "max", "ultra"}:
             raise ValueError("unsupported reasoning effort")
         if type(structured_repair_retries) is not int or structured_repair_retries not in (0, 1):
@@ -456,6 +456,14 @@ class CodexSubscriptionProvider(LLMProvider):
                     descriptions = {
                         "task_tool_acl": "Each assignment's allowed_tools must be a subset of role_tool_acl for its role. "
                                          "Split cross-role work into separate permitted assignments.",
+                        "leading_review_consistency": "Make the review internally consistent. If likely_hypothesis_supported "
+                            "is true, likely_blockers and contradictions must be empty. Missing exact request linkage "
+                            "may remain a confirmation gap in requested_checks/rationale. If an actual material blocker "
+                            "or contradiction prevents a leading explanation, keep it and set the endorsement false. "
+                            "Do not hide contradictory evidence or change the confirmed verdict merely to pass validation.",
+                        "tool_arguments": "Use the supplied tool_argument_schemas exactly: required fields, allowed fields, "
+                                          "ordered timestamps and limits (database/log record limit is at most 50). "
+                                          "Keep the same tool permissions and task scope.",
                         "json_invalid": "Return syntactically valid JSON matching the schema.",
                     }
                     error.repair_feedback = [

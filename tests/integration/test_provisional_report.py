@@ -55,18 +55,18 @@ async def test_provisional_citations_are_validated_like_confirmed_citations():
         InvestigationState.model_validate_json(__import__("json").dumps(raw))
 
 
-async def test_real_attribution_gap_stays_insufficient_and_optional_note_is_separate():
+async def test_confirmation_gap_is_preserved_without_turning_an_abstention_into_success():
     state = await run_investigation("incident_001", AbstainWithEvidence())
     leading = next(h for h in state.hypotheses
                    if h.hypothesis_id == state.report.provisional_hypotheses[0].hypothesis_id)
     leading.open_questions = ["Does this mechanism originate the failing request?"]
     leading.optional_questions = ["A longer baseline would improve the explanation"]
     populate_assessment(state)
-    assert state.report.assessment_level == "INSUFFICIENT"
+    assert state.report.assessment_level == "LIKELY"
     assert leading.open_questions[0] in state.report.unresolved
     assert leading.optional_questions[0] in state.report.optional_questions
     assert leading.optional_questions[0] not in state.report.unresolved
-    assert any(leading.open_questions[0] in step for step in state.report.next_steps)
+    assert state.report.next_steps
     assert state.report.root_cause is None
 
 

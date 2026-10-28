@@ -65,9 +65,10 @@ def test_diagnostic_redacts_tokens_and_urls():
     assert "synthetic-token" not in text and "fixture-only" not in text and "example.org" not in text
 
 
-def test_experiment_rejects_any_model_substitution_before_cli_use(tmp_path):
+@pytest.mark.parametrize("model", ["gpt-6-luna", "some-other-model"])
+def test_experiment_rejects_any_model_substitution_before_cli_use(tmp_path, model):
     with pytest.raises(ValueError, match="pinned to gpt-5.6-luna"):
-        CodexSubscriptionProvider("some-other-model", tmp_path / "must-not-exist")
+        CodexSubscriptionProvider(model, tmp_path / "must-not-exist")
     assert not (tmp_path / "must-not-exist").exists()
 
 
@@ -82,7 +83,7 @@ async def test_old_model_receipt_cannot_start_new_model_investigation(tmp_path):
     protocol.write_text(json.dumps({"model_id": "gpt-5.6-luna", "provider_id": "real"}), encoding="utf-8")
     receipt = tmp_path / "receipt.json"
     receipt.write_text(json.dumps({"status": "FEASIBLE_FOR_CODEX_SUBSCRIPTION_TRANSPORT",
-                                  "probes": [{"matched": True, "usage": {"model_id": "unapproved-old-model"}}]}), encoding="utf-8")
+                                  "probes": [{"matched": True, "usage": {"model_id": "gpt-6-luna"}}]}), encoding="utf-8")
     args = Namespace(execute_development_case=True, config=config, protocol=protocol,
                      feasibility=receipt, out=tmp_path / "not-created")
     with pytest.raises(ValueError, match="matching successful"):
@@ -231,3 +232,17 @@ def test_event_diagnostics_retains_metadata_without_response_or_secret_text():
     assert len(diagnostic["errors"][0]["message_sha256"]) == 64
     assert not any(secret in json.dumps(diagnostic) for secret in
                    ["fixture-secret", "example.org", "private incident evidence"])
+
+
+def test_active_subscription_configs_use_requested_model_and_matching_receipt():
+    from incident_lens.llm.codex_subscription import REQUIRED_MODEL
+
+    root = Path(__file__).resolve().parents[2]
+    config = json.loads((root / "configs/wp_d/codex-subscription.json").read_text())
+    protocol = json.loads((root / "configs/wp_d/codex-subscription-protocol.json").read_text())
+    plan = json.loads((root / "configs/wp_d/codex-subscription-plan.json").read_text())
+    assert REQUIRED_MODEL == config["model"] == protocol["model_id"] == "gpt-5.6-luna"
+    assert config["reasoning_effort"] == "low"
+    assert config["api_key_fallback"] is False
+    assert plan["feasibility"] == config["feasibility_receipt"]
+    assert "5.6-luna" in plan["feasibility"]

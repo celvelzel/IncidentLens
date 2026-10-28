@@ -18,6 +18,7 @@ from incident_lens.orchestration.guards import (
     competitor_assessments,
     evidence_fingerprint,
     finalize_errors,
+    likely_assessment_errors,
     review_fingerprint,
     reviewed_finalization_ready,
 )
@@ -311,6 +312,7 @@ class InvestigationRun:
     def payload(self, state, role="coordinator", fetched=None):
         value = state.model_dump(mode="json")
         value["variant"] = self.variant
+        value["acceptance_standard"] = "BEST_SUPPORTED_AVAILABLE"
         value["benchmark_rca"] = self.workflow.benchmark_rca
         from incident_lens.security.context import ROLE_TOOL_ACL
 
@@ -349,22 +351,17 @@ class InvestigationRun:
         # Keep executed query scope/results visible after stripping raw events.
         # Otherwise a narrow empty slice can masquerade as an absent source and
         # the coordinator repeatedly asks for telemetry already discovered.
-        value["query_history"] = [
-            {
-                "task_id": e.task_id,
-                "tool_name": e.details["tool_name"],
-                "args": e.details.get("args", {}),
-                "evidence_ids": [r["evidence_id"] for r in
-                                 e.details.get("result", {}).get("records", [])],
-                "error_code": e.details.get("result", {}).get("error_code"),
-                "ok": e.details.get("result", {}).get("ok", False),
-                "record_count": len(e.details.get("result", {}).get("records", [])),
-                "next_cursor": e.details.get("result", {}).get("next_cursor"),
-                "completed": e.task_id in state.completed_task_ids,
-            }
-            for e in state.events
-            if e.event_type == "TOOL_CALL" and "tool_name" in e.details
-        ]
+        from incident_lens.orchestration.evidence_board import (
+            database_coverage,
+            query_history,
+            shared_observations,
+        )
+
+        value["query_history"] = query_history(state)
+        value["database_coverage"] = database_coverage(
+            state, value["query_history"], value["role_tool_acl"])
+        value["shared_observations"] = shared_observations(
+            fetched or [] if role == "verifier" else state.evidence_index.values())
         if role == "verifier":
             value["evidence_index"] = {
                 r.evidence_id: r.model_dump(mode="json") for r in fetched or []
@@ -397,10 +394,20 @@ class InvestigationRun:
             )
         return value
 
+    def leading_review_ready(self, state):
+        if self.variant != "full" or not state.decisions:
+            return False
+        decision = state.decisions[-1]
+        candidate = next((h for h in state.hypotheses
+                          if h.hypothesis_id == decision.proposed_hypothesis_id), None)
+        return (decision.action == "ABSTAIN" and candidate is not None
+                and not likely_assessment_errors(state, candidate, self.variant))
+
     def candidate_assessments(self, state):
         return {
             h.hypothesis_id: {
                 "finalize_errors": finalize_errors(state, h, self.variant),
+                "likely_errors": likely_assessment_errors(state, h, self.variant),
                 "competing_hypothesis_ids": [other_id for other_id, assessment in
                                              competitor_assessments(state, h).items() if assessment["blocking"]],
                 "alternative_assessments": competitor_assessments(state, h),
@@ -578,6 +585,20 @@ class InvestigationRun:
                            candidate_assessments=self.candidate_assessments(state),
                            shared_open_questions=list(state.open_questions),
                            reason=decision.stop_reason)
+                candidate = next((h for h in state.hypotheses
+                                  if h.hypothesis_id == decision.proposed_hypothesis_id), None)
+                if self.variant == "full" and candidate is not None:
+                    errors = likely_assessment_errors(state, candidate, self.variant)
+                    review_errors = {
+                        "Independent review has not endorsed a leading explanation",
+                        "Leading review does not match the current candidate/evidence snapshot",
+                    }
+                    if (errors and set(errors).issubset(review_errors)
+                        and self.call_budget.calls < self.limits.max_llm_calls
+                        and self.registry.call_count < self.limits.max_tool_calls):
+                        self.event(state, "LEADING_REVIEW_REQUESTED",
+                                   proposed_hypothesis_id=candidate.hypothesis_id)
+                        return {"investigation": state, "route": "verify"}
                 return {"investigation": state, "route": "report"}
             if decision.action == "FINALIZE":
                 if changed and self.variant == "full":
@@ -700,6 +721,8 @@ class InvestigationRun:
         minimal = {
             "benchmark_discovery": self.workflow.benchmark_rca,
             "changes_discovery_done": self.changes_discovery_done,
+            "query_history": self.payload(state)["query_history"],
+            "database_coverage": self.payload(state)["database_coverage"],
             "findings": [f.model_dump(mode="json") for f in state.findings],
             "hypotheses": [h.model_dump(mode="json") for h in state.hypotheses],
             "evidence_index": {
@@ -1126,7 +1149,8 @@ class InvestigationRun:
                 self.event(state, "REVIEW_REUSED", role=role, board_sha256=signature,
                            reason="unchanged_evidence_and_assessment")
                 return {"investigation": state,
-                        "route": "finalize" if reviewed_finalization_ready(state, self.variant) else "coordinate"}
+                        "route": "report" if self.leading_review_ready(state) else
+                                 "finalize" if reviewed_finalization_ready(state, self.variant) else "coordinate"}
             before = self.candidate_assessments(state)
             prior_checks = {
                 self.check_signature(check)
@@ -1257,6 +1281,10 @@ class InvestigationRun:
             )
             self.last_review_signature = self.board_fingerprint(state)
             state.tool_calls_used = self.registry.call_count
+            if self.leading_review_ready(state):
+                self.event(state, "LEADING_REVIEW_COMPLETED",
+                           proposed_hypothesis_id=state.decisions[-1].proposed_hypothesis_id)
+                return {"investigation": state, "route": "report"}
             if reviewed_finalization_ready(state, self.variant):
                 self.stop_controller.guard()
                 self.event(
@@ -1601,7 +1629,7 @@ class InvestigationRun:
                 workflow_status=state.workflow_status,
                 termination=state.termination,
             )
-        populate_assessment(state)
+        populate_assessment(state, self.variant)
         state.tool_calls_used = self.registry.call_count
         state.llm_calls_used = self.call_budget.calls
         state.tokens_used = self.call_budget.tokens

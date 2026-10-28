@@ -25,7 +25,10 @@ async def test_rejected_competing_questions_and_stale_review_block_resolution():
     record.excerpt = "Changed after review"
     assert any("snapshot" in error for error in finalize_errors(changed, candidate))
     state.open_questions = ["Contradiction remains"]
-    assert any("shared questions" in error for error in finalize_errors(state, candidate))
+    assert not finalize_errors(state, candidate)
+    state.reviews[-1].contradictions = ["Observed contradiction remains"]
+    assert any("contradiction" in error for error in finalize_errors(state, candidate))
+    state.reviews[-1].contradictions = []
     state.open_questions = []
     competitor = next(h for h in state.hypotheses if h.status == "REJECTED")
     competitor.status = "OPEN"

@@ -7,8 +7,16 @@
   "subscription_config": "configs/wp_d/codex-subscription.json",
   "feasibility": "results/acceptance/codex-subscription-5.6-luna-feasibility-20261021/feasibility.json",
   "case_ids": [
-    "incident_3001", "incident_3002", "incident_3003", "incident_3004", "incident_3005",
-    "incident_3006", "incident_3007", "incident_3008", "incident_3009", "incident_3010"
+    "incident_3001",
+    "incident_3002",
+    "incident_3003",
+    "incident_3004",
+    "incident_3005",
+    "incident_3006",
+    "incident_3007",
+    "incident_3008",
+    "incident_3009",
+    "incident_3010"
   ],
   "stop_on_failure": true,
   "analysis_scope": "paired descriptive development comparison using official Codex ChatGPT subscription transport; not Platform API or G1a evidence",

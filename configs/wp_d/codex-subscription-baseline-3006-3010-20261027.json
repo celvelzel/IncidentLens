@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXECUTED_NOT_VALIDATED",
+  "mode": "subscription",
+  "dataset": "data/incidentbench_v16_dev",
+  "protocol": "configs/wp_d/codex-subscription-protocol.json",
+  "subscription_config": "configs/wp_d/codex-subscription-5.6-luna-macos-20261027.json",
+  "feasibility": "results/acceptance/codex-subscription-5.6-luna-feasibility-20261021/feasibility.json",
+  "case_ids": [
+    "incident_3006",
+    "incident_3007",
+    "incident_3008",
+    "incident_3009",
+    "incident_3010"
+  ],
+  "stop_on_failure": false,
+  "analysis_scope": "paired descriptive development comparison using official Codex ChatGPT subscription transport; not Platform API or G1a evidence",
+  "case_selection": "Development cases 3006\u20133010; previously reviewed labels, not blind."
+}

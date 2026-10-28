@@ -310,6 +310,27 @@ class MockProvider(LLMProvider):
 
     def _decide(self, p):
         tasks = p.get("tasks", [])
+        # Match the current runtime's mechanism/corroboration requirements using
+        # only observations and gate feedback. Never infer from fixture IDs.
+        if tasks and not p.get("fixed_schedule_completed"):
+            observed = p.get("shared_observations", []) or list(p.get("evidence_index", {}).values())
+            database_tools = p.get("database_enabled") and any(
+                "get_db_connections" in tools for tools in p.get("role_tool_acl", {}).values())
+            for candidate in p.get("hypotheses", []):
+                service = candidate.get("culprit_service")
+                errors = p.get("candidate_assessments", {}).get(candidate["hypothesis_id"], {}).get("finalize_errors", [])
+                needs_own_log = any(error in errors for error in (
+                    "No observed cause-specific discriminator for the candidate",
+                    "No temporally compatible cross-source impact or corroboration"))
+                checked = any(query.get("tool_name") == "query_logs"
+                              and query.get("args", {}).get("service") == service
+                              and query.get("ok") and query.get("completed")
+                              and not query.get("next_cursor") for query in p.get("query_history", []))
+                if (candidate.get("status") != "REJECTED" and service != "backend" and needs_own_log
+                    and not (service == "postgres" and database_tools) and not checked and not any(r.get("source_type") == "logs" and r.get("service") == service for r in observed)):
+                    return dict(action="INVESTIGATE", reason="Inspect the observed dependency mechanism",
+                                assignments=[task("logs", len(tasks), "Inspect the dependency's own failure logs",
+                                                  {"service": service})])
         checks = p.get("requested_checks", [])
         if not checks and p.get("reviews"):
             checks = p["reviews"][-1].get("requested_checks", [])
@@ -369,6 +390,15 @@ class MockProvider(LLMProvider):
             if json.dumps((c["role"], c["question"], c.get("filters", {})), sort_keys=True)
             not in completed_checks
         ]
+        checks = [check for check in checks if not (
+            "query_logs" in check.get("allowed_tools", [])
+            and check.get("filters", {}).get("service")
+            and any(query.get("tool_name") == "query_logs" and query.get("ok")
+                    and query.get("completed") and not query.get("next_cursor")
+                    and all(query.get("args", {}).get(key) == value
+                            for key, value in check["filters"].items())
+                    for query in p.get("query_history", []))
+        )]
         if checks:
             return dict(
                 action="INVESTIGATE",
