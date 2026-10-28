@@ -9,7 +9,8 @@
   "formal_experiment_enabled": false,
   "api_key_fallback": false,
   "note": "Uses local official CLI ChatGPT login; not API Platform credits. At most two synthetic feasibility invocations. Model availability depends on the signed-in account.",
-  "model_selection_note": "Owner requested lowest-cost supported model. Official rates favor gpt-6-luna, but current ChatGPT login rejected it. gpt-5.6-luna passed two synthetic probes; fixed model, low reasoning, no fallback.",
+  "model_selection_note": "Owner restored gpt-5.6-luna on 2026-10-27. Exact model, low reasoning, no fallback. Real A/B2/B3 development calls and the latest typed-tools synthetic probes completed using the official CLI. Historical receipts and failed batches are retained.",
   "readiness_status": "FEASIBLE_FOR_CODEX_SUBSCRIPTION_TRANSPORT",
-  "feasibility_receipt": "results/acceptance/codex-subscription-5.6-luna-feasibility-20261021/feasibility.json"
+  "feasibility_receipt": "results/acceptance/codex-subscription-5.6-luna-feasibility-20261021/feasibility.json",
+  "latest_feasibility_receipt": "results/diagnostics/optimization-stage-b2-typed-tools-20261027/feasibility.json"
 }

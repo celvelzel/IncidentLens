@@ -406,7 +406,7 @@ async def test_tool_planning_uses_observed_metadata_and_discovers_unknown_metric
 
     proposed = [{"tool_name": "query_changes", "args": {
         "service": "backend", "start_ts": "2026-01-01T00:00:00Z",
-        "end_ts": "2026-01-01T00:00:00Z", "change_type": "configuration",
+        "end_ts": "2026-01-01T00:00:00Z", "change_type": "config",
     }}]
     change_task = change_task.model_copy(update={"allowed_tools": ["query_changes"]})
     discovery, _ = await plan_tools(

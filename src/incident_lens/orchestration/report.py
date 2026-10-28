@@ -2,7 +2,12 @@
 
 from incident_lens.schemas import RCAReport
 
-from .guards import cause_discriminator, competitor_assessments, grounding_errors
+from .guards import (
+    cause_discriminator,
+    competitor_assessments,
+    grounding_errors,
+    likely_assessment_errors,
+)
 
 
 def observed_chain(state, hypothesis):
@@ -12,7 +17,7 @@ def observed_chain(state, hypothesis):
             for r in sorted(records, key=lambda r: (r.observed_at, r.evidence_id))]
 
 
-def populate_assessment(state):
+def populate_assessment(state, variant="full"):
     """Preserve useful work without promoting a tentative cause to a diagnosis.
 
     This is deterministic rendering of shared observations and assessments. It
@@ -21,8 +26,16 @@ def populate_assessment(state):
     report = state.report
     if report.status == "RESOLVED":
         report.assessment_level = "CONFIRMED"
+        report.acceptance_standard = "BEST_SUPPORTED_AVAILABLE"
         review = next((r for r in reversed(state.reviews)
                        if r.target_hypothesis_id == report.root_cause.hypothesis_id), None)
+        report.causal_limitations = list(dict.fromkeys(
+            report.root_cause.open_questions + state.open_questions
+            + ([check.question for check in review.requested_checks] if review else [])))
+        report.assessment_basis = [
+            "Selected the most reasonable root cause from available observations: a mechanism, "
+            "temporally compatible cross-source corroboration and no unresolved observed competitor.",
+            "Root selection is an evidence-based inference, not proof of every causal link."]
         report.optional_questions = list(dict.fromkeys(report.root_cause.optional_questions
             + ([check.question for check in review.optional_checks] if review else [])))
         return
@@ -39,6 +52,12 @@ def populate_assessment(state):
         -len({r.source_path for r in observations(h)}),
         bool(h.against_ids), len(h.open_questions), h.hypothesis_id,
     ))
+    proposed_id = state.decisions[-1].proposed_hypothesis_id if state.decisions else None
+    nominated = next((h for h in candidates if h.hypothesis_id == proposed_id), None)
+    proposal_errors = likely_assessment_errors(state, nominated, variant) if nominated else ["No explicit proposal"]
+    if nominated is not None and not proposal_errors:
+        candidates.remove(nominated)
+        candidates.insert(0, nominated)
     report.assessment_level = "INSUFFICIENT"
     report.provisional_hypotheses = [h.model_copy(deep=True, update={"status": "OPEN"})
                                      for h in candidates[:3]]
@@ -75,9 +94,19 @@ def populate_assessment(state):
         "Candidate has unresolved questions or contradictory evidence": "Resolve the attribution questions or contrary observations above.",
     }
     gaps += [readable_errors.get(error, error) for error in errors]
-    # A likely assessment is still INCONCLUSIVE/root_cause=null. Material gaps,
-    # conflicting review or runtime failure never receive this stronger label.
-    if (not errors and not state.open_questions and not material
+    # An explicitly nominated leading explanation may retain confirmation gaps.
+    # Contradictions, competing mechanisms and runtime failures still block it;
+    # it remains INCONCLUSIVE/root_cause=null and does not count as confirmed.
+    explicit_likely = (nominated is not None and not proposal_errors
+                       and not (state.termination and state.termination.runtime_failure))
+    if explicit_likely:
+        report.assessment_level = "LIKELY"
+        report.proposed_hypothesis_id = nominated.hypothesis_id
+        report.assessment_basis.append(
+            "The coordinator explicitly nominated this observed mechanism as the leading explanation. "
+            "Cross-source corroboration is present; direct causal attribution is still unconfirmed. "
+            "Missing request-level linkage and other confirmation limits remain listed below.")
+    elif (not errors and not state.open_questions and not material
         and (review is None or review.verdict == "sufficient")
         and (review is None or not review.contradictions and not review.requested_checks)
         and not (state.termination and state.termination.runtime_failure)):
@@ -88,6 +117,8 @@ def populate_assessment(state):
         )
     else:
         report.assessment_basis.append("Causal attribution remains insufficient or conflicted.")
+    if nominated is not None and proposal_errors:
+        gaps += ["Leading prediction blocked: " + error for error in proposal_errors]
     if review and review.verdict != "sufficient":
         gaps.append("Latest review has not accepted the explanation: " + review.rationale)
     if gaps:
@@ -121,7 +152,9 @@ def render_report(report: RCAReport) -> str:
     ]
     if report.assessment_level:
         sections.insert(3, "## Evidence assessment\n" + {
-            "CONFIRMED": "Confirmed by the investigation workflow",
+            "CONFIRMED": ("Root cause selected under BEST_SUPPORTED_AVAILABLE; residual causal links may be inferred"
+                          if report.acceptance_standard == "BEST_SUPPORTED_AVAILABLE"
+                          else "Confirmed by the investigation workflow"),
             "LIKELY": "Likely explanation — NOT confirmed; no accepted root cause",
             "INSUFFICIENT": "Insufficient evidence for a confirmed attribution",
         }[report.assessment_level])
@@ -140,7 +173,8 @@ def render_report(report: RCAReport) -> str:
         ))
         sections.append("## Observations for leading explanation — attribution unconfirmed\n"
                         + "\n".join("- " + item for item in report.provisional_observations))
-    for title, items in (("Assessment basis", report.assessment_basis),
+    for title, items in (("Causal limitations — do not block best-supported selection", report.causal_limitations),
+                         ("Assessment basis", report.assessment_basis),
                          ("Unresolved", report.unresolved),
                          ("Suggested next checks — not executed; new telemetry may be required", report.next_steps),
                          ("Optional corroboration — does not block a conclusion", report.optional_questions)):
