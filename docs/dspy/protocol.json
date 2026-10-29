@@ -1,0 +1,16 @@
+{
+  "version": "dspy-protocol-v1-proposed",
+  "frozen_base_commit": "fb0c848d5f25",
+  "primary": "human-adjudicated incorrect competing-hypothesis refutations",
+  "secondary": ["root-cause accuracy", "correct abstention", "schema success", "requests", "tokens", "tools", "latency"],
+  "arms": {"A0": "original", "A1": "manual few-shot", "A2": "LabeledFewShot or BootstrapFewShot (declare before execution)", "A3": "MIPROv2"},
+  "shots_max": 2,
+  "temperature": 0,
+  "seed": 21,
+  "mipro_trials": 8,
+  "error_reduction_target_relative": 0.25,
+  "quality_priority_over_cost": true,
+  "test_rule": "disjoint incidents, families and near-duplicate clusters; no optimizer access",
+  "acceptance": "no new authority violations; paired raw counts and human review required",
+  "status": "proposed; real-data allocation and noninferiority margin require team freeze before real experiments"
+}

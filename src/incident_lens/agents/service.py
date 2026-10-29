@@ -9,6 +9,7 @@ from pydantic_core import PydanticCustomError
 
 from incident_lens.agents.database import DATABASE_PROMPT
 from incident_lens.llm.provider import ProviderError, json_payload
+from incident_lens.prompts.calls import structured_call
 from incident_lens.schemas import (
     CoordinatorDecision,
     Finding,
@@ -270,7 +271,8 @@ async def decide(provider, state_payload):
         "Assign complementary checks, prefer a new category that can distinguish candidates, and "
         "do not repeat a complete identical scope without new data or changed time bounds."
     )
-    result, usage = await provider.structured_call(
+    result, usage = await structured_call(
+        provider, "coordinate",
         role, prompt(role) + "\n" + ROLE_PROMPTS["coordinator"]
         + "\nInspect changes/config diffs before concluding evidence is insufficient. "
         "Use query_history effective args, ok, record_count, next_cursor and completed to distinguish successful exhausted scope from failed or partial queries. Omitted query_changes time bounds cover the entire supplied pack. An empty broad query remains an evidence gap, not health. If completed scopes leave no new discriminating check, select the best-supported candidate when finalize_errors permit; otherwise ABSTAIN. "
@@ -341,7 +343,8 @@ async def verify(provider, state_payload):
         __validators__={"record_invalid_citations": record_invalid_citations},
     )
     try:
-        review, usage = await provider.structured_call(
+        review, usage = await structured_call(
+            provider, "verify",
             role, prompt(role) + "\n" + ROLE_PROMPTS["verifier"]
             + "\nEvery cited_evidence_ids entry must come from evidence_index; "
             "use an empty list if no fetched observation supports the review. "
@@ -401,7 +404,8 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
     call_type = Union[call_types] if len(call_types) > 1 else call_types[0] if call_types else ToolCall
     schema = create_model("InvestigatorPlan", __base__=InvestigatorPlan,
                           calls=(list[call_type], Field(max_length=2 if allowed else 0)))
-    result, usage = await provider.structured_call(
+    result, usage = await structured_call(
+        provider, "plan",
         context["role"],
         (prompt("single") + "\n" + "\n".join(ROLE_PROMPTS[r] for r in ("logs", "metrics", "changes"))
          if context["role"] == "single" else prompt(task["role"]))
@@ -475,7 +479,8 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
 
 async def analyze(provider, context, task, records):
     context, task, records = json_payload(context), json_payload(task), json_payload(records)
-    result, usage = await provider.structured_call(
+    result, usage = await structured_call(
+        provider, "analysis",
         context["role"],
         prompt("single") if context["role"] == "single" else prompt(task["role"]),
         dict(

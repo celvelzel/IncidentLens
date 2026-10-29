@@ -1,0 +1,203 @@
+{
+  "$defs": {
+    "Annotation": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviewers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reviewers",
+          "type": "array"
+        },
+        "adjudication": {
+          "default": "",
+          "title": "Adjudication",
+          "type": "string"
+        },
+        "expected": {
+          "additionalProperties": true,
+          "title": "Expected",
+          "type": "object"
+        },
+        "rationale": {
+          "default": "",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "relations": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRelation"
+          },
+          "title": "Relations",
+          "type": "array"
+        },
+        "abstention": {
+          "default": "unknown",
+          "enum": [
+            "appropriate",
+            "inappropriate",
+            "not_applicable",
+            "unknown"
+          ],
+          "title": "Abstention",
+          "type": "string"
+        },
+        "error_owner": {
+          "default": "unknown",
+          "enum": [
+            "analysis",
+            "verify",
+            "coordinator",
+            "system",
+            "none",
+            "unknown"
+          ],
+          "title": "Error Owner",
+          "type": "string"
+        },
+        "prompt_fixable": {
+          "default": "unknown",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "title": "Prompt Fixable",
+          "type": "string"
+        }
+      },
+      "title": "Annotation",
+      "type": "object"
+    },
+    "EvidenceRelation": {
+      "additionalProperties": false,
+      "properties": {
+        "culprit_service": {
+          "title": "Culprit Service",
+          "type": "string"
+        },
+        "failure_mode": {
+          "title": "Failure Mode",
+          "type": "string"
+        },
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "supports",
+            "directly_refutes",
+            "insufficient",
+            "irrelevant",
+            "unknown"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "culprit_service",
+        "failure_mode",
+        "evidence_id",
+        "relation",
+        "rationale"
+      ],
+      "title": "EvidenceRelation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "sample_id": {
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "analysis",
+        "verify"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "role": {
+      "title": "Role",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "Output Schema",
+      "type": "object"
+    },
+    "system_prompt": {
+      "title": "System Prompt",
+      "type": "string"
+    },
+    "prompt_metadata": {
+      "additionalProperties": true,
+      "title": "Prompt Metadata",
+      "type": "object"
+    },
+    "source_sha256": {
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "family": {
+      "default": "shared-synthetic-generator",
+      "title": "Family",
+      "type": "string"
+    },
+    "cluster": {
+      "default": "shared-synthetic-generator",
+      "title": "Cluster",
+      "type": "string"
+    },
+    "split": {
+      "default": "unassigned",
+      "enum": [
+        "train",
+        "dev",
+        "test",
+        "unassigned"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "annotation": {
+      "$ref": "#/$defs/Annotation"
+    }
+  },
+  "required": [
+    "sample_id",
+    "stage",
+    "role",
+    "payload",
+    "output_schema",
+    "system_prompt",
+    "prompt_metadata",
+    "source_sha256"
+  ],
+  "title": "Sample",
+  "type": "object"
+}
