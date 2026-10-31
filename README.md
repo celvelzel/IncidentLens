@@ -48,17 +48,6 @@ deterministic grounding gates are all inspectable end to end.
   alerts, proposals, tasks and stop events.
 - **Optional explanation cache** — exact or conservative semantic reuse with strict namespaces and citation validation.
 
-## Use cases
-
-- **Learning and prototyping** — study how a coordinator/investigator/verifier
-  multi-agent loop behaves under strict evidence and budget constraints.
-- **Offline demos and teaching** — run a full investigation, replay and UI tour
-  on a laptop with no model access.
-- **Architecture ablation studies** — compare single-agent, fixed-expert,
-  dynamic-no-verifier and full variants under identical budgets.
-- **Agent sandboxing patterns** — reference implementation for permission
-  ledgers, allowlists and untrusted-excerpt handling around LLM tool calls.
-
 ## Quick start (PowerShell)
 
 Python 3.11+ is declared; Windows / Python 3.13 is verified. Install dependencies
@@ -154,334 +143,75 @@ Verifier and FinalizeGate retain authority over evidence acceptance and conclusi
 | Remediation (`remediation`) | Produce evidence-supported proposals with preconditions, risks, verification and rollback steps for an accepted cause. |
 | Single-Agent baseline (`single`) | Use one agent for planning, investigation and self-reflection in architecture comparisons. |
 
-### Runtime and budgets
+### Runtime and configuration
 
-All roles run in one LangGraph StateGraph with centralized communication. Investigators
-return local outputs; Merge validates each batch against issued identities and actual-query
-ledgers before publication to the shared evidence board. Coordinator receives findings and
-evidence references; Verifier fetches authorized records, and review fingerprints bind
-candidate and evidence versions. FinalizeGate rejects rejected candidates, unresolved
-questions, competing hypotheses and missing causal support. TaskManager manages bounded
-retries; StopController freezes tasks and tools, cancels work and waits for acknowledgements.
-These components and the deterministic Reporter are runtime components, not additional
-LLM agents. Tree communication is unsupported.
+All roles use centralized LangGraph coordination, validated Merge, bounded task retries,
+STOP handling and deterministic reporting. Budgets count physical requests, retries and
+structured repairs. Budget exhaustion is a runtime failure; ordinary evidence
+insufficiency ends in `INCONCLUSIVE`.
 
-| Configuration | Workflow | Rounds | Tool calls | Actual model requests | Total time |
-| --- | --- | --- | --- | --- | --- |
-| [system.yaml](configs/system.yaml) (default) | `legacy_rca` | 4 | 12 | 16 | 600 seconds |
-| [incident-response.yaml](configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 seconds |
+See the [operations and configuration guide](docs/readme-guide.md#runtime-and-budgets)
+for profile budgets, phase limits, status semantics and stop behavior.
 
-The response configuration also limits monitoring to 8 calls, remediation to 2 calls,
-each task to 2 attempts and stop acknowledgements to 5 seconds. Phase limits share global
-budgets, including JSON repair requests. Defaults allow 180 seconds per model request and
-one JSON repair. CLI flags override configuration; `--max-tokens` blocks further requests
-after measured usage exhausts the cap, although an in-flight response may exceed it.
-Unknown usage is explicitly marked incomplete.
+## Operations and configuration
 
-Diagnosis (`RESOLVED` / `INCONCLUSIVE`), remediation (`NOT_STARTED` / `PLAN_READY` /
-`PLAN_FAILED` / `SKIPPED`) and workflow (`RUNNING` / `STOPPING` / `FINISHED` / `FAILED`)
-statuses are recorded separately. The original `RCAReport.status` still supports
-`RESOLVED` / `INCONCLUSIVE` / `ERROR`; `PLAN_READY` means a proposal exists, not that service recovered.
+The detailed operational material is now kept in the
+[operations and configuration guide](docs/readme-guide.md):
 
-## Incident response workflow
+- [Cost-Aware Evidence Selection](docs/readme-guide.md#cost-aware-evidence-selection-caes)
+- [Runtime and budgets](docs/readme-guide.md#runtime-and-budgets)
+- [Providers and configuration](docs/readme-guide.md#providers-and-configuration)
+- [Evidence and permissions](docs/readme-guide.md#evidence-and-permissions)
+- [Local explanation cache](docs/readme-guide.md#local-explanation-cache)
 
-```powershell
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --out results/legacy-demo
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --out results/response-demo
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode manual_snapshot --snapshot data/monitoring/normal.json --out results/no-alert-demo
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_037 --provider mock --config configs/incident-response.yaml --monitor-mode offline_replay --snapshot data/monitoring/anomaly.json --out results/replay-demo
-```
+## IncidentBench tests
 
-Monitoring JSON contains public `EvidenceRecord` objects for the selected incident.
-`manual_snapshot` analyzes a supplied snapshot; `offline_replay` uses offline input without
-connecting to production monitoring. Remediation is `PLAN_ONLY` and executes none of its proposed actions.
+IncidentBench keeps public observations separate from evaluator-only labels and runs
+the actual Graph under matched model, temperature, response format, public-data,
+tool, budget and cache-off settings:
 
-## Providers and configuration
-
-Copy `.env.example` to project-local `.env`. Real mode requires:
-
-| Variable | Meaning |
+| Benchmark variant | Behavior |
 | --- | --- |
-| `INCIDENT_LENS_BASE_URL` | Chat-completions base URL or full endpoint |
-| `INCIDENT_LENS_API_KEY` | Local secret, never exported or committed |
-| `INCIDENT_LENS_MODEL` | Provider model identifier |
-| `CACHE_MODE` | off (default), exact, semantic |
-| `CACHE_DB_PATH` | SQLite file path |
-| `CACHE_SIMILARITY_THRESHOLD` | At least 0.95 |
-| `CACHE_TTL_HOURS` | Expiry, default 24 |
-| `CACHE_EMBEDDING_MODEL` | fake or an explicitly installed local model |
+| `strong_single_equivalent_tools` | One identity with equivalent tools and self-reflection |
+| `fixed_four_equivalent_tools` | One fixed logs, metrics, database and changes batch |
+| `dynamic_no_verifier` | Dynamic specialist selection without independent review |
+| `full` | Dynamic selection with Verifier feedback and FinalizeGate |
 
-```powershell
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider real --out results/real001
-```
+Technical failures remain in attempted-case denominators. A normal evidence-insufficient
+`INCONCLUSIVE` is scored as abstention. Public development fixtures share encoder lineage
+and are not independent blind Test data. See the
+[IncidentBench guide](docs/incidentbench/README.md) for datasets, scoring and commands.
 
-The default `json_schema` mode requires server support for strict JSON Schema.
-For a JSON-mode endpoint, explicitly select `--response-format json_object`;
-both modes validate every response against the same local Pydantic contract.
-`--thinking disabled` and `--request-timeout 60` are explicit optional transport
-settings. The corresponding project-local environment variables are
-`INCIDENT_LENS_RESPONSE_FORMAT`, `INCIDENT_LENS_THINKING`, and
-`INCIDENT_LENS_REQUEST_TIMEOUT`; the dashboard exposes these settings too.
-Missing configuration,
-incompatibility and transport failures are explicit; real never falls back to
-Mock. HTTP fixture tests validate adapter behavior, not live endpoint compatibility.
-Mock is deterministic over supplied public evidence and never reads private
-labels or looks up answers by incident ID. Its results demonstrate correctness,
-not real-model accuracy or architecture superiority.
+### WP-D result summary
 
-### Provider reliability and recovery
+A development-visible WP-D run used `auto/deepseek-v4.1-flash`, four jobs and one
+repeat over 10 cases with provisional candidate-oracle labels. All 40 final slots
+completed. Only Full/3010 required retries.
 
-`provider_recovery.enabled` defaults to `false`, retaining the legacy single structured repair.
-Enable it explicitly in YAML to classify provider failures, retry transient HTTP/transport faults
-within request, wall and stage budgets, and perform at most one targeted syntax/schema repair.
-Every physical dispatch, including a repair or retry, consumes a permit. STOP interrupts backoff;
-concurrent stage guards use task-local context. Domain/citation guards remain authoritative.
+| Architecture | Technical completion | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 |
+| Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 |
+| Dynamic no Verifier | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
+| Full | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
 
-```yaml
-provider_recovery:
-  enabled: true
-  format_capability: json_object
-  max_transport_retries: 2
-  max_structured_repairs: 1
-  max_physical_attempts_per_call: 4
-  min_request_time_seconds: 5.0
-```
-
-CLI `--response-format` overrides the environment, then the enabled capability setting.
-There is no automatic format/model/provider fallback. Missing usage stays unknown; token
-limits are best effort without a validated provider output cap. Diagnostic trace events contain
-safe categories and attempt IDs, and old trace envelopes remain readable. Identity proposal
-binding is deferred; existing prompts and evidence schemas remain unchanged.
-
-Run deterministic fault injection, or a separately recorded compatibility probe and paired
-Seed/Dev pilot, from the repository root:
-
-```powershell
-.venv\Scripts\python.exe scripts/run_reliability_eval.py --out results/v13-eval/NEW-ID
-.venv\Scripts\python.exe scripts/run_v13_pilot.py --out results/v13-eval/NEW-PILOT --response-format json_schema
-.venv\Scripts\python.exe scripts/analyze_v13_pilot.py --source results/v13-eval/NEW-PILOT --out results/v13-eval/NEW-ANALYSIS
-```
-
-The real pilot requires local API configuration and can incur provider charges. Choose the
-response format accepted by that endpoint. Output directories must be new; analysis reads
-saved traces without model calls or private oracle access. See [runtime contracts](docs/v1.3/contracts.md) and
-[evaluation protocol](docs/v1.3/evaluation_protocol.md). Offline technical recovery does not
-establish live RCA accuracy or targeted-repair quality.
-
-## Evidence and permissions
-
-The dataset contains the original 6 seed, 10 dev and 20 held-out synthetic cases plus
-4 cases (`incident_037`–`incident_040`) in a separate [database set](data/splits/database_ids.json),
-for 40 cases total. Original splits remain frozen. Added scenarios cover connection exhaustion,
-application pool misconfiguration with a healthy database, locks and slow queries, and insufficient
-evidence. Missing evidence requires abstention; synthetic templates are not an independently
-collected production benchmark. See [data generation and limitations](data/README.md).
-
-All tools are read-only:
-
-| Evidence type | Tools |
-| --- | --- |
-| Logs | `query_logs` |
-| Metrics and dependencies | `query_metrics`, `get_dependencies` |
-| Changes | `query_changes`, `get_config_diff` |
-| Database | `get_db_connections`, `get_db_active_sessions`, `get_db_lock_waits`, `get_db_slow_queries`, `get_db_health_metrics` |
-| Shared evidence | `fetch_evidence_by_ids` |
-
-Database observations use optional `public/database.jsonl`; older packs need no additional file.
-ToolRegistry enforces role permissions; fair comparisons can explicitly enable
-`database_equivalent_tools` for equivalent database access by Metrics / Single.
-Server-issued immutable contexts constrain role, workspace, incident, run and actual-query ledgers.
-Public file allowlists reject private truth, traversal and symlink/junction escapes. Excerpts are
-untrusted data. This is application isolation, not an OS Python sandbox.
-
-## IncidentBench
-
-IncidentBench keeps versioned public observations separate from evaluator-only causal
-labels. Validation checks evidence contracts, manifest hashes and source-family leakage
-before investigations start. The runner executes the existing Graph with cache off,
-fresh per-run providers and budgets, and equivalent database tools:
-
-| Condition | Investigation behavior |
-| --- | --- |
-| `strong_single_equivalent_tools` | One runtime identity with all equivalent tools and self-reflection |
-| `fixed_four_equivalent_tools` | One fixed batch of logs, metrics, database and changes specialists |
-| `dynamic_no_verifier` | Dynamic specialist selection without the Verifier |
-| `full` | Dynamic specialist selection with Verifier feedback |
-
-The benchmark's fixed-four option is explicit; legacy `fixed` retains three experts.
-Completed and failed states are saved before evaluator access. Saved artifacts support
-candidate rescoring, anonymous citation-review exports and paired source-cluster analysis.
-Technical failures remain in attempted-case denominators; normal evidence-insufficient
-abstention is separate from runtime failure. Unknown tokens, cost and human semantic
-support remain null. Explicit resume is supported for offline Mock runs; real-provider
-resume is unsupported.
-
-Use an editable source checkout; standalone wheel-only IncidentBench execution is
-unsupported because reproducibility locks include repository scripts, prompts and configs.
-The following commands validate public data and run an unscored offline comparison:
-
-```powershell
-.venv\Scripts\python.exe scripts/validate_incidentbench.py --dataset data/incidentbench_v1 --mode public
-.venv\Scripts\python.exe scripts/run_incidentbench.py --dataset data/incidentbench_v1 --split seed --provider mock --cache-mode off --jobs 1 --out results/incidentbench/NEW-seed
-```
-
-Output directories must be new. This example supplies no private Oracle and does not
-produce causal accuracy scores. Build and candidate-scoring examples are in the
-[IncidentBench guide](docs/incidentbench/README.md). Real development runs additionally
-require a model-matching protocol and measured provider-readiness evidence, without
-automatic fallback to Mock. Raw states, receipts and locks must remain available at
-their recorded paths for rescoring; artifact relocation is unsupported.
-
-Public development fixtures share encoder lineage and are not independently reviewed
-ground truth or blind Test data. Generated annotations, including user-confirmed model
-reviews, retain their actual provenance. Formal Frozen Test execution remains gated on
-independent review, label ownership and sealing. See the guide for dataset, evaluation
-and model cards. Legacy datasets and evaluation commands remain available.
-
-## Local explanation cache
-
-Only local logs/metrics/database/changes explanations are cacheable. Monitoring, routing,
-reviews, proposals, final acceptance, reports and tool queries execute normally. Hits require current queried records, strict
-namespace and valid citations; finding/task/run identities are rebound before
-merge. Each run refreshes dataset revision. Namespace also includes evidence hash,
-identity, task type, prompt, model/parameters, schema and ACL versions.
-
-Semantic reuse combines NumPy cosine with conservative ordered-token equivalence.
-FakeEmbedder is an offline test aid, not a learned semantic model. Optional
-SentenceTransformer uses explicitly installed local weights. See [cache](docs/cache.md).
-
-```powershell
-.venv\Scripts\python.exe scripts/run_cache_eval.py --provider mock --out results/cache-experiment
-```
-
-## Evaluation and validation
-
-```powershell
-.venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider mock --out results/eval-mock
-.venv\Scripts\python.exe scripts/run_eval.py --split dev --variant all --provider real --out results/eval-real
-.venv\Scripts\python.exe scripts/run_eval.py --split test --variant all --provider real --out results/final
-.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_037 incident_038 incident_039 incident_040 --out results/v12-eval
-.venv\Scripts\python.exe scripts/run_v12_eval.py --provider mock --incidents incident_001 incident_037 --skip-legacy --inject-transient-failure --out results/v12-recovery
-.venv\Scripts\python.exe -m pytest -q
-.venv\Scripts\python.exe -m ruff check src tests scripts
-.venv\Scripts\python.exe scripts/verify_install.py --out results/fresh-install
-```
-
-Single (all tools plus self-reflection), fixed (one fixed expert batch),
-dynamic_no_verifier and full share inputs, model, temperature, budgets and
-grounding rules. Architecture comparisons force cache off. Evaluator reads truth
-only after execution. Outputs: case-level.csv, aggregate.csv, raw-runs.jsonl and
-error-analysis.md. Accuracy/abstention/citation denominators remain separate;
-unknown tokens/cost and unreviewed semantic support stay blank. Equal tool budgets
-do not imply equal tokens. See [evaluation protocol](docs/evaluation.md).
-
-Paired database evaluation gives Metrics equivalent database tools in both arms with
-cache off to compare the additional Database role. Failure injection checks bounded retries
-and recovery. Mock results establish deterministic behavior; real-model quality and remediation
-effectiveness require separate measurement.
-
-Installation verification builds a wheel, installs pinned dependencies in a fresh
-environment and runs validation/investigation/replay. It preserves logs and
-refuses to overwrite an existing verification environment.
-
-## Cost-Aware Evidence Selection (CAES)
-
-CAES adds a bounded task-selection step to the full dynamic investigation. The
-CandidateGenerator combines Coordinator proposals, published Verifier checks and
-public role templates. ActionScorer estimates discrimination between published hypotheses,
-question coverage, missing evidence sources, redundancy and request/tool costs. The
-Selector chooses at most two feasible tasks, or abstains with `NO_USEFUL_ACTION`.
-Candidate generation and scoring make no model or tool call and read no private Oracle.
-Selected tasks use the existing TaskManager, role ACLs, physical request permits,
-STOP protocol, validated merge, Verifier and FinalizeGate.
-
-| Policy | Behavior |
-| --- | --- |
-| `current_dynamic` | Default: execute original Coordinator assignments; bypass CAES. |
-| `first_eligible` | Choose feasible candidates in generator order. |
-| `active_no_cost` | Rank candidate value without the cost denominator; retain hard budgets. |
-| `active_no_discrimination` | Exclude the discrimination weight; retain cost and feasibility. |
-| `active_evidence` | Full CAES heuristic value/cost ranking with diversity checks. |
-
-`--shadow-caes` records full CAES recommendations while executing Coordinator assignments.
-Use it with the default policy for observation. An observation failure falls back to the
-original proposal while STOP/deadline guards remain authoritative. CAES options require
-`--variant full`; FINALIZE and ABSTAIN bypass selection. Defaults and weights are in
-[the example configuration](configs/active-investigation.example.yaml).
-
-```powershell
-# Observe recommendations, enable selection, or use the example configuration.
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --shadow-caes --out results/caes-shadow
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --cache-mode off --selection-policy active_evidence --out results/caes-active
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --out results/caes-config
-# Restore the original policy when using a configuration that enables CAES.
-.venv\Scripts\python.exe -m incident_lens.cli run --case incident_001 --provider mock --config configs/active-investigation.example.yaml --selection-policy current_dynamic --out results/caes-original
-# Replay saved selections without executing a model or tool.
-.venv\Scripts\python.exe scripts/replay_v15_selection.py --trace results/caes-active/trace.json
-# Public Seed engineering diagnostics and offline analysis; use new output directories.
-.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --variants B0 B1 B1c B2 B3 B4 --provider mock --out results/caes-seed
-.venv\Scripts\python.exe scripts/analyze_v15_active.py --input results/caes-seed --out results/caes-analysis
-.venv\Scripts\python.exe scripts/run_v15_active_eval.py --dataset data/incidentbench_v1 --split seed --resume --out results/caes-seed
-```
-
-B0 executes IncidentBench fixed-four, B1 original dynamic, B1c first eligible, B2 no cost,
-B3 no discrimination and B4 full CAES. They use actual different control paths and equal
-protocol settings. Saved artifacts include public candidate/feature/selection snapshots,
-actual execution and usage, raw failures, durable progress and source/protocol hashes.
-Verified Mock-only resume preserves attempted records and refuses incompatible or modified
-ledgers. Use repository scripts from an editable checkout; runtime/CLI also ship in the wheel.
-
-Scores are heuristics, not calibrated information gain. Uniform fallback costs can make
-no-cost/full rankings coincide. Cold start uses public Logs/Metrics priorities with zero
-discrimination; unknown tokens and latency estimates stay null. Tight budgets can still
-exhaust later workflow calls. Seed Mock execution establishes functionality, not accuracy
-or efficiency. Reviewed Dev calibration, real-provider evaluation and sealed Frozen Test
-remain gated; no CAES performance improvement is established. See the
-[algorithm](docs/v1.5/algorithm-spec.md) and [fairness protocol](docs/v1.5/fairness-protocol.md).
+**Multi-Agent advantage.** Dynamic no Verifier matched Single and Full at 10/10
+quality while reducing average latency by 40.3%, requests by 20.5%, tool queries
+by 21.3% and tokens by 43.6% versus Single. Fixed-4 was fastest and cheapest but
+incorrectly abstained on three identifiable cases. Full tied Single in quality but
+used more latency, requests, tools and tokens. These are descriptive results from
+one development-visible repeat with provisional labels, not statistical significance,
+blind-test or production evidence. See the [full Chinese report](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
+and [structured comparison](results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json).
 
 ## Documentation
 
-- [IncidentBench guide](docs/incidentbench/README.md) — benchmark setup, dataset and evaluation contracts
-- [CAES algorithm and contracts](docs/v1.5/algorithm-spec.md) — features, selection and authority boundaries
-- [CAES experiment protocol](docs/v1.5/fairness-protocol.md) — controlled execution, replay and recovery
+- [Operations and configuration](docs/readme-guide.md) — CAES, budgets, providers, permissions and cache
+- [IncidentBench tests](docs/incidentbench/README.md) — datasets, protocols, scoring and commands
 - [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
-- [Dependencies and ownership](docs/phase-plan.md) — phase plan and module map
-- [Demo walkthrough](docs/demo.md) — recorded demo script
 - [Evaluation protocol](docs/evaluation.md) — variants, metrics and scoring rules
 - [Cache design](docs/cache.md) — namespaces, hits and semantic reuse
-- [Analysis](docs/analysis.md) — result analysis notes
 - [Data generation and limitations](data/README.md) — synthetic fixtures and scope
-- [Acceptance evidence](docs/acceptance/) — acceptance runs and audits
-- [Source snapshots](docs/source/) — design and plan snapshots
-- [Contribution mapping](docs/contributions.md) — responsibility-to-evidence matrix
-
-Generated commits do not prove individual students' personal contributions.
-
-## Contributing
-
-Contributions, questions and feature ideas are welcome — this is a personal
-project maintained on a best-effort basis, so small, focused changes are the
-easiest to review.
-
-- **Report a bug** — open an issue describing the case ID, provider
-  (`mock`/`real`), the exact CLI command and, if possible, the run's
-  `trace.json`. Mock runs are fully reproducible offline, which makes them the
-  preferred vehicle for bug reports.
-- **Suggest a feature or improvement** — open an issue first to discuss scope
-  before investing in a large change. Honest-scope additions (docs, evaluation
-  scripts, isolation tests) are especially welcome.
-- **Submit a pull request** — keep PRs focused on one change; keep the offline
-  Mock path working; update the matching section in both `README.md` and
-  `README.zh-CN.md` when behavior or commands change.
-- **Development checks** — Push and PR checks run Ruff, the full offline Python
-  suite on Ubuntu/Windows, JS tests and Mock browser acceptance. See
-  [offline CI](docs/offline-ci.md) for setup, commands and coverage boundaries.
-  Before submitting, run:
-
-```powershell
-.venv\Scripts\python.exe -m pytest -q
-.venv\Scripts\python.exe -m ruff check src tests scripts
-```
-
-Code style follows Ruff (`line-length = 100`, `py311`). New roles should update public
-contracts, read-only tool permissions and corresponding tests. Never commit local secrets
+- [Acceptance evidence](docs/acceptance/) — runs and audits
+- [Code wiki](docs/code_wiki/README.md) — architecture, modules and implementation contracts
+- [Demo walkthrough](docs/demo.md) — recorded demo script
