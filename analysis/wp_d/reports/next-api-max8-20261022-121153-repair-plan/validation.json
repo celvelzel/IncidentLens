@@ -1,0 +1,12 @@
+{
+  "status": "PLAN_ONLY_NOT_IMPLEMENTED",
+  "protected_file_count": 1203,
+  "protected_files_unchanged": true,
+  "frozen_manifest_files_verified": 224,
+  "original_attempts_preserved": true,
+  "tests_run": false,
+  "provider_calls": 0,
+  "frozen_code_modified": false,
+  "handoff_requires_user_unfreeze_instruction": true,
+  "note": "Mutable supervisor state and future retry directories are not treated as immutable inputs; the original artifacts and frozen inputs are protected."
+}

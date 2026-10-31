@@ -1,0 +1,57 @@
+{
+  "purpose": "one standalone minimal diagnostic, no slot replacement, no retries",
+  "time_utc": "2026-10-26T04:31:13.210434+00:00",
+  "model": "deepseek-v4.1-flash-1017",
+  "request_fields": [
+    "messages",
+    "model",
+    "response_format",
+    "temperature",
+    "thinking"
+  ],
+  "request_contains_private_project_data": false,
+  "no_proxy_sanitized": {
+    "original": "localhost,127.0.0.1,::1,[::1]",
+    "kept": [
+      "localhost",
+      "127.0.0.1",
+      "::1",
+      "::1"
+    ],
+    "dropped": [],
+    "reason": "bracketed \"[::1]\" is unparseable by httpx; brackets stripped, routing unchanged"
+  },
+  "status": 200,
+  "elapsed_seconds": 2.546282200026326,
+  "response_headers": {
+    "content-type": "application/json",
+    "x-request-id": "req_79d51c40-affe-4f31-b049-a5dd9b63018e",
+    "date": "Mon, 26 Oct 2026 04:31:15 GMT",
+    "server": "istio-envoy"
+  },
+  "error": null,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"ok\": true}",
+        "reasoning_content": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 61,
+    "total_tokens": 67,
+    "completion_tokens": 6,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "created_cache_tokens": 0,
+      "multimodal_tokens": null
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  }
+}

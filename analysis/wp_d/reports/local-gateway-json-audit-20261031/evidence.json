@@ -1,0 +1,1149 @@
+{
+  "scope": "Latest terminal attempt per slot at original batch completion; later retests excluded",
+  "cutoff_epoch": 1793430842.838091,
+  "slots": [
+    {
+      "slot": "slot-001",
+      "key": {
+        "incident": "incident_3006",
+        "variant": "single",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-001/attempt-001",
+      "status": "completed",
+      "trace_sha256": "f24917fa8896eabb8b90dadeaee63551ccf67945e0dc0cee5f01bb7315c0e3ae",
+      "errors": []
+    },
+    {
+      "slot": "slot-002",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "full",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-002/attempt-001",
+      "status": "completed",
+      "trace_sha256": "8a3209eb3add3a1cd36514be065f697eb64f92ba39d60000a11ebbec873dc3b8",
+      "errors": [
+        {
+          "slot": "slot-002",
+          "event_id": "event-53",
+          "role": "metrics",
+          "logical_call_id": "logical-623351c38ada46d780ec62466e99f5bf",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545674,
+            "t": "2026-10-31T13:54:49.574561+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 261,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-002",
+          "event_id": "event-56",
+          "role": "database",
+          "logical_call_id": "logical-eda9d11a9bfd48c09db92660370bc4a4",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545673,
+            "t": "2026-10-31T13:54:44.4495234+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 1388,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-002",
+          "event_id": "event-102",
+          "role": "database",
+          "logical_call_id": "logical-35ec48f017dd4f6fb1b0ffa3398fb20e",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545690,
+            "t": "2026-10-31T13:57:55.0593223+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 710,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-003",
+      "key": {
+        "incident": "incident_3007",
+        "variant": "full",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-003/attempt-001",
+      "status": "failed",
+      "trace_sha256": "f8fd5b04d21acd0ae3b600a48093bf0d9c288ff9c233db49b9ce7c822db514f7",
+      "errors": [
+        {
+          "slot": "slot-003",
+          "event_id": "event-24",
+          "role": "changes",
+          "logical_call_id": "logical-23f2f5c66b4348d294eb28030856cdfd",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545702,
+            "t": "2026-10-31T14:00:04.858024+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 227,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-003",
+          "event_id": "event-67",
+          "role": "database",
+          "logical_call_id": "logical-27645d1aa164403ca5450a25f0908e1f",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545739,
+            "t": "2026-10-31T14:02:06.1578468+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 674,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-003",
+          "event_id": "event-70",
+          "role": "database",
+          "logical_call_id": "logical-27645d1aa164403ca5450a25f0908e1f",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545742,
+            "t": "2026-10-31T14:02:12.3278594+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 345,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-004",
+      "key": {
+        "incident": "incident_3009",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-004/attempt-001",
+      "status": "failed",
+      "trace_sha256": "95071a4fb562c57fdf0de5f6be5719a261c7614382848a1957062aca8d387870",
+      "errors": [
+        {
+          "slot": "slot-004",
+          "event_id": "event-26",
+          "role": "metrics",
+          "logical_call_id": "logical-e3a91199221b4474a5f41d297d2610da",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545709,
+            "t": "2026-10-31T14:00:14.7909731+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 719,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-004",
+          "event_id": "event-57",
+          "role": "database",
+          "logical_call_id": "logical-82bb32eca7e04c8f847764f9986f06d7",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545722,
+            "t": "2026-10-31T14:01:07.2130932+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 344,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-004",
+          "event_id": "event-92",
+          "role": "database",
+          "logical_call_id": "logical-2a17ddc0ecf24d229acb6ff6a3262a41",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545755,
+            "t": "2026-10-31T14:02:49.6416483+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 506,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-004",
+          "event_id": "event-95",
+          "role": "database",
+          "logical_call_id": "logical-2a17ddc0ecf24d229acb6ff6a3262a41",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545758,
+            "t": "2026-10-31T14:02:53.139649+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 742,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-005",
+      "key": {
+        "incident": "incident_3008",
+        "variant": "single",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-005/attempt-002",
+      "status": "completed",
+      "trace_sha256": "db05f3bc6ef7e75e3e5abf39ea5f845c3e3de064e077e58c53e1da5ecd6cfb09",
+      "errors": []
+    },
+    {
+      "slot": "slot-006",
+      "key": {
+        "incident": "incident_3008",
+        "variant": "full",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-006/attempt-002",
+      "status": "completed",
+      "trace_sha256": "1c62aeeaf9077997571c0a3d65531748d87632327a839d3f1d74bb03f62b9d4d",
+      "errors": [
+        {
+          "slot": "slot-006",
+          "event_id": "event-24",
+          "role": "logs",
+          "logical_call_id": "logical-81c679f51e414489a552836efd6dd3f9",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545845,
+            "t": "2026-10-31T14:34:36.1796102+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 454,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-006",
+          "event_id": "event-86",
+          "role": "metrics",
+          "logical_call_id": "logical-1a736b868b914bf490c84aedac56590c",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545858,
+            "t": "2026-10-31T14:36:03.1333743+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 617,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-006",
+          "event_id": "event-194",
+          "role": "metrics",
+          "logical_call_id": "logical-122d28660b5b43068cb48914ff3cc888",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545915,
+            "t": "2026-10-31T14:42:13.294278+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 350,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-007",
+      "key": {
+        "incident": "incident_3006",
+        "variant": "full",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-007/attempt-001",
+      "status": "completed",
+      "trace_sha256": "474e45caaccef2fbc9b8693c937d94e424224087a321f3480c2ada148429a1db",
+      "errors": [
+        {
+          "slot": "slot-007",
+          "event_id": "event-25",
+          "role": "database",
+          "logical_call_id": "logical-b1c44f15e0494d17a6c4ce03d214b359",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545916,
+            "t": "2026-10-31T14:42:14.2288895+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 633,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-008",
+      "key": {
+        "incident": "incident_3009",
+        "variant": "fixed",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-008/attempt-001",
+      "status": "failed",
+      "trace_sha256": "551051cce5cd3a948db2e930d4b75904c2ce048fae296bc00090a01602e7e64d",
+      "errors": [
+        {
+          "slot": "slot-008",
+          "event_id": "event-35",
+          "role": "database",
+          "logical_call_id": "logical-456817fd95da464cb5bb96b91d6f95df",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545947,
+            "t": "2026-10-31T14:44:54.4592031+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 714,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-008",
+          "event_id": "event-38",
+          "role": "database",
+          "logical_call_id": "logical-456817fd95da464cb5bb96b91d6f95df",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545952,
+            "t": "2026-10-31T14:45:05.2359154+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 628,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-009",
+      "key": {
+        "incident": "incident_3006",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-009/attempt-001",
+      "status": "failed",
+      "trace_sha256": "2c9ab16638153624f8257b6a189a2eae23a6db8977ac56b7d50f805863971138",
+      "errors": [
+        {
+          "slot": "slot-009",
+          "event_id": "event-27",
+          "role": "logs",
+          "logical_call_id": "logical-6ce66f5e46fa4c3983c20a179ffe3692",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545967,
+            "t": "2026-10-31T14:46:07.8603588+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 423,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-009",
+          "event_id": "event-83",
+          "role": "database",
+          "logical_call_id": "logical-3001e6ba03b3421b9cede2f5c51debf7",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546010,
+            "t": "2026-10-31T14:48:59.2543049+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 336,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-009",
+          "event_id": "event-86",
+          "role": "database",
+          "logical_call_id": "logical-3001e6ba03b3421b9cede2f5c51debf7",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546012,
+            "t": "2026-10-31T14:49:01.4724942+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 462,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-010",
+      "key": {
+        "incident": "incident_3009",
+        "variant": "full",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-010/attempt-001",
+      "status": "completed",
+      "trace_sha256": "6d6a7beb2d6444f630fe9d0ab0412329030a2ff3903971cf29f6e28b5b9bcacb",
+      "errors": [
+        {
+          "slot": "slot-010",
+          "event_id": "event-25",
+          "role": "database",
+          "logical_call_id": "logical-7856f1d74391466096f472d54b262db7",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416545976,
+            "t": "2026-10-31T14:46:28.7586295+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 431,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-010",
+          "event_id": "event-36",
+          "role": "verifier",
+          "logical_call_id": "logical-616e2491b25b451d97ebc7ca0933b0b7",
+          "http_attempt_index": 1,
+          "category": "SCHEMA_VALIDATION_FAILED",
+          "phase": "schema",
+          "validation_summary": "Response JSON does not match the required schema. $: validation_error",
+          "output_model": "Review",
+          "gateway_match": {
+            "route_id": 1793416545989,
+            "t": "2026-10-31T14:47:01.4441546+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 5983,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-011",
+      "key": {
+        "incident": "incident_3007",
+        "variant": "fixed",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-011/attempt-001",
+      "status": "completed",
+      "trace_sha256": "b278f0491f159a7eef305a7fdf1254981d92b299a1904f6407a747e6137c9c80",
+      "errors": [
+        {
+          "slot": "slot-011",
+          "event_id": "event-36",
+          "role": "database",
+          "logical_call_id": "logical-3584dc8d5a5b41a2a0c8b77f9430ff95",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput"
+        },
+        {
+          "slot": "slot-011",
+          "event_id": "event-39",
+          "role": "changes",
+          "logical_call_id": "logical-4e76c59fb0ba4927b5b9202c2be6d08d",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput"
+        }
+      ]
+    },
+    {
+      "slot": "slot-012",
+      "key": {
+        "incident": "incident_3007",
+        "variant": "single",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-012/attempt-001",
+      "status": "completed",
+      "trace_sha256": "9fe72a19801dd87521f3099754327b400be578013bcf165af3851f15af41a06b",
+      "errors": []
+    },
+    {
+      "slot": "slot-013",
+      "key": {
+        "incident": "incident_3008",
+        "variant": "fixed",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-013/attempt-001",
+      "status": "completed",
+      "trace_sha256": "7ce7ae65eae523129ee7435082fe8654b4505bec61f18339e6a70d0a8562dd9e",
+      "errors": [
+        {
+          "slot": "slot-013",
+          "event_id": "event-38",
+          "role": "metrics",
+          "logical_call_id": "logical-bd84be7fcd9c45bea3beac4ef19545be",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546116,
+            "t": "2026-10-31T14:54:09.8829811+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 429,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-014",
+      "key": {
+        "incident": "incident_3009",
+        "variant": "single",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-014/attempt-001",
+      "status": "completed",
+      "trace_sha256": "5c8ff5d8d91153a42040ba4e3dbc01d19db2848cdef6135b7af06cd0b250cad1",
+      "errors": []
+    },
+    {
+      "slot": "slot-015",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "fixed",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-015/attempt-001",
+      "status": "failed",
+      "trace_sha256": "d7606175122c5fcf109692d0efec4ef4b47ed16412672a157708a9a058504be6",
+      "errors": [
+        {
+          "slot": "slot-015",
+          "event_id": "event-31",
+          "role": "database",
+          "logical_call_id": "logical-03907110464243509f979c82cfe81ac0",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546265,
+            "t": "2026-10-31T15:00:53.7650445+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 596,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-015",
+          "event_id": "event-39",
+          "role": "database",
+          "logical_call_id": "logical-03907110464243509f979c82cfe81ac0",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546266,
+            "t": "2026-10-31T15:01:00.3278089+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 1014,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-015",
+          "event_id": "event-42",
+          "role": "logs",
+          "logical_call_id": "logical-c203145ffb9949098a317edfcb17b5b1",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546269,
+            "t": "2026-10-31T15:01:06.6912238+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 505,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-016",
+      "key": {
+        "incident": "incident_3007",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-016/attempt-001",
+      "status": "completed",
+      "trace_sha256": "001eaa362c0d865cc582e6240f7771b780d2b7bcb2857d781db85df76fe28e7b",
+      "errors": [
+        {
+          "slot": "slot-016",
+          "event_id": "event-25",
+          "role": "changes",
+          "logical_call_id": "logical-f22ff68d7f2f43e3a3fc60e197342911",
+          "http_attempt_index": 1,
+          "category": "SCHEMA_VALIDATION_FAILED",
+          "phase": "schema",
+          "validation_summary": "Response JSON does not match the required schema. $: extra_forbidden; finding: missing; hypotheses: missing",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546298,
+            "t": "2026-10-31T15:02:47.3462601+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 222,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-016",
+          "event_id": "event-59",
+          "role": "metrics",
+          "logical_call_id": "logical-4c816e653e234a989cc1709a1aec80a1",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546354,
+            "t": "2026-10-31T15:04:33.4774056+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 249,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-017",
+      "key": {
+        "incident": "incident_3008",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-017/attempt-001",
+      "status": "completed",
+      "trace_sha256": "7e9604ee48cc24b730b6bbd84c0b45c161d03f4689d0b62ac34608ba337cdfc3",
+      "errors": [
+        {
+          "slot": "slot-017",
+          "event_id": "event-24",
+          "role": "metrics",
+          "logical_call_id": "logical-47304faaaca345fdbdc35bf8cbc24c5d",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546337,
+            "t": "2026-10-31T15:03:59.5827735+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 288,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-017",
+          "event_id": "event-64",
+          "role": "coordinator",
+          "logical_call_id": "logical-54d1d459b1254408a6dab827520eaad9",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "DynamicDecision",
+          "gateway_match": {
+            "route_id": 1793416546367,
+            "t": "2026-10-31T15:05:19.7988189+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 2796,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-018",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-018/attempt-001",
+      "status": "failed",
+      "trace_sha256": "ea408235e0076531a39e693798d5898ace1d28ba89233998580cbf82d7f6f0b1",
+      "errors": [
+        {
+          "slot": "slot-018",
+          "event_id": "event-25",
+          "role": "database",
+          "logical_call_id": "logical-a37af05c40ff4c4c8f6f473f0c8cf9ea",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546381,
+            "t": "2026-10-31T15:06:19.3748165+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 700,
+            "ep": "/v1/chat/completions"
+          }
+        },
+        {
+          "slot": "slot-018",
+          "event_id": "event-28",
+          "role": "database",
+          "logical_call_id": "logical-a37af05c40ff4c4c8f6f473f0c8cf9ea",
+          "http_attempt_index": 2,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546384,
+            "t": "2026-10-31T15:06:23.7519752+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 669,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-019",
+      "key": {
+        "incident": "incident_3006",
+        "variant": "fixed",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-019/attempt-001",
+      "status": "completed",
+      "trace_sha256": "89a16a56ad8b25546cf0cc241b96b0ae3c76567e672cb5503822c185e37eb2ba",
+      "errors": [
+        {
+          "slot": "slot-019",
+          "event_id": "event-31",
+          "role": "database",
+          "logical_call_id": "logical-efa19af8151b45f7bdab60f5f71c9468",
+          "http_attempt_index": 1,
+          "category": "INVALID_JSON",
+          "phase": "syntax",
+          "validation_summary": "Response content is not valid JSON.",
+          "output_model": "AnalysisOutput",
+          "gateway_match": {
+            "route_id": 1793416546398,
+            "t": "2026-10-31T15:06:54.1310431+08:00",
+            "agent": "python-httpx",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 724,
+            "ep": "/v1/chat/completions"
+          }
+        }
+      ]
+    },
+    {
+      "slot": "slot-020",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "single",
+        "repeat": 0
+      },
+      "attempt": "runs/slot-020/attempt-001",
+      "status": "completed",
+      "trace_sha256": "cb4331c16656e2ecf7d9da09343cb89bfe8f4b79ae971d249b042161dee06ebc",
+      "errors": []
+    }
+  ],
+  "outcome_counts": {
+    "completed": 14,
+    "failed": 6
+  },
+  "failure_counts": [
+    {
+      "role": "metrics",
+      "category": "INVALID_JSON",
+      "count": 7
+    },
+    {
+      "role": "database",
+      "category": "INVALID_JSON",
+      "count": 19
+    },
+    {
+      "role": "changes",
+      "category": "INVALID_JSON",
+      "count": 2
+    },
+    {
+      "role": "logs",
+      "category": "INVALID_JSON",
+      "count": 3
+    },
+    {
+      "role": "verifier",
+      "category": "SCHEMA_VALIDATION_FAILED",
+      "count": 1
+    },
+    {
+      "role": "changes",
+      "category": "SCHEMA_VALIDATION_FAILED",
+      "count": 1
+    },
+    {
+      "role": "coordinator",
+      "category": "INVALID_JSON",
+      "count": 1
+    }
+  ],
+  "logical_call_counts": [
+    {
+      "role": "single",
+      "phase": "planning",
+      "count": 55,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "single",
+      "phase": "analysis",
+      "count": 36,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "coordinator",
+      "phase": "decision_or_review",
+      "count": 38,
+      "calls_requiring_repair": 1
+    },
+    {
+      "role": "changes",
+      "phase": "planning",
+      "count": 15,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "logs",
+      "phase": "planning",
+      "count": 16,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "logs",
+      "phase": "analysis",
+      "count": 14,
+      "calls_requiring_repair": 3
+    },
+    {
+      "role": "database",
+      "phase": "planning",
+      "count": 23,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "metrics",
+      "phase": "planning",
+      "count": 21,
+      "calls_requiring_repair": 0
+    },
+    {
+      "role": "database",
+      "phase": "analysis",
+      "count": 16,
+      "calls_requiring_repair": 13
+    },
+    {
+      "role": "metrics",
+      "phase": "analysis",
+      "count": 21,
+      "calls_requiring_repair": 7
+    },
+    {
+      "role": "verifier",
+      "phase": "decision_or_review",
+      "count": 14,
+      "calls_requiring_repair": 1
+    },
+    {
+      "role": "changes",
+      "phase": "analysis",
+      "count": 3,
+      "calls_requiring_repair": 3
+    }
+  ],
+  "probes": {
+    "reproduction": [
+      {
+        "started_at": "2026-10-31T07:19:08.519175+00:00",
+        "status": 200,
+        "finish_reason": "stop",
+        "valid_json": false,
+        "dsml": true,
+        "request_has_tools": false,
+        "response_has_tool_calls": false,
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "content_preview": "\n\n<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"get_db_lock_waits\">\n<｜｜DSML｜｜ parameter name=\"service\" string=\"true\">postgres</｜｜DSML｜｜ parameter>\n<｜｜DSML｜｜ parameter name=\"sta",
+        "gateway_matches": [
+          {
+            "route_id": 1793416546776,
+            "t": "2026-10-31T15:19:08.554881+08:00",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 818
+          }
+        ]
+      },
+      {
+        "started_at": "2026-10-31T07:19:13.249445+00:00",
+        "status": 200,
+        "finish_reason": "stop",
+        "valid_json": false,
+        "dsml": true,
+        "request_has_tools": false,
+        "response_has_tool_calls": false,
+        "message_roles": [
+          "system",
+          "user",
+          "user"
+        ],
+        "content_preview": "\n\n<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"get_db_lock_waits\">\n<｜｜DSML｜｜ parameter name=\"service\" string=\"true\">postgres</｜｜DSML｜｜ parameter>\n<｜｜DSML｜｜ parameter name=\"sta",
+        "gateway_matches": [
+          {
+            "route_id": 1793416546778,
+            "t": "2026-10-31T15:19:13.5332624+08:00",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 560
+          }
+        ]
+      }
+    ],
+    "control": [
+      {
+        "started_at": "2026-10-31T07:20:26.659461+00:00",
+        "status": 200,
+        "finish_reason": "stop",
+        "valid_json": true,
+        "dsml": false,
+        "request_has_tools": false,
+        "response_has_tool_calls": false,
+        "message_roles": [
+          "system",
+          "user"
+        ],
+        "content_preview": "{\"finding\": {\"finding_id\": \"F-3007-DB-001\", \"task_id\": \"task-3007-db-locks-slow-2\", \"run_id\": \"run-6605900f67564337b7756b77e5361a6c\", \"incident_id\": \"incident_3007\", \"rol",
+        "gateway_matches": [
+          {
+            "route_id": 1793416546823,
+            "t": "2026-10-31T15:20:26.6966297+08:00",
+            "provider": "workbuddy",
+            "model": "deepseek-v4.1-flash",
+            "status": 200,
+            "out": 3122
+          }
+        ]
+      }
+    ]
+  }
+}

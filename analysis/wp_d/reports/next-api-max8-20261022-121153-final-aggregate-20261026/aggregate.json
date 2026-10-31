@@ -1,0 +1,1132 @@
+{
+  "batch": "next-api-max8-20261022-121153",
+  "generated_at": "2026-10-26T05:42:57.794537+00:00",
+  "planned_slots": 40,
+  "supervisor_status": {
+    "schema_version": 2,
+    "state": "batch_finished_with_errors",
+    "parent_pid": 39988,
+    "max_concurrency": 8,
+    "heartbeat_utc": 1792653557.402718,
+    "batch_started_at_utc": 1792653206.9718778,
+    "counts": {
+      "planned": 40,
+      "started_slots": 40,
+      "completed_slots": 29,
+      "failed_slots": 11,
+      "interrupted_slots": 0,
+      "active_slots": 0
+    },
+    "active": [],
+    "note": "Supervisor heartbeat is not investigation progress; active lists every live worker."
+  },
+  "selection_rule": "每个槽位优先取第一个正常完成的 attempt（仅 slot-012 由补跑 attempt-002 替换）；全部 attempt 均技术失败的槽位保留原始 attempt-001 作为代表。",
+  "by_variant_selected": {
+    "full": {
+      "label": "Full（完整动态）",
+      "planned_slots": 10,
+      "normal_completions": 5,
+      "technical_failures": 5,
+      "resolved": 1,
+      "abstentions": 4,
+      "elapsed_sec_total": 13569.3,
+      "elapsed_sec_mean": 1356.9,
+      "elapsed_sec_min": 373.5,
+      "elapsed_sec_max": 2542.2,
+      "physical_requests_total": 263,
+      "tool_calls_total": 184,
+      "tokens_total_observed": 2566324,
+      "tokens_total_complete_only": 2507631,
+      "mean_requests_per_slot": 26.3,
+      "mean_tools_per_slot": 18.4,
+      "mean_tokens_per_slot": 256632,
+      "mean_minutes_per_slot": 22.62,
+      "elapsed_detail_seconds": [
+        1347.4,
+        1387.6,
+        1749.9,
+        1749.7,
+        908.7,
+        373.5,
+        422.0,
+        1274.0,
+        1814.3,
+        2542.2
+      ],
+      "requests_detail": [
+        31,
+        39,
+        27,
+        30,
+        22,
+        10,
+        12,
+        22,
+        33,
+        37
+      ],
+      "tools_detail": [
+        18,
+        25,
+        19,
+        22,
+        18,
+        7,
+        8,
+        18,
+        24,
+        25
+      ],
+      "tokens_detail": [
+        259014,
+        464178,
+        269860,
+        328037,
+        172476,
+        42798,
+        55376,
+        193097,
+        314016,
+        467472
+      ]
+    },
+    "single": {
+      "label": "Single（强单代理）",
+      "planned_slots": 10,
+      "normal_completions": 8,
+      "technical_failures": 2,
+      "resolved": 2,
+      "abstentions": 6,
+      "elapsed_sec_total": 10771.1,
+      "elapsed_sec_mean": 1077.1,
+      "elapsed_sec_min": 262.0,
+      "elapsed_sec_max": 1802.6,
+      "physical_requests_total": 209,
+      "tool_calls_total": 147,
+      "tokens_total_observed": 1859027,
+      "tokens_total_complete_only": 1811070,
+      "mean_requests_per_slot": 20.9,
+      "mean_tools_per_slot": 14.7,
+      "mean_tokens_per_slot": 185903,
+      "mean_minutes_per_slot": 17.95,
+      "elapsed_detail_seconds": [
+        262.0,
+        1461.9,
+        1365.6,
+        641.5,
+        1802.6,
+        1206.7,
+        1524.3,
+        1544.4,
+        334.8,
+        627.3
+      ],
+      "requests_detail": [
+        7,
+        30,
+        24,
+        18,
+        33,
+        25,
+        25,
+        26,
+        8,
+        13
+      ],
+      "tools_detail": [
+        4,
+        21,
+        19,
+        14,
+        21,
+        17,
+        17,
+        20,
+        5,
+        9
+      ],
+      "tokens_detail": [
+        45002,
+        256517,
+        254545,
+        120278,
+        331178,
+        201960,
+        240679,
+        280216,
+        53941,
+        74711
+      ]
+    },
+    "fixed": {
+      "label": "Fixed（固定四代理）",
+      "planned_slots": 10,
+      "normal_completions": 10,
+      "technical_failures": 0,
+      "resolved": 0,
+      "abstentions": 10,
+      "elapsed_sec_total": 2465.7,
+      "elapsed_sec_mean": 246.6,
+      "elapsed_sec_min": 125.4,
+      "elapsed_sec_max": 433.0,
+      "physical_requests_total": 92,
+      "tool_calls_total": 74,
+      "tokens_total_observed": 358060,
+      "tokens_total_complete_only": 313940,
+      "mean_requests_per_slot": 9.2,
+      "mean_tools_per_slot": 7.4,
+      "mean_tokens_per_slot": 35806,
+      "mean_minutes_per_slot": 4.11,
+      "elapsed_detail_seconds": [
+        142.6,
+        151.8,
+        125.4,
+        326.2,
+        254.8,
+        151.2,
+        433.0,
+        301.5,
+        232.8,
+        346.4
+      ],
+      "requests_detail": [
+        7,
+        8,
+        11,
+        10,
+        10,
+        7,
+        12,
+        11,
+        8,
+        8
+      ],
+      "tools_detail": [
+        7,
+        7,
+        7,
+        8,
+        8,
+        7,
+        8,
+        8,
+        7,
+        7
+      ],
+      "tokens_detail": [
+        22186,
+        27531,
+        29137,
+        53544,
+        31297,
+        21668,
+        64129,
+        53553,
+        27391,
+        27624
+      ]
+    },
+    "dynamic_no_verifier": {
+      "label": "NoVerifier（动态无验证）",
+      "planned_slots": 10,
+      "normal_completions": 7,
+      "technical_failures": 3,
+      "resolved": 1,
+      "abstentions": 6,
+      "elapsed_sec_total": 10831.3,
+      "elapsed_sec_mean": 1083.1,
+      "elapsed_sec_min": 86.7,
+      "elapsed_sec_max": 2104.9,
+      "physical_requests_total": 255,
+      "tool_calls_total": 167,
+      "tokens_total_observed": 1953288,
+      "tokens_total_complete_only": 1859675,
+      "mean_requests_per_slot": 25.5,
+      "mean_tools_per_slot": 16.7,
+      "mean_tokens_per_slot": 195329,
+      "mean_minutes_per_slot": 18.05,
+      "elapsed_detail_seconds": [
+        877.3,
+        667.2,
+        1830.2,
+        1657.0,
+        86.7,
+        582.0,
+        870.7,
+        1249.7,
+        905.6,
+        2104.9
+      ],
+      "requests_detail": [
+        29,
+        23,
+        34,
+        30,
+        4,
+        14,
+        29,
+        30,
+        24,
+        38
+      ],
+      "tools_detail": [
+        21,
+        15,
+        22,
+        19,
+        3,
+        10,
+        18,
+        19,
+        17,
+        23
+      ],
+      "tokens_detail": [
+        201466,
+        110250,
+        318167,
+        321313,
+        8150,
+        56537,
+        169077,
+        248466,
+        150273,
+        369589
+      ]
+    }
+  },
+  "by_variant_all_attempts_ledger": {
+    "full": {
+      "label": "Full（完整动态）",
+      "n_attempts": 45,
+      "http_requests": 525,
+      "logical_calls": 386,
+      "transport_retries": 144,
+      "repair_requests": 0,
+      "prompt_tokens": 2569675,
+      "completion_tokens": 200362,
+      "measured_total_tokens": 2770037,
+      "observed_total_tokens": 2988294,
+      "calls_with_usage": 296,
+      "calls_without_usage": 90
+    },
+    "single": {
+      "label": "Single（强单代理）",
+      "n_attempts": 24,
+      "http_requests": 328,
+      "logical_calls": 251,
+      "transport_retries": 73,
+      "repair_requests": 6,
+      "prompt_tokens": 1749879,
+      "completion_tokens": 134630,
+      "measured_total_tokens": 1884509,
+      "observed_total_tokens": 2039251,
+      "calls_with_usage": 209,
+      "calls_without_usage": 42
+    },
+    "fixed": {
+      "label": "Fixed（固定四代理）",
+      "n_attempts": 11,
+      "http_requests": 100,
+      "logical_calls": 94,
+      "transport_retries": 6,
+      "repair_requests": 0,
+      "prompt_tokens": 295310,
+      "completion_tokens": 46297,
+      "measured_total_tokens": 341607,
+      "observed_total_tokens": 385727,
+      "calls_with_usage": 88,
+      "calls_without_usage": 6
+    },
+    "dynamic_no_verifier": {
+      "label": "NoVerifier（动态无验证）",
+      "n_attempts": 32,
+      "http_requests": 402,
+      "logical_calls": 302,
+      "transport_retries": 101,
+      "repair_requests": 2,
+      "prompt_tokens": 1761790,
+      "completion_tokens": 154391,
+      "measured_total_tokens": 1916181,
+      "observed_total_tokens": 2086545,
+      "calls_with_usage": 239,
+      "calls_without_usage": 63
+    }
+  },
+  "ledger_total": {
+    "n_attempts": 112,
+    "http_requests": 1355,
+    "logical_calls": 1033,
+    "transport_retries": 324,
+    "repair_requests": 8,
+    "prompt_tokens": 6376654,
+    "completion_tokens": 535680,
+    "measured_total_tokens": 6912334,
+    "observed_total_tokens": 7499817,
+    "calls_with_usage": 832,
+    "calls_without_usage": 201
+  },
+  "selected_total": {
+    "n_slots": 40,
+    "http_requests": 819,
+    "physical_requests_status_field": 819,
+    "tool_calls": 572,
+    "measured_total_tokens": 6492316,
+    "observed_total_tokens": 6736699,
+    "elapsed_sec_total": 37637.4
+  },
+  "slots": {
+    "slot-001": {
+      "incident": "incident_3010",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 9,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "BUDGET_EXHAUSTED",
+      "selected_elapsed_sec": 877.3,
+      "selected_physical_requests": 29,
+      "selected_tool_calls": 21,
+      "selected_tokens_observed": 201466,
+      "selected_tokens_complete_only": 186684,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-002": {
+      "incident": "incident_3004",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "RESOLVED",
+      "selected_termination": "DIAGNOSIS_READY",
+      "selected_elapsed_sec": 667.2,
+      "selected_physical_requests": 23,
+      "selected_tool_calls": 15,
+      "selected_tokens_observed": 110250,
+      "selected_tokens_complete_only": 103222,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-003": {
+      "incident": "incident_3008",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 142.6,
+      "selected_physical_requests": 7,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 22186,
+      "selected_tokens_complete_only": 22186,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-004": {
+      "incident": "incident_3010",
+      "variant": "single",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 262.0,
+      "selected_physical_requests": 7,
+      "selected_tool_calls": 4,
+      "selected_tokens_observed": 45002,
+      "selected_tokens_complete_only": 45002,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-005": {
+      "incident": "incident_3008",
+      "variant": "full",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1347.4,
+      "selected_physical_requests": 31,
+      "selected_tool_calls": 18,
+      "selected_tokens_observed": 259014,
+      "selected_tokens_complete_only": 244434,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-006": {
+      "incident": "incident_3005",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "RESOLVED",
+      "selected_termination": "DIAGNOSIS_READY",
+      "selected_elapsed_sec": 1461.9,
+      "selected_physical_requests": 30,
+      "selected_tool_calls": 21,
+      "selected_tokens_observed": 256517,
+      "selected_tokens_complete_only": 243715,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-007": {
+      "incident": "incident_3010",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 151.8,
+      "selected_physical_requests": 8,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 27531,
+      "selected_tokens_complete_only": 27531,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-008": {
+      "incident": "incident_3009",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1365.6,
+      "selected_physical_requests": 24,
+      "selected_tool_calls": 19,
+      "selected_tokens_observed": 254545,
+      "selected_tokens_complete_only": 254545,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-009": {
+      "incident": "incident_3003",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 641.5,
+      "selected_physical_requests": 18,
+      "selected_tool_calls": 14,
+      "selected_tokens_observed": 120278,
+      "selected_tokens_complete_only": 116755,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-010": {
+      "incident": "incident_3004",
+      "variant": "full",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 1387.6,
+      "selected_physical_requests": 39,
+      "selected_tool_calls": 25,
+      "selected_tokens_observed": 464178,
+      "selected_tokens_complete_only": 435177,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-011": {
+      "incident": "incident_3002",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1830.2,
+      "selected_physical_requests": 34,
+      "selected_tool_calls": 22,
+      "selected_tokens_observed": 318167,
+      "selected_tokens_complete_only": 303282,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-012": {
+      "incident": "incident_3005",
+      "variant": "fixed",
+      "n_attempts": 2,
+      "selected_attempt": "attempt-002",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 125.4,
+      "selected_physical_requests": 11,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 29137,
+      "selected_tokens_complete_only": 24365,
+      "attempt_classes": [
+        "technical_failure",
+        "normal_completion"
+      ]
+    },
+    "slot-013": {
+      "incident": "incident_3001",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1802.6,
+      "selected_physical_requests": 33,
+      "selected_tool_calls": 21,
+      "selected_tokens_observed": 331178,
+      "selected_tokens_complete_only": 299546,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-014": {
+      "incident": "incident_3003",
+      "variant": "full",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1749.9,
+      "selected_physical_requests": 27,
+      "selected_tool_calls": 19,
+      "selected_tokens_observed": 269860,
+      "selected_tokens_complete_only": 258423,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-015": {
+      "incident": "incident_3002",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1206.7,
+      "selected_physical_requests": 25,
+      "selected_tool_calls": 17,
+      "selected_tokens_observed": 201960,
+      "selected_tokens_complete_only": 201960,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-016": {
+      "incident": "incident_3005",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1657.0,
+      "selected_physical_requests": 30,
+      "selected_tool_calls": 19,
+      "selected_tokens_observed": 321313,
+      "selected_tokens_complete_only": 321313,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-017": {
+      "incident": "incident_3007",
+      "variant": "full",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1749.7,
+      "selected_physical_requests": 30,
+      "selected_tool_calls": 22,
+      "selected_tokens_observed": 328037,
+      "selected_tokens_complete_only": 328037,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-018": {
+      "incident": "incident_3006",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1524.3,
+      "selected_physical_requests": 25,
+      "selected_tool_calls": 17,
+      "selected_tokens_observed": 240679,
+      "selected_tokens_complete_only": 240679,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-019": {
+      "incident": "incident_3001",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 326.2,
+      "selected_physical_requests": 10,
+      "selected_tool_calls": 8,
+      "selected_tokens_observed": 53544,
+      "selected_tokens_complete_only": 53544,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-020": {
+      "incident": "incident_3008",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 86.7,
+      "selected_physical_requests": 4,
+      "selected_tool_calls": 3,
+      "selected_tokens_observed": 8150,
+      "selected_tokens_complete_only": 8150,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-021": {
+      "incident": "incident_3007",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 254.8,
+      "selected_physical_requests": 10,
+      "selected_tool_calls": 8,
+      "selected_tokens_observed": 31297,
+      "selected_tokens_complete_only": 28333,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-022": {
+      "incident": "incident_3003",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 582.0,
+      "selected_physical_requests": 14,
+      "selected_tool_calls": 10,
+      "selected_tokens_observed": 56537,
+      "selected_tokens_complete_only": 52531,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-023": {
+      "incident": "incident_3009",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 870.7,
+      "selected_physical_requests": 29,
+      "selected_tool_calls": 18,
+      "selected_tokens_observed": 169077,
+      "selected_tokens_complete_only": 123493,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-024": {
+      "incident": "incident_3003",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 151.2,
+      "selected_physical_requests": 7,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 21668,
+      "selected_tokens_complete_only": 21668,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-025": {
+      "incident": "incident_3010",
+      "variant": "full",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "RESOLVED",
+      "selected_termination": "DIAGNOSIS_READY",
+      "selected_elapsed_sec": 908.7,
+      "selected_physical_requests": 22,
+      "selected_tool_calls": 18,
+      "selected_tokens_observed": 172476,
+      "selected_tokens_complete_only": 172476,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-026": {
+      "incident": "incident_3009",
+      "variant": "full",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 373.5,
+      "selected_physical_requests": 10,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 42798,
+      "selected_tokens_complete_only": 42798,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-027": {
+      "incident": "incident_3004",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 433.0,
+      "selected_physical_requests": 12,
+      "selected_tool_calls": 8,
+      "selected_tokens_observed": 64129,
+      "selected_tokens_complete_only": 47182,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-028": {
+      "incident": "incident_3006",
+      "variant": "full",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 422.0,
+      "selected_physical_requests": 12,
+      "selected_tool_calls": 8,
+      "selected_tokens_observed": 55376,
+      "selected_tokens_complete_only": 55376,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-029": {
+      "incident": "incident_3007",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1249.7,
+      "selected_physical_requests": 30,
+      "selected_tool_calls": 19,
+      "selected_tokens_observed": 248466,
+      "selected_tokens_complete_only": 241138,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-030": {
+      "incident": "incident_3002",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 301.5,
+      "selected_physical_requests": 11,
+      "selected_tool_calls": 8,
+      "selected_tokens_observed": 53553,
+      "selected_tokens_complete_only": 34116,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-031": {
+      "incident": "incident_3008",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1544.4,
+      "selected_physical_requests": 26,
+      "selected_tool_calls": 20,
+      "selected_tokens_observed": 280216,
+      "selected_tokens_complete_only": 280216,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-032": {
+      "incident": "incident_3007",
+      "variant": "single",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 334.8,
+      "selected_physical_requests": 8,
+      "selected_tool_calls": 5,
+      "selected_tokens_observed": 53941,
+      "selected_tokens_complete_only": 53941,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-033": {
+      "incident": "incident_3006",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 905.6,
+      "selected_physical_requests": 24,
+      "selected_tool_calls": 17,
+      "selected_tokens_observed": 150273,
+      "selected_tokens_complete_only": 150273,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-034": {
+      "incident": "incident_3005",
+      "variant": "full",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 1274.0,
+      "selected_physical_requests": 22,
+      "selected_tool_calls": 18,
+      "selected_tokens_observed": 193097,
+      "selected_tokens_complete_only": 193097,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-035": {
+      "incident": "incident_3002",
+      "variant": "full",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 1814.3,
+      "selected_physical_requests": 33,
+      "selected_tool_calls": 24,
+      "selected_tokens_observed": 314016,
+      "selected_tokens_complete_only": 314016,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-036": {
+      "incident": "incident_3004",
+      "variant": "single",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "RESOLVED",
+      "selected_termination": "DIAGNOSIS_READY",
+      "selected_elapsed_sec": 627.3,
+      "selected_physical_requests": 13,
+      "selected_tool_calls": 9,
+      "selected_tokens_observed": 74711,
+      "selected_tokens_complete_only": 74711,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-037": {
+      "incident": "incident_3006",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 232.8,
+      "selected_physical_requests": 8,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 27391,
+      "selected_tokens_complete_only": 27391,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-038": {
+      "incident": "incident_3001",
+      "variant": "dynamic_no_verifier",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 2104.9,
+      "selected_physical_requests": 38,
+      "selected_tool_calls": 23,
+      "selected_tokens_observed": 369589,
+      "selected_tokens_complete_only": 369589,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    },
+    "slot-039": {
+      "incident": "incident_3001",
+      "variant": "full",
+      "n_attempts": 8,
+      "selected_attempt": "attempt-001",
+      "selected_class": "technical_failure",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "UNRECOVERABLE_ERROR",
+      "selected_elapsed_sec": 2542.2,
+      "selected_physical_requests": 37,
+      "selected_tool_calls": 25,
+      "selected_tokens_observed": 467472,
+      "selected_tokens_complete_only": 463797,
+      "attempt_classes": [
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure",
+        "technical_failure"
+      ]
+    },
+    "slot-040": {
+      "incident": "incident_3009",
+      "variant": "fixed",
+      "n_attempts": 1,
+      "selected_attempt": "attempt-001",
+      "selected_class": "normal_completion",
+      "selected_status": "INCONCLUSIVE",
+      "selected_termination": "INCONCLUSIVE",
+      "selected_elapsed_sec": 346.4,
+      "selected_physical_requests": 8,
+      "selected_tool_calls": 7,
+      "selected_tokens_observed": 27624,
+      "selected_tokens_complete_only": 27624,
+      "attempt_classes": [
+        "normal_completion"
+      ]
+    }
+  }
+}

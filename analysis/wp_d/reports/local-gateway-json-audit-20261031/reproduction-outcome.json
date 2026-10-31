@@ -1,0 +1,95 @@
+{
+  "success": false,
+  "error": "STRUCTURED_OUTPUT_INVALID",
+  "usage": {
+    "source": "model",
+    "model_id": "auto/deepseek-v4.1-flash",
+    "llm_calls": 2,
+    "actual_http_requests": 2,
+    "logical_structured_calls": 1,
+    "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+    "transport_retries": 0,
+    "repair_requests": 1,
+    "prompt_tokens": 5818,
+    "completion_tokens": 1378,
+    "total_tokens": 7196,
+    "measured_total_tokens": 7196,
+    "tokens_complete": true,
+    "provider_recovery_enabled": true,
+    "provider_attempts": [
+      {
+        "event_type": "PROVIDER_ATTEMPT",
+        "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+        "http_attempt_index": 1,
+        "http_attempt_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5-1",
+        "repair_index": 0
+      },
+      {
+        "event_type": "PROVIDER_FAILURE_CLASSIFIED",
+        "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+        "http_attempt_index": 1,
+        "category": "INVALID_JSON",
+        "phase": "syntax",
+        "validation_summary": "Response content is not valid JSON.",
+        "output_model": "AnalysisOutput"
+      },
+      {
+        "event_type": "STRUCTURED_REPAIR",
+        "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+        "http_attempt_index": 1,
+        "repair_index": 1
+      },
+      {
+        "event_type": "PROVIDER_ATTEMPT",
+        "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+        "http_attempt_index": 2,
+        "http_attempt_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5-2",
+        "repair_index": 1
+      },
+      {
+        "event_type": "PROVIDER_FAILURE_CLASSIFIED",
+        "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+        "http_attempt_index": 2,
+        "category": "INVALID_JSON",
+        "phase": "syntax",
+        "validation_summary": "Response content is not valid JSON.",
+        "output_model": "AnalysisOutput"
+      }
+    ],
+    "request_usage": [
+      {
+        "http_attempt_index": 1,
+        "prompt_tokens": 2898,
+        "completion_tokens": 818,
+        "total_tokens": 3716,
+        "total_tokens_basis": "provider_total"
+      },
+      {
+        "http_attempt_index": 2,
+        "prompt_tokens": 2920,
+        "completion_tokens": 560,
+        "total_tokens": 3480,
+        "total_tokens_basis": "provider_total"
+      }
+    ],
+    "measured_prompt_tokens": 5818,
+    "measured_completion_tokens": 1378,
+    "requests_with_token_usage": 2,
+    "requests_without_token_usage": 0,
+    "failure": {
+      "category": "INVALID_JSON",
+      "legacy_code": "STRUCTURED_OUTPUT_INVALID",
+      "provider_http_status": null,
+      "provider_error_code": null,
+      "retryable": false,
+      "retry_after_seconds": null,
+      "phase": "syntax",
+      "logical_call_id": "logical-ef1d456fdc6a4bab8b6517e68acdafe5",
+      "http_attempt_index": 2,
+      "elapsed_ms": 7967.3752000089735,
+      "usage_complete": true
+    },
+    "elapsed_ms": 7967.918000009377
+  },
+  "scope": "Reconstructed slot-003 analysis, original task/public records; context reconstructed; current auto routing, at most 2 HTTP requests. Not original response recovery."
+}

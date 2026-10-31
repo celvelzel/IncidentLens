@@ -1,0 +1,429 @@
+{
+  "batch": "next-api-max8-20261022-121153",
+  "generated_at": "2026-10-26T06:16:00.152524+00:00",
+  "analysis_set": "selected attempts that are normal completions only",
+  "n_completed": 30,
+  "n_excluded": 10,
+  "per_case": {
+    "incident_3010": {
+      "dynamic_no_verifier": {
+        "slot": "slot-001",
+        "class": "technical_failure",
+        "elapsed_sec": 877.3,
+        "physical_requests": 29,
+        "tool_calls": 21,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "BUDGET_EXHAUSTED",
+        "selected_attempt": "attempt-001"
+      },
+      "single": {
+        "slot": "slot-004",
+        "class": "technical_failure",
+        "elapsed_sec": 262.0,
+        "physical_requests": 7,
+        "tool_calls": 4,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-007",
+        "class": "normal_completion",
+        "elapsed_sec": 151.8,
+        "physical_requests": 8,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-025",
+        "class": "normal_completion",
+        "elapsed_sec": 908.7,
+        "physical_requests": 22,
+        "tool_calls": 18,
+        "result_status": "RESOLVED",
+        "termination_reason": "DIAGNOSIS_READY",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3004": {
+      "dynamic_no_verifier": {
+        "slot": "slot-002",
+        "class": "normal_completion",
+        "elapsed_sec": 667.2,
+        "physical_requests": 23,
+        "tool_calls": 15,
+        "result_status": "RESOLVED",
+        "termination_reason": "DIAGNOSIS_READY",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-010",
+        "class": "technical_failure",
+        "elapsed_sec": 1387.6,
+        "physical_requests": 39,
+        "tool_calls": 25,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-027",
+        "class": "normal_completion",
+        "elapsed_sec": 433.0,
+        "physical_requests": 12,
+        "tool_calls": 8,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "single": {
+        "slot": "slot-036",
+        "class": "normal_completion",
+        "elapsed_sec": 627.3,
+        "physical_requests": 13,
+        "tool_calls": 9,
+        "result_status": "RESOLVED",
+        "termination_reason": "DIAGNOSIS_READY",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3008": {
+      "fixed": {
+        "slot": "slot-003",
+        "class": "normal_completion",
+        "elapsed_sec": 142.6,
+        "physical_requests": 7,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-005",
+        "class": "normal_completion",
+        "elapsed_sec": 1347.4,
+        "physical_requests": 31,
+        "tool_calls": 18,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-020",
+        "class": "technical_failure",
+        "elapsed_sec": 86.7,
+        "physical_requests": 4,
+        "tool_calls": 3,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "single": {
+        "slot": "slot-031",
+        "class": "normal_completion",
+        "elapsed_sec": 1544.4,
+        "physical_requests": 26,
+        "tool_calls": 20,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3005": {
+      "single": {
+        "slot": "slot-006",
+        "class": "normal_completion",
+        "elapsed_sec": 1461.9,
+        "physical_requests": 30,
+        "tool_calls": 21,
+        "result_status": "RESOLVED",
+        "termination_reason": "DIAGNOSIS_READY",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-012",
+        "class": "normal_completion",
+        "elapsed_sec": 125.4,
+        "physical_requests": 11,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-002"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-016",
+        "class": "normal_completion",
+        "elapsed_sec": 1657.0,
+        "physical_requests": 30,
+        "tool_calls": 19,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-034",
+        "class": "normal_completion",
+        "elapsed_sec": 1274.0,
+        "physical_requests": 22,
+        "tool_calls": 18,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3009": {
+      "single": {
+        "slot": "slot-008",
+        "class": "normal_completion",
+        "elapsed_sec": 1365.6,
+        "physical_requests": 24,
+        "tool_calls": 19,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-023",
+        "class": "normal_completion",
+        "elapsed_sec": 870.7,
+        "physical_requests": 29,
+        "tool_calls": 18,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-026",
+        "class": "technical_failure",
+        "elapsed_sec": 373.5,
+        "physical_requests": 10,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-040",
+        "class": "normal_completion",
+        "elapsed_sec": 346.4,
+        "physical_requests": 8,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3003": {
+      "single": {
+        "slot": "slot-009",
+        "class": "normal_completion",
+        "elapsed_sec": 641.5,
+        "physical_requests": 18,
+        "tool_calls": 14,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-014",
+        "class": "normal_completion",
+        "elapsed_sec": 1749.9,
+        "physical_requests": 27,
+        "tool_calls": 19,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-022",
+        "class": "technical_failure",
+        "elapsed_sec": 582.0,
+        "physical_requests": 14,
+        "tool_calls": 10,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-024",
+        "class": "normal_completion",
+        "elapsed_sec": 151.2,
+        "physical_requests": 7,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3002": {
+      "dynamic_no_verifier": {
+        "slot": "slot-011",
+        "class": "normal_completion",
+        "elapsed_sec": 1830.2,
+        "physical_requests": 34,
+        "tool_calls": 22,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "single": {
+        "slot": "slot-015",
+        "class": "normal_completion",
+        "elapsed_sec": 1206.7,
+        "physical_requests": 25,
+        "tool_calls": 17,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-030",
+        "class": "normal_completion",
+        "elapsed_sec": 301.5,
+        "physical_requests": 11,
+        "tool_calls": 8,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-035",
+        "class": "technical_failure",
+        "elapsed_sec": 1814.3,
+        "physical_requests": 33,
+        "tool_calls": 24,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3001": {
+      "single": {
+        "slot": "slot-013",
+        "class": "normal_completion",
+        "elapsed_sec": 1802.6,
+        "physical_requests": 33,
+        "tool_calls": 21,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-019",
+        "class": "normal_completion",
+        "elapsed_sec": 326.2,
+        "physical_requests": 10,
+        "tool_calls": 8,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-038",
+        "class": "normal_completion",
+        "elapsed_sec": 2104.9,
+        "physical_requests": 38,
+        "tool_calls": 23,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-039",
+        "class": "technical_failure",
+        "elapsed_sec": 2542.2,
+        "physical_requests": 37,
+        "tool_calls": 25,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3007": {
+      "full": {
+        "slot": "slot-017",
+        "class": "normal_completion",
+        "elapsed_sec": 1749.7,
+        "physical_requests": 30,
+        "tool_calls": 22,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-021",
+        "class": "normal_completion",
+        "elapsed_sec": 254.8,
+        "physical_requests": 10,
+        "tool_calls": 8,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-029",
+        "class": "normal_completion",
+        "elapsed_sec": 1249.7,
+        "physical_requests": 30,
+        "tool_calls": 19,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "single": {
+        "slot": "slot-032",
+        "class": "technical_failure",
+        "elapsed_sec": 334.8,
+        "physical_requests": 8,
+        "tool_calls": 5,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      }
+    },
+    "incident_3006": {
+      "single": {
+        "slot": "slot-018",
+        "class": "normal_completion",
+        "elapsed_sec": 1524.3,
+        "physical_requests": 25,
+        "tool_calls": 17,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "full": {
+        "slot": "slot-028",
+        "class": "technical_failure",
+        "elapsed_sec": 422.0,
+        "physical_requests": 12,
+        "tool_calls": 8,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "UNRECOVERABLE_ERROR",
+        "selected_attempt": "attempt-001"
+      },
+      "dynamic_no_verifier": {
+        "slot": "slot-033",
+        "class": "normal_completion",
+        "elapsed_sec": 905.6,
+        "physical_requests": 24,
+        "tool_calls": 17,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      },
+      "fixed": {
+        "slot": "slot-037",
+        "class": "normal_completion",
+        "elapsed_sec": 232.8,
+        "physical_requests": 8,
+        "tool_calls": 7,
+        "result_status": "INCONCLUSIVE",
+        "termination_reason": "INCONCLUSIVE",
+        "selected_attempt": "attempt-001"
+      }
+    }
+  }
+}

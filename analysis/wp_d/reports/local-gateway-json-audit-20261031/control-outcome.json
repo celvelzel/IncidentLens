@@ -1,0 +1,180 @@
+{
+  "success": true,
+  "usage": {
+    "source": "model",
+    "model_id": "auto/deepseek-v4.1-flash",
+    "llm_calls": 1,
+    "actual_http_requests": 1,
+    "logical_structured_calls": 1,
+    "logical_call_id": "logical-3d1bcbfc3da342569667209ee5b6b681",
+    "transport_retries": 0,
+    "repair_requests": 0,
+    "prompt_tokens": 3008,
+    "completion_tokens": 3122,
+    "total_tokens": 6130,
+    "measured_total_tokens": 6130,
+    "tokens_complete": true,
+    "provider_recovery_enabled": true,
+    "provider_attempts": [
+      {
+        "event_type": "PROVIDER_ATTEMPT",
+        "logical_call_id": "logical-3d1bcbfc3da342569667209ee5b6b681",
+        "http_attempt_index": 1,
+        "http_attempt_id": "logical-3d1bcbfc3da342569667209ee5b6b681-1",
+        "repair_index": 0
+      },
+      {
+        "event_type": "PROVIDER_CALL_COMPLETED",
+        "logical_call_id": "logical-3d1bcbfc3da342569667209ee5b6b681",
+        "http_attempt_index": 1,
+        "usage_complete": true
+      }
+    ],
+    "request_usage": [
+      {
+        "http_attempt_index": 1,
+        "prompt_tokens": 3008,
+        "completion_tokens": 3122,
+        "total_tokens": 6130,
+        "total_tokens_basis": "provider_total"
+      }
+    ],
+    "measured_prompt_tokens": 3008,
+    "measured_completion_tokens": 3122,
+    "requests_with_token_usage": 1,
+    "requests_without_token_usage": 0,
+    "elapsed_ms": 19309.004399983678
+  },
+  "result": {
+    "finding": {
+      "finding_id": "F-3007-DB-001",
+      "task_id": "task-3007-db-locks-slow-2",
+      "run_id": "run-6605900f67564337b7756b77e5361a6c",
+      "incident_id": "incident_3007",
+      "role": "database",
+      "claim": "Postgres internal telemetry supplied for 08:30-10:00Z contains exactly one anomaly record: at 2026-10-12T09:00:46Z session-9 was measured waiting on a transaction-level lock ('transaction_lock') held by session-2 for duration_ms=7700 (query fingerprint select-shape-7). This blocked session ends ~12s before the reported backend deadline expiry at ~09:00:58Z, so it is temporally compatible with, and a plausible contributor to, backend request deadline expiry. Only one lock-wait sample was supplied; no slow-query entries, active-session counts, blocked-session depth, or postgres health/capacity metrics were included in this batch, so the breadth (single stall vs sustained contention) and the query-side duration mechanism remain unmeasured.",
+      "evidence_ids": [
+        "incident_3007-E-003"
+      ],
+      "relation": "supports",
+      "confidence_qualifier": "weak",
+      "followup_question": "Was the 09:00:46Z transaction_lock wait an isolated single sample, or did blocked-session depth and lock wait durations grow across a window containing 09:00:58Z?"
+    },
+    "hypotheses": [
+      {
+        "hypothesis_id": "H-3007-DB-LOCK",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_lock_contention",
+        "support_ids": [
+          "incident_3007-E-003"
+        ],
+        "against_ids": [],
+        "predicted_observations": [
+          "One or more sessions observed in wait_event=transaction_lock with a named blocking session (blocked_by) and measured wait duration in the seconds range bracketing 09:00:46-09:01:00Z",
+          "Blocked/waiting session count rising above baseline while the holder session runs a long transaction",
+          "Lock wait durations that approach or exceed the backend request deadline, so requests queued behind the lock expire"
+        ],
+        "status": "SUPPORTED",
+        "open_questions": [
+          "Does the backend request deadline sit at or below ~7.7s, such that a single 7.7s transaction_lock wait is sufficient to make requests expire at ~09:00:58Z?",
+          "Was lock contention sustained (multiple blocked sessions / repeated waits) or a single isolated 7.7s wait on one query fingerprint?"
+        ],
+        "optional_questions": [
+          "Which statement in session-2 held the lock, and does its fingerprint match a known long-running write path?",
+          "Do lock waits recur on the same select-shape-7 fingerprint outside the incident window (baseline comparison)?"
+        ]
+      },
+      {
+        "hypothesis_id": "H-3007-DB-SLOWQ",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_slow_query",
+        "support_ids": [],
+        "against_ids": [],
+        "predicted_observations": [
+          "Slow-query telemetry showing elevated mean/p95 query duration or explicit slow-query entries for the backend's query fingerprints in the 08:55-09:10Z window",
+          "Query duration growth independent of lock wait events"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "No slow-query record was supplied for this window, so query-duration-driven saturation (as distinct from lock waiting) is neither observed nor excluded; would slow-query entries show high durations for fingerprints other than the blocked select-shape-7?"
+        ],
+        "optional_questions": [
+          "What is the postgres-side baseline p95 query duration for the backend's top fingerprints?"
+        ]
+      },
+      {
+        "hypothesis_id": "H-3007-UPSTREAM-POOL",
+        "culprit_service": "backend",
+        "failure_mode": "backend_pool_config_regression",
+        "support_ids": [],
+        "against_ids": [],
+        "predicted_observations": [
+          "A config or deploy change reducing application pool size / raising wait timeout shortly before 09:00Z",
+          "Application-side pool_in_use at pool_limit while database-side connection count remains below connection_limit"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "The supplied database records contain no connection_count vs connection_limit comparison and no application pool metrics, so an upstream pool configuration fault is untested in this evidence set rather than refuted; did any pool/timeout config change precede 09:00Z?"
+        ],
+        "optional_questions": [
+          "Were postgres active sessions and connection counts near the database limit at 09:00Z (which would point database-side) or far below it (which would point to an application pool limit)?"
+        ]
+      },
+      {
+        "hypothesis_id": "H-3007-DB-CONNEX",
+        "culprit_service": "postgres",
+        "failure_mode": "postgres_connection_exhaustion",
+        "support_ids": [],
+        "against_ids": [],
+        "predicted_observations": [
+          "connection_count at or near connection_limit, plus many active sessions and connection-acquisition waits around 09:00Z"
+        ],
+        "status": "OPEN",
+        "open_questions": [
+          "No connection-count or limit observation was supplied in this batch, so database connection exhaustion is unknown rather than observed; what were connection_count and connection_limit at 09:00Z?"
+        ],
+        "optional_questions": [
+          "Does connection usage track the 7.7s lock wait, i.e. do connections pile up only because sessions are blocked on the lock rather than exhausting the pool?"
+        ]
+      }
+    ],
+    "requested_checks": [
+      {
+        "task_id": "task-3007-db-lockdepth-window",
+        "role": "database",
+        "question": "Across 2026-10-12T08:55:00Z-09:10:00Z, how many postgres sessions were waiting on transaction-level locks, how long did waits last, and what did connection_count, connection_limit, active-session count and health metrics (CPU, memory, disk, replication) look like — was the 09:00:46Z wait an isolated 7.7s stall or part of a sustained contention/blocking episode spanning 09:00:58Z?",
+        "allowed_tools": [
+          "get_db_lock_waits",
+          "get_db_active_sessions",
+          "get_db_connections",
+          "get_db_health_metrics"
+        ],
+        "filters": {
+          "service": "postgres",
+          "start_ts": "2026-10-12T08:55:00Z",
+          "end_ts": "2026-10-12T09:10:00Z",
+          "limit": 50
+        },
+        "reason": "The only supplied database record is a single lock-wait sample; blocked-session depth, wait-duration distribution, and capacity headroom are unmeasured and determine whether lock contention was sustained enough to expire backend deadlines or was an incidental isolated stall.",
+        "expected_discriminator": "Multiple blocked sessions / repeated waits with transaction_lock and durations approaching the backend deadline, alongside healthy connection headroom, supports postgres_lock_contention as the leading cause; an isolated single wait with no blocked-session depth, or connection_count near connection_limit, instead points to a different mechanism (application pool limit or connection exhaustion)."
+      },
+      {
+        "task_id": "task-3007-changes-timeout-pool",
+        "role": "changes",
+        "question": "Did any configuration or deployment change in 2026-10-12T08:30:00Z-09:05:00Z alter backend connection pool limits, backend request/deadline timeouts, or postgres-side statement_timeout/lock_timeout parameters?",
+        "allowed_tools": [
+          "get_changes"
+        ],
+        "filters": {
+          "service": "postgres",
+          "start_ts": "2026-10-12T08:30:00Z",
+          "end_ts": "2026-10-12T09:05:00Z",
+          "limit": 50
+        },
+        "reason": "A pool-size or timeout change immediately before 09:00Z would offer an evidence-based competing mechanism (backend_pool_config_regression) and could explain why a 7.7s lock wait produced deadline expiry; conversely, an unchanged pool/timeout configuration leaves lock-wait-induced queuing as the better-supported explanation.",
+        "expected_discriminator": "A change reducing pool size or lowering deadlines/timeouts shortly before 09:00Z makes the application-side configuration mechanism viable and temporally prior; no such change (stable pool and timeout settings) leaves the observed 7.7s transaction_lock wait as the better-supported database-side mechanism."
+      }
+    ]
+  },
+  "scope": "Reconstructed slot-003 analysis, original task/public records; context reconstructed; current auto routing, at most 2 HTTP requests. Not original response recovery."
+}

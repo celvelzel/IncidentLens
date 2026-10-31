@@ -1,0 +1,2255 @@
+{
+  "schema_version": 1,
+  "retry_id": "next-api-max8-20261022-121153-retry5-c2-20261023-233320",
+  "retry_round": 5,
+  "created_at_utc": 1792769682.9215133,
+  "batch_dir": "results\\v16\\wp-d\\next-api-max8-20261022-121153",
+  "batch_manifest_sha256": "98232a6bc83d6c2aa16a5e44d3f918b8633419e0c2bd7c76aa52d45a3d50eaf8",
+  "frozen_inputs": {
+    "checked": 224,
+    "mismatches": []
+  },
+  "original_attempts_checked": 10,
+  "original_attempt": "attempt-001",
+  "attempt_targets": {
+    "slot-001": {
+      "parent": "attempt-005",
+      "target": "attempt-006"
+    },
+    "slot-004": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-010": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-020": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-022": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-026": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-028": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-032": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-035": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    },
+    "slot-039": {
+      "parent": "attempt-004",
+      "target": "attempt-005"
+    }
+  },
+  "historical_trees_before": {
+    "slot-001/attempt-001": {
+      "measured-usage.json": "fc8b318c6c67bfed03f4a6d486fe87812816898d89554ee7566aabeb1909c0a6",
+      "observability/checkpoints/slot-0.json": "fedf3a71a521059317dfe8e4b42c83687c47017aa2fd11ded486e147a371cd0f",
+      "observability/checkpoints/slot-1.json": "136e2f59729f6689668a0a295a5f2c316b4c50777ffe4ee5992ed4e6a01a1b72",
+      "observability/events-0001.jsonl": "c2604fa6bbbb546a8ecda8be5df246385f886c2113e37c00e99a4bbd0b8851a4",
+      "observability/run-manifest.json": "4d7184587a5458e7a54d1862f2664c99ffc1debe119a818845bb519215ad3279",
+      "observability/status.json": "9ffd7e74007824698b13a4e2d234d40cbcec3914e039079fda3ea37fa3e600b1",
+      "report.md": "391bf422b116662676a41e6e76fea6b3c70d5feee5625b4e1518cc713f8eb5ec",
+      "result.json": "a4ca7b6fddc4917848479e96f7c68cdac753b1dcf9e11ec0fa5f6d85b911999f",
+      "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+      "trace.json": "96ab37e28522e36c21f2b51414d2f236f6d87adad4c7e9e84ee9f382c34104f0",
+      "verification.json": "b2438524ee7f8a39438f00922d8e3f7faee5ed759a115dd4c21b2bfd0ee55ff3"
+    },
+    "slot-001/attempt-002": {
+      "measured-usage.json": "c54473d492f1d8709de96c216a0e85c2a4262fa0bba476ff36255a664546130e",
+      "observability/checkpoints/slot-1.json": "84dd2671be8a360f362c8c6088698aa54af3e30463af10fb029fc0889c229b2f",
+      "observability/events-0001.jsonl": "0606e76d8e9027957dc397cbf99638a3e3d50195cb0a0158bd9dea786c5eebc9",
+      "observability/run-manifest.json": "ab61c0a19126f102614a0fd7974539ae7f47618ab733324ce9f25a0b9bf3a4a7",
+      "observability/status.json": "7e5e4fe89dfc9d15f0291984da3ee6546add9e683f9204c83bea42fccc5b5140",
+      "report.md": "0cac756a050b8ef4206934657a2a2a86a4c02a4ef61bd6c79b15ef4c79b1feaf",
+      "result.json": "4a7a59a6b707bad36104680a2e3ca99d8397792339707b8f273930e984ba6619",
+      "retry-provenance.json": "6a5cf6c41be9fceccfe0cf77e78a54736dbb8ee4b82951b63efdcb1f16c10ba2",
+      "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+      "trace.json": "95df3c85afdc4fc00ef0a54c5043af2852201141bce6f91863998612bc145944",
+      "verification.json": "1eaa0d340a178115bc623f2a179d005882737483ff1c61c5a6048c4de7696eca"
+    },
+    "slot-001/attempt-003": {
+      "measured-usage.json": "b6d07651cf11c07eed6e861267ba826b57ee8eebff8874199cc91987cec34665",
+      "observability/checkpoints/slot-0.json": "b8003adbf9d58a85c9f1119630196590ba4d7d3555a6cb5cba794833d706d3f1",
+      "observability/checkpoints/slot-1.json": "f3a33a55836d4d49387ddfa0b9566243f4b9beb48dba7c88d8697fbc643ac6ea",
+      "observability/events-0001.jsonl": "aea6eeb4546591ceadd465e1b48057e08cb182620ec1920f6d8abdc124468981",
+      "observability/run-manifest.json": "65a400fb97605cf67bd9a9f254d78778410f763bb0520651959267706c6ae78b",
+      "observability/status.json": "eed800d3120ed0097add394d797b29355dde41556ad4eb77f2965fd4c108130e",
+      "report.md": "74a91487e26e368d52f1f943baa9de428184bcd3357aabcca0ad5c80ff5912de",
+      "result.json": "3e2027040640fa0f507ac0dd9c4bdf05c6ae7b36ac3d8428a8d6c4e79621db75",
+      "retry-provenance.json": "18eea129224111c93cf923bb19628c6748d0f5a3f1d1c9f53b9491291039a974",
+      "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+      "trace.json": "d53ca7bfa1f3c93d13991e04500623a5a44768d51ba537713c4a950418b35e3f",
+      "verification.json": "b35d64321cb4751f03f606d45a8c2879120594c4dd512fb1e0f3578f3c9d99f3"
+    },
+    "slot-001/attempt-004": {
+      "measured-usage.json": "06525b6a85bbac40375544301e0eedd54bc9e956eb7b9e9271c001d0cfaca5bb",
+      "observability/checkpoints/slot-0.json": "4e046a9cd180d1b0c814036b793878e6f0051e56d8e34dae7ffd080dfe270c2c",
+      "observability/checkpoints/slot-1.json": "5aa04ddc803d08789ce7b564633ecb4ceb964ced99f2bc6b20a206caf062ad94",
+      "observability/events-0001.jsonl": "892bc43a6cadee924e79fc75a1cd0afa1231447512be2969cb88a7e90ad1c5b9",
+      "observability/run-manifest.json": "aef9e9476f5a2528516101c3906820d7aa56702bf2cf43a889702d115cbd4613",
+      "observability/status.json": "5bde0cd8e1405076dacfbf498ddd91b0c4b041af20b8cd1f3419a83655ad337d",
+      "report.md": "3adeb88753c13043996712074cd23b2dfae36f0835f68ad1b6e65cf474b411f7",
+      "result.json": "74155dc69ca491f964165243a7e653c7e61717a5309837f6659593800584fa32",
+      "retry-provenance.json": "8fcca4adce99b246175d44f9042908b3b906da0601c34e96de50cbdd375e24b4",
+      "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+      "trace.json": "390a697a12a4710c016a920c7dc0c11570ab000ae34fe0f7f0652dea91213ade",
+      "verification.json": "92f0ea70cd4b4f7eb6f78f2b1e02b32a5c63aab3b9be77171348bc97bccf15ad"
+    },
+    "slot-001/attempt-005": {
+      "measured-usage.json": "bc7b965b91382cd4048eff114954bdcf0de643510e24afc8aa85d4f074d94840",
+      "observability/checkpoints/slot-0.json": "d51ab4753bd5897094a397add87ee3fa2fc7e4ff6b944440c7de31cd5f3440d1",
+      "observability/checkpoints/slot-1.json": "65b719b0c7c9e0a142e2199cdb4b503af3cf8e02901dd9cb4671cc42a1090553",
+      "observability/events-0001.jsonl": "3d3bd367e2aeccf0018bf39604335e4fd0aad5798aeedabfb26e3e08bcfc8718",
+      "observability/run-manifest.json": "05d382d63be8eb5726ffd0403e8ef04066878d0efc7e50ff6cf3167fad7909f7",
+      "observability/status.json": "43bba72c8827e5054bf8036fa71c2c6ffda5048c0e221032ce35e80ed1fcefa6",
+      "report.md": "77526ab19e9a380e3b994e77e5a869a07fc251d094a1f609b4c603b2c1a70859",
+      "result.json": "3b14a9b2814574273280c2b949b6ea29b0c35204e43a0b624db0c4199b411965",
+      "retry-provenance.json": "76cf94f8b81be456ad278bb7629e84efd6435fbb04d7c6a2ade560bb296af64e",
+      "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+      "trace.json": "d1b19cf630663c7acda32f2891e558f94a4cedf073512c220deec7f782921944",
+      "verification.json": "7ecd281e282c200ee72fc9fe272abf000d6ca4a3e2269abdb99c43c586814754"
+    },
+    "slot-002/attempt-001": {
+      "measured-usage.json": "ea5a092334082d44a340c78d3f457520d7ae8bffbf6d8566a8314d340b91020e",
+      "observability/checkpoints/slot-0.json": "865c583a9b084e8e620d4a043c0b67e71310216d13dc00d067190028d4a85012",
+      "observability/checkpoints/slot-1.json": "fdff7d35010bb4c1f349ef47438d4cb72da2585d58c45fcb47dc1655eedcf56a",
+      "observability/events-0001.jsonl": "35b977e297a1660c68361810323a55cd98d04a5c2596d6550ceb7c0593f2d0a5",
+      "observability/run-manifest.json": "ee1880d68766cf196768a6fdbc1f4ba0e0672af97189aca36dbb3165c7f8c7d7",
+      "observability/status.json": "33226092d71e040860475412b1b28c2c3bda3dbfa477a3233c568c15dcf42b38",
+      "report.md": "59e878615c3fa917b4666478813c1919209008a71ddb389923db549df2d4b949",
+      "result.json": "1d84961d319a389d8347014519bdfb60e12646585cad25621194e9b1549fb63d",
+      "scope.json": "7ad7a90c8a365065c256b830131bad2cdcc3aa2421bb696a5d5af4dd3a328e55",
+      "trace.json": "fcdb6bb641ec95cb6541aea4998f52e1918491f0162a7021e210e6427a24ce07",
+      "verification.json": "7da0c0da756655c5694275b2d81f6c38726439b021d56743870fd476b71429dc"
+    },
+    "slot-003/attempt-001": {
+      "measured-usage.json": "a3e25f48ec1f9bf9e64d7624b6db10698790521ef78a8336519827c44ae90e4f",
+      "observability/checkpoints/slot-0.json": "0f78ca2f3d151b526b403aa0b6196d12a15532995a4549e6c9a85e58cd40ef9f",
+      "observability/checkpoints/slot-1.json": "f81516befa5356d48eac1b858eef6d0af1dc28811f1408a12cc6d165fbf0bda8",
+      "observability/events-0001.jsonl": "c838411426e97163246a9c1ad6f778a6ed19ed1647a7015bfaa07abd81d6e41c",
+      "observability/run-manifest.json": "15be09e5fd9847c981c82c524df47a37e26cb66695c8fe94c982771e51eb7097",
+      "observability/status.json": "42316e579eaa4573d4a27b6baa2a9fd5f6ec9d7c684b26eede984459dd986369",
+      "report.md": "742301920b2c26cb65cb5a2004bd21359563198e987b248c37fb946176b9e415",
+      "result.json": "2839f4e13000eaef0a5c03c09e61c334c8dd2d910e14071819fc5db588ea93af",
+      "scope.json": "0f3399815d8b8d994ed081258d3f0d4464cf932fa33a18faf1f99598e7d67693",
+      "trace.json": "1932c8c48b5cbb2a0d0777fbe27ccaa7abfe7614c16842b2b5e50c474fd28c9d",
+      "verification.json": "c299633a1f4ba3ca0870b4b37ddf8a44768b5d4f14c2cec4648baded3fa26c7e"
+    },
+    "slot-004/attempt-001": {
+      "measured-usage.json": "7be2aa2ca21c8875d883eef27ad380a8bf677f996c65040c7886437eb8b06f3c",
+      "observability/checkpoints/slot-0.json": "599482207e130b3b701de8bb33105b6957a91e67eb2aa976145d2a16212113e2",
+      "observability/checkpoints/slot-1.json": "f91ade7491347cb8e4a2ba425f531c30881c9a2175333ea8477a096aa09a489f",
+      "observability/events-0001.jsonl": "3570c8d4caaadd9bb64251ae8e99f13773580c166e377026549eb357a89367b0",
+      "observability/run-manifest.json": "b811babec51e04eca3793b4e6d6d85c7072139082d43b777547bafe28a18d285",
+      "observability/status.json": "6aca67417bb382e0827773d128049716fd321e73ef6e92ccce75f865e8f3b87a",
+      "report.md": "18a0728734ca0686f4a90eb15e6fbe8157cae7e19c69fad5ae688321d60f77a7",
+      "result.json": "0ba81a38e78fe07778f5f745cc3d2c89ae8c35bd4d098907296e11bdd2baab5b",
+      "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+      "trace.json": "00758e475f5ed89c381fa48636d6534fa4a4ea966a54053756b5ae5806498203",
+      "verification.json": "3c0f87f29157a5d76e6acce88adbfa8a32e648756d8f6c8acaec25e996e11e29"
+    },
+    "slot-004/attempt-002": {
+      "measured-usage.json": "3fe4858c62bbafe6473858dccfa3acc540f01ddb32ce7f0c203db10410e3303a",
+      "observability/checkpoints/slot-1.json": "f45219741d9e006b5d40b85af63a28bf6dbe8a0e41aac7724baba768208d82d1",
+      "observability/events-0001.jsonl": "d3afa8eee3581c0847a66216ed799d3d75168c96f74e7119e4596c5cdacd9ca8",
+      "observability/run-manifest.json": "95bc8959e357d6c5e0b5e1cc17284b4ad9d25c6df9a31ccab9d51a05c5837b8a",
+      "observability/status.json": "ab30b4d2698e71baf1106317dc8422596697a78a10cf31450b2c34adafd37534",
+      "report.md": "28be1646c1d685b0f25b39c142a927a338ca37ff976bf66fa3ce3cea0a39a317",
+      "result.json": "884f122c23f16d78f0d383d9fd13172f0b4ede44466b1eabe2f5f88d174072bc",
+      "retry-provenance.json": "67e015013c7f082839375fb0e00e8f4a4bdd74aadc7a11514f4b8d8125641a17",
+      "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+      "trace.json": "f821f225e738162ba2aff57015ca301871fd808b4312d2ad85010f6ceecb6e92",
+      "verification.json": "0f4597ad148d68ef5ea78b9461be390cd6d3e352941e77f982b18853a23f3dd2"
+    },
+    "slot-004/attempt-003": {
+      "measured-usage.json": "001c1cdf626d9245dd0ce57fde36b7d0d35058f5ab1cad8b6c74e756b156bfc8",
+      "observability/checkpoints/slot-0.json": "796d0de5c02dd81ea5ed2e32f0aadc05c8f30afdc0e0508552409a3f8d1af4e0",
+      "observability/checkpoints/slot-1.json": "b4461b7f41abe131224b6a5e3055d2bc4743d0b0bbc0331fd8f6d7d85a8995da",
+      "observability/events-0001.jsonl": "c6a0137f4f343b6f4a31d0c46fa9022218b49b81c788957c9b1a967f16a8d84e",
+      "observability/run-manifest.json": "b36e713b12f9165ff9ff54130b8a251211f0f4946aeb76c7ddd807339a04c3b8",
+      "observability/status.json": "63afccf689dc76aca63777bee3ee870615cd5ce5c9db43d1ed1655e78dd0d37c",
+      "report.md": "212267df2ceca6a411817be41f140d928982447cdda991f03f4463d1fdcc1fb8",
+      "result.json": "864ce75abd893c2ad4f4fee2a8a4b4b9df6a1cbded521d2c374ed9587faae875",
+      "retry-provenance.json": "dd118965743e729a849e0b20502e5c29b1f8c720701eb968474bf8fa167091f0",
+      "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+      "trace.json": "cb0e70ed00d5512f0a998d74e7733e4dd808ba798de70fac2b1bcfcc1ed6f430",
+      "verification.json": "b7d17001b81a5fe1277dca9caea69caf86bab71f3617a215c29782f6a19b0ddb"
+    },
+    "slot-004/attempt-004": {
+      "measured-usage.json": "c1a8e36f292e3a6d4fe6a9de73eb772ebe03e6a49f83379b6e2ba5c17eee959f",
+      "observability/checkpoints/slot-0.json": "4f7059e581a52665e714c0c995dbb5c1159c0c0fdd10cd8b9c8adea35df606b5",
+      "observability/checkpoints/slot-1.json": "dcaeefae61372bea289d60ae9a015d711132b03f2be3880f878b34f4bb2183e1",
+      "observability/events-0001.jsonl": "be5ca9bbf3b719e456020d0c5f6d5d9ff93756c852043832ce293433ac5a2bd2",
+      "observability/run-manifest.json": "e4ed3b4b3c1c52196c0bb6313247f447992b0407f04a10d98fb8a7c7b3955020",
+      "observability/status.json": "302d43c5aebed94625d5b26b33ec5ade33325c0b9cc412353933a144f53f88c0",
+      "report.md": "36785e347a6f40215fb2806e5939b8cc68088a6c9e058b507e45829ad9d72a88",
+      "result.json": "335584353042fdc8b0e7547ed34677fc2bc126e618892c72f90d1a38067b29d8",
+      "retry-provenance.json": "5013480af537619ef0fac699a0700524abfc7593b2d7c52b56b8cd0de5ffd656",
+      "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+      "trace.json": "ba19b9f0c5091e5d94572d95bf22f72dbb7fb15cff3c7993f8fa03a4a13b65a3",
+      "verification.json": "43b293f13a48981c608330e0cf77ac94597cfa88db912af3e684b0def1036156"
+    },
+    "slot-005/attempt-001": {
+      "measured-usage.json": "0a85d56942b1c998f5a5345410e0b9d9601b3685eb8b1935f0f89d8e2b934901",
+      "observability/checkpoints/slot-0.json": "ebff16094a411790af83d86ba26e274034398ff1c07d07780cfa9db295174a32",
+      "observability/checkpoints/slot-1.json": "d37af651c83e7be3bb84ea0ea550750290ba535cffc852efdb8be639594022bd",
+      "observability/events-0001.jsonl": "5a0b482b6c55c70637dbb66dc86dbbb014aef9c3b9ccc3bb4b3cbd0fa18222fb",
+      "observability/run-manifest.json": "3deebfa4b88851dc3e04ff4daecdf98798ac8cd31fd6c403e2fcc4850f49b43c",
+      "observability/status.json": "232d5d9463c84171b18a71b4d84bf20ab5ed1c95e329e32cb74af0608bd5a363",
+      "report.md": "8aec806253544ae525772675a049230c4301daa75f4919691ea1969bfe91d55f",
+      "result.json": "78e5bc2af34432813015cbe157b0e8c319c468f9cbbe9ef48a61108cbf258c2f",
+      "scope.json": "43fddb69636bbda4a649d36539d68285cfd64f58710c167137e9d1aeafec82a8",
+      "trace.json": "72da47d1d0bface7d5567e58b84bc02023cf75b298909763532559ab6f1f63d4",
+      "verification.json": "22a29f44e2174338c4fe501b70509f3bab3dee5aa84bd9ef18d536949ef47411"
+    },
+    "slot-006/attempt-001": {
+      "measured-usage.json": "68c74b4b10d8042a04509404c06449b277b34259163fe5b04f9e094dc1c7a492",
+      "observability/checkpoints/slot-0.json": "284b21f4a29180417a7cd4eb0070d92943ec5c7f12e36227c2867396c61d2c34",
+      "observability/checkpoints/slot-1.json": "a7b13a67d5726b34eec44c44a802bfd8fcad5117b6aa16851ec026619addd74a",
+      "observability/events-0001.jsonl": "713c5c32a0dafcf531acb4fa0c35bc7c4ef345b4f295556995db8eb42a865d74",
+      "observability/run-manifest.json": "c9d10e4158e1e1fe11efd3dae16e252b05b29ebd07e164f087d88f4a4d73993b",
+      "observability/status.json": "c9dcaa4b4b1af357f899146d44fb553e77b4538c47e3b19e937c557c742adbaf",
+      "report.md": "89c89cb5167e7b549c7f042204eaaf703d49f962078fdcc2f5e957f9ead17594",
+      "result.json": "18a4578b7d9a4ff2ef2b31bccfea6bef5dcc18f9222949316c669dc2b6919b03",
+      "scope.json": "2e7e40972c9fec659c63872ffd8a79ad477c37aa47eb758bae64d5e38e648a6f",
+      "trace.json": "53162d974122f6908a94252062d351658bea38059407149a03113b8c3def157f",
+      "verification.json": "8de6393991055c9b449b321b7f5be4d4ddc5df90d89aafaef7e5eaf355d5a22e"
+    },
+    "slot-007/attempt-001": {
+      "measured-usage.json": "65643d928f6b15483a0ab98cdd98dbcacd54255acf648f513211341f27d9cc6f",
+      "observability/checkpoints/slot-0.json": "057908206ee42ad7a245745139c23c48d35357cea99b6acc6cb94e690228d889",
+      "observability/checkpoints/slot-1.json": "2fd9e6bfecaf64a3d3dfd80604f6d1e5f2281b45a30288c2b3782bdd1a6d8296",
+      "observability/events-0001.jsonl": "6a458df60a40243c3d5be4420670d32845c774defa18ea47f3d18b65f935c1fe",
+      "observability/run-manifest.json": "ba7d6358fe2d2785fd7f16603c4afab9c990448b30d6aa9e319a8f7ec09924ee",
+      "observability/status.json": "c9406a415f53003436011149e4b65d7b270e3f85bd9e19b83abf946142e01ddd",
+      "report.md": "eaa315937b93de5724a61befccf34fab9808a65fbd0bf829dbdd1fa069943b76",
+      "result.json": "fe8d102e4d18cb65891f6630a1918c702a462f47a2be7e12169c02d0e7343408",
+      "scope.json": "3b8828fb35115dcb7be3de0366a7a8f3efb2ae721ce2124c2cc7253f7d5c8920",
+      "trace.json": "018bbc73962bc36593da68a73462139bf7af857e697d7a7778c620961c157de3",
+      "verification.json": "c3eed503a1fe28fa14fd615b6ba2600cbdb130ab4e67b705c0ab1b1767dc922b"
+    },
+    "slot-008/attempt-001": {
+      "measured-usage.json": "ff525471f6d4f938e7663b6d6c1251bc090487a5fa31afde02f2f583e870e3a5",
+      "observability/checkpoints/slot-0.json": "b4e3707021a1e2c26b358cede3b1caff9abad4151449bd0b767a04f154eef3f1",
+      "observability/checkpoints/slot-1.json": "7f6d56ef315fb5a6a3a3c072283a07eca35175d671d3250df9358c6d8e69db1c",
+      "observability/events-0001.jsonl": "81af57184f868bf456beb009da7885affdacfe571f368a26639dee455159e17e",
+      "observability/run-manifest.json": "9b77836565e2e328f84e1fc6f8ddfcfd3a7d3ab0f6d33d60e8b5b3ea1ca9040e",
+      "observability/status.json": "373c40e95e4b5df2971314084b5a83ec586ef2a111b64076fd734552a492ce05",
+      "report.md": "9aacf2708f0fe87d65d51a9787dad1f8047a00b5374b0b970460c407f920ced5",
+      "result.json": "40731848111f4a12f46bbbc8e0a8999e76b87d9879625214b6f6fd26168e9b0e",
+      "scope.json": "da807311940a37adf18f89d51cb1ddf2f07a738c555f0b1f4e54f56c541b42d6",
+      "trace.json": "ea6532c1bae8f3693398e9ff43cbc6bbdeafdc06538a14932eafb74d09766e96",
+      "verification.json": "31d0108f55f180e659a01855a53fd61f4e3e6363f902da1437a2a91f6855bdfc"
+    },
+    "slot-009/attempt-001": {
+      "measured-usage.json": "4858cf300309db66d10f612e4cdd6763fef8f0cd27811b34af5b23cf468eb1d3",
+      "observability/checkpoints/slot-0.json": "8f076195c0c1636477b68bdc00690752f026643f4cd0cdaedfc6de2268e5f16f",
+      "observability/checkpoints/slot-1.json": "5a451dd860f9033b68c6f6d70b3f541c9ab3f05a427bd539197f7729aabd2303",
+      "observability/events-0001.jsonl": "bfd6d6b2b068dcab566f2f663d6ea65964acbef8af0c3177d35c587b9d351735",
+      "observability/run-manifest.json": "5cefa22a42586866c25168a32cbfb822e6124245f9845edb2f2369f1d56186fb",
+      "observability/status.json": "1e59f2bde80b77dbd834b376709e3851cba1558509b34d9d56a4447bb71a1f03",
+      "report.md": "e0e64a1c8269d7367020eb31cb45de95fbaaa5d6192c89eca09edba2a432cc6d",
+      "result.json": "bd555570d4eebc636bfc18acef6072b6a1e73c15fd089530fd5261f1361c06aa",
+      "scope.json": "cfe89c9decc344c58d3aa78d57232483295fbb95d07823b8c66d10b0afd36fbe",
+      "trace.json": "4fdcce476e031f660498d36a59df9a127f051612d2dac6e1719e840178ab9e92",
+      "verification.json": "b03bbfef5d6e058375e0475d8088a1f9f977aad9e7afa52a3f1c5136a8396dff"
+    },
+    "slot-010/attempt-001": {
+      "measured-usage.json": "38c6ba297ae0301dd5954448f28332409ae23a8f76c23660a63c460c440bfbc9",
+      "observability/checkpoints/slot-0.json": "2ffdaf238e6541fc1c4976452b18b8dca5bd834eed716a13f0944a228daa6d76",
+      "observability/checkpoints/slot-1.json": "09b8f4763bf70506dc0494c144bf284440ac1a4949641020216c08508af378ab",
+      "observability/events-0001.jsonl": "dfe18b438bd2ef4e2bae943d06b16a9cb12fdadb56135ddb02536be8e0720f86",
+      "observability/run-manifest.json": "2f8b89c7c587e240fb4add488592195a6dc52e8aca0b07b15c3fc68d5fde31b2",
+      "observability/status.json": "f416619e01a2d4cc5bc87286a1db0fda73d75a805d10c14194580b6088a4ee18",
+      "report.md": "222e84b31c53e5293f9ac9e01d99c96c6cebc46c7d0a340ff00adc72c8f86032",
+      "result.json": "2b9eae581784239e621a8191461d6b8d6efaacb59fa866d8da91398d6347aa91",
+      "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+      "trace.json": "42b1a61e9bd2d71b3e281a8600e2e2313fcffa7fcb4e2222cf0b496f60c8d4a4",
+      "verification.json": "967b445478f0ad367303f5a5375b2bdf1e394d3cb3c7373f61d51724ad93868d"
+    },
+    "slot-010/attempt-002": {
+      "measured-usage.json": "836c929420687a9ef7f925e08328588d63258f1dede3ff80c3949786660146ba",
+      "observability/checkpoints/slot-1.json": "1baddc74837223cd400b462d354aba7d377359b638796b9ac74883b79cbf7f8d",
+      "observability/events-0001.jsonl": "e71951fc621540f30c066caad848fcbfaf6884435483ea8aaa78c06d5065eb75",
+      "observability/run-manifest.json": "d88e29e74ffb5eb7bc22e56f0a6107c9b229126b24d07ccabcaddc3407ae1661",
+      "observability/status.json": "0370b1392210995e4b5e20d2b125ab8dbd3845f6675ddacdaa6a2cad32928266",
+      "report.md": "b02406ad83238462760b5665d19e22af8437b08447213c7fcbff3b26309d45fa",
+      "result.json": "e460f2d1293ddb384fd7b96638ee803ed28b762c503547ba59b89a702ff56114",
+      "retry-provenance.json": "510ad71b162f3252bb01aad4e5390dab21245e167222b2bf92c09b750d4119fc",
+      "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+      "trace.json": "033a9ce1b9704c9edd8c88c0bf4bf4efb9432d4a63a82bb5f24cd5e441fb055e",
+      "verification.json": "4d8b16dba4f1713c25d1c3c544a82c63fe92860ef592ceb321cb78ced4e4a005"
+    },
+    "slot-010/attempt-003": {
+      "measured-usage.json": "93754af77a6aa9ca72a808d8f8643542d07bc96123c8f0b76aa6e2b2578d39d2",
+      "observability/checkpoints/slot-0.json": "bc09d42d820e1e9887027cd340609c338da324291492333dd384c69a0914ddc7",
+      "observability/checkpoints/slot-1.json": "512b5da26dc06647176dddb0285c862c0a47b9afdc8eb01209f4dba7373dd310",
+      "observability/events-0001.jsonl": "3073b5e0177ed30e97645026dd1561d1020c02b2f4f661d176b5918b532fc5a2",
+      "observability/run-manifest.json": "fb45147d17ce300b1530c33ba523db2d150e4a707c42a9dc5b514cbfe7a36127",
+      "observability/status.json": "d5080a65d5a14a9e7ab331f5ce9716057f6ad26f9cca982262662b16ac30b575",
+      "report.md": "150a7c029572ef9903ef52e277a458ecf9b48a6bf1fcc8a11cec5493775c3c23",
+      "result.json": "2230464027bbeff31e01fe4601437246887ea24d3dab192c264b76d69efb8cdc",
+      "retry-provenance.json": "aba31f0ad346a205f64eeb94b5cf00809f50cfaf8205c756b1f301fe49327efd",
+      "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+      "trace.json": "ae3b2e23e074b29660dca11c825e56128968140d9c23166084b45c84062da853",
+      "verification.json": "a51af7bccdd82db5a6259d8269163fa8b30343c9d8b8e1b9bb291571e4e94b41"
+    },
+    "slot-010/attempt-004": {
+      "measured-usage.json": "c2e6bd65ab8b84c90d10600458fc57bf4d83cb842dd0cd4187699a5688c099ea",
+      "observability/checkpoints/slot-0.json": "275e6a39c520290cee14878c8f25cffcd053827c2072585f2ef32c4076bebc0a",
+      "observability/checkpoints/slot-1.json": "921594e83494cd2464a932b759b4196123dbb7a0a9d1194295272e681aa6750d",
+      "observability/events-0001.jsonl": "996bbe53669c31eb678d53c15252a24b298960bd87a795abdb3390b41f6b848a",
+      "observability/run-manifest.json": "d0a94d5a143bcf3c2b1ba6df78ce9247ea7e0bc93458bed532399427189cabe1",
+      "observability/status.json": "21584872e8980ac30ea04fc82e89cd77c828cde58e7d4ca78ee1ad4849c17ff4",
+      "report.md": "b771546a357e24b1bf026f8724d73413a2b410122b14c0b047581c7dc2f95504",
+      "result.json": "9e77ccf0045ff32d34f8867b7387f4ef2fa37083a53fc4d621e2c0700e2a13c8",
+      "retry-provenance.json": "37ee8826cf20f0dac705c50dc5e92d9ff099d8d8037c14d28f69e680754e2a9a",
+      "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+      "trace.json": "382dc253c8949e3e00a73f37a35f41267d9a71bd9412cca0adad18c075fee1b1",
+      "verification.json": "2b31c1b23977235b5526bcca3c47d5c965a6d96e2f9c78bb6440157ccf5cef5d"
+    },
+    "slot-011/attempt-001": {
+      "measured-usage.json": "f9cbbca0a3ca4546404507e11ec0cc5d0391855291b1e30560ca555febefa974",
+      "observability/checkpoints/slot-0.json": "e057d07283b675f4952febb96ae1a47e0687168d1a0c8d1f23a5266f4ccfb233",
+      "observability/checkpoints/slot-1.json": "63c3ae557d326b5a3c439fe7ba2b83dab12f7cbc1f16d655bde3d7e906bc90cf",
+      "observability/events-0001.jsonl": "cc48e24e546e9f9d24d8f9b5948f0195118003a198958d0d06e1f8d038bbd732",
+      "observability/run-manifest.json": "024f6a2ea328c93b0258e9e6768fa6d2cd06e53f52a293af571a1266a43422b1",
+      "observability/status.json": "93c0f2884e4839932e3d9003fa826ce4ec1dd7e35ca65beffe7df577de0ab281",
+      "report.md": "d13a84bfe67aa80d023551afc5edc78b1df94760fa6866f9d985e1031784eb3e",
+      "result.json": "824751674dbac511fffe2d766868d98027fa207a71411a15caa120ad0a7bba3c",
+      "scope.json": "1e28dd95d3b3993e2854e66552ff398208ee28cd5144375d8c2fffecfe30e802",
+      "trace.json": "7e06646ffd039ac0470e94d43dec987892140656ffb1e50d6d3fb140def4e0d3",
+      "verification.json": "0f4076689d3b8681b84357a17d35dede4c06211f00b4c66abc45c1f014a68164"
+    },
+    "slot-012/attempt-001": {
+      "measured-usage.json": "c2f52f7f54d07606ece6ec10816785419510768ea612e226247cc73546e2ebd0",
+      "observability/checkpoints/slot-0.json": "5f48005838bc48ee720bfffacc13aa403329be4206bc8189c223d36e39f9f26d",
+      "observability/checkpoints/slot-1.json": "cc2fc09c4b73ec6eb3eab63eaa756aa1d0ee9ac34e36c304d46be72a0b01efb9",
+      "observability/events-0001.jsonl": "d0b6410074d5ca3d86bfffd56c162f24b71dad8a33f38d08421ec1cdec32054b",
+      "observability/run-manifest.json": "b2351c0c31cde05d3185bea07c9d4eec7494daeccd73d071878a9d885892d07a",
+      "observability/status.json": "6c5c738423cc0c91688db750d508250bb82063cd59b68d1a36f58bcdef463fd3",
+      "report.md": "328d7410cadac8077713d4929275b94ca87322db43cc27d593a14ecfd6b4b7c3",
+      "result.json": "00b98b8f07dae03550dcb1e2cc3211664f1c40af7aeeb64ff963681bc3e90f7e",
+      "scope.json": "acd1b8b5907e9e9872900f57d93f3f2c4d466549c40519558f9aa13f389a00b5",
+      "trace.json": "bf9cdb4c3b4d34fb5f59d65988a39d79e8cf5b72b1426a6bdb1990659983dded",
+      "verification.json": "1e97de358de494e37f3a135aeb19287b741a20685ff03eb956b37684b497c8fc"
+    },
+    "slot-012/attempt-002": {
+      "measured-usage.json": "9da2b48391951c76d61fff4d88e08fa10860368b293e32bd83f2df094204d482",
+      "observability/checkpoints/slot-0.json": "13f1e23e17b21b6586731d7af097a6c0aa3f4e1aa9913adfff10e52ffa046f5c",
+      "observability/checkpoints/slot-1.json": "f21716195f67979903d972334c435aeab820be4c4d82486f10ce5e5cbf38a939",
+      "observability/events-0001.jsonl": "7c24543b06b85b6f345d22d72f58af0739c7ea91cddada3203deafa9a80b5434",
+      "observability/run-manifest.json": "46e92ad842b8bd8111a71f91059488c9112ba70119488686466c32437b3ab0cb",
+      "observability/status.json": "1a54d8a7b5ba6519f28c067df3913b519f765d83f6946b8dce62ccf1c089b331",
+      "report.md": "c8a9028f58c02daf8e456abc59b50df50ce4072f19cf24453df58436465998c8",
+      "result.json": "f0d0d50b8070629346324046864d42fd576967be65ce6abf3afa1e17df024903",
+      "retry-provenance.json": "5e364dc8d2631bb4ff29bddb00a5ef647406f9dafad3f54d50f175dd19de7ba1",
+      "scope.json": "acd1b8b5907e9e9872900f57d93f3f2c4d466549c40519558f9aa13f389a00b5",
+      "trace.json": "4e63bc535d2172e65cdefa82be320ec2fa82f9c6821bef4e3a77c901139e8410",
+      "verification.json": "5cf0f3a1d1f3da06bfdf8509b8f2a030794f72aaa8b1637e7c1727b288c82ad8"
+    },
+    "slot-013/attempt-001": {
+      "measured-usage.json": "dfbc85d3cd3642546ef822aa0bb0593a7f56e2e971799b581f85eeb3050aaa22",
+      "observability/checkpoints/slot-0.json": "9ba3a2526b0efb8df1af39ea00483b1891b1ca49873681777bd865ee265ac7a8",
+      "observability/checkpoints/slot-1.json": "0dcadf0833ff9eea8234949ac3b5223c7a0b69ea54cf5b451542decb0121434d",
+      "observability/events-0001.jsonl": "d778bc0d32075b393d8822d4038b85611793485bc9d4c0541f4467e30bb93a05",
+      "observability/run-manifest.json": "2adde67bf8eead872773e1edd0ce0f7d126e35460c6cd82b39d3a63e1144c1a6",
+      "observability/status.json": "943af6999381b50a18b7cec72691e5bfeeafd95034afa4802deb3c8645753177",
+      "report.md": "b37a350a09aef397053ec2ccd3dcfe30cbf6a366b95bd0b72097e5cba548be3c",
+      "result.json": "1d40843c7468948a2c308b650f6edd9711d59248382eb18173e5b4f3488f87db",
+      "scope.json": "503a94e04a9fd0d65fc2937c68ef9564bc29eb894fc85321967c028597a40c4e",
+      "trace.json": "d2f9b287596a5f2ebc779d384e1cb9a016500a34d94c97b57a485d843e10add1",
+      "verification.json": "dfc21d0966ef89f4c582bc040a8a8f0c61b287f990bf290e10b1657961427c5a"
+    },
+    "slot-014/attempt-001": {
+      "measured-usage.json": "e2c8930cac87c02d7d3d6b3f8721821c75957bb3c50041e40b49d6afd7c50e64",
+      "observability/checkpoints/slot-0.json": "7bba72ce963ce89741b1bcc6b8d52cb984aadfe597dcf1a2c1c92d781521002a",
+      "observability/checkpoints/slot-1.json": "7c6cfb4668ef7c6e35fbfbebb13e87c3b034fe5db7de7e9274d24580ec57f6aa",
+      "observability/events-0001.jsonl": "c19b23c25bafba689c2bd4679a1a631b50eedb26b510e5c447a361e34c77474d",
+      "observability/run-manifest.json": "7b1567991956f2f66ded4c564e5ee19da7c47d68f27f1838d012c04f7eeaaa4a",
+      "observability/status.json": "af83ce3aae6f0a152dabb2519bbcf8693a89e279ae778ab0fc275b4413538d03",
+      "report.md": "2ea31bc1c57831b87074f3e86b98d7f3d90ec1b8813e1a02a106cd2f57215350",
+      "result.json": "b488dc80eeb42742a1af309d4f300dee23329cf250cb984cf7bf985fac6c8f22",
+      "scope.json": "79565c15da78b61793324bf0fc2ee9f0793e325305d047e82c58250c3fd42e4c",
+      "trace.json": "cdba8a4d57ed1e488083f02074034d0aba2845edd89fff17937292aa7112e44a",
+      "verification.json": "db239301e809b7e06646d3b4b14281623712b4be7f58063f9b4f112637f22612"
+    },
+    "slot-015/attempt-001": {
+      "measured-usage.json": "061f5889a8bf845e3fc8633bdf64526e49793aa0427d1af748c33ecf8e041c88",
+      "observability/checkpoints/slot-0.json": "10351389ead36240767743af3473901976537eb663cc8ae2174032755059f0ac",
+      "observability/checkpoints/slot-1.json": "f5656ad7b8dc0eb7fc228d10f86cd2e3f18ca65474bac57d370e3c6d3ec9106f",
+      "observability/events-0001.jsonl": "f49cd807399235914c54ee267581d55e92fe3b835bd4ca97bea52c33a94dd853",
+      "observability/run-manifest.json": "d82f9bc09131df55898033c8520c5134152186321a5e113d7042664f9f08a71c",
+      "observability/status.json": "6404ae78863acca876e6fdc35f0082c45c2b50f148b1097eba379746ea3baed5",
+      "report.md": "79ef4dbdeee87a0ba854072e4c0b71d26ed7f00fd62869e45939a741cf85787f",
+      "result.json": "3dc465e5df4cbe84d35608bf592ce1582685dcae2d28428835ade6ed9c9fa733",
+      "scope.json": "d22fa3fb79c35f2eff0afeb6a5567c43f01ef286c90cfb386a7b635797ff0813",
+      "trace.json": "ea157767a0d694c111371107ff0789355895ce854a9c6989aa5fe7e356ec8020",
+      "verification.json": "1ed78d8e7ffeb7879d6fea83be7c4b1fbbac7e6360dba303a64ce74c10ce6228"
+    },
+    "slot-016/attempt-001": {
+      "measured-usage.json": "13bf4feb17d3cba3cf7c936fba9d5c912b46c8f10bbc91d311865ae21ba01b05",
+      "observability/checkpoints/slot-0.json": "71cd3c0a5b0691584eeace933d544eebcefa4e9a8bed36567cc71256604884eb",
+      "observability/checkpoints/slot-1.json": "4bb5bc29d4312ac64113a2fa24082c14fb04e995655fb5ee5c17c214b3eb8f16",
+      "observability/events-0001.jsonl": "6fc3f2bfa31dbdedc947df3d04486b6367fe753cb2e26accd2b71c086f16c319",
+      "observability/run-manifest.json": "61b9a0a5b9663433f9a9dd0ea52edbf08e4cd99656bb9e64b41d775b2952dae9",
+      "observability/status.json": "91c38518f1687d31963b6d627cf76925cbb1c8c77f141395059accef583d0b88",
+      "report.md": "193119d8a73164e2f23c07083f0bc61387c71a40212831bec48a562c722eb7e2",
+      "result.json": "80680c18e5588fd801188871ae84e4c412b2e4eef8ccef2c7afdb41ab4b77338",
+      "scope.json": "f14516c87563f79fe4b12ea98968d4be0f85406d1c0ee0f37e164a4e571afa17",
+      "trace.json": "c64028adc87e5795ddd5bcae7137a95cae9373fa762df71f9b5463cee2a15831",
+      "verification.json": "1eb66a9b82a04e0f3fa807518c67e5e099aad5970913d90eff81354b33268f1a"
+    },
+    "slot-017/attempt-001": {
+      "measured-usage.json": "0e55975e96b56591bf83f055b52701c3bb407ad8730324abe7efd5edb44d724f",
+      "observability/checkpoints/slot-0.json": "ef31897943205c51b434143ed314a198c064e415cca0e71aa1b55649439cf79e",
+      "observability/checkpoints/slot-1.json": "5a05349426e5fb14ae5c2863528889db3998e000469c2813455510235a3bc0d1",
+      "observability/events-0001.jsonl": "cddcdc6f0b17de4ca1232dab84da41cb6b0c346fce3a8ec59bd4d8a04c31cab6",
+      "observability/run-manifest.json": "2fa1617d74b80e3e689b3bb5260045b9487f6929eb9d098f12fed333023ab907",
+      "observability/status.json": "815233954f8b263594b5593bcaa0f52dbbf5d15b5f11902482a0e5763030cec3",
+      "report.md": "55dfe3cf40ed4892e1ca5d6e92409357d0d0ff094535d8d74abb34d7369e055d",
+      "result.json": "ea34a7ee680a41125a0588a8944edc74de97ac01940f6590116158dc1b800a8c",
+      "scope.json": "ab75c856f42ebcafba611fbb63b9f50a6dca8eb3f3e292526819cf367b8d1675",
+      "trace.json": "416c37b243106238e29d1083573412443942cc476ae3af23af6f7e23a6725d17",
+      "verification.json": "c0782d577325d3033e2706579a7d82f52213e8bb4a0acb42c4cb943fa8590aef"
+    },
+    "slot-018/attempt-001": {
+      "measured-usage.json": "251c905acc060484305061cab83655c392c384d1b18c94f7ef47bfad88a4fb19",
+      "observability/checkpoints/slot-0.json": "5c189475cc838e82139969a376c6402b94270ac87b74fc25cc253f46eae342c4",
+      "observability/checkpoints/slot-1.json": "8342174edc5a10d52f1d120d82d088d99bdc0af1588a09851905784b324df424",
+      "observability/events-0001.jsonl": "319ccf2b77b42a278ac527a339255d4b652f1a1b2784a231259481da4bbaa631",
+      "observability/run-manifest.json": "87d13cdc2267618bff843e7c9b2d86feec8741b4a4a8354dd6156f094c6d4b8a",
+      "observability/status.json": "1ed8c06d4975670babda464966ac2807ed108b9361581544ff840159e0b28c10",
+      "report.md": "b7b395d752dfb22c475ce46a492e7d5d3a89cdc0d6baa181e2630c508534f668",
+      "result.json": "479321309925215e169bdcbf744bf0a9e81f82fd389dab46c418e33f7fb29d97",
+      "scope.json": "afaa412a13008075d27900eb76e98c90717e454b943f25eaaf929e3e1c496b48",
+      "trace.json": "a4b6795948f7fd81f7d36f0487c881c9ee230aeebcdecc356ab97ea1bb5d7d55",
+      "verification.json": "f8b91a8664f621bc039b0ec8d47840fc7fd0d6286e46f073066f637eaa1c4e67"
+    },
+    "slot-019/attempt-001": {
+      "measured-usage.json": "a35fd3e117c8088d1dff9b7d2307262d14b2f1f17704e0c3f746f0803046367c",
+      "observability/checkpoints/slot-0.json": "c0f88105381e623a6f2caaf37eec0d551c4c40b0a4aabcdd2a48399b3d16de60",
+      "observability/checkpoints/slot-1.json": "25926305606fb9878b325f66914acae0c0e8d7a74daa5985a9b34e6f25346c2f",
+      "observability/events-0001.jsonl": "9b9d996becffcf5cbf031b0f126d69b6449c8d6e1c192f32686c925bea84cb66",
+      "observability/run-manifest.json": "808c23a26a0d4e62e108225a8feed7967b619f0a890fe1ad808efc04ded4996e",
+      "observability/status.json": "68a1e891c9bbebe872c0e2fd8a095cf9603dc513e5f66157b327cbdee936fcdf",
+      "report.md": "a729459a7030665000435f06b9df81209c06013e86d954941af9139be6674fd6",
+      "result.json": "781acac819462f4b9a70363fccb6533f01072d971f9d6db6012f90d38532fa56",
+      "scope.json": "e64970e0618458f44edbacfffb8cb53ed2820c035bda88e6fc9080adc4fda7c6",
+      "trace.json": "755079bc468accf8499ffc55f1b21fff7be0464851fed8bb08df8d53cbcb66c2",
+      "verification.json": "fe52c806a7df605595753fe5ca725e66b27afa0cb1984668d3b1851a90a41c64"
+    },
+    "slot-020/attempt-001": {
+      "measured-usage.json": "8f219f93059cf627eb9a0c0e360086e0f77ace5cc9404fc333b521f91b2810dc",
+      "observability/checkpoints/slot-0.json": "23578527d52ab8b9a282f0ac55d9f9f5f28c9f6908c8a8df957cc4054314ac79",
+      "observability/checkpoints/slot-1.json": "d5be8b61d8d301e80df44669d07bf20c2fee387dd8759aee681e23a43c91fa93",
+      "observability/events-0001.jsonl": "ecdc8088d8174ca3bedceecb64d840e5a38c27b18eacd7055a04b7f931e1d7a7",
+      "observability/run-manifest.json": "366405bd012e8c2c3771f1dc6b15849f0622af5101d11216bc709ac0f9d35aa5",
+      "observability/status.json": "4d8e1149fe5d7bcb0ad1ed3a2857d0cd0b76397b82f64b7e172adc07991ae432",
+      "report.md": "e8be557487d17c87ff0db6ae6957435f65282afd50061766afebb83a4f6bdd32",
+      "result.json": "bc1b5996200b2ab7cc693136e32683f78df9afd4c688cd256b47f1d396eaed19",
+      "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+      "trace.json": "0175e5ab08a4d3899dc0a8f2c9cad066e691c2b258f44be0fccbc0a1b06e8374",
+      "verification.json": "d136334a1861397c1bc8f221b00ad0cad3757f0bfe779bbf3c7bb6b18446107d"
+    },
+    "slot-020/attempt-002": {
+      "measured-usage.json": "1b0627592f1ca731aed616dc112b64b68e200fb64e76c58dc94c226a71d1db7f",
+      "observability/checkpoints/slot-1.json": "ce94ad89830f2268617361f77119fb5b3cb25b297dfb835a7a1e644c6696d148",
+      "observability/events-0001.jsonl": "caf7db76fc128978098c8b5e74e34cb1401dbf8dd3ee54e5fcb3bc21b2f2b63f",
+      "observability/run-manifest.json": "365c921e1411be0a4ca6b58dbf48d803e095e49f2a2b569865b06d4f4f1ea1d1",
+      "observability/status.json": "5442f129c915e4b1701142fddc6d5c7e7f6b2b31a89798fb77c3292bbbf70fb2",
+      "report.md": "aa418b2fe7de45347cdfe9eb4b9c18bc4907985b159b87e942602068d82e8a70",
+      "result.json": "73be68d55e09cd4dc79c683b3c39761396fa144092db4210e80ed41d461c223f",
+      "retry-provenance.json": "4e8009356996317fdcb5e051fdb9a85227751cb8cb029a45640d477f3a97305f",
+      "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+      "trace.json": "285bc39cbed38d408365f4e4e22aec2a62159edf66ab5baece1c3cda3f1f9f0c",
+      "verification.json": "b3392885c89b72b02213360b4d72ccd3fd2721c5066cc03db6fd9abd043d5ec7"
+    },
+    "slot-020/attempt-003": {
+      "measured-usage.json": "a76b1750e0778dcace0ade9b29c86ed5c6dd305d5399f26f22439836d3f72149",
+      "observability/checkpoints/slot-0.json": "429c46372a3fd53f8dd868b2b48f202b01de69e9928be9d0585409e3fd4a8f1d",
+      "observability/checkpoints/slot-1.json": "a93c3502fae5cd46a08ee3c3f78ab660d5db261661f156b301fdbad51873c7f6",
+      "observability/events-0001.jsonl": "382032a31709427702a26b2b93987d56d5e67af79c2d7cd838ce487662d5b5fb",
+      "observability/run-manifest.json": "16c0a77ea4b0527001b4047f8e283e13d9ee7b61ff4b523fb21de6eb972f5c2f",
+      "observability/status.json": "0480ba36287a69df62320cfba632f6db250f1494165ab94869e11dc33e502a39",
+      "report.md": "4abf768f4273850bcede25da5fbc86174e738df9a7ce33f7d4f5572d0c519193",
+      "result.json": "3a5d8ff38b98813ba1a378e3bdbf05d2d3de3d4795fb45729a66682a7835c957",
+      "retry-provenance.json": "ce6049699b61b7b55781c40544e11eff281f469809fe3f652cf830b57d1d5076",
+      "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+      "trace.json": "789f80733335aa4c829f30fb353489a165fac73356039824a3e61fb6a243183a",
+      "verification.json": "2ac42a8a475ecc4adbacebf1d8b8159c162ff39d43f3d9bd86f868971c6d1dd5"
+    },
+    "slot-020/attempt-004": {
+      "measured-usage.json": "af865af977301b6459c7574a63bd0830273bc6ddb03a50e9a6a9ff776ada5f04",
+      "observability/checkpoints/slot-0.json": "d7d14175da94f6ee4bb8647550ece18a9f8a92479f6ed38b87fc63fba64cafda",
+      "observability/checkpoints/slot-1.json": "6ab3b2eccad5e6bd98612bd6ae17b36958d2c0b8b0127377dd0be5dd3c3171d5",
+      "observability/events-0001.jsonl": "803b86d3b4fff803a007f68018ea7c8e551f997e45618cf3ee9f6a6f40cab563",
+      "observability/run-manifest.json": "2678ed2a2944c36b1fc0a2ce2e8c46f6cc975cdec410a363a7033fcd2bf29b3b",
+      "observability/status.json": "8d12795142e7463e30206ca68c68b5e8b545151cbb68dbf9cb2c9ee653a2077a",
+      "report.md": "2011bdcb320ed26a7821c67e9af3dbd5ed6904be0a2f31d65bc6220a99298fad",
+      "result.json": "f40c219b5c4e137aea63aacedd2ae68ac6f7bd9628982c11fba0917573a34075",
+      "retry-provenance.json": "05bddcf1e6205cadbf34ae33fe227dbd6132bc29a3905df72243b34f979b63cf",
+      "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+      "trace.json": "224996a0bdce110dafae805a6a70f917ad59f79847ceb7660b17707b02e35921",
+      "verification.json": "20687ed875f9da77e912d7f73ea57939493a82a0eb3cb3f6fafc973b1e10086c"
+    },
+    "slot-021/attempt-001": {
+      "measured-usage.json": "f0667fef43649cd4219fd1f172777a92818acf23d22ad4aeaddd17b5a46e8144",
+      "observability/checkpoints/slot-0.json": "71d53403fa236a2bf96823773163eac237e10aeb92e42730f9609b56d1123957",
+      "observability/checkpoints/slot-1.json": "e419bbd642bfb95ced141b29795bc5bee0d0f494564dbe91cbf2030314b2315c",
+      "observability/events-0001.jsonl": "344f69681ecea8fc87b82ede9e3bf5903b2939914b20629ef349f25985b5308b",
+      "observability/run-manifest.json": "01fd112f36a5482c976182f30f97103e30e0f7bca5861b1e27326b4615bae0c8",
+      "observability/status.json": "a76f3957f8a94b191d358b8731d840daa42df7e31bb325f983c718eedf3a77ad",
+      "report.md": "e9bb730e6a86ed0ea1535149b221a83dcb1b84ac6687409d6e0598e84ff0617b",
+      "result.json": "0093b4841fe6e8c8b7bc7f5be587bd33e87d5c057b2bfda23edde0e1d0f0e802",
+      "scope.json": "1f314c99f4f9eba4b1e0e3594a5f728a560a9824745410d80b66ef11637a92a7",
+      "trace.json": "b218dcef63e01c851d6f59a85b5fe4cf4e2c9c23603ec745d802e825fba33199",
+      "verification.json": "a2f676652a6b4469572fd2b912d3b4a31816f0e137b262684c98d4a74b05ae9c"
+    },
+    "slot-022/attempt-001": {
+      "measured-usage.json": "48f2a68ca0ad4bf783eeaad2e7b27e0e150a83136744badc6db866a89e9289cd",
+      "observability/checkpoints/slot-0.json": "bfb7f54652b0d76e53f44c8f0510be62e72e227c94c4c9f1b7fdf857f7a7f949",
+      "observability/checkpoints/slot-1.json": "8a850586fafe7ac7eb8f2695a5d390a84cbb4820470102d3d5103afce3bd224c",
+      "observability/events-0001.jsonl": "ccf11bd217807645b340f409d7f1fc7083529a635b1565c523c9c169b47380a8",
+      "observability/run-manifest.json": "fa79fccb3a8660e4e34f0ea16c5ad99d17371f72d6570108ffded59dd410cf56",
+      "observability/status.json": "af9c46c8e2269b840a5c8c7d1aebfa3747d3228d59588dbeceb116f3a0591bd0",
+      "report.md": "45c3235d4ba8c2f48ad3d3194a59e3d22e6fa5f0b660a134bf672e0091bf4810",
+      "result.json": "cc3e74623c1bb3ec1ec57caf36a0ccb73377e9db8b0e27aff947cd4056d7c1a5",
+      "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+      "trace.json": "345c23b4c79ae720b312227ef03c5c884ccaf76dcfe7b430fb599f2f85b7da70",
+      "verification.json": "83a2bc8f2733071e235e08a8aea343e2b78941671d092258cc43163ccf0c8cf4"
+    },
+    "slot-022/attempt-002": {
+      "measured-usage.json": "16a3770175e40ac325537d489fe47fac392f3dcb71d57130b4544998ef8e6aef",
+      "observability/checkpoints/slot-1.json": "aa22f3da3e1eac4a2f3be07c07d577ca15388a2c32367881991c3eec3c75f5f2",
+      "observability/events-0001.jsonl": "33f06858982b3273ee66f71be3cdf72259068dadaceba4c60b2d6584cd703b64",
+      "observability/run-manifest.json": "e03362252a78db7515de9adedf776b030f27b381a4ebaa4261a201d195a72d55",
+      "observability/status.json": "79d05790f3bb741eba73be190cc9ecc24300f80fd191958accb7d0d5bdd3f194",
+      "report.md": "a8928dd2ece529b843ebefd13de7a3d58944a81cb083abab408dd12ae3b59314",
+      "result.json": "6dfdfa475859a8650d33c90d24c08da97943125151b1f8141be7651fe01036fa",
+      "retry-provenance.json": "3d0515dc7f7ed49aeefecbeaeecc67a50f80b2bb346a4fe238f29ef1bab4b3b2",
+      "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+      "trace.json": "3a34f3e47b34276fcf10e7467168f6d181eeab0b184d1398ac24b97fe7000b0d",
+      "verification.json": "b4c0df6a147d9400233175f94a54cdb4fb57f640bc79d73871d84c7b8e8a1644"
+    },
+    "slot-022/attempt-003": {
+      "measured-usage.json": "422cdf7bc4d40bca4a3073bad53f2b90a35e04063752d4beb41cde77b8e0a987",
+      "observability/checkpoints/slot-1.json": "ace2b0e8525d542cd7ac4b9377b260a5cfcb6c570fa7ea9f19f1782ce70718a4",
+      "observability/events-0001.jsonl": "9c2b9f3997b521b06acbf40b6246debdd9838ab1fd6e54c835894eb0e5c89e85",
+      "observability/run-manifest.json": "d661431e77fa928f8c34e844cf3fed877fa6c304728023fac215f784730add41",
+      "observability/status.json": "5f21e98f8b00dc3d49659d8c564ca3eff165f8d2047f119b7c030765ea00eb75",
+      "report.md": "e7f2c2f8c03ef043dd44d742311ce5f9229803aaf7dcffbe405fbf94aca4c0de",
+      "result.json": "6179f659c867640421ba9f97616e8aaaa6ab66d9af652fad5bc8abb1df94d53f",
+      "retry-provenance.json": "5f3ce8359fa1e5ebad6618f88c0d082369a273909096876b5668d333f1ee627d",
+      "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+      "trace.json": "e8fa4da954f3a1ff3bbb58584281faa1e9a2b033ce9c133a91b6929646f2e194",
+      "verification.json": "c62c1fec7aa7a8fcab9cc3b97f6aed7be73371c6ad80b6b374271a3db041a1a2"
+    },
+    "slot-022/attempt-004": {
+      "measured-usage.json": "8dea4919b8d2e6a5e57cf9f133bec133eb0d8829877a7ff914423e4ab130a7c8",
+      "observability/checkpoints/slot-0.json": "43f2620f4858c73a325d8bfb4cecdf61e2fc559206797d77b059eaa7f3daf61d",
+      "observability/checkpoints/slot-1.json": "2b03c916dde8edcd6eae8dcff5bca54e3ff43334d22481c83a88583deafa8a2c",
+      "observability/events-0001.jsonl": "ac8f01eff693026df01b3d58ad2d5269dfce4fe2493f42f18d897de5feac3bb6",
+      "observability/run-manifest.json": "cf8584dc91e5ada9a83caaae7b935e3a25491dc91916fda34db773a788800013",
+      "observability/status.json": "11195122bb08cfe964123c25c93d3d183a576845a29ae582d177a5ee65da34bf",
+      "report.md": "5066ad97dd8c09b2d58b299df18cc3a7dcc3408ea9d1fd905d69c9d1cd802822",
+      "result.json": "4e552a143299634bcce062bacbe4bcbc73d0a71dba310e291f48b09e392661b3",
+      "retry-provenance.json": "b625f9256f0aa0228ed6943265df03cf33b5e2bb6c83ed250591aa3c6406b1ad",
+      "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+      "trace.json": "5724cf380094e034dd3719a8f68321063422e47dfb5c3079dd9f182c2230e5a0",
+      "verification.json": "b11803eb9fa77f5d7ce4507f4b433d78ed7f31935044c4ede494e27cabf6ce4f"
+    },
+    "slot-023/attempt-001": {
+      "measured-usage.json": "99b9a409447569ec38a587eeea0447563a87f974ad963070f93c02689675b276",
+      "observability/checkpoints/slot-0.json": "d38d755990838810ba3dd6ad33ff17a327d52fc11382783399474f97fc9fc9ab",
+      "observability/checkpoints/slot-1.json": "27e96c61f8f06e424d096c5404534166f93bc92678b0980ba15e318cbc3315a0",
+      "observability/events-0001.jsonl": "2bbcf0babdbc8a6eb0ca1e8073276a9f9a208e8318f7cc433dbda36037b88877",
+      "observability/run-manifest.json": "25e6a56838aee98a0cfa14510d3caccae06ef86388bfa9775c966f20e72a1b89",
+      "observability/status.json": "7dac2039453c63c9f7da9c91f93ae2af6d75e7c26e2536781b5a68cba37b044c",
+      "report.md": "f81c3a4cfd05ec7a9e0093235e72dfc5e1a74bdaea25d4b0e9c1faf9e9ee3a11",
+      "result.json": "11fa45cbcc8edcd5d4519cae258df1794c4ba680e673776a979ca02e07e408fc",
+      "scope.json": "4c13ef32f6cd9cd4c85903932601e1b5e694228cda0208701c26f83f59f71efb",
+      "trace.json": "6f73e80f0d4e6edf238faebd0436544e4ab4f7cfa74cdcc1ad7df1ae38838333",
+      "verification.json": "381aa96d5943966f391eee04524dac2c7d4106c0f65d401c82d00cb37837b7ce"
+    },
+    "slot-024/attempt-001": {
+      "measured-usage.json": "8ca12c6e16b79297e7a571563f388bd08c21ca0a5e124c163444e4f7c60f39f9",
+      "observability/checkpoints/slot-0.json": "93346fcace88939e78a249ea071253a36899e1f7f9a15447210e3597dc1c6c64",
+      "observability/checkpoints/slot-1.json": "7a0a79d22b52b667d0b307752848493a77650e66ec6c777274a48d383dcaad5f",
+      "observability/events-0001.jsonl": "6f4ddc7277dd1063199a525efe881c36d16b237fa952c7e1cb74de7dec4f6dfc",
+      "observability/run-manifest.json": "5dd1e9840100d5a2fe3229e8f300eb88846ae724d1985d6608b456eda96dcb79",
+      "observability/status.json": "38e6cc74f9643dd8864e7779d47beee8d73d1f5f88048f2f04800661091f5933",
+      "report.md": "d8bf4312943768f53b06aacc4844669cf2fb50a6e80ff297bf02f1fad4780087",
+      "result.json": "aaf2d855d71bb4dd809ec5d509ccb36301dc6500a72f93cc697e48d80f17c7bc",
+      "scope.json": "643121d3c21bb96e8c75f8ea33ca0e265034a80548998475d47e98801f9831cf",
+      "trace.json": "56dbe0f8e9673a55e2e414bc3200e10c5e63f810e2132d18540477d37eee397c",
+      "verification.json": "4dd9257dd820952ed7d08e5f257e6b8e6436aea9b31d6f27c2aff8be40a297e5"
+    },
+    "slot-025/attempt-001": {
+      "measured-usage.json": "b2e8f003529a3864101269cdea1f3a4011512c9a363ce81dcba79e32e3ee2e5b",
+      "observability/checkpoints/slot-0.json": "8bad991001fd2086e2aa9e9c82296ea2f19b70e1c1072ea4df36930aa7f8cee4",
+      "observability/checkpoints/slot-1.json": "d00c400b4e1f556feeb1e26be3e07162ab3507fcad6748fa0a26e3fdfed13cd0",
+      "observability/events-0001.jsonl": "df6a44242a3bb3c4033275e655faba712e488aff8f329b1ee5908d6c0c958a95",
+      "observability/run-manifest.json": "4149350b33ca0be8495e94fc5002ff59887fa5203ce50a2abbc4a802c6af42e8",
+      "observability/status.json": "20177a41e87d044ba537e76b9a673cb2f99c3647f5f14cce2721b0157111a8c0",
+      "report.md": "7038952cd9f6afb21932930b36302fc3ed3700d146588f9506df70d614744926",
+      "result.json": "c3e2dcc1558d9ee5a9450c4ae8151bc1dac48384829e447d2258609c96fe565b",
+      "scope.json": "de27726137b822b7622723b41712f1490db4c00150f9fe15b68ad26148daa87a",
+      "trace.json": "2b374ff9820cf9d203392cd09f9e44eaa035d085507cb19a3c6ff87231f92c87",
+      "verification.json": "9f4e4f359468dfbb950d10d5dad0c19aa2b165d9544f72a5e89645386e780142"
+    },
+    "slot-026/attempt-001": {
+      "measured-usage.json": "b1135f5f5749c5a97c9f6a4761f6ce27f45f1dda6c2045c85e75980080ee2c06",
+      "observability/checkpoints/slot-0.json": "719edf16b5cab3e5bd5a08c3042e152d80fa194e299ef73aac812352d8fe90b6",
+      "observability/checkpoints/slot-1.json": "b89715888ec10512c910f1926274298fe481ca51b7863813f03f4e1aeb4dae55",
+      "observability/events-0001.jsonl": "36612cd6329c071f4719546912ba73519e8f09b7b1eb239caa20bded3d9ce1ab",
+      "observability/run-manifest.json": "a463d0facfa58be3cb716582c7c2556983ebfbd5146aa0268c4ec4d3cb0aa65c",
+      "observability/status.json": "6123d9a4a4b1eef6d377033e4b6dce0bfca826edb1eb59eb871a0f2794398510",
+      "report.md": "f6f801e992206b5f413af78d6b8a7cc77c4c4896a2c2cd264bd292c6a6e4c7e4",
+      "result.json": "bb858dee7429e84b856c612bfaf00304f890409c018cc21b22fc29f4d98b10f4",
+      "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+      "trace.json": "77a822320bb1b5e2df90194128dabc9dc8ab01d7a16dec209033eff62d7e2342",
+      "verification.json": "15df06c6cfa6e74a0a10003dd75f875ea1f2ee6e62313254b3499d7490fb8e8a"
+    },
+    "slot-026/attempt-002": {
+      "measured-usage.json": "f9f47f4f9ca4b399e7a329a95e459e875e66b73dd6b64013180abe2203e3f643",
+      "observability/checkpoints/slot-1.json": "4104374f8cf344f5f90a67ebbe557c16b8cddd17d8624e689079d64188b62bde",
+      "observability/events-0001.jsonl": "6376bce49cf2c5711a675244feb69ba14f9d8e5ec7fe910b3807d98b86493084",
+      "observability/run-manifest.json": "786b405e42dc89cfa16f3bb5c521bc50a8c135cb68a4be99bbb33df96269ace8",
+      "observability/status.json": "133fa032593cb387205dfbdf464e83bc9c230fe75c6713a61ac143a0124eb538",
+      "report.md": "eacc910f88cf312fd88ee9fae7ee2afe00614492f4d5121437ed445a8e5307c9",
+      "result.json": "0c42a40b35ee947e96fdc9a609b5ff8df77bd4a168268daba717c26d8129757c",
+      "retry-provenance.json": "dbfe71352b3b3d0fea9ecbe734e647e9c14d4572eae111015fe1fa28178cadcf",
+      "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+      "trace.json": "7461d658feb8add931c4bb9db12a8dd72f986d68c9123d4ea38e09272f23b57b",
+      "verification.json": "c7dd8ae8605bd74e0c487f13266eb91b154e26a7a66b73fc5410c907718afd05"
+    },
+    "slot-026/attempt-003": {
+      "measured-usage.json": "b2ae9906572001628a23afa8f5d92596e7639c013d4491f8dd8cd469bb7f385e",
+      "observability/checkpoints/slot-1.json": "b1d6fc3974fde98b9c5e9bee62395ba76da2ff15540d10cdf6aad143e1a4a85f",
+      "observability/events-0001.jsonl": "6f8f93307829a50af85197df1d7d8853648945a9e5d0fdd8366e0936786ebce9",
+      "observability/run-manifest.json": "c192992082d487f97044efe8eb46180c96adf5d0e9b71c309300728901c7c9f9",
+      "observability/status.json": "30862144b666d16266068f5c301c87f84cb9b1cbdc7408085049d75c8d3510fa",
+      "report.md": "e791cb0c34410a51941eb0b79de55b12aaed8078866526002b74c3e82a839a22",
+      "result.json": "d1ad60d7149df95435b3d36d0c6985b95da2c4a3fcdc72092efba8328a28ddba",
+      "retry-provenance.json": "bbb39213ca16840e596b2f3b27dd12e56237f0bbbf352b307082bcd8b871df67",
+      "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+      "trace.json": "ce75abad8f3f81d3f7e130c98bfac238990355eaffff587713c81453d08b3a81",
+      "verification.json": "65c8c32ce0d3db62c7387ff04e9f77516c1d88c3853f491c24e23cb202043cfa"
+    },
+    "slot-026/attempt-004": {
+      "measured-usage.json": "d221fbb0ec2d6ca39d922558ca0d38693bdb3c922d6a4a981834954737315d85",
+      "observability/checkpoints/slot-0.json": "5039838d34dfb2d8a851586e0686efe0a343234426c9c1a9d64dd6b6a3f38274",
+      "observability/checkpoints/slot-1.json": "ab9cc0a080b137cfbf52d1b12534d435a1ddd167b44e6f949e987196cfeef8f5",
+      "observability/events-0001.jsonl": "2c09b7531ab7df743732969e95a2a480117ef232b6b1f90d8a3508649e8d0d2f",
+      "observability/run-manifest.json": "0247d0d0b60ff5bc8bb44f53ddeb5f16f5e5d0ba84a730f6e5bb45b44f6e2084",
+      "observability/status.json": "461d83f9747b9ea5d4d719ee8fd002949531ebacda19d242769b17a70307b01d",
+      "report.md": "eb296a85fdd3151a223f42f9b512e1e7c8fe8ebf64a9f3519b9652959a7971d6",
+      "result.json": "dc994f609e58dc737b8f2b60536931ceb2e70fec88c7e3d619d19b87113d2944",
+      "retry-provenance.json": "29e11f13f392cf3a1eb86ae5252e3b3af275871067ecebabdf2423774376ab58",
+      "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+      "trace.json": "7be89fe63f3a7b1ca961132dfe3bbe98e9c87b13666c10717b839374f4d521ec",
+      "verification.json": "55084bf6895e985f91fa4a82cf1a5ada872b86ecd31c5428a41dd5a66574ef52"
+    },
+    "slot-027/attempt-001": {
+      "measured-usage.json": "22746e6c8f7c89de93b846fa93fcd773e12595f6c41e96090fc28389635e7bef",
+      "observability/checkpoints/slot-0.json": "caefc6f03ca457840edb97a8a3cadc820994098db0b87b8dd4199393cb1d3756",
+      "observability/checkpoints/slot-1.json": "4371cfbaba8f8ee5190a2328939289bb1fcaf680d6239eacbc6964c13319e6ad",
+      "observability/events-0001.jsonl": "559be9bf9d41b68d8361cb1d4556012cc4d5509150bb01ad83d932b9101eea35",
+      "observability/run-manifest.json": "6db440903e4f586b44e97e9932f55421a4c2ecaeadc4bd994675949f187e9aaf",
+      "observability/status.json": "2c2377fa4817f1e55c8d2aee2c37d41c861f9c19b270bfa5a3b721d622d87993",
+      "report.md": "2c0a4d2902f8f09f54577442dc791efe7b614ca6bdf113de30cbb0b9e3be0e3a",
+      "result.json": "5d1a9d4b92a98f4115e3e942f20dc8489de6027430f29c29e19c171bf76ff1b0",
+      "scope.json": "35b8d858761ba71630b3e1fa8735f90cf00d73c64f8cfaab8e5031fdcd0fefe5",
+      "trace.json": "944ae629970a6215765f0c4931a15073023f902d822aa10598cc4c2dc4e9bc3c",
+      "verification.json": "e793a2539f9213f767f41985f3ef93e9e2dc366723ee4d93e7c712b20171caff"
+    },
+    "slot-028/attempt-001": {
+      "measured-usage.json": "56ffcb262c094cb02017660ad5ac7ae76a429d1a9696e12dc767d59df23ef49e",
+      "observability/checkpoints/slot-0.json": "29cf0dad78c762e3b5080979a24648b9b57f4cf0ad9f3d584f78d1bcf6a3ea7e",
+      "observability/checkpoints/slot-1.json": "13a45af04413b5581c9e7889621271e74ec779d5b414c0d2060637621a2e6090",
+      "observability/events-0001.jsonl": "838df583458606052a54f84f09e2d5c015b396d8057b1d62611645e6b95f861c",
+      "observability/run-manifest.json": "41a9b36dd3a987b8bfc5b1ce7af25aa9d34552eb8506ca0e910fe7559f2014a8",
+      "observability/status.json": "6de8762359efd5d0d4b643d5d5fb80a40e5ae9cb969a26c3ea4f93cdd208dd5b",
+      "report.md": "47e2d7eab504bbba9432d51c2d595b9e35a6840ca416afbc1e1e828c5da1f8aa",
+      "result.json": "4c86511ba3ae0d6acc0e80814a308965fb99ad1e54355189d7d64fb3bf4e31e5",
+      "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+      "trace.json": "63db18aa47fa145e55f66e478238f8dcffd7b29c1da960b096f5227ec4af724a",
+      "verification.json": "351212ed1d81f66347c68afab7010b5f92f6c0037749e8e433b5bf7e0c82e4d0"
+    },
+    "slot-028/attempt-002": {
+      "measured-usage.json": "428cea7f70a7c3d3ed2016d1e0c818bd5b839c248788b35ccde2dd3855fbfb81",
+      "observability/checkpoints/slot-1.json": "8a6fdd6befd2e1ac50e462af99ffe7971daac3c1dc32d9e3ef703ad5f6e1ad70",
+      "observability/events-0001.jsonl": "d6b6681814fd92c105ac72c51b16e0ccc6c1b4be2ab74e19e73b861daa86f9a1",
+      "observability/run-manifest.json": "1f62d09173a29bd31568d21709a7d1f0659abe58ea56fefb3e27427094b22e76",
+      "observability/status.json": "fe4dcaefd09c068c35a019fb8a60acb00b0e2b0d007507bea898c1f2bd9007fd",
+      "report.md": "156065f32fa6cf190ec937f321936d0dfc2c44166ba344a7c34a3b9c73738e4f",
+      "result.json": "bb40c0b77b032c79d4993d665bc5940212eae5640fb90546a64a16c409ac6835",
+      "retry-provenance.json": "16b7a50d68ceeb5d8b2240c0fe660d4b783ca79ee6c627ac608247a623179c58",
+      "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+      "trace.json": "a2634df79d7b6426cc7eab502b5d6b96fed13bc1836828b825a07ff3051d8bdd",
+      "verification.json": "855f2df79d8c7e84e13e94651ec554bbf7dc2a0294662b0f7cd3cef35cf109e7"
+    },
+    "slot-028/attempt-003": {
+      "measured-usage.json": "7f377bc16ee5049daf7f25b02440f979710ae010fa8575c35cde766102099765",
+      "observability/checkpoints/slot-0.json": "373f27b2c0df9770f9bdc9f30ad45ad4bfdb8519a96cf6723f93398746a0eb66",
+      "observability/checkpoints/slot-1.json": "b18cbe0a83f2e4287bfff1e9fa97c6e7252b40528dfe2f355ff80e88e6a1de07",
+      "observability/events-0001.jsonl": "cef6b4105689d07400577510358fb6d8bdd5ac2e763abbc058c1262f65e2d109",
+      "observability/run-manifest.json": "c279a5c9a84da229d976af276add59d7c2a4e280abf05a45ecc86f5b62139bf3",
+      "observability/status.json": "f9030e471f341040c4d7f7411affb3240a554aaf0b2f757e1a43548ed9e866d0",
+      "report.md": "56d883312927db480455555919db90b9661c2c4e5ef29d1962802f7ec7826945",
+      "result.json": "393a3aebba3e84efa5a064227b0f1b886f1c21c0dd30ce8abc49e31e2175914e",
+      "retry-provenance.json": "a63c0094eeae5263c5eaba714a60133945499768861d918a777aa77caf314982",
+      "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+      "trace.json": "c4218770652718a2a0dda39181cafcb566b6931e449af0c5f138ede59229ae4c",
+      "verification.json": "020c98d34eda6b1bc8d12e10183043f92a16e79191f3bfbb200722004fd573a7"
+    },
+    "slot-028/attempt-004": {
+      "measured-usage.json": "b365d1bf16896d27e40cfffce250dec3a52e1951d23f4c1719f1c715d5860cac",
+      "observability/checkpoints/slot-0.json": "5312719d669e6c4d4dcd568c463156416215fb4113219cd26b6f44b4fab24e4c",
+      "observability/checkpoints/slot-1.json": "f41d80792c00836f937fda85ce27660cc4ba1f91a6d5e7597a902730af40f184",
+      "observability/events-0001.jsonl": "409aaf3b82694bc8a5f5a6511e69274b74edccfeaabf8bc30409ce950523ab13",
+      "observability/run-manifest.json": "176b8856b49c323562d8c65966c88ae735eaff94926ded082999bada5a219c08",
+      "observability/status.json": "abcbb4bef44e8f535b3ac25c5858dfdb6a665c36ac11a5a7f29d3e84a03705da",
+      "report.md": "e1eaa346d33f4ac5d141ecbcf7d3fbd50129ee94d30fdd7438a5964dde79c2a1",
+      "result.json": "ff886d4f440959a285a96712f6af7358f172672299ba8dde48b2b4e2d0df8035",
+      "retry-provenance.json": "d0bad0127d1f3777a3af0f4485c2464413617c24719fb47c25eabf209852d457",
+      "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+      "trace.json": "adb6aa18018eb16ce5c8c5bc8264ca137169aca0e173c1bf79809cf81175d210",
+      "verification.json": "a9c77caa45261b2c30cf100bd893282e0b9ee4e1858262bdeb6ddc7826c91d7d"
+    },
+    "slot-029/attempt-001": {
+      "measured-usage.json": "e53d1a131fcadc69c6f9cd3db886a1517024eb861cd2bf253ffaecdf54877f4c",
+      "observability/checkpoints/slot-0.json": "f11bb3835663eee937983dac66d596d070e5da700eca64d0578ab3d6add51709",
+      "observability/checkpoints/slot-1.json": "ffaff5fd3f70e41266f5983cc17fd58dd8cd70ecf59351d7c02bb7e250728312",
+      "observability/events-0001.jsonl": "437b26112eb83bbc565795889b57f7abc76ef986a6d33c6641c6de3979e4d7f8",
+      "observability/run-manifest.json": "1b46dc21d41cf7406b9c9287e71a354aaaad898bb2ba0d5362690a34c8120249",
+      "observability/status.json": "3cfc7a96a387a1571cf282565404adaae6a2def5b60c1c8bada73f41b08a4bc3",
+      "report.md": "17e3eb16f6bc5e9ab42fb1019d2c472f6fbb851697755a47b20f8949b126e850",
+      "result.json": "1b5cad75bf7a26f135d8e88f18f9b552528bce48b10b07a4a00976dead8a4ddf",
+      "scope.json": "0fa6e146093cfc20119930fe1106ce9f910a98c3a58c6b4f917cc9e42676e17b",
+      "trace.json": "ac32267440929f396e3ffcaa2cf941b77e95d02b5bec8e9037534c9c5880d25f",
+      "verification.json": "e4727c4c566e96b81782574d3870992b212b124be5e9d4b7c73ba25136b84467"
+    },
+    "slot-030/attempt-001": {
+      "measured-usage.json": "275f4479a6034d485e2a0901b5c6e55af068ce403bd24de93a95870716a7682b",
+      "observability/checkpoints/slot-0.json": "2b4ee8e24015d4ba73a8439ff41892258383e89a5366a38fc1bcf11387896e46",
+      "observability/checkpoints/slot-1.json": "45fc4f8ebe212093018b66dba7379c124ec07734a7f5a4d1bf79c261a55288d5",
+      "observability/events-0001.jsonl": "2420881e6aa10e1150453f4244c18a1215f823f00f8f98cb42872816b41859f0",
+      "observability/run-manifest.json": "a0d9bf69ec165869415ed2c3bd032a0667670a5c7b4137c02f72e027dea6b65a",
+      "observability/status.json": "edd9002e3f04347b1ff9e68ffe3ace8ee2404c5bf7962a31b49e83d8e873214e",
+      "report.md": "243a2f3f8d03de5c309db96c40ab9e040ad20111c0e9a3f0f75ec1f2484e2142",
+      "result.json": "e2a224c540c38fa3fb61cf02e6c5dbb73c273faa92b97caffae32d763f71da13",
+      "scope.json": "feac0b9d4b5e793767db7b93185ce9fa308a8e66daa431e99b98e4f1e5080c56",
+      "trace.json": "1eee4cd6e306a01742464399c0aa165e3112c6f3031ad755378a56de63b37256",
+      "verification.json": "b9b98df152c5bbd8c9acf4c3fa52547f58253aaa0ec2f7ae0137f30a161ce3fa"
+    },
+    "slot-031/attempt-001": {
+      "measured-usage.json": "8f0714e4d80beb3126fc36745c00ec8a7b0ef2a5f2df262cb80b12000ec60e82",
+      "observability/checkpoints/slot-0.json": "3745184f360f357b1240aaaa25907e3343b65c5756d398877453a9002cc5eb9a",
+      "observability/checkpoints/slot-1.json": "be919459bd00fcd5ebdc8cb953aa781d7dbf8727794bf09cee8041a4d1cda549",
+      "observability/events-0001.jsonl": "781d9606b1d56bb1681d559d54980aade1ab525f5eb5d72981b3b79f3e73c995",
+      "observability/run-manifest.json": "5434599914beb627fef35a1beb2610b976057ceca3f642cca3b61b8c64f969d7",
+      "observability/status.json": "4e58101c61b5ca979ae80ad70d8b9106efff06b79ed3fb403f9de376e4c2134f",
+      "report.md": "29a2ed9a3ce615df4a27503ca5518e43547403913fb63733e95d826d70e5ec28",
+      "result.json": "96ef6c7c54e2a259f6374adeed7e4373413852cd8da52403f19da0bdade63ecd",
+      "scope.json": "16ce86918658ebc20f2c02b84a07d2266b867a63b1cfa998030fbe52c024ce65",
+      "trace.json": "1c9f0c46202c81c12df9addfbc2e068699a6dae4fa8acc7d6644510e4c531094",
+      "verification.json": "d28e71714a724d2d524792b689a1a3a1d6f16bf34d30cd339b7de94f263e3ba6"
+    },
+    "slot-032/attempt-001": {
+      "measured-usage.json": "7a30e057434f4d93ccc8c1dd0eb41846018c7b6ee0f51ee96cad364c943770f6",
+      "observability/checkpoints/slot-0.json": "257d239f47812bbd966b4ac1ecc5de747e0024897ad5b091725d82f98b2e21cd",
+      "observability/checkpoints/slot-1.json": "d8d262ac342c80fd6edc115dfda1df70f2198f616f9be297b6faf1b1726afeb3",
+      "observability/events-0001.jsonl": "dcd1013b9418e2f20fd9b848bb33a5fecf0bc608d6a7f5ed1481f85744e4776d",
+      "observability/run-manifest.json": "f4cfc16a3448fa06d9ef04223cad6d89cfaebd4b9763f620e4fb5cd24e805eb9",
+      "observability/status.json": "b66ecca4698396396768af93cbe7b6bf53e92e097d873892f03357e9dbf124dd",
+      "report.md": "f5adfd7ca9d717c4770c8982a4d5352ee8cb4e3d7a8b94dad56758b4caade437",
+      "result.json": "cc956ee55baf41e51f851413150a157d14779ae8a0d307e74b2d10f00ba33ee7",
+      "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+      "trace.json": "5fa74df150a900919c26823bfd34265a71ca76cd9814e4fc4019f05b7886a842",
+      "verification.json": "609fa1cbd8ca57acee68868748f193c319b5b7c344e2be832ee86bb4667e6c19"
+    },
+    "slot-032/attempt-002": {
+      "measured-usage.json": "b44848c76e25a38ba9efa64c1ed898777f87085c64e843d4dce83be1c89886e4",
+      "observability/checkpoints/slot-1.json": "ac014f75f0bd896c2f88fee25dbb6c43e44ed598d2175813304c764d3963b2e6",
+      "observability/events-0001.jsonl": "030c10394686065d6f68bee2f908b792f67d72fee9d228721da34b129031c28e",
+      "observability/run-manifest.json": "f6e98268e4d612117ccc106b58dee550e241baec683396e83c531ef861ee24c5",
+      "observability/status.json": "1521db3ee77fd58a363d329f61d011454e50c28763c0b50ec747b84e632549c7",
+      "report.md": "c0a9d68972a2dff090ce026006499ad9a06360473629fdc5c508838723fa9165",
+      "result.json": "bbd50d9e999dcf0691a13cd38d96ab435d4bb3a963cda68482c653668f4edf42",
+      "retry-provenance.json": "0be9029f38a36f23d4a72953452ab431b1dd3b805e10216f07de44bfd5ba7a26",
+      "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+      "trace.json": "ebaece65f3b1dee0f5688e05327385bf5f3b7ec08abefa3c60a619688f647058",
+      "verification.json": "d13ff8f705fb88bdbdb47b4dddb3fb8e05f961a926eb0764c1048199cd386134"
+    },
+    "slot-032/attempt-003": {
+      "measured-usage.json": "434a4dbe2f14543c2cb82a434c0cae996b7393c590138f767de33bb38a81222f",
+      "observability/checkpoints/slot-0.json": "a12ed66264408ad22f11b322a5b7bf0a13f2ed9b7cd50cbc3fa828db6f0924f2",
+      "observability/checkpoints/slot-1.json": "9bce4e8fc21ae7d902b83ec5692eac73b2c3e588258bb8ed683d035052944b54",
+      "observability/events-0001.jsonl": "b4cdbc5148c4f201d37c8d79da4b07dbc667f99cf15526c6eaf327a5846d8c21",
+      "observability/run-manifest.json": "2577e08a0d59f9b108361f0c5c79fb4319b4524b0635744cb7b96f94eaa34e26",
+      "observability/status.json": "398289712277757ff223a61122cb2616032e05838307893c55b9b94887176ce9",
+      "report.md": "5859d6fed5c67ef4e2f00c5ffbbbba9db0ecc612370de38131a435a582c7352c",
+      "result.json": "b2ec88edf86918bf1db507896f16b8852494559a4cf368154df6f7803cd35706",
+      "retry-provenance.json": "8f2fda9561a9da345723d2261a9ddeae4da9b7376c2c9794047c0188742c54b3",
+      "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+      "trace.json": "f2c5966c56a49a1705df8f8416c9cd2fa3df3ab9094911f4705c53315a707421",
+      "verification.json": "4c6fbe09f40a20771919528e8443b6ed4e8cbbed515b3c9d6c643ee53c3ac105"
+    },
+    "slot-032/attempt-004": {
+      "measured-usage.json": "327cede530a7f9dbb0b2fb067272e667d7c9827246f1164f79edbc22b0cdab2f",
+      "observability/checkpoints/slot-0.json": "f62b5ec6d5cd50095bbc8afc0f888bf433d56ea88ada52fa134b9e0edeb8fa3f",
+      "observability/checkpoints/slot-1.json": "41c926311d32a91d83b30071a72dbb1518082d6962f779720e217d44aff33edf",
+      "observability/events-0001.jsonl": "bce87ae958c032e2896452814f87ff3114d70aa3186c697ab432be10bc2c3bc2",
+      "observability/run-manifest.json": "367d6c12f3f6fb6a73654b9c53c03cf14eff92dbb30ff64688fe6704838db411",
+      "observability/status.json": "4d9d1c0c61bc8c43f022bde59b2cc9d9033c7236370b47057fccb108c3e128db",
+      "report.md": "f5f6018df573b922e48e48d78eb127befcfad4ad6897ecec5225a5e058259b2f",
+      "result.json": "f79cbaa410435a8b1381f92d99ca6b3c2ef6e600d663c8f5769acbc7d401a4d9",
+      "retry-provenance.json": "34845daba513861122a5adf34d68a47554fc959abb7cc51ae12ea82cb930b7cd",
+      "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+      "trace.json": "63f50a0a40700442842cf11dff7c4120248923adc01014b2e5254cc79ea616bb",
+      "verification.json": "0907c6b85df0a7ce629488b80c0b3b2b8e4d9d9498bde9fcacfef9f5c6fbbbda"
+    },
+    "slot-033/attempt-001": {
+      "measured-usage.json": "a6e17adbef0c355ffe2bb3dfef714027a924dbdac711d5e90b40cd3f098fe170",
+      "observability/checkpoints/slot-0.json": "e0ad307cd3430d411ef6e5f3300090a138e4e3d0c73f2141592dd9e2be912225",
+      "observability/checkpoints/slot-1.json": "f98d2bf32856d87f948ade6dbe822f425d10189a391a84eb9a7d1c9a1d63375e",
+      "observability/events-0001.jsonl": "d8fce1ef121c9df3b6a47a5516864fd00225227f9e3edc56bd1aa18488f897ef",
+      "observability/run-manifest.json": "221bbe69ebe2b09f6379aa854eb85604fec9f8dacaa1b5f6be787d66e3a4698a",
+      "observability/status.json": "8635429b8ae0a0b1afef9406833b19bb3d02da2ab1aa33ef7734411264c73103",
+      "report.md": "e62641ab18ea6c285cde47964a22ea39839308345a086608a53af5ae91b443ad",
+      "result.json": "fb2dc2dbfa14098235d40bbfc6ff7a98fc556f85415f34ebe4634e4a84e3dda9",
+      "scope.json": "1c472a75a4565616ea3d670f46074abcb9d73926567e555a78da20fc8e141bc1",
+      "trace.json": "b9bfce93dfc10a8913d616e8a27e8ebd17268c17d302be03ddf99d7a0eb99275",
+      "verification.json": "3d5e944e9c549be844516404f42c2d206914549b29a96fdba6645a14eb4c6e1a"
+    },
+    "slot-034/attempt-001": {
+      "measured-usage.json": "6de842b7f873fa9627a62ad3ff03c2dbf3013373014144f63c130ca73f66cebd",
+      "observability/checkpoints/slot-0.json": "339e732c695a758e675398f54b8eaacff6f9018d8f56eaa49a90dd6045e58795",
+      "observability/checkpoints/slot-1.json": "22df6725511e33c9f6f519bd3a2df449eae7f3a66fc44513cd683419187b5cd0",
+      "observability/events-0001.jsonl": "64894c03a139b7dfb4a969c1c87b42af8661594027d305280efcdfa3068c11aa",
+      "observability/run-manifest.json": "ad7e200d7853c793a17e9137288c351b4d25a19c3428f3453ea5c38be72123a9",
+      "observability/status.json": "86f1a68ed1259f07627e00307d6d3480b8192803fb0797b98a2f6fbce4061ec2",
+      "report.md": "c5bf6825e08dfa30023b4a31c3fc71019bb1fde39dbb462e163c2b6b6f23c7c8",
+      "result.json": "eb990730460f6877ddeb29bebd9889c769e73d525cad79de8d2a305ce504108e",
+      "scope.json": "7f5c1d5ca4b5f25be28dd7a22535c16fefb84f8449a6f388ebe58462156b6800",
+      "trace.json": "0ea841cf6f043b6339e5090e105cd1ce16dbebf24a4e7ce6f55dc70ba852cf28",
+      "verification.json": "f946f0cdb210e0bb68c9d1a3d32f76c08e0e2f82bd4c3d2f4cf395c1ab36a1d3"
+    },
+    "slot-035/attempt-001": {
+      "measured-usage.json": "106024e14ea855146037c716a76201f0a819848b6cc25668e26b460d2e201bd2",
+      "observability/checkpoints/slot-0.json": "6e3c7d00fbbe0ecdfe427be34bcc9723c517903da5433e0c98d8675c54f4d4d9",
+      "observability/checkpoints/slot-1.json": "86ab1ecf2c8f39c26bff1940ce4b8ed18bba955e5e2c9876dbd65c2eed337c29",
+      "observability/events-0001.jsonl": "b40273361dd9d34b77b4db8e5843dafdc0da7f15f298079a52bd4669d4dd2b00",
+      "observability/run-manifest.json": "447b8406daf711d0a397af6d43b98482799062e0c8234c93b475fc8f921cbe4d",
+      "observability/status.json": "c067ef86a8522f860828cc40754714af3cfb0855ac636ab5d9d6f169eded5241",
+      "report.md": "b961006e6d0e8b740f163c79fc376d798630793c045f4f620c364820c102fd55",
+      "result.json": "dc1d1f7c8accaa8792494e3f8cd64fef9264d39caa41aa6cb3c68cc70fa2169f",
+      "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+      "trace.json": "7e3e9fefbc895e6d732c5a89b3e864999c44553d3631f7bf2c55e5f45a3dee19",
+      "verification.json": "c1331d0dac51c01cae720a6fc0b4dd9cf3cc55a1d4bc8cf06238235d2c3a038e"
+    },
+    "slot-035/attempt-002": {
+      "measured-usage.json": "3a24eb63b8db9715882f7f20bf447ca3da38a12942ebbbdf1447f57798845780",
+      "observability/checkpoints/slot-1.json": "6d15fcf88fe3f87faf515a480f828009598ccfd1a1d4d5006b6e83776b488bdb",
+      "observability/events-0001.jsonl": "8bd65edec9dd2c47dfc715814d906c6ad87eb78d429b77dd6947896fe30d4a80",
+      "observability/run-manifest.json": "6a2365f7c1d80ca791fabc636dd6c7d80ea0fb9929a54b2a3502c0d27b247e66",
+      "observability/status.json": "7896bac4dd5cf8e901bf5a04ea95e783a29c52b1979b81ffd0dc877968701b35",
+      "report.md": "942f5919f3c4d67325a0c414e67870bf489f51934ae2eece6f702efd1c2c9979",
+      "result.json": "f9848c2cc88476c7c635d3be48e9709389b1a6d31b74a6b72983774eebd7e2f9",
+      "retry-provenance.json": "8da3c18be6886cd156a71484e6d18b73cf144c94d6b71929852b77aa8178c3db",
+      "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+      "trace.json": "573eb63fe345f22e69b723f9007becca4102cf114a6497e1cb20f57e07ed8eee",
+      "verification.json": "31a39f32b3ec8c62a9b75834f1e90a1c8e9e61df921816be71914229c65643ed"
+    },
+    "slot-035/attempt-003": {
+      "measured-usage.json": "f8f7f037e0d93493b69947419920d3653cb7d0db0f51a5da2efcafdd70e04c0b",
+      "observability/checkpoints/slot-1.json": "a972bce2e548c344feef79092c6c8b8d5c0f2dc250a0378696959fe6b04acd3c",
+      "observability/events-0001.jsonl": "e137cbf9dc270ca28c044fe4da0105d2a1e66c5ae415db201a708920ab1cf6b6",
+      "observability/run-manifest.json": "3fa9f6c81f5fa112fff75d0a0ef295d23547ef3173ca0a6649df627adb7a0b13",
+      "observability/status.json": "a5ff59e3d9edc656cb5fb0be52ad9fea3df2a253edb69b0fa3c4a9c4c24da056",
+      "report.md": "3b18cffa73b9e5072a2f056f6b86332f4b63e90b8e0db3c67ea80f363792a0e4",
+      "result.json": "d874d6999615bbf660fdf2b8c309845d13d698e1fda1aa5867907d36ec69b2ac",
+      "retry-provenance.json": "f3c1354b2c3866f5c4dd745f71e842d85b7315a2dd74568b47e6b2d886807db1",
+      "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+      "trace.json": "de47d8af314839c990c1942b260a1492d5f0893642144fbe82685f6158876ba6",
+      "verification.json": "54a7be1c215262a7c831de75562de37cd0e11d947dad0b6de22547b960ac77da"
+    },
+    "slot-035/attempt-004": {
+      "measured-usage.json": "5874241b9a2e250b6164f397b0e9fd26bfe8394a20366801aa790e460b201f8d",
+      "observability/checkpoints/slot-0.json": "6a759e93083d8fb95d23fc5cf9e17f86b9784480287faade2f01b9dd7fcdfb36",
+      "observability/checkpoints/slot-1.json": "2cb0e5026da614ff82643f2f4413eff1341431041d81a2dc401b2dc7836cbd6b",
+      "observability/events-0001.jsonl": "80d3a9d62587f816ce129b78863c20d85679a3e625c00db7ca739f0cdf05c2b9",
+      "observability/run-manifest.json": "35096ff4d3b84499531a304d7dc212bfcb433d5c2bf68cc6dc152259ccf78370",
+      "observability/status.json": "e65920e3b3060ca4f2fec84463c46f58d68855b925b0a31514eecdc9dd8d2726",
+      "report.md": "0a770d175e1b04f38201d6ea163b399f9a47e39597298290efe3e29ded224b4f",
+      "result.json": "9c11548d85b348ccdfe490c13eb83979ba6bd84c091d983ba5c52902cfa92995",
+      "retry-provenance.json": "c87d2ecea0cc49ac134273bbab04c4ba88a077e9f915aa192b06dd77fd607932",
+      "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+      "trace.json": "99d88e5d0971a850e581cefe379f5aea94e86dca56b42ce0cadad3ceee2d94cf",
+      "verification.json": "a5e0a9a0e65db4c10cc2237eb42f3eaddcac93c57dca09285efc0132b809e70c"
+    },
+    "slot-036/attempt-001": {
+      "measured-usage.json": "74abc571d3479c2c0ea46c6a000adc048c6a5d8b5820519dd3d27e3bd2940aa4",
+      "observability/checkpoints/slot-0.json": "f0ac94af6b0bd38bc2ee10667edc881d5162671504356afd7f2d663f165f66d0",
+      "observability/checkpoints/slot-1.json": "e9223a7e5b97a1b63206fd05a1038e2b9f04b59616f0f2a2fe71f86ac6deb691",
+      "observability/events-0001.jsonl": "ba5d7904ffd4f5f444cce758fb84dc4284f3f975e4c738eeda71d575c6974828",
+      "observability/run-manifest.json": "2147e67cce901c7abe265d4287a3d340ccb7dabd4ab214358d6a63832336a22d",
+      "observability/status.json": "802ccd6bea2e9625b0df5f401b18b754b166cfa467a77d32900ceb03d2b53f63",
+      "report.md": "ae24d4c4acacf0e208190595958091db5cb824ae299cc86ec08dc041bb16ebc7",
+      "result.json": "6003465f6f3e9d3b5c734583242ac703e1d2a12b13fc4174549d4d7acfd061f1",
+      "scope.json": "5610248f26324359421cb6a706c9e29ea0453a2bfcaf1a6828f9d18bd868f2d3",
+      "trace.json": "a3b5d9998d67ba57a2d3938326f657afdf1d230a32814f4eeaded52230d878f3",
+      "verification.json": "10a688b72387a8aae7d7ac292c7ac15ca37f7c852d7fd37de3fd61b4eaf63f26"
+    },
+    "slot-037/attempt-001": {
+      "measured-usage.json": "5821bcaa231c37b9fabd5fdbf308b2e7dec650054bd66a0c74b226d66e411ad7",
+      "observability/checkpoints/slot-0.json": "89ce2404c112c47a22889310005a874747e2b8f7325e4d5fbee081eb79610a7e",
+      "observability/checkpoints/slot-1.json": "53b1291c196b4dbd4265034e0ad47701b73c336045953b8b3158d094bb6a98d3",
+      "observability/events-0001.jsonl": "584a2a04aea569c1a653d6171d3f6de77f7dd95faf2cf854e634b1689e1b31b7",
+      "observability/run-manifest.json": "7d9aa09245aea48629a9e029f01b479d05d26a08a500d266502321ce40aa9f3a",
+      "observability/status.json": "2f3f6ef7a7579f0c90825e357942f3bdc29b096fe1ed896bceffd8137a174dca",
+      "report.md": "355ab6f6d6a9aaa7dba70015f6401856e097a8a0c71a4e1217950f1fd31fbba2",
+      "result.json": "712aedd49c9591ab01bb888bf5ce135a5c2867c68e9f247d99251f8fda574306",
+      "scope.json": "4e6f742c0fb972a5e7ae2d7a934eafe39f0656ae156ad05343f22328edd6da2f",
+      "trace.json": "bbb16da7864f1fa009dfa4db69a1122ca5f88b241ea804700a7bb11c4d341e4e",
+      "verification.json": "ef0467fed7b201249b09febe452e6dc92a7362458d6b173ffcb31e5e0a031005"
+    },
+    "slot-038/attempt-001": {
+      "measured-usage.json": "7caf4c2e6b37797f1b1d65cde29de109e0de8aa266209a23407e6ac4d705ea7e",
+      "observability/checkpoints/slot-0.json": "99bb4aca01a74c9bb6f6ba9289effe0c78f6c700999c74fddc3ca7de45ce478c",
+      "observability/checkpoints/slot-1.json": "ea392ae10f37aa947738f89eb6a8fdb4543409c0ec4954a1a467a929a7bf656d",
+      "observability/events-0001.jsonl": "8e4266aa3a253cb67d1a916efae7c1d1fb8419a91fc178514ecfedb66373c499",
+      "observability/run-manifest.json": "047e162470b726a13dff930cea1202ad6c36584f5ccec1b387233e17be4c4149",
+      "observability/status.json": "75e316d603149b81f579ea557fa2e757607de6febdb2dce4cca61c4976496cf3",
+      "report.md": "aa90beb143250d6c0e3ec3470a5480a2f6653899ad179e237f762e8c69e92d4e",
+      "result.json": "e869b0945c9f061595926e6865f4afbaf1ea9825160bae5d9e4a1f91bf15c9c9",
+      "scope.json": "df57da982d05803771df56fb26b26b8630cfa499e0f6e0ca2c79016d6e085d1f",
+      "trace.json": "5fc829f0676006f57ab5bdebd12dbb04a6a403032ffeaab92d6a1d9f40af152a",
+      "verification.json": "684a3586f17a8b0bada550ccd0d2bc51a75bc0ac9d316574441f173aa52cb168"
+    },
+    "slot-039/attempt-001": {
+      "measured-usage.json": "efd794d6a348f5f7bdf7759bcb1935d074596f930fea8165de5b9678837e1acc",
+      "observability/checkpoints/slot-0.json": "7a1ea5fd4a45ea0e5f25657d526a58bfb0cb3952397c7e68f72a2ab40deed6ab",
+      "observability/checkpoints/slot-1.json": "6949eaa374ae5dbfcd19892a1f37bc498b637f697e5c178d0c712c2ebb7548bc",
+      "observability/events-0001.jsonl": "4a71a56891e0a64a59d8d7daaf686b3d1f23abc3441610b109f6986fccc18b01",
+      "observability/run-manifest.json": "98aee9dde714f182a9646542d1268b540167cf6c55923c18cd3052e7861cfbd1",
+      "observability/status.json": "3867e2be8ff4cba26763078160a3ffa78366dcf419841f87fb8aae27ea932159",
+      "report.md": "df589f27d5a91815a3be3d0b9e1f54ddeff453406788d6eb4513d33a616c6c65",
+      "result.json": "fc91603fd511ad4730f31582b312f24f31f40c6719455b883093c0b6d7fd44a0",
+      "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+      "trace.json": "d22ea752ae519aced4e85c7238c7f582c770b7085e7aafaab71fd0164c188c7d",
+      "verification.json": "8fd5c671321db282d5a621ee805e7c4ecc1eab6f9d3f8ca2aa130c7f90bd97e2"
+    },
+    "slot-039/attempt-002": {
+      "measured-usage.json": "b5335136a680e1e007b33d727d0c9e13b7adf91dc6683e4dd95487e3560063ef",
+      "observability/checkpoints/slot-1.json": "15463edb2d17743812e8cad2559d9d60c0f0f5a99f64e3443b3aede2192514b4",
+      "observability/events-0001.jsonl": "47f4535bf0971890496d16cb45196eddb7d37ca4584da69f032557c39deccd23",
+      "observability/run-manifest.json": "0d22b35dbe42638dce0f6e9eed5c7b1c6adee408b0129c77c4f51b2a6290f66e",
+      "observability/status.json": "cfb32f3fc880a342f05420b2b1b5b7a3dfe934a90f5028564b0d9b5e634889e8",
+      "report.md": "680905b60b303da1a475e4e4b7ed383d51d20cc88bb121d6e96d7668f61a6d3f",
+      "result.json": "3e01aba6e41b46321935f7e72260e92a97fe0a4ea9ba6d5784357828e6583008",
+      "retry-provenance.json": "f57913ab339eb862263f2554b2bc647d96941ea0a21ccffde90e34b8952623c1",
+      "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+      "trace.json": "f142be6d57530f9e2054bd60e742ad6f2672963b041bd8d189ff1e3e5d5fffef",
+      "verification.json": "5bc20abf63fc17736fc75c50af6d90595c53af1275dde1fa15b8d0f16e7e6c0e"
+    },
+    "slot-039/attempt-003": {
+      "measured-usage.json": "2ec6452404c5770ca6998abc67adfb1512fd2e1f43e211ba6499b7a4317e4de9",
+      "observability/checkpoints/slot-1.json": "8ec656bbb6ba42331bcafdb2ee64bb8499e8389481b762c0ae21fd2e889afe68",
+      "observability/events-0001.jsonl": "7ab828911ee14996e8cc3d5bd9707d17d2402db040794d7b1b4988fea5cbc69f",
+      "observability/run-manifest.json": "4c26b6be473ca26b054b0e76608ad4ffa5f6f85e72c515721244ad4c05534c57",
+      "observability/status.json": "5761b0d3691b8c0ce989fd37ccff88b397c424351043d120bf1ca00384c8b0aa",
+      "report.md": "ab55489c91533dc5df10e4037e703019eade8f6d948462e4b717b96c0ef4dcfa",
+      "result.json": "8954522ee0a337c89d2d05a39cf36c5c1c893337883ca47d8040167a45372471",
+      "retry-provenance.json": "9334b4c620112b2e0a65a2e84ae7e136b1fa4c3e31befdcbc214b32c6d2e2a8c",
+      "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+      "trace.json": "18d75efafbf4175cb826f52ccbc62a1e5cbc82f655070b09a016bffb50d33750",
+      "verification.json": "e157d1f18cfc9a98eb8cee9169f7cd4853368963dcd99c21aa833ab1f4e9efa9"
+    },
+    "slot-039/attempt-004": {
+      "measured-usage.json": "bc7e27acd50b56b2e87cc4e987d7428fef3fd1a6a0d635fc051894ba68892285",
+      "observability/checkpoints/slot-0.json": "d1e9e555157d22b69339e798a87f86699c9b11bc5a0e03ea73add6f8df43f18f",
+      "observability/checkpoints/slot-1.json": "c478d76478c4544fad89fd566fe906ae31c0000d5fa7971aceb20f84152d2049",
+      "observability/events-0001.jsonl": "d3ff00122dac1d381daef4e8c68410bdac8e55cd462ec024ad561ab0d156459e",
+      "observability/run-manifest.json": "e70dc88c7b0201aefc3a214db8f8a75933e53f081ab2a5f9fe3a41417b446d39",
+      "observability/status.json": "3d7d01e52c160cbee27492818c70c8b7b9507aa18dad25fadc34222e67c50c8a",
+      "report.md": "d958338888bac1935cd59df444aa249fca80e2ba9e0d16d4a316c19e4143d736",
+      "result.json": "b9442ddea9e4a30e300a05eb8ae9f6de844588fed36c6e3a8db5085a198ec829",
+      "retry-provenance.json": "8df2a72c66e86505fb266c4bb354bf28c1a8ac408e5f263b45126a3365d418c7",
+      "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+      "trace.json": "20e4a8b9a8d9f07fd4e7be4c14a332e6d585a88c8cdf1395786deff47a71a0cc",
+      "verification.json": "ae1e9e932003b515f3a5cf9121df35427cd130399ad6c9889df74d27e83906e2"
+    },
+    "slot-040/attempt-001": {
+      "measured-usage.json": "ccce492b1805dbff574e73b23c6dd9829d8fcbec9c7bf6a48b30fc4e1ed32d90",
+      "observability/checkpoints/slot-0.json": "acc7189db14911cd39488dbc6db8044dc49d696c483cd59b81c2ee5dec8c59c7",
+      "observability/checkpoints/slot-1.json": "383809734e40ce92237b30fe0e62167ecd820165351934fc0b956b1e00ed8492",
+      "observability/events-0001.jsonl": "00d836a784d35a0079e71ceb30ae0cd8b8d20b2d7d83c6ac69aa8b222e1918c0",
+      "observability/run-manifest.json": "9d0db1092d78f76df64a79f32268a5da197be0d4c4220fa32a2bd5935a7b7a4d",
+      "observability/status.json": "bd8851c288952e722c49354deae9b8083386def8cbba94e01bd4942992151082",
+      "report.md": "9487c4a8ffd5cf5b9647d5766d43487dce6de8d0642365bd74b236ec92136a73",
+      "result.json": "06be3a99c28ec708e3fcb5442e24ec238c150825eb39b0813b276fa2d25fa766",
+      "scope.json": "73845e9a8519cd0bdf6ac7253df24da961689059def947de8cc92d5258ecc2f9",
+      "trace.json": "26dcd4b36aaf1efd9edd2085677b48f7c66bc976ca7bd7a6416a626d4b131159",
+      "verification.json": "5de4de5660f6d93d5f237bc76d9ddcd301aab12136c0507d20c52e79d232070c"
+    }
+  },
+  "protocol": {
+    "protocol_id": "incidentbench-wpd-api-prepared-20261021",
+    "benchmark_version": "incidentbench-v1",
+    "provider_id": "real",
+    "model_id": "deepseek-v4.1-flash-1017",
+    "temperature": 0.0,
+    "cache_mode": "off",
+    "jobs": 8,
+    "run_order_seed": 14100,
+    "repeats": 1,
+    "variants": [
+      "strong_single_equivalent_tools",
+      "fixed_four_equivalent_tools",
+      "dynamic_no_verifier",
+      "full"
+    ],
+    "max_rounds": 8,
+    "max_tool_calls": 40,
+    "max_llm_calls": 64,
+    "max_wall_seconds": 7200.0,
+    "response_format": "json_schema",
+    "request_timeout": 1200.0,
+    "blindness_level": "development_visible",
+    "formal": false,
+    "analysis_seed": 14101,
+    "bootstrap_samples": 10000,
+    "analysis_plan": "family_clustered_paired_bootstrap_plus_exact_discordance"
+  },
+  "plan": {
+    "schema_version": 1,
+    "status": "PREPARED_NOT_EXECUTED_NOT_VALIDATED",
+    "mode": "api",
+    "dataset": "data/incidentbench_v16_dev",
+    "protocol": "configs/wp_d/api-protocol.json",
+    "runtime_config": "configs/wp_d/api-runtime.yaml",
+    "case_ids": [
+      "incident_3001",
+      "incident_3002",
+      "incident_3003",
+      "incident_3004",
+      "incident_3005",
+      "incident_3006",
+      "incident_3007",
+      "incident_3008",
+      "incident_3009",
+      "incident_3010"
+    ],
+    "stop_on_failure": true,
+    "analysis_scope": "paired descriptive development comparison; no superiority assumption or independence claim",
+    "case_selection": "All existing owner-accepted Dev10; no result-dependent filtering."
+  },
+  "original_batch_max_concurrency": 8,
+  "max_concurrency": 2,
+  "concurrency_override": {
+    "authorized": true,
+    "authorized_by": "explicit user instruction 2026-10-23: 之前失败槽位重跑，并发数设置为 2；slot-001 使用 attempt-006，其余槽位使用 attempt-005",
+    "from": 8,
+    "to": 2,
+    "reason": "round-1 retry at concurrency 8 exhausted HTTP 429 retries; lower concurrency reduces the simultaneous request burst",
+    "frozen_inputs_unchanged": true,
+    "model_parameters_unchanged": true,
+    "comparability_note": "retry round 5 uses a different worker concurrency than the original batch; results are not a strictly fair comparison"
+  },
+  "drop_concurrency": false,
+  "stop_on_failure": true,
+  "readiness": {
+    "readiness_sha256": null,
+    "endpoint_sha256": "fbc3444fc8d9b7a72cf0035a6478a9a71ab430bbe0cb3201185dde3146c1ce0f",
+    "thinking_env": null,
+    "authorization": "original batch manifest readiness record; not re-created or modified"
+  },
+  "readiness_mode": "skipped_per_original_batch_manifest",
+  "provider_environment": {
+    "model_id": "deepseek-v4.1-flash-1017",
+    "endpoint_sha256": "fbc3444fc8d9b7a72cf0035a6478a9a71ab430bbe0cb3201185dde3146c1ce0f",
+    "endpoint_matches_original": true,
+    "thinking_env": null,
+    "api_key_present": true
+  },
+  "source_commit": "50467d2c0e9376c7a7d401714c68f49edc7184a1",
+  "retest_source_sha256": {
+    "analysis\\wp_d\\serve_bridge_response.py": "16c720aae41c12fbc18b46a60e4661fcd11d86974c58ea2202f6b5bbd6463276",
+    "configs\\active-investigation.example.yaml": "4137f3147bd52afb473a3768099488fd09ad7ba3c3eaaa4323643e9e6d5bbee0",
+    "configs\\agents.yaml": "fc13019962d1eec2beb1acc8a013d6d3e4485c4ff08ae236e1eba1cfc6bc3572",
+    "configs\\incident-response.yaml": "3a2df976fcbcd223c624f250634b3d2ac2e676c2f36fcbe3e8b016dc4376868c",
+    "configs\\incidentbench-protocol.yaml": "3e0774ea7162acc8d2272bd1f63604c7fb5a1d73f9ec5411bfdb8931349450f9",
+    "configs\\model.yaml": "78861f34366250dd8c4944bbc91a5cdfa65f8b324badc14a4708fd61a68a86bd",
+    "configs\\system.yaml": "b4339f040d860edad375fe5806f6bfb44e76b0882ddf6458863aa1b172e48065",
+    "configs\\wp_d\\api-plan.json": "e81ad99bf760018db09e0acac062fd08d59b3e0f8ef0ae8f8aa5716dbdd790b4",
+    "configs\\wp_d\\api-protocol.json": "5fb96f30448483e79898fb7123717dd1cf7122d76f6a939f57564d0b7c615b4a",
+    "configs\\wp_d\\api-readiness.example.json": "c456b1310cdcb866c107a108460909b8c64e22a4ad88bffcb991b633e4361100",
+    "configs\\wp_d\\api-runtime.yaml": "fc618b78f141fb6e28de454b0f8d5cc6f09560769750c22b6b97136289edf48f",
+    "configs\\wp_d\\bridge-plan.json": "17864e71a094ced25195dd7fb9c2fd4521b190da8790d98acc370bc5a918e1ba",
+    "configs\\wp_d\\bridge-protocol.json": "dcc3cc0768dab1f1c5deeec6d6d05cdeab44f975624e08c41cee245f564ecf99",
+    "configs\\wp_d\\bridge-runtime.yaml": "86a86d6ee1e6fbd86d70cff6fb4cca1064fbfd22ee7a16a0c69a49a4c2e01507",
+    "configs\\wp_d\\codex-subscription-plan.json": "c79fdfd5c50a3b64ff26b2ad5ca10e61d3d479f897e785efad10255664b5e217",
+    "configs\\wp_d\\codex-subscription-protocol.json": "da52dcf9794de1175809c2f44d116c7d7eef7b1f8c5e1eb81fc0fd0351a59172",
+    "configs\\wp_d\\codex-subscription.json": "d662937035ba8e415379f376259e187fc8065d0b53c583e31830147629124822",
+    "prompts\\changes.md": "7117a7bdcf3fed4c1623069aede261d44dd8728bf9cd374e7f4c491da25a7de7",
+    "prompts\\coordinator.md": "4d86d73497d3e5d9f9e850385587912b32cb1927e037e1bd156019b4ea0a9efd",
+    "prompts\\logs.md": "aabe6f53e77a5d6091a9b825bc79584b0d1bc750d049578d9bbf6b7c8f51409e",
+    "prompts\\metrics.md": "df43e2a555dd3b3d7683ca6a01e7a946f4ff0f670dced20099a127ce1a6c78dc",
+    "prompts\\single.md": "27f22e0e76ff078a6562432f39635c5aa63bd5ebe533efdb468f2b697bed1d6b",
+    "prompts\\verifier.md": "123e017e48c6b64e07c73087edeacab0fa6b95f009143cd727a4d9fade1fb612",
+    "pyproject.toml": "70453e7324f848b3751afce9f527cda18e9214c8f65046634de74c5e832ae77c",
+    "requirements.lock": "994515b08f3eed8d7691a3039512b80f8f425e63f276ef589a3d41e577125a8b",
+    "scripts\\analyze_eval.py": "ef56582e831cf8545a8c75f79fb86e266cd8a44d51d1399226add774f74d6127",
+    "scripts\\analyze_incidentbench.py": "4acfee89a640f46f24d8811453e763eeac792bc037b052b89a57560bacc30708",
+    "scripts\\analyze_v13_pilot.py": "5a5cdfb1eb6f84c65c621c499d855427ce922f6a0f491e07ca70eb41ae98eae2",
+    "scripts\\analyze_v15_active.py": "73995a2a57ad96538a9663b3f3ad6e23982176b1bf6f76b7d101e7e52e7a4685",
+    "scripts\\build_incidentbench.py": "b3a34ab4b50f0757d384c30de052897ca43efaa37f7f860d386be48cd0a7fbba",
+    "scripts\\finalize_wp_b_dataset.py": "9bb0792b449a30e33591b424a7e66862093fe83c070e406f07394640edb384ad",
+    "scripts\\generate_cases.py": "4fedbd27b14fbbf49c2c719c893741d12c7de2c42592f417552a6fa36c8d634c",
+    "scripts\\generate_database_cases.py": "bc90e47acdd6b95f5602301d352ffac8b2566758fc99e2d62e140bd9cab66e60",
+    "scripts\\prepare_citation_review.py": "8a45d4659b402834667147be64b7cf86bf7bdbd21d105b40b6478ab0926f1405",
+    "scripts\\probe_codex_subscription.py": "6f2c3c25b5831e9816280814d7fa2b88946ebfa400509222cfb871e0b74fbb80",
+    "scripts\\probe_saved_bridge_requests.py": "26493d18a5f61b98e858f36ecbc4fbb5db5d9f2ac970913a33db5dfd3d4c8833",
+    "scripts\\replay_v15_selection.py": "357533e8fd0d3c5c1081b11037c931f2af3cd1196fa8b7fc94d22dc34fc5a251",
+    "scripts\\rescore_eval.py": "6edea85494afa67af79bfe3e452e451b387632a95efaf865e6a616b8ce9b70d1",
+    "scripts\\retest_live_provider_fix.py": "a140c5fb3d171519984a4411fe77ade11dda8e2895f29f885c4889a2940212a9",
+    "scripts\\retest_subagent_bridge.py": "180507c83f0d7e8e126636184f908e42aa3af959cd93efd9e898b502ce1072a1",
+    "scripts\\run_cache_eval.py": "af78fd673f3d2c55d887d4e53505281f742aacc4a938cd0002dad0e4a8b06ce8",
+    "scripts\\run_codex_subscription_case.py": "460467bbe7a84cd5cf6f38d503c57c453924ac938156f9b7df0a05bd17ac0824",
+    "scripts\\run_eval.py": "a40cbd63afd3dd725132da092c885287c598b50cd3b03048ac161779aa6d4200",
+    "scripts\\run_incidentbench.py": "eec1ba590b050f7b3cf7b6153689f40d52a0075246b319a37c970f0d3529cd72",
+    "scripts\\run_mock_browser.py": "8f33a819df2fa3d9b37298fe214a418c4ae90311bf08b24a33d7d3af85ecd8ce",
+    "scripts\\run_reliability_eval.py": "d497e9d1d865666a7182d83214c64753b1e73c26a532db70efe9108f82b35ea8",
+    "scripts\\run_status.py": "ef3db91a5be14d79504f59333b235eab0dcb119ecb7a5fbf1bf5d2af3a8713f0",
+    "scripts\\run_v12_eval.py": "8d08c2cfd22316093dc9323194586df65c3c5d723d6c4fe146a03cd9ede6bf91",
+    "scripts\\run_v13_pilot.py": "4eb76b165b91349528d8267d2c9d373550fdb2d807ddd92e10dad3a37f526352",
+    "scripts\\run_v15_active_eval.py": "7212019ebb1bdcf8f6822f8bca448c24eeb250fbe0432aec679ec6027ef07a79",
+    "scripts\\run_wpd_batch.py": "3a95aad1020f621e9c02ca7e75c694107ada1d9b660d9a46a9cf64a46dfea7c2",
+    "scripts\\seal_incidentbench.py": "264a7002b7232c240b2bcba46041e37a4fb78e5904505686a7fed66f43fbb9c3",
+    "scripts\\v16_e2e_preflight.py": "d25ffdf77e8f32479864a3fa0833443f54ab04840822e9ae4dea9bcc9405e912",
+    "scripts\\validate_dataset.py": "33a6eb297b4cb8740433e711bb49ee2b368cfa42d9ead319aa02b31053434648",
+    "scripts\\validate_incidentbench.py": "f33094a18e2e2caf53641e285540536162a7d9eaab63b3fb9b5c3aa44cf3fe1c",
+    "scripts\\verify_install.py": "617d69a84a6e5e1ba3871dfa88d7b70783daa1a21532d30b426978a8cabe6017",
+    "scripts\\verify_stop_protocol.py": "999646aff445d24d72ea9c2269dd03e5854a442dfc91f78fdefffa7a06270717",
+    "scripts\\wp_b_evaluate.py": "6b4baccf7fef3516911eb4d17b9891e4797befffcc7d9275038b4d11e393651b",
+    "src\\incident_lens\\__init__.py": "6adff829953bf37ee8a65ff1332a13db1068cc87e71b3448a7e995ce9a9d0bc0",
+    "src\\incident_lens\\agents\\__init__.py": "3092397159f9c315af6a5e3e51015695b61af2aad582fe33a4ba50c249b81ca2",
+    "src\\incident_lens\\agents\\database.py": "3a6e1ea2bf066e976785c8f0969a8320eb798cb637d9a863798a4ec266a71679",
+    "src\\incident_lens\\agents\\monitoring.py": "120bab1daf731d3346e48462309095c3bc44269bdd3d230155e972e91f973aa6",
+    "src\\incident_lens\\agents\\remediation.py": "56de5e04b079d95d0bc50d48b97f8b877b9ffaf16b30fc39205205c8c1c520a4",
+    "src\\incident_lens\\agents\\service.py": "1bccaf847f2a0ce20e4b5dda4515a82378fc345d5af455708f97bd6c04540ffa",
+    "src\\incident_lens\\artifacts.py": "c9054f7490f87ac919926c1fa9b3c5ef4a7968564a3569d1a93ee1c394b41887",
+    "src\\incident_lens\\cache\\__init__.py": "d537ac3eebbe9d21ee6269a5e482f38f1c890b070acc0f85393c855a4719df55",
+    "src\\incident_lens\\cache\\embeddings.py": "a96ae08d29caf4608ea65cadbb9a45a2948ec5d7312b9b5e1f617690ee417fd1",
+    "src\\incident_lens\\cache\\policy.py": "82d9d4e5039df682acc73e4b14698fd15e926e334daffee5a9945074015e4e3a",
+    "src\\incident_lens\\cache\\semantic.py": "09d68add30d98d38df01ca881be58101a07e79bbed20cf429bcaad6a02480a15",
+    "src\\incident_lens\\cache\\store.py": "e4d41c1ef23900a5f351b02950ed1b2ed30a97fe5513f4ab7bd3db9f75820593",
+    "src\\incident_lens\\cli.py": "f76e94c028bce8b9292ba9d322a449d8781a2d250797b1b1c63f4bc1dab32624",
+    "src\\incident_lens\\evaluation\\__init__.py": "55f010c32510f51ba50a395c9b12e556e9c68959404e2e1c3c5827c320188314",
+    "src\\incident_lens\\evaluation\\active_evidence\\__init__.py": "4ba2133d0ace2f2f0318037f3f94881a2711b6848da3d389a558bcc15079374e",
+    "src\\incident_lens\\evaluation\\active_evidence\\metrics.py": "53ae196463d9dd5407afb5e14001b29e0dbda5b3b307070132b45131698ca3e6",
+    "src\\incident_lens\\evaluation\\active_evidence\\recovery.py": "b85e06fea61d54f2b23ab67cb44210bc6f4be9f63735ca2a39658f8de54665f3",
+    "src\\incident_lens\\evaluation\\active_evidence\\replay.py": "8f4ca8d9e7336702136f515e7ea5146b1ca40460eb12f94feed6679db9bd002f",
+    "src\\incident_lens\\evaluation\\active_evidence\\runner.py": "861d12ccc8b78644702b008e2aa8545640a1517da85a95ca9d0536d9ef3e1b4b",
+    "src\\incident_lens\\evaluation\\active_evidence\\statistics.py": "e88a81f95172edde48b98e8d76f389cbb455f3fff621f95e8315abbc5af21909",
+    "src\\incident_lens\\evaluation\\active_evidence\\variants.py": "5cdf7a147c620d61f712da7aaea1df2f3c6726f6dea835ce8db1a493bfb0fe6a",
+    "src\\incident_lens\\evaluation\\metrics.py": "4078d8f5b7135a9dac97cbea1c436a7727c67ce1235ed938a6d7a0e116f0c574",
+    "src\\incident_lens\\evaluation\\reliability_metrics.py": "71455d86330908670fc1358236ba69ad39217f5f51692bbcb2577785a2f77b10",
+    "src\\incident_lens\\evaluation\\retest_provenance.py": "9e0ba1481e26a590d07535445c41356f66b057c4da8cbc377de2bdc55bf15531",
+    "src\\incident_lens\\evaluation\\run_io.py": "233a02455a974ce43447278a04f3da5a5fe066a27f98d0a8c8d3d072de04ca4d",
+    "src\\incident_lens\\evaluation\\runner.py": "8ebf8101d81c1b89b8fdd717b0af79b08e6dc6f300f4c5d0f5116ab67069ecb1",
+    "src\\incident_lens\\evaluation\\termination.py": "d02d34dbadafea879cc283739c66d34c43c662fea21fd17e6a2c9212649f4b9b",
+    "src\\incident_lens\\evaluation\\v16.py": "ea60ec4d25d7b148347d9939cfc7b101295a8afbc0d82ea69245b285fe176261",
+    "src\\incident_lens\\evaluation\\verifier.py": "e71a6073a5463e7f141557f3b53ac628f7ff6fabe4a50452fea1ff6c5bddc6b2",
+    "src\\incident_lens\\incidentbench\\__init__.py": "0cbf920816be40579c3084cbc50d4f0b387ffb8282891d1fd11e13decd2f7aee",
+    "src\\incident_lens\\incidentbench\\builder.py": "f46e3f7dfb49a11b54601041db1cdfb5f5252a7b218065e8a0f6dd95ef08353c",
+    "src\\incident_lens\\incidentbench\\citation_review.py": "e856ddf2cd0c798a53c5bb2c0a0a4ff129aa70cae5202f113f29179fa01f2991",
+    "src\\incident_lens\\incidentbench\\experiment.py": "8469134226350eab3b56c58a865415d2915ec443f6c2d03cf0be57928de7abac",
+    "src\\incident_lens\\incidentbench\\family_split.py": "054bca742457162d34feddccd7cbc0b99b04802de58bb2737406a9a4128a7c43",
+    "src\\incident_lens\\incidentbench\\manifest.py": "3158d2235d39680f900a5d5f512d196f336829056258867ee5df465b2ab6101c",
+    "src\\incident_lens\\incidentbench\\normalizer.py": "1a19bda4def0bf59957df5d7eeb08511eee4ecb0d5b44b40f4a1e608f5420cc8",
+    "src\\incident_lens\\incidentbench\\oracle_store.py": "99c87d560eb891b7a35f62b522962092fdf2a57e01defbdca50fed2a3bcf86ef",
+    "src\\incident_lens\\incidentbench\\readiness.py": "8a3ef5a8cdd83a872be4421fb5de08ff0a86ed5646de752b66fc0fec8d63d162",
+    "src\\incident_lens\\incidentbench\\scenarios\\__init__.py": "6419db61aa7343dc963fc94a88a9437926fc7eb15bcebd4b7b62c8e3ab15f1d0",
+    "src\\incident_lens\\incidentbench\\scenarios\\world.py": "26958f58ec201a519ceedadc3cd183a7ed825629298421edc04c275eaa2c8779",
+    "src\\incident_lens\\incidentbench\\schemas.py": "31fafea97c132df24e902513175d30efcd872ef270b2defe9c0f5f94b4b679c0",
+    "src\\incident_lens\\incidentbench\\scorer.py": "5ac30b9b19d3888eaa5ec20ed63d47bb29400cee827d3d139c0c2f8740e5d9f4",
+    "src\\incident_lens\\incidentbench\\statistics.py": "aa93c32ace042646ab2a5d8dc7849d9eaf866d43b3111e0cfb910fbbebca2930",
+    "src\\incident_lens\\incidentbench\\validator.py": "1c2c0f8915a5b1757ce408c9c6a5e49060ee16d2c7574e23df5e73de8418f3d1",
+    "src\\incident_lens\\llm\\__init__.py": "a42ae9cfebc09fd8ae66e1917fb9cf048c1df83c87aa5604d95871549e765c9e",
+    "src\\incident_lens\\llm\\capabilities.py": "656e79f7851fbfd50a512c8888f9cd2776c2caad23992a4d9bd8c0deb0105f10",
+    "src\\incident_lens\\llm\\codex_subscription.py": "7a61107cb49abff65f2e86db2a880bf8fb86bbab6b52aa6565d91189f6406a6b",
+    "src\\incident_lens\\llm\\config.py": "450da846dc79968ae22683f5bf54ba9fbad2408b4a0344831e7172af7b94afee",
+    "src\\incident_lens\\llm\\errors.py": "9f264f52fc308de00b7e1dd70ba76094bb2f1af2aab8ecf97eef52c42e0a974d",
+    "src\\incident_lens\\llm\\mock.py": "a01d130b3e0b41da1bf39e7af390dfd349b12a71e782ec4ebd1cadde233d948c",
+    "src\\incident_lens\\llm\\provider.py": "de4d85800c409978daf2c895534d3235517d712e7719b63d6d1dfe334dbe1e4c",
+    "src\\incident_lens\\llm\\structured_output.py": "419e1d1a3e8c8c580f5625cf95b11d1ac2fbb9c6f7e6fa144b22501b14d5c5d8",
+    "src\\incident_lens\\llm\\transport_retry.py": "157544b94af7924a395303eb690948d19e909ff010aed96af65d1279b9179e47",
+    "src\\incident_lens\\llm\\usage.py": "74cf0d7d1fbd9f5c41fc0f81e406527db56cad95579e94c0c07918abe52d92ae",
+    "src\\incident_lens\\orchestration\\__init__.py": "2c84865bfb6101ceb3a3cd2f01a9e5df2e66968a5c0e5408711fc1ed1b5a557d",
+    "src\\incident_lens\\orchestration\\active_investigation\\__init__.py": "bb48238182aab7be288cbfc92019e32be00e8b329403f7a7fb7f0b26a348c74f",
+    "src\\incident_lens\\orchestration\\active_investigation\\candidate_generator.py": "58c5270fbb3e3f51d6b89bc95c4cffe5eb5858df87b30cae1254478fcfb935ae",
+    "src\\incident_lens\\orchestration\\active_investigation\\contracts.py": "0d8131bbbd27c2b2b9bdf08b678cd91629bdd08e584d279bbb4f5e49af691807",
+    "src\\incident_lens\\orchestration\\active_investigation\\cost_estimator.py": "9d415e1aa1005ed57fb821b73c4b7cdd7ea04e830f7453bfb794b8a7d8821185",
+    "src\\incident_lens\\orchestration\\active_investigation\\eligibility.py": "32a9956da318b802b1b290fd4bf4f9613003928a4be817680d03e684dbbb50a4",
+    "src\\incident_lens\\orchestration\\active_investigation\\feature_extractors.py": "68ffc0371b62097c02a0d1679ee3f2d8870f72f04f631fe075aa28647b049944",
+    "src\\incident_lens\\orchestration\\active_investigation\\policy.py": "231093ae0f486eedee73ac7c540225aa8c68d9cd45469f8b199a2c59f6434322",
+    "src\\incident_lens\\orchestration\\active_investigation\\selector.py": "829d3b56a31043232efb592a74567695f8789df7034ae7cd456c2c3679374722",
+    "src\\incident_lens\\orchestration\\budget.py": "1aacf2d2f513eb6f29d816f773baa5cb9d49d1a125ae5adc1911e49931db13f3",
+    "src\\incident_lens\\orchestration\\config.py": "00c62a0aca7b3f368fc41c87548fce1557da009c665d84d3ffbbe6baa4417900",
+    "src\\incident_lens\\orchestration\\graph.py": "f5ce2f3959cdd53a4878790c092dd03c026f0471b2f3e3457cdad61a0c882bfc",
+    "src\\incident_lens\\orchestration\\guards.py": "edaca8922971fe56d15e3e09e5baafaf8b8fed2e6ec28cb8668f131a761a1b19",
+    "src\\incident_lens\\orchestration\\merge.py": "fa5c8d3452fab7aff26af582f2084317816e03ebdc3516cf2734f6674ddf4ac0",
+    "src\\incident_lens\\orchestration\\observability.py": "6f5021b5b7a91a7af8644af3d9d360a2f5606c3607077b8182effc92e401fb17",
+    "src\\incident_lens\\orchestration\\permits.py": "90ebd121f34cf570d79b41d54ca7fc76c376286328013ee94695957bbb388079",
+    "src\\incident_lens\\orchestration\\recovery.py": "84a824116c1dfcaf54faf84eef79b91bd764c8a1510b9854034ffacdf144a8e1",
+    "src\\incident_lens\\orchestration\\report.py": "f5eebc5473baddbd3bc092085374b11541ae903b3d71b1a2a7577174076dae10",
+    "src\\incident_lens\\orchestration\\runtime.py": "74fccf783d9eaf8c831343234a01745b80f3ad4d4be0e06e8784fed036eb67a8",
+    "src\\incident_lens\\schemas\\__init__.py": "2a28cd1f2c0be3fcc9ffaa79f77cf4ed2ae5319dcfe0660678581589d912fba4",
+    "src\\incident_lens\\schemas\\active_config.py": "004a797d757f6d23a92bc42c39949139e989a7d8e22e8db1a0d1c7cfa0506534",
+    "src\\incident_lens\\schemas\\agent_io.py": "03586b05f74f37d96087043b29c51c960ff32893e9d9044d9882202f856bfa09",
+    "src\\incident_lens\\schemas\\contracts.py": "4aa084bde7d04f8a5d6ed0ceced80bdcb66bbec813308c32b3a618fd20bbedc3",
+    "src\\incident_lens\\schemas\\evidence.py": "92b44ad36a548aaba51865e1414b09859d2fc2164995f451668e30b9bdcdd0f6",
+    "src\\incident_lens\\schemas\\incident.py": "c0291063986dd6b40552203f2504c948bb4adf6c0ca82416efadb9cfcd13152f",
+    "src\\incident_lens\\schemas\\report.py": "ae9950ed02b770790442aeb8c6e5ba8c6dcd3fddfa1ac360d5ef73d91971b4c3",
+    "src\\incident_lens\\schemas\\state.py": "421d6e288b83f0e38db3ccab048f8a438e3f417e88866b1da5a0c5e6b688e0da",
+    "src\\incident_lens\\schemas\\workflow.py": "f2dd42599a0df1b6fff54f6b0d11995335c09ff4d0fd38a4b128795fed00b44b",
+    "src\\incident_lens\\security\\authorization.py": "016442a2b786c042f085d84010b9858ceb1d479daeaca82ecbf534407377abfe",
+    "src\\incident_lens\\security\\context.py": "cf964f0106ec7f0559043bc18c6ac0a7ffc993cfc41a3f985f008d511cebd92a",
+    "src\\incident_lens\\security\\scoped_client.py": "40d20e7af09e10af74bad803ba4453d23607e6f6fb1755aa4263591d1ca5f81f",
+    "src\\incident_lens\\tools\\__init__.py": "873fd7208ee47fed04010b2c47fe124c75a118dbeeb5895a6269bafef106616f",
+    "src\\incident_lens\\tools\\arguments.py": "1bbec374b94fc8ca37316ba894483df5fb5bedf96aa96a6ab8cfda8bef88c0e1",
+    "src\\incident_lens\\tools\\changes.py": "24be3dbb49772b39d88018e4ce20a4ebce871a4cf01ba83a516e8cd42a589dbf",
+    "src\\incident_lens\\tools\\database.py": "d22e69275b27d733abc7174709a36afde101ad62a6578a6b3bea6d41b17d7d05",
+    "src\\incident_lens\\tools\\errors.py": "348f91e307a25b3fe7cd67cc84ddf1404a22ca7b4b39ef4e9d80c3a0136db77a",
+    "src\\incident_lens\\tools\\logs.py": "034b06b237c9e29e5dbbf190b1af81465a4f4b1ce919636ade670bd4af944344",
+    "src\\incident_lens\\tools\\metrics.py": "906a42e602aaf313c86dc31072781a6d34ef7bbf008670d3a1aad7b12d7f0d05",
+    "src\\incident_lens\\tools\\provider.py": "0222a7588f94795c6e26aabcc4e17f5929f8bbca58d321792a04931f7cb6dd75",
+    "src\\incident_lens\\tools\\registry.py": "d168ea80a21d55d930ec9fc56ad2ebba88a7e7c376ac11091356384d20e22b61",
+    "src\\incident_lens\\ui\\__init__.py": "30c7b43eaa684a7ae7d7a8da076959faab622ac79d2c399e997525a347740faa",
+    "src\\incident_lens\\ui\\app.py": "3ae36b5517a8cbd1702ef43063f6941aec7ca53182b14b55db5ef4654ead0649",
+    "src\\incident_lens\\web\\__init__.py": "73ae0e78bfaaffd293b3a039b98cfa90231830d20f13b10aa569612ff7121d0d",
+    "src\\incident_lens\\web\\__main__.py": "2373ea5c0e4e3bf87cfb81d2d3bc14649b6b1113346bb058b89f5789bd8e3509",
+    "src\\incident_lens\\web\\server.py": "72806c890921932e565aa002ebcbd809b0f85dc8b0f270a6c1c5c27535eabc62"
+  },
+  "runtime_config_sha256": "fc618b78f141fb6e28de454b0f8d5cc6f09560769750c22b6b97136289edf48f",
+  "dataset_revision": "182a283bf7659e463ea8dd4f833607d5a1eda146d5ad4d782d92b86bebe49402",
+  "effective_model_parameters": {
+    "temperature": 0.0,
+    "response_format": "json_schema",
+    "thinking": "disabled",
+    "structured_repair_retries": 1,
+    "request_timeout_seconds": 1200.0,
+    "provider_recovery": {
+      "enabled": true,
+      "max_transport_retries": 2,
+      "max_structured_repairs": 1,
+      "max_physical_attempts_per_call": 4,
+      "initial_backoff_seconds": 2.0,
+      "max_backoff_seconds": 20.0,
+      "jitter_mode": "none",
+      "retry_http_statuses": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "reserve_verifier_requests": 0,
+      "min_request_time_seconds": 30.0,
+      "safety_margin_seconds": 10.0,
+      "format_capability": "json_schema"
+    },
+    "targeted_structured_repair": true,
+    "capability_profile": {
+      "response_format": "json_schema",
+      "supports_output_cap": false,
+      "supports_retry_after": true,
+      "capability_source": "explicit_config"
+    }
+  },
+  "python": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "win32",
+  "slots": [
+    {
+      "slot": "slot-001",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "incident": "incident_3010",
+      "variant": "dynamic_no_verifier",
+      "repeat": 0,
+      "original_attempt": "runs/slot-001/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+        "trace.json": "96ab37e28522e36c21f2b51414d2f236f6d87adad4c7e9e84ee9f382c34104f0",
+        "result.json": "a4ca7b6fddc4917848479e96f7c68cdac753b1dcf9e11ec0fa5f6d85b911999f",
+        "report.md": "391bf422b116662676a41e6e76fea6b3c70d5feee5625b4e1518cc713f8eb5ec",
+        "verification.json": "b2438524ee7f8a39438f00922d8e3f7faee5ed759a115dd4c21b2bfd0ee55ff3",
+        "measured-usage.json": "fc8b318c6c67bfed03f4a6d486fe87812816898d89554ee7566aabeb1909c0a6",
+        "observability/status.json": "9ffd7e74007824698b13a4e2d234d40cbcec3914e039079fda3ea37fa3e600b1"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "BUDGET_EXHAUSTED",
+          "outcome": "FAILED",
+          "failure_stage": "runtime",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-001/attempt-005",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-001/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-001/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-001/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-001/attempt-004",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-001/attempt-005",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-001/attempt-006",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-004",
+      "key": {
+        "incident": "incident_3010",
+        "variant": "single",
+        "repeat": 0
+      },
+      "incident": "incident_3010",
+      "variant": "single",
+      "repeat": 0,
+      "original_attempt": "runs/slot-004/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+        "trace.json": "00758e475f5ed89c381fa48636d6534fa4a4ea966a54053756b5ae5806498203",
+        "result.json": "0ba81a38e78fe07778f5f745cc3d2c89ae8c35bd4d098907296e11bdd2baab5b",
+        "report.md": "18a0728734ca0686f4a90eb15e6fbe8157cae7e19c69fad5ae688321d60f77a7",
+        "verification.json": "3c0f87f29157a5d76e6acce88adbfa8a32e648756d8f6c8acaec25e996e11e29",
+        "measured-usage.json": "7be2aa2ca21c8875d883eef27ad380a8bf677f996c65040c7886437eb8b06f3c",
+        "observability/status.json": "6aca67417bb382e0827773d128049716fd321e73ef6e92ccce75f865e8f3b87a"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-004/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-004/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-004/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-004/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-004/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-004/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-010",
+      "key": {
+        "incident": "incident_3004",
+        "variant": "full",
+        "repeat": 0
+      },
+      "incident": "incident_3004",
+      "variant": "full",
+      "repeat": 0,
+      "original_attempt": "runs/slot-010/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+        "trace.json": "42b1a61e9bd2d71b3e281a8600e2e2313fcffa7fcb4e2222cf0b496f60c8d4a4",
+        "result.json": "2b9eae581784239e621a8191461d6b8d6efaacb59fa866d8da91398d6347aa91",
+        "report.md": "222e84b31c53e5293f9ac9e01d99c96c6cebc46c7d0a340ff00adc72c8f86032",
+        "verification.json": "967b445478f0ad367303f5a5375b2bdf1e394d3cb3c7373f61d51724ad93868d",
+        "measured-usage.json": "38c6ba297ae0301dd5954448f28332409ae23a8f76c23660a63c460c440bfbc9",
+        "observability/status.json": "f416619e01a2d4cc5bc87286a1db0fda73d75a805d10c14194580b6088a4ee18"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-010/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-010/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-010/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-010/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-010/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-010/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-020",
+      "key": {
+        "incident": "incident_3008",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "incident": "incident_3008",
+      "variant": "dynamic_no_verifier",
+      "repeat": 0,
+      "original_attempt": "runs/slot-020/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+        "trace.json": "0175e5ab08a4d3899dc0a8f2c9cad066e691c2b258f44be0fccbc0a1b06e8374",
+        "result.json": "bc1b5996200b2ab7cc693136e32683f78df9afd4c688cd256b47f1d396eaed19",
+        "report.md": "e8be557487d17c87ff0db6ae6957435f65282afd50061766afebb83a4f6bdd32",
+        "verification.json": "d136334a1861397c1bc8f221b00ad0cad3757f0bfe779bbf3c7bb6b18446107d",
+        "measured-usage.json": "8f219f93059cf627eb9a0c0e360086e0f77ace5cc9404fc333b521f91b2810dc",
+        "observability/status.json": "4d8e1149fe5d7bcb0ad1ed3a2857d0cd0b76397b82f64b7e172adc07991ae432"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-020/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-020/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-020/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-020/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-020/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-020/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-022",
+      "key": {
+        "incident": "incident_3003",
+        "variant": "dynamic_no_verifier",
+        "repeat": 0
+      },
+      "incident": "incident_3003",
+      "variant": "dynamic_no_verifier",
+      "repeat": 0,
+      "original_attempt": "runs/slot-022/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+        "trace.json": "345c23b4c79ae720b312227ef03c5c884ccaf76dcfe7b430fb599f2f85b7da70",
+        "result.json": "cc3e74623c1bb3ec1ec57caf36a0ccb73377e9db8b0e27aff947cd4056d7c1a5",
+        "report.md": "45c3235d4ba8c2f48ad3d3194a59e3d22e6fa5f0b660a134bf672e0091bf4810",
+        "verification.json": "83a2bc8f2733071e235e08a8aea343e2b78941671d092258cc43163ccf0c8cf4",
+        "measured-usage.json": "48f2a68ca0ad4bf783eeaad2e7b27e0e150a83136744badc6db866a89e9289cd",
+        "observability/status.json": "af9c46c8e2269b840a5c8c7d1aebfa3747d3228d59588dbeceb116f3a0591bd0"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-022/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-022/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-022/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-022/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-022/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-022/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-026",
+      "key": {
+        "incident": "incident_3009",
+        "variant": "full",
+        "repeat": 0
+      },
+      "incident": "incident_3009",
+      "variant": "full",
+      "repeat": 0,
+      "original_attempt": "runs/slot-026/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+        "trace.json": "77a822320bb1b5e2df90194128dabc9dc8ab01d7a16dec209033eff62d7e2342",
+        "result.json": "bb858dee7429e84b856c612bfaf00304f890409c018cc21b22fc29f4d98b10f4",
+        "report.md": "f6f801e992206b5f413af78d6b8a7cc77c4c4896a2c2cd264bd292c6a6e4c7e4",
+        "verification.json": "15df06c6cfa6e74a0a10003dd75f875ea1f2ee6e62313254b3499d7490fb8e8a",
+        "measured-usage.json": "b1135f5f5749c5a97c9f6a4761f6ce27f45f1dda6c2045c85e75980080ee2c06",
+        "observability/status.json": "6123d9a4a4b1eef6d377033e4b6dce0bfca826edb1eb59eb871a0f2794398510"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-026/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-026/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-026/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-026/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-026/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-026/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-028",
+      "key": {
+        "incident": "incident_3006",
+        "variant": "full",
+        "repeat": 0
+      },
+      "incident": "incident_3006",
+      "variant": "full",
+      "repeat": 0,
+      "original_attempt": "runs/slot-028/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+        "trace.json": "63db18aa47fa145e55f66e478238f8dcffd7b29c1da960b096f5227ec4af724a",
+        "result.json": "4c86511ba3ae0d6acc0e80814a308965fb99ad1e54355189d7d64fb3bf4e31e5",
+        "report.md": "47e2d7eab504bbba9432d51c2d595b9e35a6840ca416afbc1e1e828c5da1f8aa",
+        "verification.json": "351212ed1d81f66347c68afab7010b5f92f6c0037749e8e433b5bf7e0c82e4d0",
+        "measured-usage.json": "56ffcb262c094cb02017660ad5ac7ae76a429d1a9696e12dc767d59df23ef49e",
+        "observability/status.json": "6de8762359efd5d0d4b643d5d5fb80a40e5ae9cb969a26c3ea4f93cdd208dd5b"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-028/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-028/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-028/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-028/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-028/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-028/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-032",
+      "key": {
+        "incident": "incident_3007",
+        "variant": "single",
+        "repeat": 0
+      },
+      "incident": "incident_3007",
+      "variant": "single",
+      "repeat": 0,
+      "original_attempt": "runs/slot-032/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+        "trace.json": "5fa74df150a900919c26823bfd34265a71ca76cd9814e4fc4019f05b7886a842",
+        "result.json": "cc956ee55baf41e51f851413150a157d14779ae8a0d307e74b2d10f00ba33ee7",
+        "report.md": "f5adfd7ca9d717c4770c8982a4d5352ee8cb4e3d7a8b94dad56758b4caade437",
+        "verification.json": "609fa1cbd8ca57acee68868748f193c319b5b7c344e2be832ee86bb4667e6c19",
+        "measured-usage.json": "7a30e057434f4d93ccc8c1dd0eb41846018c7b6ee0f51ee96cad364c943770f6",
+        "observability/status.json": "b66ecca4698396396768af93cbe7b6bf53e92e097d873892f03357e9dbf124dd"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-032/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "verify",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-032/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-032/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-032/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-032/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-032/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-035",
+      "key": {
+        "incident": "incident_3002",
+        "variant": "full",
+        "repeat": 0
+      },
+      "incident": "incident_3002",
+      "variant": "full",
+      "repeat": 0,
+      "original_attempt": "runs/slot-035/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+        "trace.json": "7e3e9fefbc895e6d732c5a89b3e864999c44553d3631f7bf2c55e5f45a3dee19",
+        "result.json": "dc1d1f7c8accaa8792494e3f8cd64fef9264d39caa41aa6cb3c68cc70fa2169f",
+        "report.md": "b961006e6d0e8b740f163c79fc376d798630793c045f4f620c364820c102fd55",
+        "verification.json": "c1331d0dac51c01cae720a6fc0b4dd9cf3cc55a1d4bc8cf06238235d2c3a038e",
+        "measured-usage.json": "106024e14ea855146037c716a76201f0a819848b6cc25668e26b460d2e201bd2",
+        "observability/status.json": "c067ef86a8522f860828cc40754714af3cfb0855ac636ab5d9d6f169eded5241"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "verify",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-035/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "dispatch",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-035/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-035/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-035/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-035/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-035/attempt-005",
+      "new_attempt_exists": false
+    },
+    {
+      "slot": "slot-039",
+      "key": {
+        "incident": "incident_3001",
+        "variant": "full",
+        "repeat": 0
+      },
+      "incident": "incident_3001",
+      "variant": "full",
+      "repeat": 0,
+      "original_attempt": "runs/slot-039/attempt-001",
+      "original_status": "failed",
+      "original_assessed": "failed",
+      "original_artifacts": {
+        "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+        "trace.json": "d22ea752ae519aced4e85c7238c7f582c770b7085e7aafaab71fd0164c188c7d",
+        "result.json": "fc91603fd511ad4730f31582b312f24f31f40c6719455b883093c0b6d7fd44a0",
+        "report.md": "df589f27d5a91815a3be3d0b9e1f54ddeff453406788d6eb4513d33a616c6c65",
+        "verification.json": "8fd5c671321db282d5a621ee805e7c4ecc1eab6f9d3f8ca2aa130c7f90bd97e2",
+        "measured-usage.json": "efd794d6a348f5f7bdf7759bcb1935d074596f930fea8165de5b9678837e1acc",
+        "observability/status.json": "3867e2be8ff4cba26763078160a3ffa78366dcf419841f87fb8aae27ea932159"
+      },
+      "original_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "coordinate",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "parent_attempt": "runs/slot-039/attempt-004",
+      "parent_status": "failed",
+      "parent_assessed": "failed",
+      "parent_verification": {
+        "protocol_valid": true,
+        "source_unchanged": true,
+        "stop_completion": true,
+        "runtime_failure": true,
+        "termination": {
+          "protocol_version": "2",
+          "reason": "UNRECOVERABLE_ERROR",
+          "outcome": "FAILED",
+          "failure_stage": "verify",
+          "stop_completed": true,
+          "runtime_failure": true
+        }
+      },
+      "history": [
+        {
+          "attempt": "runs/slot-039/attempt-001",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-039/attempt-002",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-039/attempt-003",
+          "status": "failed"
+        },
+        {
+          "attempt": "runs/slot-039/attempt-004",
+          "status": "failed"
+        }
+      ],
+      "new_attempt": "runs/slot-039/attempt-005",
+      "new_attempt_exists": false
+    }
+  ],
+  "order": [
+    "slot-001",
+    "slot-004",
+    "slot-010",
+    "slot-020",
+    "slot-022",
+    "slot-026",
+    "slot-028",
+    "slot-032",
+    "slot-035",
+    "slot-039"
+  ],
+  "pending_slots": [
+    "slot-001",
+    "slot-004",
+    "slot-010",
+    "slot-020",
+    "slot-022",
+    "slot-026",
+    "slot-028",
+    "slot-032",
+    "slot-035",
+    "slot-039"
+  ],
+  "preflight": {
+    "slot-001": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004",
+        "attempt-005"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-001/attempt-001",
+        "runs/slot-001/attempt-002",
+        "runs/slot-001/attempt-003",
+        "runs/slot-001/attempt-004",
+        "runs/slot-001/attempt-005"
+      ],
+      "worker_alive": []
+    },
+    "slot-004": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-004/attempt-001",
+        "runs/slot-004/attempt-002",
+        "runs/slot-004/attempt-003",
+        "runs/slot-004/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-010": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-010/attempt-001",
+        "runs/slot-010/attempt-002",
+        "runs/slot-010/attempt-003",
+        "runs/slot-010/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-020": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-020/attempt-001",
+        "runs/slot-020/attempt-002",
+        "runs/slot-020/attempt-003",
+        "runs/slot-020/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-022": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-022/attempt-001",
+        "runs/slot-022/attempt-002",
+        "runs/slot-022/attempt-003",
+        "runs/slot-022/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-026": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-026/attempt-001",
+        "runs/slot-026/attempt-002",
+        "runs/slot-026/attempt-003",
+        "runs/slot-026/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-028": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-028/attempt-001",
+        "runs/slot-028/attempt-002",
+        "runs/slot-028/attempt-003",
+        "runs/slot-028/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-032": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-032/attempt-001",
+        "runs/slot-032/attempt-002",
+        "runs/slot-032/attempt-003",
+        "runs/slot-032/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-035": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-035/attempt-001",
+        "runs/slot-035/attempt-002",
+        "runs/slot-035/attempt-003",
+        "runs/slot-035/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-039": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-039/attempt-001",
+        "runs/slot-039/attempt-002",
+        "runs/slot-039/attempt-003",
+        "runs/slot-039/attempt-004"
+      ],
+      "worker_alive": []
+    }
+  },
+  "selection_rule": "completed_resolved_or_completed_inconclusive_replaces_technical_failure_only"
+}

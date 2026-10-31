@@ -1,0 +1,29 @@
+{
+  "purpose": "one standalone minimal diagnostic, no slot replacement, no retries",
+  "time_utc": "2026-10-23T02:39:12.942332+00:00",
+  "model": "deepseek-v4.1-flash-1017",
+  "request_fields": [
+    "model",
+    "temperature",
+    "messages",
+    "response_format",
+    "thinking"
+  ],
+  "request_contains_private_project_data": false,
+  "status": 429,
+  "elapsed_seconds": 2.320646900043357,
+  "response_headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-request-id": "req_230f4357-4108-47d7-939f-9785468ccb13",
+    "date": "Fri, 23 Oct 2026 02:39:13 GMT",
+    "server": "istio-envoy"
+  },
+  "error": {
+    "message": "Channel rate limit reached for model",
+    "type": "rate_limit_exceeded",
+    "param": null,
+    "code": "rate_limit_exceeded",
+    "trace_id": "b8d41907a49d6a541e3ab70d83298545"
+  },
+  "usage": null
+}

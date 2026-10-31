@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_manifest": "results/v16/wp-d/next-api-max8-20261022-121153/batch-manifest.json",
+  "source_manifest_sha256": "98232a6bc83d6c2aa16a5e44d3f918b8633419e0c2bd7c76aa52d45a3d50eaf8",
+  "source_field": "external",
+  "external": {
+    "readiness_sha256": null,
+    "readiness_skipped": true,
+    "readiness_skip_authorization": "USER_DIRECTIVE_20261022",
+    "readiness_skip_note": "independent readiness-file gate bypassed by explicit user instruction; prior real connectivity asserted by user; no readiness record used",
+    "endpoint_sha256": "fbc3444fc8d9b7a72cf0035a6478a9a71ab430bbe0cb3201185dde3146c1ce0f",
+    "thinking_env": null
+  },
+  "retry_manifest_readiness_field": {
+    "readiness_sha256": null,
+    "endpoint_sha256": "fbc3444fc8d9b7a72cf0035a6478a9a71ab430bbe0cb3201185dde3146c1ce0f",
+    "thinking_env": null,
+    "authorization": "original batch manifest readiness record; not re-created or modified"
+  },
+  "retry_manifest_sha256": "0d841272c9b2175b02f929813251981ba1ac897faecaa4f51ef6a2f6bd4572a4",
+  "used_for_retry": "inherited original skip authorization; no new readiness gate or readiness file",
+  "fabricated": false
+}

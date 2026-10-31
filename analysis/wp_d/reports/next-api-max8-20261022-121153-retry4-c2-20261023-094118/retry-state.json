@@ -1,0 +1,449 @@
+{
+  "schema_version": 1,
+  "retry_id": "next-api-max8-20261022-121153-retry4-c2-20261023-094118",
+  "state": "finished_with_errors",
+  "created_at_utc": 1792719810.130669,
+  "max_concurrency": 2,
+  "stop_on_failure": true,
+  "slots": {
+    "slot-001": {
+      "status": "failed",
+      "attempt": "runs/slot-001/attempt-005",
+      "parent_attempt": "runs/slot-001/attempt-004",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792719927.0435119,
+      "error": null,
+      "artifacts": {
+        "scope.json": "8cc39daff72eff223d2165d68100980a74c52e0a1f93243f5eedc9c7bac6d27e",
+        "trace.json": "d1b19cf630663c7acda32f2891e558f94a4cedf073512c220deec7f782921944",
+        "result.json": "3b14a9b2814574273280c2b949b6ea29b0c35204e43a0b624db0c4199b411965",
+        "report.md": "77526ab19e9a380e3b994e77e5a869a07fc251d094a1f609b4c603b2c1a70859",
+        "verification.json": "7ecd281e282c200ee72fc9fe272abf000d6ca4a3e2269abdb99c43c586814754",
+        "measured-usage.json": "bc7b965b91382cd4048eff114954bdcf0de643510e24afc8aa85d4f074d94840",
+        "observability/status.json": "43bba72c8827e5054bf8036fa71c2c6ffda5048c0e221032ce35e80ed1fcefa6"
+      }
+    },
+    "slot-004": {
+      "status": "failed",
+      "attempt": "runs/slot-004/attempt-004",
+      "parent_attempt": "runs/slot-004/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792719873.9265602,
+      "error": null,
+      "artifacts": {
+        "scope.json": "4deab2ce5016477ac3ea89ff7c862034db4eb5c9bf4b79022c9dafd6461d6775",
+        "trace.json": "ba19b9f0c5091e5d94572d95bf22f72dbb7fb15cff3c7993f8fa03a4a13b65a3",
+        "result.json": "335584353042fdc8b0e7547ed34677fc2bc126e618892c72f90d1a38067b29d8",
+        "report.md": "36785e347a6f40215fb2806e5939b8cc68088a6c9e058b507e45829ad9d72a88",
+        "verification.json": "43b293f13a48981c608330e0cf77ac94597cfa88db912af3e684b0def1036156",
+        "measured-usage.json": "c1a8e36f292e3a6d4fe6a9de73eb772ebe03e6a49f83379b6e2ba5c17eee959f",
+        "observability/status.json": "302d43c5aebed94625d5b26b33ec5ade33325c0b9cc412353933a144f53f88c0"
+      }
+    },
+    "slot-010": {
+      "status": "failed",
+      "attempt": "runs/slot-010/attempt-004",
+      "parent_attempt": "runs/slot-010/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720139.8370101,
+      "error": null,
+      "artifacts": {
+        "scope.json": "1dc50021de078dc740c4d06273990ca72141a3811182483a4f0250a92208e5df",
+        "trace.json": "382dc253c8949e3e00a73f37a35f41267d9a71bd9412cca0adad18c075fee1b1",
+        "result.json": "9e77ccf0045ff32d34f8867b7387f4ef2fa37083a53fc4d621e2c0700e2a13c8",
+        "report.md": "b771546a357e24b1bf026f8724d73413a2b410122b14c0b047581c7dc2f95504",
+        "verification.json": "2b31c1b23977235b5526bcca3c47d5c965a6d96e2f9c78bb6440157ccf5cef5d",
+        "measured-usage.json": "c2e6bd65ab8b84c90d10600458fc57bf4d83cb842dd0cd4187699a5688c099ea",
+        "observability/status.json": "21584872e8980ac30ea04fc82e89cd77c828cde58e7d4ca78ee1ad4849c17ff4"
+      }
+    },
+    "slot-020": {
+      "status": "failed",
+      "attempt": "runs/slot-020/attempt-004",
+      "parent_attempt": "runs/slot-020/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792719991.930938,
+      "error": null,
+      "artifacts": {
+        "scope.json": "eec884f70f1eb2a9237e0720493fe88af56119e3ba37be4ddbb42de90c3d236d",
+        "trace.json": "224996a0bdce110dafae805a6a70f917ad59f79847ceb7660b17707b02e35921",
+        "result.json": "f40c219b5c4e137aea63aacedd2ae68ac6f7bd9628982c11fba0917573a34075",
+        "report.md": "2011bdcb320ed26a7821c67e9af3dbd5ed6904be0a2f31d65bc6220a99298fad",
+        "verification.json": "20687ed875f9da77e912d7f73ea57939493a82a0eb3cb3f6fafc973b1e10086c",
+        "measured-usage.json": "af865af977301b6459c7574a63bd0830273bc6ddb03a50e9a6a9ff776ada5f04",
+        "observability/status.json": "8d12795142e7463e30206ca68c68b5e8b545151cbb68dbf9cb2c9ee653a2077a"
+      }
+    },
+    "slot-022": {
+      "status": "failed",
+      "attempt": "runs/slot-022/attempt-004",
+      "parent_attempt": "runs/slot-022/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720320.039214,
+      "error": null,
+      "artifacts": {
+        "scope.json": "18c9a270a245bcb55d17eda4e02ea157ff922f1df017e45551235f6dc9aec471",
+        "trace.json": "5724cf380094e034dd3719a8f68321063422e47dfb5c3079dd9f182c2230e5a0",
+        "result.json": "4e552a143299634bcce062bacbe4bcbc73d0a71dba310e291f48b09e392661b3",
+        "report.md": "5066ad97dd8c09b2d58b299df18cc3a7dcc3408ea9d1fd905d69c9d1cd802822",
+        "verification.json": "b11803eb9fa77f5d7ce4507f4b433d78ed7f31935044c4ede494e27cabf6ce4f",
+        "measured-usage.json": "8dea4919b8d2e6a5e57cf9f133bec133eb0d8829877a7ff914423e4ab130a7c8",
+        "observability/status.json": "11195122bb08cfe964123c25c93d3d183a576845a29ae582d177a5ee65da34bf"
+      }
+    },
+    "slot-026": {
+      "status": "failed",
+      "attempt": "runs/slot-026/attempt-004",
+      "parent_attempt": "runs/slot-026/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720170.4267082,
+      "error": null,
+      "artifacts": {
+        "scope.json": "342df9cdcc343bdb3a36b47be89886bb85da2a2e8bba686efc02ea3454a7de53",
+        "trace.json": "7be89fe63f3a7b1ca961132dfe3bbe98e9c87b13666c10717b839374f4d521ec",
+        "result.json": "dc994f609e58dc737b8f2b60536931ceb2e70fec88c7e3d619d19b87113d2944",
+        "report.md": "eb296a85fdd3151a223f42f9b512e1e7c8fe8ebf64a9f3519b9652959a7971d6",
+        "verification.json": "55084bf6895e985f91fa4a82cf1a5ada872b86ecd31c5428a41dd5a66574ef52",
+        "measured-usage.json": "d221fbb0ec2d6ca39d922558ca0d38693bdb3c922d6a4a981834954737315d85",
+        "observability/status.json": "461d83f9747b9ea5d4d719ee8fd002949531ebacda19d242769b17a70307b01d"
+      }
+    },
+    "slot-028": {
+      "status": "failed",
+      "attempt": "runs/slot-028/attempt-004",
+      "parent_attempt": "runs/slot-028/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720472.5758142,
+      "error": null,
+      "artifacts": {
+        "scope.json": "d983ce3efc9bfa9151fbbecc34f9819307d940f6ef613ae79e5b1bde1f46e043",
+        "trace.json": "adb6aa18018eb16ce5c8c5bc8264ca137169aca0e173c1bf79809cf81175d210",
+        "result.json": "ff886d4f440959a285a96712f6af7358f172672299ba8dde48b2b4e2d0df8035",
+        "report.md": "e1eaa346d33f4ac5d141ecbcf7d3fbd50129ee94d30fdd7438a5964dde79c2a1",
+        "verification.json": "a9c77caa45261b2c30cf100bd893282e0b9ee4e1858262bdeb6ddc7826c91d7d",
+        "measured-usage.json": "b365d1bf16896d27e40cfffce250dec3a52e1951d23f4c1719f1c715d5860cac",
+        "observability/status.json": "abcbb4bef44e8f535b3ac25c5858dfdb6a665c36ac11a5a7f29d3e84a03705da"
+      }
+    },
+    "slot-032": {
+      "status": "failed",
+      "attempt": "runs/slot-032/attempt-004",
+      "parent_attempt": "runs/slot-032/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720591.69454,
+      "error": null,
+      "artifacts": {
+        "scope.json": "95483344fee5658da837dadcf467a7a50e18eb7a42dc8bac38bf0b1a2cb7e66f",
+        "trace.json": "63f50a0a40700442842cf11dff7c4120248923adc01014b2e5254cc79ea616bb",
+        "result.json": "f79cbaa410435a8b1381f92d99ca6b3c2ef6e600d663c8f5769acbc7d401a4d9",
+        "report.md": "f5f6018df573b922e48e48d78eb127befcfad4ad6897ecec5225a5e058259b2f",
+        "verification.json": "0907c6b85df0a7ce629488b80c0b3b2b8e4d9d9498bde9fcacfef9f5c6fbbbda",
+        "measured-usage.json": "327cede530a7f9dbb0b2fb067272e667d7c9827246f1164f79edbc22b0cdab2f",
+        "observability/status.json": "4d9d1c0c61bc8c43f022bde59b2cc9d9033c7236370b47057fccb108c3e128db"
+      }
+    },
+    "slot-035": {
+      "status": "failed",
+      "attempt": "runs/slot-035/attempt-004",
+      "parent_attempt": "runs/slot-035/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720883.2283323,
+      "error": null,
+      "artifacts": {
+        "scope.json": "a42dded8e435a9333386f7123317652e1f81db1cbe48ff61609a534f706a1625",
+        "trace.json": "99d88e5d0971a850e581cefe379f5aea94e86dca56b42ce0cadad3ceee2d94cf",
+        "result.json": "9c11548d85b348ccdfe490c13eb83979ba6bd84c091d983ba5c52902cfa92995",
+        "report.md": "0a770d175e1b04f38201d6ea163b399f9a47e39597298290efe3e29ded224b4f",
+        "verification.json": "a5e0a9a0e65db4c10cc2237eb42f3eaddcac93c57dca09285efc0132b809e70c",
+        "measured-usage.json": "5874241b9a2e250b6164f397b0e9fd26bfe8394a20366801aa790e460b201f8d",
+        "observability/status.json": "e65920e3b3060ca4f2fec84463c46f58d68855b925b0a31514eecdc9dd8d2726"
+      }
+    },
+    "slot-039": {
+      "status": "failed",
+      "attempt": "runs/slot-039/attempt-004",
+      "parent_attempt": "runs/slot-039/attempt-003",
+      "assessed": "failed",
+      "exit_code": 0,
+      "ended_at_utc": 1792720654.068481,
+      "error": null,
+      "artifacts": {
+        "scope.json": "f6f35540ff4caa96407044084a597f6c34a9e506fcefdfc9ee87d7e56cd6be77",
+        "trace.json": "20e4a8b9a8d9f07fd4e7be4c14a332e6d585a88c8cdf1395786deff47a71a0cc",
+        "result.json": "b9442ddea9e4a30e300a05eb8ae9f6de844588fed36c6e3a8db5085a198ec829",
+        "report.md": "d958338888bac1935cd59df444aa249fca80e2ba9e0d16d4a316c19e4143d736",
+        "verification.json": "ae1e9e932003b515f3a5cf9121df35427cd130399ad6c9889df74d27e83906e2",
+        "measured-usage.json": "bc7e27acd50b56b2e87cc4e987d7428fef3fd1a6a0d635fc051894ba68892285",
+        "observability/status.json": "3d7d01e52c160cbee27492818c70c8b7b9507aa18dad25fadc34222e67c50c8a"
+      }
+    }
+  },
+  "order": [
+    "slot-001",
+    "slot-004",
+    "slot-010",
+    "slot-020",
+    "slot-022",
+    "slot-026",
+    "slot-028",
+    "slot-032",
+    "slot-035",
+    "slot-039"
+  ],
+  "started_at_utc": 1792719833.43657,
+  "preflight": {
+    "slot-001": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003",
+        "attempt-004"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-001/attempt-001",
+        "runs/slot-001/attempt-002",
+        "runs/slot-001/attempt-003",
+        "runs/slot-001/attempt-004"
+      ],
+      "worker_alive": []
+    },
+    "slot-004": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-004/attempt-001",
+        "runs/slot-004/attempt-002",
+        "runs/slot-004/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-010": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-010/attempt-001",
+        "runs/slot-010/attempt-002",
+        "runs/slot-010/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-020": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-020/attempt-001",
+        "runs/slot-020/attempt-002",
+        "runs/slot-020/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-022": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-022/attempt-001",
+        "runs/slot-022/attempt-002",
+        "runs/slot-022/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-026": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-026/attempt-001",
+        "runs/slot-026/attempt-002",
+        "runs/slot-026/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-028": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-028/attempt-001",
+        "runs/slot-028/attempt-002",
+        "runs/slot-028/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-032": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-032/attempt-001",
+        "runs/slot-032/attempt-002",
+        "runs/slot-032/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-035": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-035/attempt-001",
+        "runs/slot-035/attempt-002",
+        "runs/slot-035/attempt-003"
+      ],
+      "worker_alive": []
+    },
+    "slot-039": {
+      "new_attempt_dirs": [],
+      "allowed_attempt_dirs": [
+        "attempt-001",
+        "attempt-002",
+        "attempt-003"
+      ],
+      "unexpected_attempt_dirs": [],
+      "lease_free": true,
+      "lease_detail": "lease acquired and released",
+      "state_attempts": [
+        "runs/slot-039/attempt-001",
+        "runs/slot-039/attempt-002",
+        "runs/slot-039/attempt-003"
+      ],
+      "worker_alive": []
+    }
+  },
+  "pauses": [
+    {
+      "time_utc": 1792719927.1081808,
+      "failed": [
+        "slot-001",
+        "slot-004"
+      ],
+      "unstarted": [
+        "slot-010",
+        "slot-020",
+        "slot-022",
+        "slot-026",
+        "slot-028",
+        "slot-032",
+        "slot-035",
+        "slot-039"
+      ]
+    },
+    {
+      "time_utc": 1792720139.883598,
+      "failed": [
+        "slot-001",
+        "slot-004",
+        "slot-010",
+        "slot-020"
+      ],
+      "unstarted": [
+        "slot-022",
+        "slot-026",
+        "slot-028",
+        "slot-032",
+        "slot-035",
+        "slot-039"
+      ]
+    },
+    {
+      "time_utc": 1792720321.288766,
+      "failed": [
+        "slot-001",
+        "slot-004",
+        "slot-010",
+        "slot-020",
+        "slot-022",
+        "slot-026"
+      ],
+      "unstarted": [
+        "slot-028",
+        "slot-032",
+        "slot-035",
+        "slot-039"
+      ]
+    },
+    {
+      "time_utc": 1792720591.767662,
+      "failed": [
+        "slot-001",
+        "slot-004",
+        "slot-010",
+        "slot-020",
+        "slot-022",
+        "slot-026",
+        "slot-028",
+        "slot-032"
+      ],
+      "unstarted": [
+        "slot-035",
+        "slot-039"
+      ]
+    }
+  ],
+  "ended_at_utc": 1792720883.2922611,
+  "failure_reason": "slot technical failure"
+}

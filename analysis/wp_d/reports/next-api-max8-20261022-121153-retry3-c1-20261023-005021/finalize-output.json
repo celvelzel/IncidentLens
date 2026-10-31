@@ -1,0 +1,35 @@
+{
+  "mode": "finalize",
+  "counts": {
+    "slots": 40,
+    "selected_completed_resolved": 4,
+    "selected_completed_inconclusive": 26,
+    "selected_completed_other": 0,
+    "selected_technical_failure": 10,
+    "replaced_slots": 1,
+    "retained_failed_slots": 10,
+    "extra_attempts": 22
+  },
+  "usage_all_attempts": {
+    "http_requests": 925,
+    "llm_requests": 925,
+    "total_tokens": 6802434,
+    "prompt_tokens": 6292997,
+    "completion_tokens": 509437
+  },
+  "integrity": {
+    "frozen_inputs_checked": 224,
+    "frozen_input_mismatches": [],
+    "batch_manifest_sha256_before": "98232a6bc83d6c2aa16a5e44d3f918b8633419e0c2bd7c76aa52d45a3d50eaf8",
+    "batch_manifest_sha256_after": "98232a6bc83d6c2aa16a5e44d3f918b8633419e0c2bd7c76aa52d45a3d50eaf8",
+    "batch_manifest_unchanged": true,
+    "historical_attempt_trees_unchanged": true,
+    "historical_attempts_checked": 61,
+    "selection_valid": true
+  },
+  "outputs": [
+    "analysis\\wp_d\\reports\\next-api-max8-20261022-121153-retry3-c1-20261023-005021\\final-selection.json",
+    "analysis\\wp_d\\reports\\next-api-max8-20261022-121153-retry3-c1-20261023-005021\\final-selection.csv",
+    "analysis\\wp_d\\reports\\next-api-max8-20261022-121153-retry3-c1-20261023-005021\\final-matrix.csv"
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "scope": "Only this fourth-round batch; other account/API-key traffic unavailable",
+  "physical_requests": 151,
+  "max_rolling_60s_requests": 18,
+  "max_rolling_1s_requests": 3,
+  "peak_inflight_from_client_events": 4,
+  "remaining_unmatched_inflight": 0,
+  "http_429_count": 78,
+  "median_429_response_ms": 165.41480002342723,
+  "recorded_tokens": 372270,
+  "max_rolling_60s_recorded_tokens_at_call_completion": 48345,
+  "token_caveat": "Incomplete reported usage, timestamped by logical-call completion; not provider TPM accounting",
+  "recovered_logical_calls_after_429": 22,
+  "frozen_inputs_checked": 224,
+  "frozen_mismatches": [],
+  "batch_files_checked": 1039,
+  "batch_unchanged_during_audit": true,
+  "slots": [
+    {
+      "slot": "slot-001",
+      "attempt": "runs/slot-001/attempt-005",
+      "classifications": {
+        "SCHEMA_VALIDATION_FAILED": 1,
+        "RATE_LIMITED": 7
+      },
+      "recovered_after_429": 1,
+      "requests": 13,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-004",
+      "attempt": "runs/slot-004/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 3
+      },
+      "recovered_after_429": 0,
+      "requests": 6,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-010",
+      "attempt": "runs/slot-010/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 7
+      },
+      "recovered_after_429": 2,
+      "requests": 19,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "coordinate",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-020",
+      "attempt": "runs/slot-020/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 7
+      },
+      "recovered_after_429": 2,
+      "requests": 10,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-022",
+      "attempt": "runs/slot-022/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 9
+      },
+      "recovered_after_429": 5,
+      "requests": 17,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "coordinate",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-026",
+      "attempt": "runs/slot-026/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 6
+      },
+      "recovered_after_429": 0,
+      "requests": 7,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-028",
+      "attempt": "runs/slot-028/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 12
+      },
+      "recovered_after_429": 4,
+      "requests": 20,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-032",
+      "attempt": "runs/slot-032/attempt-004",
+      "classifications": {
+        "SCHEMA_VALIDATION_FAILED": 1,
+        "RATE_LIMITED": 15
+      },
+      "recovered_after_429": 6,
+      "requests": 27,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "verify",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-035",
+      "attempt": "runs/slot-035/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 9
+      },
+      "recovered_after_429": 2,
+      "requests": 24,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "dispatch",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    },
+    {
+      "slot": "slot-039",
+      "attempt": "runs/slot-039/attempt-004",
+      "classifications": {
+        "RATE_LIMITED": 3
+      },
+      "recovered_after_429": 0,
+      "requests": 8,
+      "termination": {
+        "protocol_version": "2",
+        "reason": "UNRECOVERABLE_ERROR",
+        "outcome": "FAILED",
+        "failure_stage": "verify",
+        "stop_completed": true,
+        "runtime_failure": true
+      }
+    }
+  ]
+}
