@@ -4,10 +4,13 @@
   "counts": {
     "seed": 6,
     "dev": 10,
-    "test": 20
+    "test": 20,
+    "database": 4,
+    "total": 40
   },
   "limitations": [
     "Generated variants share five causal templates; not independent production incidents.",
-    "Test IDs are held out by convention only; no blind real-model evaluation has been performed."
+    "Test IDs are held out by convention only; no blind real-model evaluation has been performed.",
+    "The database cohort (incident_037-incident_040) is added by scripts/generate_database_cases.py after scripts/generate_cases.py builds the 36 seed/dev/test packs; only the latter writes this manifest, so re-running it alone reverts these counts to 36."
   ]
 }
