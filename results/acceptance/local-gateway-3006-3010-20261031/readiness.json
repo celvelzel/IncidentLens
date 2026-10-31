@@ -1,0 +1,9 @@
+{
+  "model_id": "auto/deepseek-v4.1-flash",
+  "response_format": "json_schema",
+  "thinking": "disabled",
+  "provider_compatible": true,
+  "status": "SINGLE_STRUCTURED_CONNECTIVITY_PROBE_PASSED",
+  "evidence": "results/acceptance/local-gateway-20261031/connectivity.json",
+  "scope": "One small structured schema passed through RealChatProvider; does not establish full investigation schema or concurrent reliability."
+}

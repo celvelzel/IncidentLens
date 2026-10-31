@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "PREPARED_NOT_EXECUTED_NOT_VALIDATED",
+  "mode": "api",
+  "dataset": "data/incidentbench_v16_dev",
+  "protocol": "results/acceptance/local-gateway-full40-20261031/protocol.json",
+  "runtime_config": "configs/wp_d/api-runtime.yaml",
+  "case_ids": [
+    "incident_3001",
+    "incident_3002",
+    "incident_3003",
+    "incident_3004",
+    "incident_3005",
+    "incident_3006",
+    "incident_3007",
+    "incident_3008",
+    "incident_3009",
+    "incident_3010"
+  ],
+  "stop_on_failure": false,
+  "analysis_scope": "paired descriptive development comparison; no superiority assumption or independence claim",
+  "case_selection": "All owner-accepted Dev10; previously reviewed labels, development-visible and not blind."
+}

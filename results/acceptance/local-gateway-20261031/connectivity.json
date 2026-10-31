@@ -1,0 +1,15 @@
+{
+  "tested_at": "2026-10-31T05:49:24.351299+00:00",
+  "endpoint": "http://127.0.0.1:3425/v1",
+  "model": "auto/deepseek-v4.1-flash",
+  "response_format": "json_schema",
+  "scope": "one structured connectivity request through project RealChatProvider; no investigation",
+  "success": true,
+  "reply": {
+    "status": "ok"
+  },
+  "requests": 1,
+  "tokens": 144,
+  "tokens_complete": true,
+  "elapsed_seconds": 4.409
+}
