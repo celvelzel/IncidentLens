@@ -182,7 +182,7 @@ Technical failures remain in attempted-case denominators. A normal evidence-insu
 and are not independent blind Test data. See the
 [IncidentBench guide](docs/incidentbench/README.md) for datasets, scoring and commands.
 
-### WP-D result summary
+### Test result summary
 
 A development-visible WP-D run used `auto/deepseek-v4.1-flash`, four jobs and one
 repeat over 10 cases with provisional candidate-oracle labels. All 40 final slots
@@ -199,9 +199,8 @@ completed. Only Full/3010 required retries.
 quality while reducing average latency by 40.3%, requests by 20.5%, tool queries
 by 21.3% and tokens by 43.6% versus Single. Fixed-4 was fastest and cheapest but
 incorrectly abstained on three identifiable cases. Full tied Single in quality but
-used more latency, requests, tools and tokens. These are descriptive results from
-one development-visible repeat with provisional labels, not statistical significance,
-blind-test or production evidence. See the [full Chinese report](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
+used more latency, requests, tools and tokens. See the
+[full Chinese report](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 and [structured comparison](results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json).
 
 ## Documentation

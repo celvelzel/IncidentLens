@@ -162,7 +162,7 @@ IncidentBench 将公开观测与评测器专用标签分离，并在相同模型
 公开开发夹具共享编码器来源，不是独立盲测 Test。数据、评分和命令见
 [IncidentBench 测试指南](docs/incidentbench/README.md)。
 
-### WP-D 测试结果简述
+### 测试结果简述
 
 一次开发可见的完整 WP-D 测试使用 `auto/deepseek-v4.1-flash`、4 并发和单次重复，
 覆盖 10 个候选 oracle 案例。40 个最终槽位全部完成；仅 Full/3010 经过重试。
@@ -177,8 +177,7 @@ IncidentBench 将公开观测与评测器专用标签分离，并在相同模型
 **多 Agent 优势。** Dynamic（无 Verifier）与 Single、Full 的质量同为 10/10，
 但相对 Single 将平均耗时降低 40.3%、请求降低 20.5%、工具查询降低 21.3%、
 Token 降低 43.6%。Fixed-4 最快且最省，但在 3 个可识别案例中错误弃答。
-Full 与 Single 质量相同，却使用更多耗时、请求、工具和 Token。上述结果是单次
-开发可见且标签为候选状态的描述性结果，不构成统计显著性、盲测或生产结论。详见
+Full 与 Single 质量相同，却使用更多耗时、请求、工具和 Token。
 [完整报告](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 与 [结构化对比](results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json)。
 
