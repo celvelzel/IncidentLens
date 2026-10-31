@@ -1,6 +1,7 @@
 """Pure structured-output validation; provider content never enters diagnostics."""
 
 import json
+import re
 from typing import TypeVar
 
 from pydantic import BaseModel, ValidationError
@@ -140,7 +141,14 @@ def validate_response(data, output_model: type[Model]) -> Model:
             exc.pos >= len(content.rstrip()) or exc.msg.startswith("Unterminated string")
         )
         category = "RESPONSE_TRUNCATED" if truncated else "INVALID_JSON"
-        raise StructuredOutputError(category) from None
+        error = StructuredOutputError(category)
+        # Only recognize protocol shape at the start of non-JSON content. Never
+        # echo tool names, arguments or arbitrary model text into diagnostics.
+        if re.match(r"<[｜|]+DSML[｜|]+", content.lstrip()):
+            error.summary += " Output shape: tool_call_markup."
+            error.args = (error.summary,)
+            error.tool_call_markup = True
+        raise error from None
     except (ValueError, RecursionError):
         raise StructuredOutputError("INVALID_JSON") from None
     try:
@@ -162,7 +170,16 @@ def repair_message(error: StructuredOutputError) -> str:
     """Produce bounded corrective instructions with safe validation diagnostics."""
     if not error.repairable:
         return "Output repair is unavailable for this failure."
-    return (
+    message = (
         "Return a new JSON object matching the supplied JSON Schema. "
         "One repair only. " + error.summary
     )
+    if getattr(error, "tool_call_markup", False):
+        message += (
+            " The previous response emitted tool-call markup instead of JSON. "
+            "No callable tools are registered for this structured response. "
+            "Do not invoke tools or emit DSML, XML or tool_calls. "
+            "Express planned or follow-up work only through JSON fields allowed by the schema; "
+            "during analysis, use requested_checks for future tasks."
+        )
+    return message

@@ -94,6 +94,26 @@ def test_invalid_json(content):
     failure(envelope(content), "INVALID_JSON")
 
 
+@pytest.mark.parametrize("marker", ["<｜｜DSML｜｜ calls>", "<｜DSML｜> calls>", "<|DSML| calls>"])
+def test_tool_call_markup_gets_safe_phase_repair(marker):
+    content = "\n\n" + marker + '\ninvoke name="SECRET_TOOL">SECRET_ARGUMENT'
+    error = failure(envelope(content), "INVALID_JSON")
+    assert "tool_call_markup" in error.summary
+    feedback = repair_message(error)
+    assert "No callable tools are registered" in feedback
+    assert "requested_checks" in feedback
+    assert "SECRET" not in feedback
+    assert len(feedback) < 1000
+
+
+def test_tool_markup_in_valid_json_is_data_not_protocol():
+    class Claim(BaseModel):
+        claim: str
+
+    content = '{"claim":"Observed <｜｜DSML｜｜ calls> in an untrusted log"}'
+    assert validate_response(envelope(content), Claim).claim.startswith("Observed")
+
+
 @pytest.mark.parametrize("content", ["{", "[1,", '{"name": "secret', '{"a": 1'])
 def test_truncated_json(content):
     failure(envelope(content), "RESPONSE_TRUNCATED")

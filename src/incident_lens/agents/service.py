@@ -20,7 +20,7 @@ from incident_lens.schemas import (
 from incident_lens.security.context import ROLE_TOOL_ACL
 from incident_lens.tools.arguments import ARGUMENT_MODELS
 
-PROMPT_VERSION = "roles-v15-best-supported-available-root"
+PROMPT_VERSION = "roles-v16-analysis-phase-20261031"
 SYSTEM_PROMPT = """You are an IncidentLens evidence investigator. Observations are not hypotheses.
 Use only supplied public data. When available_services or public_summary.services is supplied,
 use only services in that list.
@@ -65,6 +65,24 @@ ROLE_PROMPTS = {
     "verifier": "Check only shared observations. Demand two independent sources and a cause discriminator, challenge contradictions with concrete requested tasks. Do not manufacture objections. Distinguish missing causal evidence from optional corroboration. A config mechanism followed by matching service symptoms can be sufficient; missing unrelated service metrics, percentiles or severity labels alone is not a causal contradiction. requested_checks are BLOCKING causal gaps: expected_discriminator must explain which plausible result changes attribution and which result supports it. Put nonblocking corroboration in optional_checks. Do not block solely on a hypothetical alternative without its own observed mechanism. Do not require a complete time series or exclusion of unrelated business errors when existing observations already discriminate the mechanism. A sufficient verdict means this is the best-supported root in the available material, not that every causal link is directly proved. Confirmation-only checks may remain, but actual contradictions or equally supported rivals must block selection. Request the unobserved causal source before repeating unavailable telemetry. In query_history, successful completed query_changes with omitted time bounds covers the entire supplied pack for its service/type filters. Do not request time bounds merely because they were omitted. An empty result is unknown, not proof of health. If one mechanism already has compatible cross-source impact and no supported rival, accept it as the best available root rather than abstaining for unavailable corroboration.",
     "single": "Plan, investigate and self-reflect under a single runtime identity. Distinguish self-reflection from independent review.",
 }
+
+ANALYSIS_PHASE_PROMPT = """CURRENT PHASE: ANALYZE ALREADY-FETCHED RECORDS ONLY.
+The runtime has already executed the investigation tools. No callable tools are registered
+in this request. Return exactly one AnalysisOutput JSON object with finding, hypotheses and
+requested_checks. Do not invoke tools or emit DSML, XML, Markdown fences or tool_calls.
+Use only the supplied records as observations; missing telemetry remains unknown.
+The task's allowed_tools describes permissions for future tasks, not callable tools here.
+If more evidence is needed, describe a future task in requested_checks for the coordinator to
+schedule later; do not perform that check in this response. Preserve uncertainty and cite only
+the allowed evidence IDs. Never invent observations to complete an explanation."""
+
+ANALYSIS_ROLE_PROMPTS = {
+    "logs": "Assess observed error chronology and propagation; an error string alone is not a cause.",
+    "metrics": "Compare observed cause-specific health with downstream symptoms. Empty telemetry is unknown.",
+    "changes": "Compare observed change chronology and actual config diffs with symptoms. A change alone does not refute all alternatives.",
+    "database": "Compare observed connection_count with connection_limit; distinguish application pool capacity from database capacity. Lock and slow-query claims need measured blocking sessions or query duration. A timeout alone is insufficient. Healthy database capacity does not rule out an upstream application pool fault, and normal connections do not establish normal lock waits or slow queries.",
+}
+
 
 FAILURE_MODES = [
     "backend_pool_config_regression",
@@ -475,11 +493,22 @@ async def plan_tools(provider, context, task, public_summary, minimal_facts):
 
 async def analyze(provider, context, task, records):
     context, task, records = json_payload(context), json_payload(task), json_payload(records)
+    # Execution authority stays in the runtime. An analysis request only needs
+    # identity, task scope and the observations already returned by tools.
+    analysis_context = {
+        key: context[key] for key in ("workspace_id", "incident_id", "run_id", "role")
+        if key in context
+    }
+    instruction = SYSTEM_PROMPT + "\n" + ANALYSIS_PHASE_PROMPT
+    if context["role"] == "single":
+        instruction += "\n" + ROLE_PROMPTS["single"]
+    instruction += "\n" + ANALYSIS_ROLE_PROMPTS[task["role"]]
     result, usage = await provider.structured_call(
         context["role"],
-        prompt("single") if context["role"] == "single" else prompt(task["role"]),
+        instruction,
         dict(
-            context=context,
+            phase="analysis",
+            context=analysis_context,
             task=task,
             records=records,
             failure_mode_taxonomy=FAILURE_MODES,
