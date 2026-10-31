@@ -183,6 +183,7 @@ Full 与 Single 质量相同，却使用更多耗时、请求、工具和 Token�
 
 ## 文档
 
+- [课程项目交接指南](docs/project-handoff.zh-CN.md) —— 面向测试、报告、PPT、Demo 与现场汇报的完整上手说明
 - [运行与配置指南](docs/readme-guide.zh-CN.md) —— CAES、预算、模型配置、证据权限与缓存
 - [IncidentBench 测试指南](docs/incidentbench/README.md) —— 数据、协议、评分与命令
 - [排查协议](docs/protocol.md) —— 运行生命周期、门控与预算

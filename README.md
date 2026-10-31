@@ -205,6 +205,7 @@ and [structured comparison](results/v16/wp-d/full40-local-gateway-c4-20261031/fi
 
 ## Documentation
 
+- [Course project handoff](docs/project-handoff.zh-CN.md) — Chinese onboarding guide for testing, reporting, slides, demo recording and presentation
 - [Operations and configuration](docs/readme-guide.md) — CAES, budgets, providers, permissions and cache
 - [IncidentBench tests](docs/incidentbench/README.md) — datasets, protocols, scoring and commands
 - [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
