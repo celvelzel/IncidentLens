@@ -2,19 +2,30 @@
 
 本文供后续负责测试验收、报告撰写、PPT 制作、Demo 视频和现场汇报的成员使用。非技术成员可以先读“项目一句话”和“如何解释结果”，再按自己的角色进入对应章节；技术成员可从运行命令、证据路径和限制直接接手。
 
+> **配套网页版：** [project-handoff.zh-CN.html](project-handoff.zh-CN.html) —— 用浏览器直接打开，含图表、按角色的上手标签页和可勾选的自检清单，适合快速浏览与小组内分享。本 Markdown 是权威版本，网页版数字与之同步。
+
 ## 先看结论
 
 **项目一句话：** IncidentLens 让日志、指标与依赖、数据库、变更四类调查员分工取证，由协调者根据当前证据缺口动态派出最需要的 1–2 个调查员；只有经过校验、合并和证据门控的记录才能进入共享证据板，证据不足时系统明确输出 `INCONCLUSIVE`。
 
-最新完整 WP-D 测试中，40 个最终槽位全部技术完成。**`dynamic`（无独立 Verifier）是本项目的主架构，也是运行时默认**；`full` 保留为消融对照，文档中显示为 *dynamic (with verifier)*。Single、Dynamic 和 Full 的质量均为 10/10；Fixed-4 只有 7/10，因为在 `incident_3004`、`incident_3005`、`incident_3010` 三个可识别案例上错误弃答。
+最新完整批次是 **硬化集 36 案例 × 四架构 = 144 槽位**（`full144-hardened-c4-20261101`，2026-11-01，4 小时 39 分）：136 槽位技术完成，8 次技术失败按协议保留在分母中，0 中断。**`dynamic`（无独立 Verifier）是本项目的主架构，也是运行时默认**；`full` 保留为消融对照，文档中显示为 *dynamic (with verifier)*。
+
+| 架构 | 技术完成 | 根因正确 | 正确弃答 | 质量成功 | 平均耗时 | 平均请求 | 平均工具 | 平均 Token |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single | 35/36 | 25/28 | 7/7 | 32/36 | 680.9s | 17.3 | 14.5 | 245,971 |
+| Fixed-4 | 34/36 | 15/27 | 7/7 | 22/36 | 196.3s | 7.8 | 7.4 | 58,042 |
+| **Dynamic（主架构）** | 33/36 | **27/27** | 6/6 | **33/36** | 412.9s | 14.6 | 12.0 | 149,216 |
+| Full（*dynamic with verifier*） | 34/36 | 23/27 | 7/7 | 30/36 | 503.8s | 17.6 | 15.5 | 233,772 |
 
 **为什么以 `dynamic` 为主架构：**
 
-- **对 Single：** 质量相同（10/10），平均耗时、请求、工具查询和 Token 分别降低 **40.3% / 20.5% / 21.3% / 43.6%**，支持“动态分工减少无效查询与上下文”这一设计论点。
-- **对 Full（dynamic with verifier）：** 质量相同（10/10），Full 的耗时、请求、工具和 Token 分别高 **88.0% / 34.3% / 34.7% / 86.0%**，说明独立 Verifier 在本批没有产出可测的质量增益。我们只表述为“未观测到增益”，不据此断言 Verifier 永远无用。
-- **对 Fixed-4：** Fixed 更便宜（96.9s、7.9 请求、56,586 Token），但错弃 3 个可识别案例（3004/3005/3010），证明“一次性固定批次无法补证”，这恰恰是 Dynamic 多轮补查的价值所在。
+- **对 Single：** 质量多 1 个成功（33 vs 32），耗时、请求、工具查询和 Token 分别降低 **39.4% / 15.6% / 17.2% / 39.3%**，支持“动态分工减少无效查询与上下文”这一设计论点。
+- **对 Full（dynamic with verifier）：** 质量多 3 个成功（33 vs 30），Full 的耗时、请求、工具和 Token 分别高 **18.0% / 20.5% / 29.2% / 56.7%**，说明独立 Verifier 在本批没有产出可测的质量增益。我们只表述为“未观测到增益”，不据此断言 Verifier 永远无用。
+- **对 Fixed-4：** Fixed 明显更便宜（196.3s、7.8 请求、58,042 Token），但在 27 个可识别案例上错弃 12 个，证明“一次性固定批次无法补证”，这恰恰是 Dynamic 多轮补查的价值所在。
 
-把 `dynamic` 设为默认**不改变产品风险画像**：它的接地门控、引用校验和弃答行为与实验时完全相同，改变的只是被当作主架构的那一档。这些结果来自 10 个开发可见案例、每案例一次重复和候选 oracle，属于描述性开发证据，不是独立盲测、统计显著性或生产部署结论。不能把“Agent 数量更多”当作天然优势。
+**这一批最值得讲的结论是“零误判”。** 在技术上完成的运行里，`dynamic` 33/33 全部判对；四个架构合计 19 次可识别失分全部以 `INCONCLUSIVE` 结束，没有一次给出错误的 `culprit_service` / `failure_mode`。失分模式是过度弃答，而不是编造根因。
+
+把 `dynamic` 设为默认**不改变产品风险画像**：它的接地门控、引用校验和弃答行为与实验时完全相同，改变的只是被当作主架构的那一档。这些结果来自 36 个开发可见案例、每案例一次重复和候选 oracle，属于描述性开发证据，不是独立盲测、统计显著性或生产部署结论。不能把“Agent 数量更多”当作天然优势。
 
 ## 课程交付与责任映射
 
@@ -22,8 +33,8 @@
 
 | 后续工作 | 必须完成的产物 | 本项目应重点呈现的证据 | 建议负责人 |
 | --- | --- | --- | --- |
-| 测试与验收 | 可复现命令、批次状态、保留的失败尝试、评分表 | 40/40 技术完成、0 最终失败、Full/3010 的三次 attempt、四架构同条件设置 | 测试负责人 + 技术负责人复核 |
-| 课程报告 | 方法、架构、实验设置、结果、失败案例、限制 | Dynamic 对 Single 的资源优势；Fixed-4 的 3 个错误弃答；Full 无额外质量收益 | 报告负责人 |
+| 测试与验收 | 可复现命令、批次状态、保留的失败尝试、评分表 | 144 槽位状态（136 完成 / 8 技术失败保留在分母）、失败分类、四架构同条件设置、离线评分脚本 | 测试负责人 + 技术负责人复核 |
+| 课程报告 | 方法、架构、实验设置、结果、失败案例、限制 | Dynamic 零误判与四项资源优势；Fixed-4 的 12 次错误弃答；Full 无额外质量收益；8 次技术失败的分类 | 报告负责人 |
 | PPT | 10–12 页，覆盖课程四部分 | 角色与协作图、证据流、四架构消融、质量与成本双轴结果 | PPT 负责人 + 技术审阅 |
 | Demo 视频 | 不超过 10 分钟，展示真实工作流和代表性案例 | 动态调度、共享证据、Verifier/门控、明确弃答、离线 replay | 视频负责人 |
 | 现场汇报 | 8–10 分钟主讲稿、问答准备、计时演练 | 一句话价值、架构设计、关键数据、证据边界 | 主讲人 |
@@ -102,19 +113,26 @@ flowchart LR
 
 ### 为什么适合多 Agent
 
-事故 RCA 不是简单的文本生成，而是多个证据域逐步缩小假设空间。日志可能显示症状，指标提供时间与影响，数据库连接数据区分内部容量与上游池配置，变更记录提供触发机制。单个 Agent 容易把所有材料塞入一次超长上下文，也更容易在相似症状上过度断言。动态分工让每轮只查最有判别价值的一两个来源，再由确定性合并和门控维护证据边界。最新数据支持的是“减少无效查询和上下文”这一优势；Full 的额外审查在本批没有带来更高正确率。
+事故 RCA 不是简单的文本生成，而是多个证据域逐步缩小假设空间。日志可能显示症状，指标提供时间与影响，数据库连接数据区分内部容量与上游池配置，变更记录提供触发机制。单个 Agent 容易把所有材料塞入一次超长上下文，也更容易在相似症状上过度断言。动态分工让每轮只查最有判别价值的一两个来源，再由确定性合并和门控维护证据边界。硬化集批次支持的是两条：一是“减少无效查询和上下文”（对 Single 省 39.4% 耗时、39.3% Token 且多对 1 例），二是在竞争性成因与反事实配对上只有 `dynamic` 做到 7/7、6/6。Full 的额外审查在两批中都没有带来更高正确率。
 
 ## 评测设计
 
 ### 数据与案例
 
-WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident_3010`。公开观测与 evaluator-only oracle 分离；Graph 结束后才评分。8 个案例可识别根因，2 个案例证据不足并要求正常弃答。所有案例为 `development_visible`，oracle 当前为 `pending/candidate-v1`，没有独立人工验收或 blind Test 结论。
+**最新批次使用 `data/incidentbench_v2_hardened`**（`incident_4001`–`incident_4036`，36 例：29 可识别 / 7 需弃答），由编码器血统 `causal-world-v2-hardened` 生成。它的难度分六类杠杆，每类在四个架构上都跑过：
 
-另有新增的开发集 `data/incidentbench_v2_hardened`（`incident_4001`–`incident_4036`，36 例，
-29 可识别 / 7 需弃答），由新的编码器血统 `causal-world-v2-hardened` 生成。它带三个难度杠杆
-（`standard` / `boundary` / `competing`），同样全部是 `development_visible` 与候选标签，不能当作
-验证或测试集。旧 Dev10 的 `causal-world-v1` 编码器保持冻结、逐字节可复现。详见
-[优化路线](optimization-roadmap.zh-CN.md) 的 P0-C 章节。
+| 杠杆 | 含义 | 案例数 | 可识别 |
+| --- | --- | ---: | --- |
+| `standard` | 标准可识别案例 | 7 | 是 |
+| `boundary` | 判别证据落在边界条件 | 7 | 是 |
+| `competing` | 存在竞争性成因 | 7 | 是 |
+| `counterfactual_pair` | 反事实配对的成对案例 | 6 | 是 |
+| `misleading` | 含误导性证据 | 2 | 是 |
+| `missing` | 判别证据缺失，应弃答 | 7 | 否 |
+
+公开观测与 evaluator-only oracle 分离；Graph 结束后才评分。所有案例为 `development_visible`，oracle 仍为 `pending` / `candidate-v1`，没有独立人工验收或 blind Test 结论，**不能当作验证集或测试集**。
+
+上一批使用的 Dev10（`data/incidentbench_v16_dev` 的 `incident_3001`–`incident_3010`，8 可识别 / 2 需弃答）保持冻结、逐字节可复现，作为早期证据保留在附录与 README 中。详见 [优化路线](optimization-roadmap.zh-CN.md) 的 P0-C 章节。
 
 可识别案例要求 `culprit_service` 与 `failure_mode` 同时精确匹配；不可识别案例只有在正常终止且 `INCONCLUSIVE`、无根因时才算正确弃答。技术失败仍在对应分母中；证据不足的正常弃答是有效结果；Provider/网络/预算失败不是弃答。
 
@@ -122,22 +140,23 @@ WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident
 
 | 项目 | 本次设置 |
 | --- | --- |
-| 计划与协议 | `results/acceptance/local-gateway-full40-20261031/{plan,protocol,readiness}.json` |
+| 计划与协议 | `results/acceptance/full144-hardened-c4-20261101/{plan,protocol,readiness}.json` |
 | 模型 | `auto/deepseek-v4.1-flash`，本地 OpenAI 兼容网关 |
-| 矩阵 | 10 个案例 × 4 架构 × 1 repeat = 40 slots |
+| 矩阵 | 36 个案例 × 4 架构 × 1 repeat = 144 slots |
 | 并发 | 4；每槽独立 provider、预算和公开数据 reader |
 | 采样 | temperature 0，cache off |
 | 上限 | 8 轮、40 次工具、64 次逻辑请求、7200 秒/调查、请求超时 1200 秒 |
 | 顺序 | seed 14100，固定随机化；所有架构保留在配对计划中 |
-| 结果目录 | `results/v16/wp-d/full40-local-gateway-c4-20261031/` |
-| 最终状态 | `batch_finished`；40 completed，0 final failed |
+| 结果目录 | `results/v16/wp-d/full144-hardened-c4-20261101/` |
+| 最终状态 | `batch_finished_with_errors`；136 completed、8 failed（保留在分母）、0 interrupted |
+| 实际耗时 | 4 小时 39 分（16,737.6 秒），输入哈希全程无漂移（144/144 `source_unchanged`） |
 
 ### 指标定义
 
 - **技术完成：** 保存产物通过协议、来源不变、STOP 完成、无 runtime failure，且 observability 未降级。
 - **正确根因：** 可识别案例的服务和故障模式均匹配 oracle。
 - **正确弃答：** 不可识别案例正常输出 `INCONCLUSIVE` 且没有根因。
-- **质量成功：** 正确根因与正确弃答之和，分母是全部 10 个案例。
+- **质量成功：** 正确根因与正确弃答之和，分母是全部 36 个案例（技术失败算未成功，即“失败包含”口径）。
 - **耗时：** 围绕实际 Graph 执行的单调时钟时长。
 - **请求：** 实际 Provider 物理请求，包括重试和结构化修复。
 - **工具查询：** 经 ToolRegistry 实际执行的查询。
@@ -149,71 +168,130 @@ WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident
 
 ### 总体对比
 
-| 架构 | 技术完成 | 根因正确 | 正确弃答 | 质量成功 | 平均耗时 | 平均请求 | 平均工具 | 平均 Token | 最终结果总 Token |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 | 2,571,460 |
-| Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 | 565,863 |
-| **Dynamic（主架构）** | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 | 1,450,353 |
-| Full（*dynamic with verifier*） | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 | 2,698,325 |
+分母口径：`技术完成` 以 36 个槽位为分母；`根因正确` 只在可识别且技术完成的案例上计分；
+`正确弃答` 只在不可识别且技术完成的案例上计分；`质量成功` 以 36 为分母，技术失败计为未成功。
+
+| 架构 | 技术完成 | 根因正确 | 正确弃答 | 质量成功 | 平均耗时 | 平均请求 | 平均工具 | 平均 Token |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single | 35/36 | 25/28 | 7/7 | 32/36 | 680.9s | 17.3 | 14.5 | 245,971 |
+| Fixed-4 | 34/36 | 15/27 | 7/7 | 22/36 | 196.3s | 7.8 | 7.4 | 58,042 |
+| **Dynamic（主架构）** | 33/36 | **27/27** | 6/6 | **33/36** | 412.9s | 14.6 | 12.0 | 149,216 |
+| Full（*dynamic with verifier*） | 34/36 | 23/27 | 7/7 | 30/36 | 503.8s | 17.6 | 15.5 | 233,772 |
+
+只看技术上完成的运行，质量成功率是：Dynamic 33/33（100%）、Single 32/35（91.4%）、
+Full 30/34（88.2%）、Fixed-4 22/34（64.7%）。报告里这两个口径必须分开说，不能混用。
 
 ### 多 Agent 优势分析
 
-**Dynamic（主架构）相对 Single。** 两者质量同为 10/10，Dynamic 的平均耗时从 391.2 秒降到 233.5 秒（-40.3%），请求从 17.6 降到 14.0（-20.5%），工具从 15.0 降到 11.8（-21.3%），Token 从 257,146 降到 145,035（-43.6%）。这支持“按证据缺口选择专家，减少无关查询与上下文”的设计论点。
+**Dynamic（主架构）相对 Single。** Dynamic 多 1 个质量成功（33 vs 32），平均耗时从 680.9 秒降到 412.9 秒（−39.4%），请求从 17.3 降到 14.6（−15.6%），工具从 14.5 降到 12.0（−17.2%），Token 从 245,971 降到 149,216（−39.3%）。这支持“按证据缺口选择专家，减少无关查询与上下文”的设计论点。
 
-**Dynamic 相对 Full（dynamic with verifier）。** 两者质量同为 10/10，Full 的耗时、请求、工具和 Token 分别比 Dynamic 高 88.0%、34.3%、34.7% 和 86.0%。本批没有观察到独立 Verifier 带来的可测质量增益，说明完整审查机制在当前 10 个开发案例上成本较高。这不能证明 Verifier 在所有情况下无用，它可能对更难的竞争假设或错误候选更有价值；本批只是没有区分出该收益。
+**Dynamic 相对 Full（dynamic with verifier）。** Dynamic 多 3 个质量成功（33 vs 30），Full 的耗时、请求、工具和 Token 分别比 Dynamic 高 18.0%、20.5%、29.2% 和 56.7%。两批（10 案例与 36 案例）都没有观察到独立 Verifier 带来的可测质量增益；这只说明“本批未观测到收益”，不能断言 Verifier 永远无用。
 
-**Fixed-4 相对 Single。** Fixed-4 耗时、请求、工具和 Token 分别降低 75.2%、55.1%、49.3% 和 78.0%，但它在 `incident_3004`、`incident_3005`、`incident_3010` 三个可识别案例错误弃答。它是最低成本的对照，不能作为质量最优架构。
+**Fixed-4 相对 Single。** Fixed-4 的耗时、请求、工具和 Token 分别降低 71.2%、54.9%、49.0% 和 76.4%，是最便宜的对照，但它在 27 个可识别案例上错弃 12 个，不能作为质量最优架构。
 
-**Full 相对 Single。** 质量同为 10/10，但 Full 最终成功结果的耗时、请求、工具和 Token 分别高 12.2%、6.8%、6.0% 和 4.9%。计入 Full/3010 的额外尝试后，全部已知 Token 高 11.9%，全部已知耗时长 17.9%。本批没有证据支持 Full 优于 Single。
+**Full 相对 Single。** Full 略便宜（耗时 −26.0%、Token −5.0%），但质量更低（30 vs 32），且请求与工具略多；本批没有证据支持 Full 优于 Single 或 Dynamic。
 
-### 逐案例错误定位
+**零误判是本批最强的结论。** 四个架构合计 19 次可识别失分，全部以 `INCONCLUSIVE` 结束，没有一次给出错误的 `culprit_service` / `failure_mode`；7 个不可识别案例在所有完成的运行里都正确弃答。也就是说系统“答的时候是准的”，代价在召回。
 
-| 案例 | 四方均正确？ | 关键差异 |
+**配对比较（同一案例内，Dynamic 对其它架构）。**
+
+| 对照 | Dynamic 更好 | Dynamic 更差 | 持平 |
+| --- | ---: | ---: | ---: |
+| vs Single | 3 | 2 | 31 |
+| vs Fixed-4 | 12 | 1 | 23 |
+| vs Full | 5 | 2 | 29 |
+
+注意 Dynamic 本批有 3 次技术失败、Full 只有 2 次；在失败更多的前提下仍然赢下配对比较。
+
+### 分难度杠杆
+
+表中的数字是该杠杆下“质量成功 / 案例数”。
+
+| 杠杆 | 案例数 | Single | Fixed-4 | Dynamic | Full |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `standard` | 7 | 6/7 | 3/7 | 6/7 | 6/7 |
+| `boundary` | 7 | 6/7 | 4/7 | 6/7 | 5/7 |
+| `competing` | 7 | 6/7 | 4/7 | **7/7** | 6/7 |
+| `counterfactual_pair` | 6 | 5/6 | 3/6 | **6/6** | 4/6 |
+| `misleading` | 2 | 2/2 | 1/2 | 2/2 | 2/2 |
+| `missing`（应弃答） | 7 | 7/7 | 7/7 | 6/7 | 7/7 |
+
+`dynamic` 的强项正好落在硬化集新增的难点上：竞争性成因 7/7、反事实配对 6/6，其他架构在这两类各丢 1–3 个。
+`missing` 一格里 Dynamic 的 6/7 是那 1 次技术失败造成的，不是误判。
+
+### 各架构失分分布
+
+| 架构 | 错误弃答的可识别案例 | 技术失败案例 |
 | --- | --- | --- |
-| incident_3001 | 是 | 四架构均正确根因；Fixed-4 最省 |
-| incident_3002 | 是 | 四架构均正确根因；Dynamic 明显低于 Single 的资源 |
-| incident_3003 | 是 | 四架构均正确弃答；Fixed-4 最省 |
-| incident_3004 | 否 | Fixed-4 错误弃答；其余三方正确根因 |
-| incident_3005 | 否 | Fixed-4 错误弃答；其余三方正确根因 |
-| incident_3006 | 是 | 四架构均正确根因；Dynamic 的工具和 Token 更低 |
-| incident_3007 | 是 | 四架构均正确根因；Dynamic 四项资源均低于 Single |
-| incident_3008 | 是 | 四架构均正确弃答；Dynamic 和 Full 的成本高于 Single |
-| incident_3009 | 是 | 四架构均正确根因；Dynamic 节省明显 |
-| incident_3010 | 否 | Fixed-4 错误弃答；Full 的最终成功 attempt 为第 3 次 |
+| Single | 4020、4025、4036 | 4019（身份不匹配） |
+| Fixed-4 | 4001、4006、4007、4008、4014、4019、4020、4023、4024、4025、4035、4036 | 4021、4032（结构化输出） |
+| Dynamic | 无 | 4004、4006、4020（结构化输出） |
+| Full | 4020、4021、4023、4036 | 4011（结构化输出）、4032（身份不匹配） |
 
-### 全尝试成本
+### 全尝试成本与失败分类
 
-| 架构 | Attempts | 结构化失败 | 中断 | 额外重试 Token | 额外重试耗时 | 全部已知 Token | 全部已知耗时 |
+| 架构 | Attempts | 结构化输出失败 | 身份不匹配 | 中断 | 失败尝试 Token | 全部 Token | 全部耗时 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Single | 10 | 0 | 0 | 0 | 0.0s | 2,571,460 | 3,911.5s |
-| Fixed-4 | 10 | 0 | 0 | 0 | 0.0s | 565,863 | 969.1s |
-| Dynamic（主架构） | 10 | 0 | 0 | 0 | 0.0s | 1,450,353 | 2,334.7s |
-| Full | 12 | 1 | 1 | 179,050 | 223.1s | 2,877,375（下界） | 4,612.5s（下界） |
+| Single | 36 | 0 | 1 | 0 | 155,973 | 8,764,961 | 24,082.8s |
+| Fixed-4 | 36 | 2 | 0 | 0 | 92,902 | 2,066,337 | 7,362.2s |
+| Dynamic（主架构） | 36 | 3 | 0 | 0 | 481,787 | 5,405,907 | 15,858.9s |
+| Full | 36 | 1 | 1 | 0 | 190,937 | 8,139,190 | 18,115.1s |
+| **合计** | **144** | **6** | **2** | **0** | **921,599** | **24,376,395** | **65,419.0s** |
 
-Full/3010 的 attempt 1 因 Provider 结构化输出失败，attempt 2 因终端/监督进程断连被标记 interrupted，attempt 3 成功。失败尝试被保留；中断 attempt 没有完整 verification/cost 记录，因此 Full 的全尝试 Token 与耗时均为下界。不能把 Provider 失败解释成模型已经给出正确诊断，也不能把断连归因为网关网络故障。
+144 个槽位都是第一次 attempt 就进入终态，没有重试；8 次技术失败按预案保留，不重试、也不替换成
+“后来挑出的最好一次”。失败尝试占全部 Token 的 3.8%。
+
+8 次失败分两类：
+
+- **6 次 `STRUCTURED_OUTPUT_INVALID`**：模型输出在 token 上限处被截断，schema 校验失败
+  （`dispatch` 阶段 4 次、`coordinate` 阶段 2 次）。
+- **2 次 `FINDING_IDENTITY_MISMATCH`**：工具返回的 finding 与本轮身份不匹配，被确定性门禁拦下
+  （都在 `dispatch` 阶段）。
+
+分布是 Single 1、Fixed-4 2、Dynamic 3、Full 2——四个架构都有，说明这是 provider / 结构化输出层
+的偶发问题，不是某一架构的设计缺陷。不能把 Provider 失败解释成模型已经给出正确诊断。
+
+**每质量成功案例的成本**（全部 Token ÷ 质量成功数）：Fixed-4 93,924、Dynamic 163,815、
+Full 271,306、Single 273,905。Fixed-4 单看成本最低，但它少答对 11 个案例，不能据此说它“更划算”。
+
+### 上一批：Dev10 40 槽位（2026-10-31，保留作早期证据）
+
+| 架构 | 技术完成 | 根因正确 | 正确弃答 | 质量成功 | 平均耗时 | 平均请求 | 平均工具 | 平均 Token |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 |
+| Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 |
+| Dynamic（主架构） | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
+| Full | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
+
+这一批 40/40 全部技术完成，只有 Full/3010 因 provider 结构化失败与终端断连重试了 3 次；
+前两次 attempt 被保留并计入全尝试成本，因此该批 Full 的全尝试 Token 与耗时是下界。它的价值是
+提供 Dev10 上的干净对照，并说明证据缺口成本护栏的来由；但案例只有 10 个、缺少难度杠杆，
+**对外结论一律以硬化集 144 槽位为准**。
 
 ### 结果可以怎样讲，不能怎样讲
 
 可以讲：
 
-- “Dynamic 在 10 个开发案例上保持 10/10 质量，同时显著降低资源。”
-- “Fixed-4 的成本最低，但错误弃答揭示了固定一次性批次无法补足关键证据缺口。”
-- “Full 在本批与 Single 质量相同、成本更高，因此实验没有支持更复杂架构必然更好。”
-- “这是候选 oracle 下的开发集描述性结果，下一步应扩大案例并开展独立标签验收。”
+- “在 36 个硬化开发案例上，Dynamic 取得 33/36，是四个架构中最高的；技术上完成的 33 次全部判对。”
+- “Dynamic 比 Single 少用 39.4% 耗时、39.3% Token，并多答对 1 个案例；比 Full 多答对 3 个，耗时低 18.0%、Token 低 36.2%。”
+- “四个架构合计 19 次可识别失分全部是弃答，没有一次根因误判——系统答的时候是准的，代价在召回。”
+- “Fixed-4 成本最低，但在 27 个可识别案例上错弃 12 个，说明一次性固定批次无法补足证据缺口。”
+- “这是候选 oracle 下的开发集描述性结果，下一步应做独立标签验收与更大规模的重复评测。”
 
 不能说：
 
 - “多 Agent 已达到统计显著优势。”
-- “Full 或 Dynamic 在盲测/生产中一定更准确。”
-- “40/40 技术完成等于 40/40 诊断正确。”
-- “Fixed-4 成本最低所以整体最好。”
+- “Dynamic 在盲测/生产中一定更准确。”
+- “136/144 技术完成等于 136/144 诊断正确。”
+- “Fixed-4 每成功案例成本最低，所以整体最好。”
+- “8 次技术失败说明某个架构不稳定。”（失败分布在四个架构，属 provider 层）
 - “Mock 结果证明真实模型能力。”
 - “修复建议已执行或生产事故已恢复。”
 
 ## 优化路线（先建立可信基础，再提高效率）
 
 主架构定稿后，下一步不是继续增加 Agent，而是先统一成本与质量口径、审计查询覆盖，并推进标签复核
-与独立评测。本批 `incident_3003`、`incident_3008` 两个不可识别案例上，Dynamic 的 Token 是它可识别
+与独立评测。早期 Dev10 批次里 `incident_3003`、`incident_3008` 两个不可识别案例上，Dynamic 的 Token 是它可识别
 案例均值的 2.39 倍；3008 单案 386.3 秒 / 274,794 Token，最终是正确弃答。两个案例由 Coordinator
 主动 `ABSTAIN`，并非预算耗尽。
 
@@ -224,12 +302,17 @@ Full/3010 的 attempt 1 因 Provider 结构化输出失败，attempt 2 因终端
 降 44.0%、3008 降 21.9%、Dynamic 十例合计 −12.3%（重放估计，非新批次实测）。注意
 `configs/system.yaml` 的 `max_rounds: 4` 使该阈值在默认配置下无法触发，需同时调高轮次上限。
 
+**2026-11-01 晚：P0-C 的数据集已跑完一轮正式规模批次。** 硬化集 36 案例 × 四架构 = 144 槽位全部
+落盘（4 小时 39 分），评分脚本 `analysis/wp_d/reports/hardened144-20261101/score_batch.py` 可离线复算
+全部数字。仍**未完成**的是：oracle 标签仍是 `pending`（没有人工复核）、只有单次重复、没有 blind Test
+分区。因此 P0-C 的完成标准仍未满足，下一步是把标签送审并做重复评测，而不是再加大并发或换模型。
+
 优先级与验收标准写在 [优化路线](optimization-roadmap.zh-CN.md)，要点：
 
 | 优先级 | 合并后的方向 | 完成标准 |
 | --- | --- | --- |
 | **P0-A** | 评测账本与可观测性 | 原始记录可复算；失败、弃答、全尝试成本与质量口径一致 |
-| **P0-B** | 查询覆盖、去重与搜索收敛 | 停止理由与覆盖范围可审计；3004/3005/3010 仍正确归因 |
+| **P0-B** | 查询覆盖、去重与搜索收敛 | 停止理由与覆盖范围可审计；硬化集上 Dynamic 质量不回归（≥33/36），过度弃答不增加 |
 | **P0-C** | 标签验收、未见案例与重复评测 | 标签与数据边界可追踪；同期基线与预定分析方案已冻结 |
 | **P1** | 上下文裁剪；判别价值派单与及时定稿 | 分别消融；报告质量和全流程成本，无质量回归 |
 | **P2** | 按需 Verifier；提供商与结构化输出可靠性 | 独立实验条件；报告触发率、失败类别和收益边界 |
@@ -305,7 +388,13 @@ Get-Content results/v16/wp-d/NEW-BATCH/batch-state.json -Raw
 Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 ```
 
-验收标准是 40 个唯一案例×架构槽位均有成功终态，最终 `failed_slots=0`；每个成功 attempt 的 scope/trace/result 身份一致，verification 通过协议和 STOP 检查；失败 attempt 仍在 `batch-state.json` 中；最终成功均值不混入失败 attempt；质量正确性按 oracle 单独计算。若重新分析评分，使用新的分析目录，不改写原批次。
+验收标准不是 `failed_slots=0`。硬化集 144 槽位批次的终点是 `batch_finished_with_errors`（136 completed / 8 failed / 0 interrupted），这正是协议允许的合法终态：每个槽位都必须有终态记录，失败 attempt 保留在 `batch-state.json` 与分母中，不重试、不替换。要核对的是：每个成功 attempt 的 scope/trace/result 身份一致；verification 通过协议和 STOP 检查；最终成功均值不混入失败 attempt；质量正确性按 evaluator oracle 离线单独计算。若重新分析评分，使用 `analysis/wp_d/reports/` 下的新目录，不改写原批次：
+
+```powershell
+.venv\Scripts\python.exe analysis/wp_d/reports/hardened144-20261101/score_batch.py
+```
+
+脚本只读批次目录，重算 `final-success-comparison.json`（144 条记录，含预测、真值、失败原因、难度杠杆与逐槽资源用量）。
 
 ## 报告成员上手
 
@@ -313,12 +402,12 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 1. 问题：事故 RCA 要求跨日志、指标、数据库与变更交叉验证，单 Agent 容易塞满上下文或过度断言。
 2. 设计：角色 ACL、动态 1–2 任务派发、Merge 发布、共享证据板、Verifier 反馈、确定性 FinalizeGate。
-3. 方法：10 个开发案例 × 四架构、同模型同工具同预算、cache off、候选 oracle。
-4. 结果：先展示 40/40 技术完成，再展示质量表；重点写 Dynamic 对 Single 的质量保持与资源下降。
-5. 失败分析：Fixed-4 的三个错误弃答；Full 的额外成本与无额外质量收益；Full/3010 的重试成本。
-6. 限制与下一步：单次重复、开发可见、候选标签；扩大案例、独立人工标签、盲测和更多重复。
+3. 方法：硬化集 36 个开发案例 × 四架构 = 144 槽位、同模型同工具同预算、cache off、4 并发、单次重复、候选 oracle。
+4. 结果：先说明 136/144 技术完成（8 次技术失败保留在分母），再展示质量表：Dynamic 33/36 最高，且在完成的 33 次里 33/33 全对。
+5. 失败分析：零根因误判，19 次失分全是过度弃答；Fixed-4 在 27 个可识别案例上错弃 12 个；Full 多耗 56.7% Token 却少 3 个成功；8 次技术失败是 provider 层的结构化输出问题，四个架构都有。
+6. 限制与下一步：单次重复、开发可见、`annotator_status: pending` 的临时标签；送审标签、重复评测、blind Test 分区。
 
-报告中的每个结论都应对应到表格或证据文件。不要用“技术完成率”替代“根因正确率”，不要只报告平均值而隐藏错误案例和失败 attempt。若要画图，建议用两个清晰面板：质量成功数与四项相对 Single 的百分比变化；另用单列图展示全尝试成本，避免把最终成功均值和含重试成本混在同一图。
+报告中的每个结论都应对应到表格或证据文件。不要用“技术完成率”替代“根因正确率”，也不要把“失败包含”的 33/36 和“完成内”的 33/33 混着讲。若要画图，建议用三个清晰面板：质量成功数（36 为分母）与完成内成功率；四项相对 Single 的百分比变化；分难度杠杆的 6 格热力。另用单列图展示全尝试成本，避免把最终成功均值和含失败 attempt 的成本混在同一图。
 
 ## PPT 成员上手
 
@@ -332,14 +421,14 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 | 4 | 一轮证据流：缺口 → 1–2 任务 → Merge → 补查/定稿 | 设计 30% |
 | 5 | 权限、引用、弃答与 STOP：为什么系统有边界 | 设计 30% |
 | 6 | 四架构消融与公平控制变量 | 分析 15% |
-| 7 | 总体结果表：技术完成与质量成功分开 | 实现 25% + 分析 15% |
-| 8 | Dynamic 对 Single 的四项资源下降图 | 分析 15% |
-| 9 | Fixed-4 失败案例与 Full 无额外质量收益 | 分析 15% |
+| 7 | 总体结果表：技术完成 136/144 与质量成功 33/32/30/22 分开 | 实现 25% + 分析 15% |
+| 8 | Dynamic 对 Single 的 39.4% 耗时 / 39.3% Token 下降图 | 分析 15% |
+| 9 | 零误判：19 次失分全是弃答；Fixed-4 错弃 12 次；Full 无额外质量收益 | 分析 15% |
 | 10 | UI/Demo 截图：调度、共享证据、审查、报告 | 实现 25% |
 | 11 | 限制、失败分类、下一步验证 | 分析 15% |
 | 12 | 贡献声明与结论 | 展示与提交 15% |
 
-架构图突出“证据如何流经角色”，少放代码类名。结果页大字写 `10/10 vs 10/10`，副标题写 `-40.3% latency / -43.6% tokens`，再注明开发集和候选 oracle。不要将四个架构画成完全并行的独立 LLM；本项目展示的是中央协调、结构化交接、共享证据和门控。
+架构图突出“证据如何流经角色”，少放代码类名。结果页大字写 `33/36 vs 32/36`（质量成功），副标题写 `-39.4% latency / -39.3% tokens vs Single`，再用一行小字补“136/144 技术完成、零根因误判、开发集与 pending oracle”。不要将四个架构画成完全并行的独立 LLM；本项目展示的是中央协调、结构化交接、共享证据和门控。
 
 ## 现场汇报与问答
 
@@ -358,14 +447,14 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 | 问题 | 回答要点 |
 | --- | --- |
-| 为什么不直接用一个更大的模型？ | 单 Agent 仍可做基线，但动态分工减少无关上下文和查询；本批 Dynamic 与 Single 质量相同且资源显著下降。 |
-| 多 Agent 的优势是不是因为模型变多？ | 不是。优势来自专家边界、按缺口派发、校验合并和明确弃答；Full 在本批并未因更多审查而更准确。 |
-| 为什么 Fixed-4 更便宜却正确率低？ | 它只做一次固定批次，不能根据缺口补查；3004、3005、3010 因此错误弃答。 |
-| Dynamic 没有 Verifier 是否风险更高？ | 它仍保留 Merge 校验、确定性接地和 FinalizeGate；本批质量与 Single/Full 相同，设为默认不改变风险画像。Verifier 对更难竞争假设的独立价值需要更大数据验证，按需 Verifier 是计划中的后续实验。 |
-| 数据是否独立盲测？ | 不是。10 个 Dev 案例开发可见，oracle 为候选状态，每案例一次；结论是描述性开发证据。 |
-| 为什么 Full 有 12 次 attempt？ | Full/3010 先 Provider 结构化失败，再遇终端/监督断连，第三次成功；前两次保留并计入全尝试成本。 |
-| 弃答是否是失败？ | 在无足够证据案例中，明确弃答是正确业务结果；Provider、网络或预算失败才是技术失败。 |
-| 下一步最重要的验证是什么？ | 先统一指标并审计查询覆盖，再验证搜索收敛、上下文裁剪与判别价值派单；同时完成人工标签验收、扩大独立案例并开展重复评测。按需 Verifier 在代表性困难案例准备后再测试。 |
+| 为什么不直接用一个更大的模型？ | 单 Agent 仍可做基线，但动态分工减少无关上下文和查询；本批 Dynamic 质量更高（33 vs 32），耗时和 Token 各低约 39%。 |
+| 多 Agent 的优势是不是因为模型变多？ | 不是。优势来自专家边界、按缺口派发、校验合并和明确弃答；Full 多一个 Verifier，反而少 3 个成功、多耗 56.7% Token。 |
+| 为什么 Fixed-4 更便宜却正确率低？ | 它只做一次固定批次，不能根据缺口补查；27 个可识别案例上错弃 12 个（4001、4006、4007、4008、4014、4019、4020、4023、4024、4025、4035、4036）。 |
+| Dynamic 没有 Verifier 是否风险更高？ | 它仍保留 Merge 校验、确定性接地和 FinalizeGate；本批 Dynamic 是四架构最高（33/36，完成内 33/33），设为默认不改变风险画像。Verifier 对更难竞争假设的独立价值需要更大数据验证，按需 Verifier 是计划中的后续实验。 |
+| 数据是否独立盲测？ | 不是。36 个 Dev 案例为 `development_visible`，oracle 的 `annotator_status` 仍是 `pending`，每案例一次；结论是描述性开发证据。 |
+| 为什么批次以“有错误”结束、退出码是 1？ | 8 个槽位发生技术失败（6 次结构化输出截断、2 次 finding 身份不匹配），`batch_finished_with_errors` 就是协议允许的合法终态。按预案不重试、不替换，失败保留在分母；失败分布在四个架构，是 provider 层偶发问题。 |
+| 弃答是否是失败？ | 在无足够证据案例中，明确弃答是正确业务结果；Provider、网络或预算失败才是技术失败。本批 19 次可识别失分全是弃答，没有一次根因误判。 |
+| 下一步最重要的验证是什么？ | 先把 oracle 标签送人工复核、做重复评测并划分 blind Test 分区；再验证搜索收敛、上下文裁剪与判别价值派单。按需 Verifier 在代表性困难案例准备后再测试。 |
 
 ## Demo 视频方案
 
@@ -407,12 +496,17 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 | 证据 | 路径 |
 | --- | --- |
-| 完整中文报告与 40 行明细 | [WP-D 报告](../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
-| 机器可读四架构对比 | [final-success-comparison.json](../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
-| 最终批次状态 | [supervisor-status.json](../results/v16/wp-d/full40-local-gateway-c4-20261031/supervisor-status.json) |
-| 实验计划 | [plan.json](../results/acceptance/local-gateway-full40-20261031/plan.json) |
-| 协议与预算 | [protocol.json](../results/acceptance/local-gateway-full40-20261031/protocol.json) |
-| Provider readiness | [readiness.json](../results/acceptance/local-gateway-full40-20261031/readiness.json) |
+| 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
+| 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../analysis/wp_d/reports/hardened144-20261101/README.md) |
+| 硬化集离线评分脚本 | [score_batch.py](../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
+| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
+| 硬化集最终批次状态 | [supervisor-status.json](../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
+| 硬化集实验计划 | [plan.json](../results/acceptance/full144-hardened-c4-20261101/plan.json) |
+| 硬化集协议与预算 | [protocol.json](../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
+| 硬化集 Provider readiness | [readiness.json](../results/acceptance/full144-hardened-c4-20261101/readiness.json) |
+| 早期 10 案例完整中文报告（40 行明细） | [WP-D 报告](../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
+| 早期 10 案例机器可读对比 | [final-success-comparison.json](../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
+| 早期 10 案例计划 / 协议 / readiness | [plan](../results/acceptance/local-gateway-full40-20261031/plan.json)、[protocol](../results/acceptance/local-gateway-full40-20261031/protocol.json)、[readiness](../results/acceptance/local-gateway-full40-20261031/readiness.json) |
 | 架构与实现契约 | [架构总览](code_wiki/01-architecture.md)、[编排层](code_wiki/03-orchestration.md) |
 | 指标与评分 | [评估说明](evaluation.md)、[V16 协议](evaluation/v16-protocol.md) |
 | IncidentBench 指南 | [测试指南](incidentbench/README.md) |
@@ -427,9 +521,9 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 1. 本项目为什么需要多 Agent，而不是只调用多个模型？
 2. Coordinator、专家、Verifier、Merge、FinalizeGate 各自做什么，哪些不是 LLM Agent？
-3. 四种架构如何控制变量，Fixed-4 为什么在三个案例错误弃答？
-4. Dynamic 作为主架构，对 Single、Full、Fixed-4 的质量与资源变化分别是多少？
-5. 为什么 Full（dynamic with verifier）在本批没有证明优于 Single，下一步需要什么证据？
+3. 四种架构如何控制变量，Fixed-4 为什么在 27 个可识别案例上错弃 12 个？
+4. Dynamic 作为主架构，对 Single、Full、Fixed-4 的质量与资源变化分别是多少（33 vs 32/30/22，−39.4% 耗时、−39.3% Token vs Single）？
+5. 为什么 Full（dynamic with verifier）在本批没有证明优于 Dynamic 甚至 Single，下一步需要什么证据？
 6. 技术完成、正确根因、正确弃答、全尝试成本分别如何统计？
 7. 新批次如何准备、执行、检查状态、保留失败并显式重试？
 8. 哪些表述会越过开发集、候选 oracle 和单次重复的证据边界？
