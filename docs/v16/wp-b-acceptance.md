@@ -57,7 +57,7 @@ Required delivery files:
 - [Dataset inventory](wp-b-final-dataset-inventory.md)
 - [Validation and actual evidence](wp-b-dataset-validation.md)
 - [Owner label acceptance policy](wp-b-label-acceptance-policy.md)
-- [WP-D handoff and executable commands](wp-b-experiment-handoff.md)
+- [WP-D handoff and executable commands](../handoff/v16/wp-b-experiment-handoff.md)
 - This acceptance record
 - [Machine-readable freeze](../incidentbench/wp-b-project-accepted-freeze.json)
 

@@ -38,7 +38,7 @@ investigation:
 
 默认配置中的权重是开发起点，不是校准后的研究参数。评分是启发式估计，不是信息增益概率；成本为统一回退值时，`active_no_cost` 与完整 CAES 的排序可能相同。冷启动没有可用区分性，只能使用公开角色优先顺序。物理重试乘数、Verifier 预留、STOP、墙钟和 token 预算始终优先于选择分数。
 
-`--shadow-caes` 记录完整建议，但实际执行 Coordinator 原任务，适合观察而不改变控制流。显式策略、Shadow 和重放选项要求 `--variant full`。观测失败时回退原提案。完整配置见 [CAES 示例](../configs/active-investigation.example.yaml)，算法和实验边界见 [CAES 算法](v1.5/algorithm-spec.md) 与 [公平实验协议](v1.5/fairness-protocol.md)。
+`--shadow-caes` 记录完整建议，但实际执行 Coordinator 原任务，适合观察而不改变控制流。显式策略、Shadow 和重放选项要求 `--variant full`。观测失败时回退原提案。完整配置见 [CAES 示例](../../configs/active-investigation.example.yaml)，算法和实验边界见 [CAES 算法](../v1.5/algorithm-spec.md) 与 [公平实验协议](../v1.5/fairness-protocol.md)。
 
 ```powershell
 # 记录建议，但不采用建议执行。
@@ -59,8 +59,8 @@ TaskManager 限制单任务尝试次数；StopController 冻结任务和工具�
 
 | 配置 | 工作流 | 轮次 | 工具调用 | 模型请求 | 总时限 |
 | --- | --- | ---: | ---: | ---: | ---: |
-| [system.yaml](../configs/system.yaml)（默认） | `legacy_rca` | 4 | 12 | 16 | 600 秒 |
-| [incident-response.yaml](../configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 秒 |
+| [system.yaml](../../configs/system.yaml)（默认） | `legacy_rca` | 4 | 12 | 16 | 600 秒 |
+| [incident-response.yaml](../../configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 秒 |
 
 事件响应配置额外限制 Monitoring 8 次调用、Remediation 2 次调用、单任务 2 次尝试和 5 秒停止确认等待。阶段预算共享全局上限；JSON 修复、传输重试和物理请求都计入实际请求用量。CLI 参数覆盖配置文件。
 
@@ -78,11 +78,11 @@ TaskManager 限制单任务尝试次数；StopController 冻结任务和工具�
 - 修复：`NOT_STARTED`、`PLAN_READY`、`PLAN_FAILED`、`SKIPPED`。
 - 工作流：`RUNNING`、`STOPPING`、`FINISHED`、`FAILED`。
 
-`PLAN_READY` 只表示修复建议已生成，不表示生产服务恢复。完整停止与评分契约见 [排查协议](protocol.md)。
+`PLAN_READY` 只表示修复建议已生成，不表示生产服务恢复。完整停止与评分契约见 [排查协议](../reference/protocol.md)。
 
 ## 模型提供方与配置
 
-将 [`.env.example`](../.env.example) 复制为项目本地 `.env`。真实模式必须显式提供以下配置：
+将 [`.env.example`](../../.env.example) 复制为项目本地 `.env`。真实模式必须显式提供以下配置：
 
 | 环境变量 | 含义 |
 | --- | --- |
@@ -116,7 +116,7 @@ provider_recovery:
   min_request_time_seconds: 5.0
 ```
 
-恢复策略不会把缺失 usage 填成零，也不会把 Provider 失败改写为证据弃权。诊断事件只保存安全失败类别和尝试标识。旧 trace 仍可读取。详细错误分类、恢复判定和 usage 记账见 [LLM 与缓存实现](code_wiki/07-llm-and-cache.md)。
+恢复策略不会把缺失 usage 填成零，也不会把 Provider 失败改写为证据弃权。诊断事件只保存安全失败类别和尝试标识。旧 trace 仍可读取。详细错误分类、恢复判定和 usage 记账见 [LLM 与缓存实现](../code_wiki/07-llm-and-cache.md)。
 
 真实可靠性实验会产生 Provider 费用，必须使用新的输出目录。确定性故障注入和独立真实预检分别执行：
 
@@ -126,11 +126,11 @@ provider_recovery:
 .venv\Scripts\python.exe scripts/analyze_v13_pilot.py --source results/v13-eval/NEW-PILOT --out results/v13-eval/NEW-ANALYSIS
 ```
 
-离线故障恢复不证明真实 RCA 正确率或定向修复质量。相关契约见 [运行时契约](v1.3/contracts.md) 与 [评测协议](v1.3/evaluation_protocol.md)。
+离线故障恢复不证明真实 RCA 正确率或定向修复质量。相关契约见 [运行时契约](../v1.3/contracts.md) 与 [评测协议](../v1.3/evaluation_protocol.md)。
 
 ## 证据与权限
 
-数据集包含原有 6 个 Seed、10 个 Dev、20 个留出合成用例，以及独立 [数据库用例集](../data/splits/database_ids.json) 中的 `incident_037`–`incident_040`，共 40 个案例。原有划分保持冻结；新增案例覆盖连接耗尽、应用连接池误配置、锁竞争、慢查询和证据不足。合成模板不是独立采集的生产基准，证据不足案例要求正常弃权。数据范围见 [数据说明](../data/README.md)。
+数据集包含原有 6 个 Seed、10 个 Dev、20 个留出合成用例，以及独立 [数据库用例集](../../data/splits/database_ids.json) 中的 `incident_037`–`incident_040`，共 40 个案例。原有划分保持冻结；新增案例覆盖连接耗尽、应用连接池误配置、锁竞争、慢查询和证据不足。合成模板不是独立采集的生产基准，证据不足案例要求正常弃权。数据范围见 [数据说明](../../data/README.md)。
 
 所有业务工具只读：
 
@@ -146,7 +146,7 @@ ToolRegistry 以角色 ACL 为上限；`InvestigationTask.allowed_tools` 只能�
 
 工具成功返回的记录进入该 context 的 observed ledger。Merge 发布和 Verifier 获取共享证据时，只能引用实际观察并已发布到当前运行的记录。公共文件采用固定文件名白名单，拒绝私有真值、路径穿越、符号链接和 Windows junction。证据摘录始终按不可信数据提示模型；应用层隔离不等同于操作系统级 Python 沙箱。
 
-新增工具必须同时维护参数 Schema、只读实现、角色 ACL、路径白名单和越权/预算/超时测试。完整权限矩阵与查询账本见 [工具与安全边界](code_wiki/06-tools-and-security.md)。
+新增工具必须同时维护参数 Schema、只读实现、角色 ACL、路径白名单和越权/预算/超时测试。完整权限矩阵与查询账本见 [工具与安全边界](../code_wiki/06-tools-and-security.md)。
 
 ## 本地解释缓存
 
@@ -187,11 +187,11 @@ $env:CACHE_DB_PATH = 'results/cache.sqlite'
 ## 相关文档
 
 - [运行与配置指南（英文）](readme-guide.md)
-- [排查协议](protocol.md)
-- [CAES 算法](v1.5/algorithm-spec.md)
-- [CAES 公平实验协议](v1.5/fairness-protocol.md)
-- [工具与安全边界](code_wiki/06-tools-and-security.md)
-- [LLM 与缓存实现](code_wiki/07-llm-and-cache.md)
+- [排查协议](../reference/protocol.md)
+- [CAES 算法](../v1.5/algorithm-spec.md)
+- [CAES 公平实验协议](../v1.5/fairness-protocol.md)
+- [工具与安全边界](../code_wiki/06-tools-and-security.md)
+- [LLM 与缓存实现](../code_wiki/07-llm-and-cache.md)
 - [缓存设计](cache.md)
-- [数据说明](../data/README.md)
-- [IncidentBench 测试指南](incidentbench/README.md)
+- [数据说明](../../data/README.md)
+- [IncidentBench 测试指南](../incidentbench/README.md)

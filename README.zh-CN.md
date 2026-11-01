@@ -137,17 +137,17 @@ Verifier 反馈回路，仅作为消融对照保留。`fixed` 保留一次原有
 `INCONCLUSIVE` 正常弃答。
 
 两种工作流的预算、阶段限制、状态语义和停止规则见
-[运行与配置指南](docs/readme-guide.zh-CN.md#运行机制与预算)。
+[运行与配置指南](docs/guides/readme-guide.zh-CN.md#运行机制与预算)。
 
 ## 运行与配置
 
-详细操作说明已移至 [运行与配置指南](docs/readme-guide.zh-CN.md)：
+详细操作说明已移至 [运行与配置指南](docs/guides/readme-guide.zh-CN.md)：
 
-- [成本感知证据选择（CAES）](docs/readme-guide.zh-CN.md#成本感知证据选择caes)
-- [运行机制与预算](docs/readme-guide.zh-CN.md#运行机制与预算)
-- [模型提供方与配置](docs/readme-guide.zh-CN.md#模型提供方与配置)
-- [证据与权限](docs/readme-guide.zh-CN.md#证据与权限)
-- [本地解释缓存](docs/readme-guide.zh-CN.md#本地解释缓存)
+- [成本感知证据选择（CAES）](docs/guides/readme-guide.zh-CN.md#成本感知证据选择caes)
+- [运行机制与预算](docs/guides/readme-guide.zh-CN.md#运行机制与预算)
+- [模型提供方与配置](docs/guides/readme-guide.zh-CN.md#模型提供方与配置)
+- [证据与权限](docs/guides/readme-guide.zh-CN.md#证据与权限)
+- [本地解释缓存](docs/guides/readme-guide.zh-CN.md#本地解释缓存)
 
 ## IncidentBench 测试
 
@@ -230,18 +230,19 @@ Fixed 更便宜（96.9s、7.9 请求、56,586 Token），但错弃 3 个可识�
 `causal-world-v2-hardened` 编码器血统新增 36 个开发案例（29 可识别 / 7 需弃答），
 难度杠杆覆盖 standard、boundary、competing、missing、misleading 与反事实配对六类；
 上文的 144 槽位批次就是针对这套数据。后续仍以独立实验验证上下文裁剪、判别价值派单与
-按需 Verifier。优先级、验收标准和责任分工见 [优化路线](docs/optimization-roadmap.zh-CN.md)。
+按需 Verifier。优先级、验收标准和责任分工见 [优化路线](docs/guides/optimization-roadmap.zh-CN.md)。
 
 ## 文档
 
-- [课程项目交接指南](docs/project-handoff.zh-CN.md) —— 面向测试、报告、PPT、Demo 与现场汇报的完整上手说明
-- [运行与配置指南](docs/readme-guide.zh-CN.md) —— CAES、预算、模型配置、证据权限与缓存
+- [文档地图](docs/README.md) —— 交接、指南、契约与版本档案的入口
+- [课程项目交接指南](docs/handoff/project-handoff.zh-CN.md) —— 面向测试、报告、PPT、Demo 与现场汇报的完整上手说明
+- [运行与配置指南](docs/guides/readme-guide.zh-CN.md) —— CAES、预算、模型配置、证据权限与缓存
 - [IncidentBench 测试指南](docs/incidentbench/README.md) —— 数据、协议、评分与命令
-- [排查协议](docs/protocol.md) —— 运行生命周期、门控与预算
-- [评估协议](docs/evaluation.md) —— 变体、指标与计分规则
-- [优化路线](docs/optimization-roadmap.zh-CN.md) —— 面向技术与报告成员的分层计划、优先级、责任和验收标准
-- [缓存设计](docs/cache.md) —— 命名空间、命中与语义复用
+- [排查协议](docs/reference/protocol.md) —— 运行生命周期、门控与预算
+- [评估协议](docs/guides/evaluation.md) —— 变体、指标与计分规则
+- [优化路线](docs/guides/optimization-roadmap.zh-CN.md) —— 面向技术与报告成员的分层计划、优先级、责任和验收标准
+- [缓存设计](docs/guides/cache.md) —— 命名空间、命中与语义复用
 - [数据生成与局限](data/README.md) —— 合成夹具与适用范围
 - [验收证据](docs/acceptance/) —— 验收运行与审计
 - [代码百科](docs/code_wiki/README.md) —— 架构、模块与实现契约
-- [演示脚本](docs/demo.md) —— 录制演示流程
+- [演示脚本](docs/guides/demo.md) —— 录制演示流程

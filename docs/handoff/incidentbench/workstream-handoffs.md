@@ -1,6 +1,6 @@
 # IncidentBench workstream handoffs
 
-The shared interface is `incidentbench-v1.0`; see [contracts-freeze.md](contracts-freeze.md). Each worker uses its assigned worktree and edits only owned files. The Lead owns integration, final generated data, source manifests, root documentation and final validation. No existing result directory is reused.
+The shared interface is `incidentbench-v1.0`; see [contracts-freeze.md](../../incidentbench/contracts-freeze.md). Each worker uses its assigned worktree and edits only owned files. The Lead owns integration, final generated data, source manifests, root documentation and final validation. No existing result directory is reused.
 
 | Workstream | Owned responsibility | Evidence needed for handoff |
 | --- | --- | --- |
@@ -42,4 +42,4 @@ Current research gates remain explicit: zero accepted labels, zero human reviewe
 | D | 146e002 | Cards/reproduction/CLI E2E integrated |
 | E | read-only | Leakage/denominator/receipt/statistical/resume findings corrected;80artifact audit passed |
 
-Coordinator final source freeze072cea5; data Git-byte correctionf5e64ef; finalserial723passed3skipped.80Mock runs independently rescored,0realHTTP,75pendingclaims. Freshwheel7legacychecks andfresh editableCLI8runE2E passed. See release-report.md andqa-review.md for exact limits, prior failures andunmetresearch gates. No original history was overwritten andno remote publication occurred.
+Coordinator final source freeze072cea5; data Git-byte correctionf5e64ef; finalserial723passed3skipped.80Mock runs independently rescored,0realHTTP,75pendingclaims. Freshwheel7legacychecks andfresh editableCLI8runE2E passed. See ../../incidentbench/release-report.md and../../incidentbench/qa-review.md for exact limits, prior failures andunmetresearch gates. No original history was overwritten andno remote publication occurred.

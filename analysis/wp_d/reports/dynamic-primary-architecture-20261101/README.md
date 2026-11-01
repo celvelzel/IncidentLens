@@ -135,4 +135,4 @@ Dynamic 在本批 10 个槽位全部一次成功，没有结构化失败、没�
 ## 9. 后续
 
 主架构的下一步不是再加一个 Agent，而是补上**证据不足时的成本护栏**，并把 Verifier 从“常开”
-改为“按需触发”。优先级与验收方式见 [优化路线](../../../../docs/optimization-roadmap.zh-CN.md)。
+改为“按需触发”。优先级与验收方式见 [优化路线](../../../../docs/guides/optimization-roadmap.zh-CN.md)。

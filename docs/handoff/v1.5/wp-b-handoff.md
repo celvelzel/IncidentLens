@@ -4,7 +4,7 @@ WORKSTREAM: B
 BASE SHA: 50c21e8
 DEPENDENCIES: A 7cb9396 + 45275db (cherry-picked locally for validation only).
 OWNED/CHANGED: feature_extractors.py, cost_estimator.py, selector.py; test_feature_extraction.py, test_cost_estimation.py, test_selector.py; this handoff.
-CONTRACT: frozen caes-v1 DTO and function signatures in contract-freeze.md.
+CONTRACT: frozen caes-v1 DTO and function signatures in ../../v1.5/contract-freeze.md.
 
 Features are deterministic lexical heuristics, not calibrated information gain. D uses only non-rejected published hypothesis predictions: distinct prediction sets, candidate matches both, and matches at least one contrast token. Shared generic service words alone do not yield D. No failure_mode/root-mode lookup. Negations are retained. U covers published exact requested checks or open-question token coverage. G independently rewards absent role source (.5; 1 with published grounding errors). G predicts possible contribution; it never certifies sufficiency. R is exact completed signature on the same evidence snapshot. Different windows/snapshots are not completed duplicates. Pair diversity uses same role+filters and token Jaccard, preserving opposite negation sets.
 

@@ -157,19 +157,19 @@ STOP handling and deterministic reporting. Budgets count physical requests, retr
 structured repairs. Budget exhaustion is a runtime failure; ordinary evidence
 insufficiency ends in `INCONCLUSIVE`.
 
-See the [operations and configuration guide](docs/readme-guide.md#runtime-and-budgets)
+See the [operations and configuration guide](docs/guides/readme-guide.md#runtime-and-budgets)
 for profile budgets, phase limits, status semantics and stop behavior.
 
 ## Operations and configuration
 
 The detailed operational material is now kept in the
-[operations and configuration guide](docs/readme-guide.md):
+[operations and configuration guide](docs/guides/readme-guide.md):
 
-- [Cost-Aware Evidence Selection](docs/readme-guide.md#cost-aware-evidence-selection-caes)
-- [Runtime and budgets](docs/readme-guide.md#runtime-and-budgets)
-- [Providers and configuration](docs/readme-guide.md#providers-and-configuration)
-- [Evidence and permissions](docs/readme-guide.md#evidence-and-permissions)
-- [Local explanation cache](docs/readme-guide.md#local-explanation-cache)
+- [Cost-Aware Evidence Selection](docs/guides/readme-guide.md#cost-aware-evidence-selection-caes)
+- [Runtime and budgets](docs/guides/readme-guide.md#runtime-and-budgets)
+- [Providers and configuration](docs/guides/readme-guide.md#providers-and-configuration)
+- [Evidence and permissions](docs/guides/readme-guide.md#evidence-and-permissions)
+- [Local explanation cache](docs/guides/readme-guide.md#local-explanation-cache)
 
 ## IncidentBench tests
 
@@ -265,18 +265,19 @@ The `causal-world-v2-hardened` lineage adds 36 development cases (29 identifiabl
 misleading-evidence and counterfactual-pair levers; the 144-slot batch above measures
 all of them.
 Priority, ownership and acceptance criteria are in the
-[optimization roadmap](docs/optimization-roadmap.zh-CN.md).
+[optimization roadmap](docs/guides/optimization-roadmap.zh-CN.md).
 
 ## Documentation
 
-- [Course project handoff](docs/project-handoff.zh-CN.md) — Chinese onboarding guide for testing, reporting, slides, demo recording and presentation
-- [Operations and configuration](docs/readme-guide.md) — CAES, budgets, providers, permissions and cache
+- [Documentation map](docs/README.md) — where handoffs, guides, contracts and version archives live
+- [Course project handoff](docs/handoff/project-handoff.zh-CN.md) — Chinese onboarding guide for testing, reporting, slides, demo recording and presentation
+- [Operations and configuration](docs/guides/readme-guide.md) — CAES, budgets, providers, permissions and cache
 - [IncidentBench tests](docs/incidentbench/README.md) — datasets, protocols, scoring and commands
-- [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
-- [Evaluation protocol](docs/evaluation.md) — variants, metrics and scoring rules
-- [Optimization roadmap](docs/optimization-roadmap.zh-CN.md) — prioritized work with ownership and acceptance criteria
-- [Cache design](docs/cache.md) — namespaces, hits and semantic reuse
+- [Investigation protocol](docs/reference/protocol.md) — run lifecycle, gates and budgets
+- [Evaluation protocol](docs/guides/evaluation.md) — variants, metrics and scoring rules
+- [Optimization roadmap](docs/guides/optimization-roadmap.zh-CN.md) — prioritized work with ownership and acceptance criteria
+- [Cache design](docs/guides/cache.md) — namespaces, hits and semantic reuse
 - [Data generation and limitations](data/README.md) — synthetic fixtures and scope
 - [Acceptance evidence](docs/acceptance/) — runs and audits
 - [Code wiki](docs/code_wiki/README.md) — architecture, modules and implementation contracts
-- [Demo walkthrough](docs/demo.md) — recorded demo script
+- [Demo walkthrough](docs/guides/demo.md) — recorded demo script

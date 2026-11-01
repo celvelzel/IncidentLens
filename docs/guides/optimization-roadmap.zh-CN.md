@@ -35,9 +35,9 @@ FinalizeGate 决定是否接受根因；默认不调用独立的 LLM Verifier。
 ### 实验条件
 
 主要证据来自
-[2026-10-31 完整 WP-D 批次](../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
+[2026-10-31 完整 WP-D 批次](../../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 及对应的
-[结构化结果](../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json)。
+[结构化结果](../../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json)。
 
 | 项目 | 条件 |
 | --- | --- |
@@ -85,8 +85,8 @@ Dynamic 全部 Token 中约 74.8% 是输入 Token。这说明上下文构成值�
 
 原始轨迹：
 
-- [3003 trace](../results/v16/wp-d/full40-local-gateway-c4-20261031/runs/slot-022/attempt-001/trace.json)
-- [3008 trace](../results/v16/wp-d/full40-local-gateway-c4-20261031/runs/slot-020/attempt-001/trace.json)
+- [3003 trace](../../results/v16/wp-d/full40-local-gateway-c4-20261031/runs/slot-022/attempt-001/trace.json)
+- [3008 trace](../../results/v16/wp-d/full40-local-gateway-c4-20261031/runs/slot-020/attempt-001/trace.json)
 
 **后续（2026-11-01）**：这一现象已由 P0-B 的证据缺口护栏处理。在冻结轨迹上重放该判据，
 阈值 5 下两例都会在连续 5 轮没有候选获得 `cause_discriminator` 时提前弃答：3003 的 Token
@@ -140,7 +140,7 @@ Dynamic 全部 Token 中约 74.8% 是输入 Token。这说明上下文构成值�
 
 trace、verification 与 measured-usage 已记录请求、工具、Token、终止和失败；查询历史与数据库覆盖
 已有基础实现，见
-[`evidence_board.py`](../src/incident_lens/orchestration/evidence_board.py)。
+[`evidence_board.py`](../../src/incident_lens/orchestration/evidence_board.py)。
 这项工作主要是补齐、统一和验证，不另建一套与现有记录冲突的计数器。
 
 **工作内容**
@@ -189,7 +189,7 @@ trace、verification 与 measured-usage 已记录请求、工具、Token、终�
 
 **现状**
 
-[`graph.py`](../src/incident_lens/orchestration/graph.py) 已有任务签名、部分完成范围去重、
+[`graph.py`](../../src/incident_lens/orchestration/graph.py) 已有任务签名、部分完成范围去重、
 预算限制和模型主动弃答；Coordinator 提示也要求在没有新的判别检查时考虑弃答。
 优化应增强这些机制，而不是只增加“连续几轮没进展就停止”的口号式规则。
 
@@ -206,11 +206,11 @@ trace、verification 与 measured-usage 已记录请求、工具、Token、终�
   `BEST_SUPPORTED_AVAILABLE` 全部不变，所以它既不会把可查清的案例判成正确弃答，
   也不会让本来该弃答的案例变成错误归因。`fixed` 变体不启用（它本来就不做后续轮次）。
 - 阈值不是拍脑袋定的，而是用
-  [`recalibrate.py`](../analysis/wp_d/reports/evidence-gap-calibration-20261101/recalibrate.py)
+  [`recalibrate.py`](../../analysis/wp_d/reports/evidence-gap-calibration-20261101/recalibrate.py)
   在**冻结的 WP-D 轨迹**上只读重放该判据得到的：可识别案例的最大连续缺口轮数为 3
   （single / dynamic / full 三个变体都是 3），因此 4 是首个零误报值；mock 套件在不受轮次上限
   限制时峰值为 4，所以取 5 留一格余量。详见
-  [校准报告](../analysis/wp_d/reports/evidence-gap-calibration-20261101/)。
+  [校准报告](../../analysis/wp_d/reports/evidence-gap-calibration-20261101/)。
 
 **必须一起读的三条限制**
 
@@ -355,8 +355,8 @@ trace、verification 与 measured-usage 已记录请求、工具、Token、终�
 契约读者持平、幅度读者下降，这才是本轮的结论：**新案例对“只凭数值大小推断”的读法更难，
 但对逐条核对契约的读法没有变难，也并非不可读**。它不构成对任何真实模型、盲测或生产表现的
 结论。复算脚本：
-[`measure.py`](../analysis/wp_d/reports/hardened-difficulty-20261101/measure.py)、结果
-[`results.json`](../analysis/wp_d/reports/hardened-difficulty-20261101/results.json)。
+[`measure.py`](../../analysis/wp_d/reports/hardened-difficulty-20261101/measure.py)、结果
+[`results.json`](../../analysis/wp_d/reports/hardened-difficulty-20261101/results.json)。
 
 **这条路线仍缺什么**
 
@@ -369,8 +369,8 @@ trace、verification 与 measured-usage 已记录请求、工具、Token、终�
 **四变体 mock 基线（仅证明流程可用，不证明难度）**
 
 用正式实验装置（`run_incidentbench.py`，四条件协议、cache off）分别在两个数据集上跑了一遍，
-结果见 [`mock-v1`](../analysis/wp_d/reports/hardened-dataset-validation-20261101/mock-v1/aggregate.csv)
-与 [`mock-v2`](../analysis/wp_d/reports/hardened-dataset-validation-20261101/mock-v2/aggregate.csv)：
+结果见 [`mock-v1`](../../analysis/wp_d/reports/hardened-dataset-validation-20261101/mock-v1/aggregate.csv)
+与 [`mock-v2`](../../analysis/wp_d/reports/hardened-dataset-validation-20261101/mock-v2/aggregate.csv)：
 
 | 指标 | v1（10 例） | v2-hardened（36 例） |
 | --- | --- | --- |
@@ -524,7 +524,7 @@ Coordinator 已能动态派发 1–2 个任务，并有限制重复任务和预�
 
 阶段提示拆分、分析阶段精简身份上下文和 DSML 定向修复已在源码中存在，不再作为“待开发功能”重复列出。
 此前网关审计记录了旧故障范围，见
-[网关 JSON 原因审计](../analysis/wp_d/reports/local-gateway-json-audit-20261031/report.zh-CN.md)；
+[网关 JSON 原因审计](../../analysis/wp_d/reports/local-gateway-json-audit-20261031/report.zh-CN.md)；
 后续完整批次的失败情况应单独统计。
 
 **工作内容**
@@ -658,9 +658,9 @@ Benchmark 主对照仍保持 cache off；缓存实验单列命中率、失效行
 
 ## 相关文档
 
-- [主架构决策与证据边界](../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md)
-- [最新 WP-D 完整报告](../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
+- [主架构决策与证据边界](../../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md)
+- [最新 WP-D 完整报告](../../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 - [评测说明](evaluation.md)
-- [IncidentBench 指南](incidentbench/README.md)
-- [课程项目交接指南](project-handoff.zh-CN.md)
+- [IncidentBench 指南](../incidentbench/README.md)
+- [课程项目交接指南](../handoff/project-handoff.zh-CN.md)
 - [运行与配置指南](readme-guide.zh-CN.md)

@@ -1,6 +1,6 @@
 # WP-B → WP-D benchmark handoff
 
-Scope: development/course-project comparison, owner-approved reference labels; not an independent blind test. Authority and limits: [label policy](wp-b-label-acceptance-policy.md). No paid execution is authorized by this handoff. Run from the isolated WP-B checkout; retain the original repository and saved completion paths.
+Scope: development/course-project comparison, owner-approved reference labels; not an independent blind test. Authority and limits: [label policy](../../v16/wp-b-label-acceptance-policy.md). No paid execution is authorized by this handoff. Run from the isolated WP-B checkout; retain the original repository and saved completion paths.
 
 ## Inputs and access
 
@@ -13,7 +13,7 @@ Original repository `$R = 'C:\Develop\python_projects\COMP5584_Agents\IncidentLe
 
 Each runtime dataset includes manifest, coverage, public index, topology, split IDs and public case observations. Oracle file layout is `rca/incidents/<id>/private/benchmark_oracle.json`. Evaluator credentials/permissions must remain separate from Agent filesystem/tool access. Never mount the oracle root as runtime data, tool response, prompt context or frontend Replay input. Run raw persistence precedes receipt-gated oracle access. Keep raw Agent artifacts separate from evaluator output containing reference comparisons.
 
-The full case-ID list and hashes are in [inventory](wp-b-final-dataset-inventory.md) and `docs/incidentbench/wp-b-project-accepted-freeze.json`; detailed causes, support, competing alternatives and misleading references are in the ignored evaluator inventory, whose exact path is recorded in validation. Owner acceptance is an external sidecar; original pending reviewer provenance is preserved.
+The full case-ID list and hashes are in [inventory](../../v16/wp-b-final-dataset-inventory.md) and `docs/incidentbench/wp-b-project-accepted-freeze.json`; detailed causes, support, competing alternatives and misleading references are in the ignored evaluator inventory, whose exact path is recorded in validation. Owner acceptance is an external sidecar; original pending reviewer provenance is preserved.
 
 ## Freeze and offline preparation
 

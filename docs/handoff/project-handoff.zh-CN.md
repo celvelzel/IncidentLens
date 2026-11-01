@@ -132,7 +132,7 @@ flowchart LR
 
 公开观测与 evaluator-only oracle 分离；Graph 结束后才评分。所有案例为 `development_visible`，oracle 仍为 `pending` / `candidate-v1`，没有独立人工验收或 blind Test 结论，**不能当作验证集或测试集**。
 
-上一批使用的 Dev10（`data/incidentbench_v16_dev` 的 `incident_3001`–`incident_3010`，8 可识别 / 2 需弃答）保持冻结、逐字节可复现，作为早期证据保留在附录与 README 中。详见 [优化路线](optimization-roadmap.zh-CN.md) 的 P0-C 章节。
+上一批使用的 Dev10（`data/incidentbench_v16_dev` 的 `incident_3001`–`incident_3010`，8 可识别 / 2 需弃答）保持冻结、逐字节可复现，作为早期证据保留在附录与 README 中。详见 [优化路线](../guides/optimization-roadmap.zh-CN.md) 的 P0-C 章节。
 
 可识别案例要求 `culprit_service` 与 `failure_mode` 同时精确匹配；不可识别案例只有在正常终止且 `INCONCLUSIVE`、无根因时才算正确弃答。技术失败仍在对应分母中；证据不足的正常弃答是有效结果；Provider/网络/预算失败不是弃答。
 
@@ -307,7 +307,7 @@ Full 271,306、Single 273,905。Fixed-4 单看成本最低，但它少答对 11 
 全部数字。仍**未完成**的是：oracle 标签仍是 `pending`（没有人工复核）、只有单次重复、没有 blind Test
 分区。因此 P0-C 的完成标准仍未满足，下一步是把标签送审并做重复评测，而不是再加大并发或换模型。
 
-优先级与验收标准写在 [优化路线](optimization-roadmap.zh-CN.md)，要点：
+优先级与验收标准写在 [优化路线](../guides/optimization-roadmap.zh-CN.md)，要点：
 
 | 优先级 | 合并后的方向 | 完成标准 |
 | --- | --- | --- |
@@ -496,24 +496,24 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 | 证据 | 路径 |
 | --- | --- |
-| 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
-| 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../analysis/wp_d/reports/hardened144-20261101/README.md) |
-| 硬化集离线评分脚本 | [score_batch.py](../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
-| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
-| 硬化集最终批次状态 | [supervisor-status.json](../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
-| 硬化集实验计划 | [plan.json](../results/acceptance/full144-hardened-c4-20261101/plan.json) |
-| 硬化集协议与预算 | [protocol.json](../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
-| 硬化集 Provider readiness | [readiness.json](../results/acceptance/full144-hardened-c4-20261101/readiness.json) |
-| 早期 10 案例完整中文报告（40 行明细） | [WP-D 报告](../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
-| 早期 10 案例机器可读对比 | [final-success-comparison.json](../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
-| 早期 10 案例计划 / 协议 / readiness | [plan](../results/acceptance/local-gateway-full40-20261031/plan.json)、[protocol](../results/acceptance/local-gateway-full40-20261031/protocol.json)、[readiness](../results/acceptance/local-gateway-full40-20261031/readiness.json) |
-| 架构与实现契约 | [架构总览](code_wiki/01-architecture.md)、[编排层](code_wiki/03-orchestration.md) |
-| 指标与评分 | [评估说明](evaluation.md)、[V16 协议](evaluation/v16-protocol.md) |
-| IncidentBench 指南 | [测试指南](incidentbench/README.md) |
-| 运行、模型、权限与缓存 | [运行与配置指南](readme-guide.zh-CN.md) |
-| Demo 回放说明 | [V1.6 replay demo](v16/replay-demo.md)、[WP-C walkthrough](v16/wp-c-demo-walkthrough.md) |
-| 主架构论证报告 | [dynamic-primary-architecture-20261101](../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md) |
-| 优化路线 | [优化路线（优先级、责任与验收）](optimization-roadmap.zh-CN.md) |
+| 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
+| 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../../analysis/wp_d/reports/hardened144-20261101/README.md) |
+| 硬化集离线评分脚本 | [score_batch.py](../../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
+| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
+| 硬化集最终批次状态 | [supervisor-status.json](../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
+| 硬化集实验计划 | [plan.json](../../results/acceptance/full144-hardened-c4-20261101/plan.json) |
+| 硬化集协议与预算 | [protocol.json](../../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
+| 硬化集 Provider readiness | [readiness.json](../../results/acceptance/full144-hardened-c4-20261101/readiness.json) |
+| 早期 10 案例完整中文报告（40 行明细） | [WP-D 报告](../../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
+| 早期 10 案例机器可读对比 | [final-success-comparison.json](../../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
+| 早期 10 案例计划 / 协议 / readiness | [plan](../../results/acceptance/local-gateway-full40-20261031/plan.json)、[protocol](../../results/acceptance/local-gateway-full40-20261031/protocol.json)、[readiness](../../results/acceptance/local-gateway-full40-20261031/readiness.json) |
+| 架构与实现契约 | [架构总览](../code_wiki/01-architecture.md)、[编排层](../code_wiki/03-orchestration.md) |
+| 指标与评分 | [评估说明](../guides/evaluation.md)、[V16 协议](../evaluation/v16-protocol.md) |
+| IncidentBench 指南 | [测试指南](../incidentbench/README.md) |
+| 运行、模型、权限与缓存 | [运行与配置指南](../guides/readme-guide.zh-CN.md) |
+| Demo 回放说明 | [V1.6 replay demo](../v16/replay-demo.md)、[WP-C walkthrough](../v16/wp-c-demo-walkthrough.md) |
+| 主架构论证报告 | [dynamic-primary-architecture-20261101](../../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md) |
+| 优化路线 | [优化路线（优先级、责任与验收）](../guides/optimization-roadmap.zh-CN.md) |
 
 ## 交接完成定义
 

@@ -38,7 +38,7 @@ scores or conservative reserves can stop before useful checks. Analyze these fai
 against saved Coordinator proposals, candidate assessments, executed tasks, budget and
 Verifier evidence; never adjust FinalizeGate or remove failures to improve reported scores.
 
-Actual D-owned command checks and results are recorded in `wp-d-handoff.md`.
+Actual D-owned command checks and results are recorded in `../handoff/v1.5/wp-d-handoff.md`.
 Later saved main smoke `results/v15/active-final-smoke-20261014` remains INCONCLUSIVE
 with 7 Mock calls/3 tools (Lead count): result.json inspected directly reports workflow
 FINISHED, ABSTAINED, Missing discriminating evidence, runtime_failure=false. Companion

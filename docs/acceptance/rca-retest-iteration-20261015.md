@@ -34,7 +34,7 @@
 
 定向回归覆盖身份冲突、查询范围、同任务有界 diff 获取、引用/原因身份约束和重新审查。后续真实 v4 已实际观察 E-003/004/005/008/009，并将 `backend_pool_config_regression` 设为 SUPPORTED、排除竞争原因。证据发现与共同状态协调取得实际进展，但不能据此宣称四变体最终恢复率已通过。
 
-详细历史：[10 月 14 日修复与交接](../IncidentBench_20261014_RCA_Fix_Notes.md)。其中 37 passed 是当时定向测试；878 passed、3 skipped、1 failed 是当时源码变动期间的历史全量结果，不能当作当前验证状态。
+详细历史：[10 月 14 日修复与交接](../handoff/incidentbench/2026-10-14-rca-fix-notes.md)。其中 37 passed 是当时定向测试；878 passed、3 skipped、1 failed 是当时源码变动期间的历史全量结果，不能当作当前验证状态。
 
 ## 3. 迭代二：补齐阶段恢复，分清请求超时与总预算
 

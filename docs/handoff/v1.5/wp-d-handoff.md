@@ -1,7 +1,7 @@
 # WP-D handoff
 
-Base: 1c95339. Scope: algorithm-spec.md, fairness-protocol.md,
-experiment-preregistration.md, dev-results.md, future-work.md and this handoff.
+Base: 1c95339. Scope: ../../v1.5/algorithm-spec.md, ../../v1.5/fairness-protocol.md,
+../../v1.5/experiment-preregistration.md, ../../v1.5/dev-results.md, ../../v1.5/future-work.md and this handoff.
 No runtime, old UI, README, graph, schemas, dataset or result files changed.
 Authoritative main plan read in full; A/B/C contracts and actual implemented code reviewed.
 Existing saved JSON replay fulfills the secondary CLI trace view; no new renderer added.

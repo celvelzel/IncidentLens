@@ -34,7 +34,7 @@ See coverage-matrix.md for all T01–T68 evidence mappings.
 | E | independent read-only reviewer | no implementation ownership; verifies source/permissions/budgets, final traces, receipts/hashes, negative results and wheel isolation |
 | Lead | main shared interfaces | schema/config/CLI, LangGraph dispatch, visible projection, STOP/materialization rechecks, common integration/tests, final report |
 
-Worker handoffs: wp-a-handoff.md,wp-b-handoff.md,wp-c-handoff.md,wp-d-handoff.md.
+Worker handoffs: ../handoff/v1.5/wp-a-handoff.md,../handoff/v1.5/wp-b-handoff.md,../handoff/v1.5/wp-c-handoff.md,../handoff/v1.5/wp-d-handoff.md.
 Existing worker worktrees/commits are retained for audit. No unrelated dirty files
 were reset, staged or deleted. Original two untracked plan files and results/acceptance/v14
 remain untouched; newly observed unrelated `_tmp_pdf/` is also preserved.

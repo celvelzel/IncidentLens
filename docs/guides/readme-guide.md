@@ -38,7 +38,7 @@ investigation:
 
 The weights in the default example are development starting values, not calibrated research parameters. The score is a heuristic, not calibrated information gain or a probability of success. Uniform fallback costs can make `active_no_cost` and full CAES rank candidates identically. Cold start has no usable discrimination and falls back to a public role order. Physical retry multipliers, Verifier reserves, STOP, wall-clock limits, and token budgets take precedence over a selection score.
 
-`--shadow-caes` records recommendations while executing the Coordinator assignments. Explicit policies, Shadow, and replay require `--variant full`. Observation failures fall back to the original proposal. See the [CAES example configuration](../configs/active-investigation.example.yaml), [algorithm](v1.5/algorithm-spec.md), and [fairness protocol](v1.5/fairness-protocol.md).
+`--shadow-caes` records recommendations while executing the Coordinator assignments. Explicit policies, Shadow, and replay require `--variant full`. Observation failures fall back to the original proposal. See the [CAES example configuration](../../configs/active-investigation.example.yaml), [algorithm](../v1.5/algorithm-spec.md), and [fairness protocol](../v1.5/fairness-protocol.md).
 
 ```powershell
 # Record recommendations without changing execution.
@@ -59,8 +59,8 @@ TaskManager bounds task attempts. StopController freezes tasks and tools, cancel
 
 | Configuration | Workflow | Rounds | Tool calls | Model requests | Total time |
 | --- | --- | ---: | ---: | ---: | ---: |
-| [system.yaml](../configs/system.yaml) (default) | `legacy_rca` | 4 | 12 | 16 | 600 seconds |
-| [incident-response.yaml](../configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 seconds |
+| [system.yaml](../../configs/system.yaml) (default) | `legacy_rca` | 4 | 12 | 16 | 600 seconds |
+| [incident-response.yaml](../../configs/incident-response.yaml) | `incident_response` | 6 | 24 | 24 | 600 seconds |
 
 The response configuration also limits Monitoring to eight calls, Remediation to two calls, each task to two attempts, and stop acknowledgement to five seconds. Phase budgets share global limits. JSON repair, transport retries, and physical requests count toward actual request usage. CLI flags override configuration.
 
@@ -72,11 +72,11 @@ Diagnosis, remediation, and workflow states are separate:
 - Remediation: `NOT_STARTED`, `PLAN_READY`, `PLAN_FAILED`, `SKIPPED`.
 - Workflow: `RUNNING`, `STOPPING`, `FINISHED`, `FAILED`.
 
-`PLAN_READY` means a proposal exists, not that a production service recovered. See the [investigation protocol](protocol.md) for stop and scoring contracts.
+`PLAN_READY` means a proposal exists, not that a production service recovered. See the [investigation protocol](../reference/protocol.md) for stop and scoring contracts.
 
 ## Providers and configuration
 
-Copy [`.env.example`](../.env.example) to a project-local `.env`. Real mode requires explicit configuration:
+Copy [`.env.example`](../../.env.example) to a project-local `.env`. Real mode requires explicit configuration:
 
 | Variable | Meaning |
 | --- | --- |
@@ -110,7 +110,7 @@ provider_recovery:
   min_request_time_seconds: 5.0
 ```
 
-Recovery never converts missing usage to zero or rewrites a provider failure as evidence-based abstention. Diagnostic events retain safe failure categories and attempt identifiers. Older traces remain readable. See [LLM and cache internals](code_wiki/07-llm-and-cache.md) for failure classification, recovery decisions, and usage accounting.
+Recovery never converts missing usage to zero or rewrites a provider failure as evidence-based abstention. Diagnostic events retain safe failure categories and attempt identifiers. Older traces remain readable. See [LLM and cache internals](../code_wiki/07-llm-and-cache.md) for failure classification, recovery decisions, and usage accounting.
 
 Real reliability experiments can incur provider charges and require fresh output directories. Deterministic fault injection and separately recorded real compatibility pilots are:
 
@@ -120,11 +120,11 @@ Real reliability experiments can incur provider charges and require fresh output
 .venv\Scripts\python.exe scripts/analyze_v13_pilot.py --source results/v13-eval/NEW-PILOT --out results/v13-eval/NEW-ANALYSIS
 ```
 
-Offline fault recovery does not establish live RCA accuracy or targeted-repair quality. See [runtime contracts](v1.3/contracts.md) and the [evaluation protocol](v1.3/evaluation_protocol.md).
+Offline fault recovery does not establish live RCA accuracy or targeted-repair quality. See [runtime contracts](../v1.3/contracts.md) and the [evaluation protocol](../v1.3/evaluation_protocol.md).
 
 ## Evidence and permissions
 
-The dataset contains the original 6 Seed, 10 Dev, and 20 held-out synthetic cases, plus `incident_037`–`incident_040` in a separate [database set](../data/splits/database_ids.json), for 40 cases total. Existing splits remain frozen. Added cases cover connection exhaustion, application pool misconfiguration, lock contention, slow queries, and insufficient evidence. Synthetic templates are not an independently collected production benchmark; missing-evidence cases require a normal abstention. See [data documentation](../data/README.md).
+The dataset contains the original 6 Seed, 10 Dev, and 20 held-out synthetic cases, plus `incident_037`–`incident_040` in a separate [database set](../../data/splits/database_ids.json), for 40 cases total. Existing splits remain frozen. Added cases cover connection exhaustion, application pool misconfiguration, lock contention, slow queries, and insufficient evidence. Synthetic templates are not an independently collected production benchmark; missing-evidence cases require a normal abstention. See [data documentation](../../data/README.md).
 
 All business tools are read-only:
 
@@ -140,7 +140,7 @@ ToolRegistry treats the role ACL as an upper bound. `InvestigationTask.allowed_t
 
 Successful tool results enter that context's observed ledger. Merge publication and Verifier access can reference only records actually observed in the current run and then published. Public files use a fixed filename allowlist that rejects private truth, traversal, symlinks, and Windows junctions. Evidence excerpts are treated as untrusted data. Application isolation is not an operating-system Python sandbox.
 
-New tools require coordinated updates to argument schemas, read-only implementations, role ACLs, path allowlists, and tests for authorization, budgets, and timeouts. See [tools and security boundaries](code_wiki/06-tools-and-security.md).
+New tools require coordinated updates to argument schemas, read-only implementations, role ACLs, path allowlists, and tests for authorization, budgets, and timeouts. See [tools and security boundaries](../code_wiki/06-tools-and-security.md).
 
 ## Local explanation cache
 
@@ -181,11 +181,11 @@ Measure cache benefits separately; architecture comparisons cannot enable the ca
 ## Related documentation
 
 - [Chinese operations guide](readme-guide.zh-CN.md)
-- [Investigation protocol](protocol.md)
-- [CAES algorithm](v1.5/algorithm-spec.md)
-- [CAES fairness protocol](v1.5/fairness-protocol.md)
-- [Tools and security boundaries](code_wiki/06-tools-and-security.md)
-- [LLM and cache internals](code_wiki/07-llm-and-cache.md)
+- [Investigation protocol](../reference/protocol.md)
+- [CAES algorithm](../v1.5/algorithm-spec.md)
+- [CAES fairness protocol](../v1.5/fairness-protocol.md)
+- [Tools and security boundaries](../code_wiki/06-tools-and-security.md)
+- [LLM and cache internals](../code_wiki/07-llm-and-cache.md)
 - [Cache design](cache.md)
-- [Data documentation](../data/README.md)
-- [IncidentBench test guide](incidentbench/README.md)
+- [Data documentation](../../data/README.md)
+- [IncidentBench test guide](../incidentbench/README.md)
