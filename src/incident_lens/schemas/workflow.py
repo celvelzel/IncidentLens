@@ -140,6 +140,15 @@ class WorkflowOptions(StrictModel):
     benchmark_fixed_four: bool = False
     remediation_enabled: bool = True
     execution_mode: Literal["plan_only"] = "plan_only"
+    # Cost guard, not a conclusion: after this many consecutive investigator
+    # rounds in which no candidate gains a cause-specific discriminator, stop
+    # searching and publish INCONCLUSIVE. ``0`` disables it.
+    #
+    # 5 is the smallest value that never fired on an identifiable run in either
+    # workload measured on 2026-11-01: the frozen WP-D batch (largest peak 3)
+    # and the mock suite at an uncapped round budget (largest peak 4). Any
+    # smaller default abstained on a case the pipeline would have resolved.
+    evidence_gap_rounds: int = Field(default=5, ge=0, le=10)
     max_attempts: int = Field(default=2, ge=1, le=10)
     continue_on_partial_failure: bool = True
     ack_timeout_seconds: float = Field(default=5.0, gt=0)

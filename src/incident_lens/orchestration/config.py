@@ -11,6 +11,7 @@ def workflow_options(config, *, profile=None, monitor_mode=None, snapshot=None):
         "selection_policy",
         "shadow_enabled",
         "active_evidence",
+        "evidence_gap_rounds",
     }:
         raise ValueError("invalid investigation configuration")
     workflow = config.get("workflow", {})
@@ -35,6 +36,7 @@ def workflow_options(config, *, profile=None, monitor_mode=None, snapshot=None):
         database_equivalent_tools=database.get("equivalent_tools", False),
         remediation_enabled=remediation.get("enabled", True),
         execution_mode=remediation.get("execution_mode", "plan_only"),
+        evidence_gap_rounds=investigation.get("evidence_gap_rounds", 5),
         max_attempts=runtime.get("max_attempts", 2),
         continue_on_partial_failure=runtime.get("continue_on_partial_failure", True),
         ack_timeout_seconds=stop.get("ack_timeout_seconds", 5.0),

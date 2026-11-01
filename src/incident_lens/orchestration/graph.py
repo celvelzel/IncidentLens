@@ -4,6 +4,7 @@ import asyncio
 import copy
 import hashlib
 import json
+import time
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
@@ -126,6 +127,10 @@ class InvestigationRun:
         self.verify_rounds = 0
         self.coordinate_rounds = 0
         self.last_review_signature = None
+        # Consecutive investigator rounds in which no candidate gained a
+        # cause-specific discriminator. Reset by any decisive observation.
+        self.evidence_gap_streak = 0
+        self.evidence_gap_peak = 0
         self.state = InvestigationState(
             workspace_id=workspace_id,
             incident_id=incident_id,
@@ -467,6 +472,55 @@ class InvestigationRun:
             return "Token budget exhausted"
         return None
 
+    def discriminator_candidates(self, state):
+        """Candidates whose current support contains a cause-specific mechanism.
+
+        Reuses the grounding predicate rather than inventing a second notion of
+        "enough evidence": if this is empty, no candidate can be accepted no
+        matter how many more rounds run.
+        """
+        return [
+            h.hypothesis_id
+            for h in state.hypotheses
+            if any(
+                cause_discriminator(h, state.evidence_index[eid])
+                for eid in h.support_ids
+                if eid in state.evidence_index
+            )
+        ]
+
+    def record_evidence_gap(self, state):
+        """Track how long the investigation has run without decisive support.
+
+        Returns True when the cost guard should stop the search. This is a
+        budget decision only: it never changes what would have been accepted.
+        """
+        limit = self.workflow.evidence_gap_rounds
+        if limit and self.variant != "fixed" and not self.discriminator_candidates(state):
+            self.evidence_gap_streak += 1
+        else:
+            self.evidence_gap_streak = 0
+        self.evidence_gap_peak = max(self.evidence_gap_peak, self.evidence_gap_streak)
+        return bool(limit) and self.evidence_gap_streak >= limit
+
+    def abstention_cost(self, state, reason):
+        """Snapshot spent resources so abstention cost is auditable on its own."""
+        snapshot = self.call_budget.snapshot(self.request_stage.get())
+        return {
+            "trigger": reason,
+            "round_index": state.round_index,
+            "coordinate_rounds": self.coordinate_rounds,
+            "tool_calls": self.registry.call_count,
+            "llm_requests": self.call_budget.calls,
+            "tokens": self.call_budget.tokens,
+            "elapsed_ms": round((time.monotonic() - self.call_budget.started) * 1000, 3),
+            "gap_streak": self.evidence_gap_streak,
+            "gap_rounds_limit": self.workflow.evidence_gap_rounds,
+            "remaining_requests": snapshot.remaining_request_permits,
+            "remaining_rounds": max(0, self.limits.max_rounds - state.round_index),
+            "remaining_tool_calls": max(0, self.limits.max_tool_calls - self.registry.call_count),
+        }
+
     async def coordinate(self, value):
         from incident_lens.agents.service import decide
 
@@ -608,6 +662,25 @@ class InvestigationRun:
                     # Reconciliation cannot reuse acceptance of an older board.
                     return {"investigation": state, "route": "verify"}
                 return {"investigation": state, "route": "finalize"}
+            # A round that adds evidence without ever producing a
+            # cause-specific discriminator cannot change the answer. The
+            # ceiling is a cost guard: it stops the search, it does not decide
+            # what would have been accepted.
+            if self.record_evidence_gap(state):
+                state.stop_reason = "INCONCLUSIVE"
+                self.event(
+                    state,
+                    "INVESTIGATION_EVIDENCE_EXHAUSTED",
+                    role=role,
+                    message=(
+                        f"No candidate gained a cause-specific discriminator in "
+                        f"{self.evidence_gap_streak} consecutive rounds"
+                    ),
+                    cost=self.abstention_cost(state, "no_cause_specific_discriminator"),
+                    discriminator_candidate_ids=self.discriminator_candidates(state),
+                    candidate_assessments=self.candidate_assessments(state),
+                )
+                return {"investigation": state, "route": "report"}
             known_change = any(
                 r.metadata.get("change_id") for r in state.evidence_index.values()
             )

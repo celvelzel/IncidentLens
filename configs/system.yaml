@@ -5,6 +5,14 @@ time_limit_seconds: 600
 structured_repair_retries: 1
 cache_mode: "off"
 
+investigation:
+  # Cost guard: stop searching after this many consecutive rounds in which no
+  # candidate gains a cause-specific discriminator, then publish INCONCLUSIVE.
+  # 5 is the smallest value that never fired on an identifiable run in either
+  # measured workload (frozen WP-D peak 3, mock suite at an uncapped round
+  # budget peak 4). 0 disables the guard.
+  evidence_gap_rounds: 5
+
 # Explicit opt-in; CLI --response-format and environment take precedence.
 provider_recovery:
   enabled: false
