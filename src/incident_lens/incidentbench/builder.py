@@ -14,9 +14,17 @@ from incident_lens.tools.provider import ANSWER_FIELDS, EvidenceProvider
 
 from .family_split import split_ids
 from .scenarios import encode, simulate
+from .scenarios.hardened import DIFFICULTIES, encode_hardened
 from .schemas import INTERFACE_VERSION, SUPPORTED_MODES, BenchmarkCaseMetadata, BenchmarkOracle
 
 BUILDER_VERSION = "causal-world-v1"
+#: Selectable encoder lineages. ``causal-world-v1`` is frozen: its datasets must
+#: stay byte-reproducible, so harder cases go through a new lineage instead.
+#: Each entry is (encoder, honours the difficulty lever).
+ENCODERS = {
+    "causal-world-v1": (encode, False),
+    "causal-world-v2-hardened": (encode_hardened, True),
+}
 SERVICES = {
     "gateway": ["backend"],
     "backend": ["postgres", "redis", "payment"],
@@ -61,8 +69,11 @@ def _load(config) -> dict:
     return dict(config)
 
 
-def _pack(world, incident_id):
-    rows, roles = encode(world, incident_id)
+def _pack(world, incident_id, encoder=encode, difficulty=None):
+    """Encode one case; the lever is only passed to lineages that honour it."""
+    rows, roles = (
+        encoder(world, incident_id) if difficulty is None else encoder(world, incident_id, difficulty)
+    )
     for row in rows:
         EvidenceRecord.model_validate_json(json.dumps(row))
     case = dict(
@@ -112,6 +123,10 @@ def build_dataset(config, out, oracle_root) -> dict:
     split, started_at, mechanism, and variants [{id, kind, mechanism?}]. kind is
     ordinary/misleading/missing/counterfactual; paired variants additionally carry
     pair_id. Unreviewed labels always remain pending/development_visible.
+
+    ``encoder_lineage`` selects the observation encoder (default
+    ``causal-world-v1``, frozen). ``difficulty`` (family-level, overridable per
+    variant) selects that lineage's lever: standard/boundary/competing.
     """
     output, private = Path(out).absolute(), Path(oracle_root).absolute()
     if output.exists() or private.exists():
@@ -125,6 +140,10 @@ def build_dataset(config, out, oracle_root) -> dict:
     families = settings.get("families", [])
     if not families:
         raise ValueError("external causal family specifications required")
+    lineage = settings.get("encoder_lineage", "causal-world-v1")
+    if lineage not in ENCODERS:
+        raise ValueError("unknown encoder lineage")
+    encoder, honours_lever = ENCODERS[lineage]
     # This initial generic encoder lineage has no independently authored holdout
     # observations. Merely renaming blueprint/cluster IDs cannot authorize leakage.
     core_splits = {f["split"] for f in families if f.get("cohort", "core") == "core"}
@@ -132,6 +151,7 @@ def build_dataset(config, out, oracle_root) -> dict:
         raise ValueError("shared core encoder lineage must remain in one split")
     packs, metadata, oracles = [], [], []
     seen_families, pair_roots = set(), {}
+    levers = Counter()
     counter = int(settings.get("first_incident_number", 1001))
     for family in families:
         if family["id"] in seen_families:
@@ -144,6 +164,11 @@ def build_dataset(config, out, oracle_root) -> dict:
             variant_ids.add(variant["id"])
             if variant["kind"] not in {"ordinary", "misleading", "missing", "counterfactual"}:
                 raise ValueError("unknown observation intervention")
+            difficulty = variant.get("difficulty", family.get("difficulty", "standard"))
+            if difficulty not in DIFFICULTIES:
+                raise ValueError("unknown difficulty lever")
+            if difficulty != "standard" and not honours_lever:
+                raise ValueError(f"encoder lineage {lineage} has no difficulty levers")
             incident_id = f"incident_{counter:04d}"
             counter += 1
             world = simulate(family, variant)
@@ -152,7 +177,9 @@ def build_dataset(config, out, oracle_root) -> dict:
                 raise ValueError("healthy windows belong to monitoring")
             if world.mechanism not in SUPPORTED_MODES and cohort == "core":
                 raise ValueError("unsupported mechanism belongs to OOD")
-            files, rows, roles = _pack(world, incident_id)
+            files, rows, roles = _pack(
+                world, incident_id, encoder, difficulty if honours_lever else None
+            )
             pair_id = variant.get("pair_id")
             if pair_id:
                 pair_roots.setdefault(pair_id, []).append((world.mechanism, _digest(files)))
@@ -204,7 +231,9 @@ def build_dataset(config, out, oracle_root) -> dict:
                     public_sha256=_digest(files),
                     source_blueprint_id=family["source_blueprint_id"],
                     near_duplicate_cluster_id=(
-                        "cluster_causal_world_v1"
+                        # Shared-encoder core cases carry the lineage's cluster
+                        # identity: renaming families can never imply independence.
+                        f"cluster_{lineage.replace('-', '_')}"
                         if cohort == "core"
                         else family["near_duplicate_cluster_id"]
                     ),
@@ -213,6 +242,7 @@ def build_dataset(config, out, oracle_root) -> dict:
                 )
             )
             packs.append((incident_id, files))
+            levers[difficulty] += 1
             metadata.append(meta)
             oracles.append(oracle)
     splits = split_ids(metadata)
@@ -233,6 +263,8 @@ def build_dataset(config, out, oracle_root) -> dict:
             for k in ("ordinary", "misleading", "missing", "counterfactual")
         },
         identifiable=sum(o.is_identifiable for o in oracles),
+        encoder_lineage=lineage,
+        difficulty_levers={k: levers[k] for k in DIFFICULTIES},
         accepted_labels=0,
         blindness_level="development_visible",
     )
@@ -267,6 +299,7 @@ def build_dataset(config, out, oracle_root) -> dict:
                 benchmark_version="incidentbench-v1",
                 interface_version=INTERFACE_VERSION,
                 builder_version=BUILDER_VERSION,
+                encoder_lineage=lineage,
                 label_status="pending",
                 source_code_sha256=_source_digest(),
                 rca_public_sha256=digest_tree(output / "rca"),

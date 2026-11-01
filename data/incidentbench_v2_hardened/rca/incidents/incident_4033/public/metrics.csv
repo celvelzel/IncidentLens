@@ -1,0 +1,4 @@
+evidence_id,service,observed_at,excerpt,metric_name,value,unit
+incident_4033-E-001,backend,2026-11-09T09:00:00+00:00,request_latency_ms=40 ms,request_latency_ms,40,ms
+incident_4033-E-004,postgres,2026-11-09T09:00:58+00:00,query_latency_ms=12000 ms,query_latency_ms,12000,ms
+incident_4033-E-007,gateway,2026-11-09T09:01:11+00:00,http_5xx_rate=0.35 ratio,http_5xx_rate,0.35,ratio
