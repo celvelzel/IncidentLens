@@ -191,9 +191,38 @@ and are not independent blind Test data. See the
 
 ### Test result summary
 
-A development-visible WP-D run used `auto/deepseek-v4.1-flash`, four jobs and one
-repeat over 10 cases with provisional candidate-oracle labels. All 40 final slots
-completed. Only Full/3010 required retries.
+**Hardened 36-case batch (2026-11-01).** `causal-world-v2-hardened`, 36 development
+cases (29 identifiable, 7 abstaining), the same four architectures, four jobs and one
+repeat — 144 slots in 4 h 39 min: 136 completed and 8 technical failures kept in the
+denominator. Scored offline against the evaluator oracle; labels remain provisional.
+
+| Architecture | Technical completion | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Single | 35/36 | 25/28 | 7/7 | 32/36 | 680.9s | 17.3 | 14.5 | 245,971 |
+| Fixed-4 | 34/36 | 15/27 | 7/7 | 22/36 | 196.3s | 7.8 | 7.4 | 58,042 |
+| **Dynamic (primary)** | 33/36 | **27/27** | 6/6 | **33/36** | 412.9s | 14.6 | 12.0 | 149,216 |
+| Full (dynamic with verifier) | 34/36 | 23/27 | 7/7 | 30/36 | 503.8s | 17.6 | 15.5 | 233,772 |
+
+`dynamic` leads and is the cheapest of the dynamic family: against Single it gains one
+success with 39.4% less latency and 39.3% fewer tokens; against Full it gains three
+successes with 18.0% less latency and 36.2% fewer tokens, so the Verifier loop produced
+no measurable quality gain here and cost 56.7% more tokens. Fixed-4 is cheapest per run
+(196s, 58k tokens) but wrongly abstained on 12 of 27 identifiable cases.
+
+**No run named a wrong root cause.** All 19 identifiable misses ended in `INCONCLUSIVE`,
+and all seven unidentifiable cases were correctly abstained in every completed run; the
+observed failure mode is over-abstention, not fabrication. `dynamic` is also the only
+variant at 7/7 on competing causes and 6/6 on counterfactual pairs. Six of the eight
+technical failures were truncated structured output and two were identity-mismatched
+findings, spread across all four variants — a provider-layer issue, not an architecture
+defect.
+
+Chinese report: [report.zh-CN.md](analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md);
+English summary and regenerate script: [analysis/wp_d/reports/hardened144-20261101](analysis/wp_d/reports/hardened144-20261101/README.md).
+
+**Earlier 10-case batch (2026-10-31).** A development-visible WP-D run used
+`auto/deepseek-v4.1-flash`, four jobs and one repeat over 10 cases with provisional
+candidate-oracle labels. All 40 final slots completed. Only Full/3010 required retries.
 
 | Architecture | Technical completion | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -231,8 +260,10 @@ emits `INVESTIGATION_EVIDENCE_EXHAUSTED` with a cost snapshot and publishes `INC
 It changes only the budget, never what `FinalizeGate` would accept. Replaying it over the
 frozen traces estimates −44.0% tokens on 3003, −21.9% on 3008 and −12.3% across the batch;
 the default `max_rounds: 4` means the threshold cannot fire under the stock configuration.
-A separate opt-in encoder lineage `causal-world-v2-hardened` adds 36 development cases
-(29 identifiable, 7 abstaining) with boundary and competing-rival difficulty levers.
+The `causal-world-v2-hardened` lineage adds 36 development cases (29 identifiable,
+7 abstaining) with standard, boundary, competing-rival, missing-discriminator,
+misleading-evidence and counterfactual-pair levers; the 144-slot batch above measures
+all of them.
 Priority, ownership and acceptance criteria are in the
 [optimization roadmap](docs/optimization-roadmap.zh-CN.md).
 
