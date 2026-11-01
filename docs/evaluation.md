@@ -16,10 +16,18 @@ running again replaces the previous experiment artifacts.
 
 ## Comparisons and frozen settings
 
-All four variants execute the common investigation graph. `single` uses one broad
-runtime identity with planning and self-reflection; `fixed` assigns the same three
-investigators once; `dynamic_no_verifier` keeps dynamic routing and deterministic
-grounding but omits independent review; `full` retains routing and review.
+All four variants execute the common investigation graph. `dynamic` is the primary
+architecture and the runtime default: dynamic routing with deterministic grounding and
+no independent review. `full` is its ablation control — displayed as *dynamic (with
+verifier)* — and retains the Verifier review. `single` uses one broad runtime identity
+with planning and self-reflection, and `fixed` assigns the same three investigators once.
+
+The name `dynamic_no_verifier` appears in saved WP-D protocols, traces and result rows.
+It is a frozen historical alias of `dynamic`: the runtime resolves it on input and never
+writes it for a new run. IncidentBench condition names (`strong_single_equivalent_tools`,
+`fixed_four_equivalent_tools`, `dynamic_no_verifier`, `full`) are also frozen, because
+saved `protocol.json` files must keep validating.
+
 The evaluator creates a fresh provider and budget for every run. It enforces equal
 model ID, temperature, budget and public dataset revision across variants and records
 the initial public input hash. A change to public data during execution stops the
@@ -37,6 +45,31 @@ and usage with identical jobs settings for real experiments.
 Equal upper bounds do not imply equal actual computation; inspect measured usage.
 Seed/dev support smoke checks and development. Do not tune prompts using hidden test
 results. Mock policy results are offline correctness checks, not model performance.
+
+## Evidence-gap cost guard
+
+`WorkflowOptions.evidence_gap_rounds` (default 5, `0` disables) stops an investigation
+that has made no discriminative progress. Each round the run asks whether *any*
+candidate gained a `cause_discriminator`; if none did, a streak counter increments,
+and any decisive observation resets it. At the threshold the run writes
+`stop_reason="INCONCLUSIVE"`, emits `INVESTIGATION_EVIDENCE_EXHAUSTED` with a cost
+snapshot, and routes to `report`. It is a budget decision only: `FinalizeGate`,
+`grounding_errors` and `BEST_SUPPORTED_AVAILABLE` are untouched, so it cannot convert
+a resolvable case into a scored abstention. The `fixed` variant does not arm it.
+
+The default is measured, not chosen by feel. Replaying the same predicate over the
+frozen WP-D traces gives a largest non-unidentifiable streak of 3 for `single`,
+`dynamic` and `full`; the mock suite at an uncapped round budget peaks at 4. A threshold
+of 4 is therefore the first false-positive-free value and 5 keeps one round of margin.
+Note that the default `configs/system.yaml` sets `max_rounds: 4`, so the guard cannot
+reach 5 under that configuration — the round cap fires first. Raising `max_rounds` or
+lowering `evidence_gap_rounds` changes which mechanism ends the run, and lowering it
+reintroduces the false positive seen at 3 (`incident_3005`).
+
+Replay estimates for `dynamic` at threshold 5: `incident_3003` 268,375 → 150,355
+tokens (−44.0%), `incident_3008` 274,794 → 214,669 (−21.9%), batch −12.3%. These are
+replays over the frozen 10-case batch, not a new measured run, and the batch contains
+no case whose decisive evidence arrives late.
 
 ## Artifacts and metric definitions
 

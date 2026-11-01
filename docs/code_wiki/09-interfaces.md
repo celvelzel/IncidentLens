@@ -22,7 +22,7 @@
 | --- | --- | --- |
 | `--case` | 必填 | 事故 ID（`incident_xxx`） |
 | `--provider` | `mock` | `mock` / `real` |
-| `--variant` | `full` | `full` / `single` / `fixed` / `dynamic_no_verifier` |
+| `--variant` | `dynamic` | `dynamic` / `full` / `single` / `fixed`（`dynamic_no_verifier` 作为历史别名仍可传入） |
 | `--out` | 必填 | 必须是**全新或空**目录 |
 | `--data-root` | `data` | 公开数据根 |
 | `--config` | `configs/system.yaml` | 系统配置 |

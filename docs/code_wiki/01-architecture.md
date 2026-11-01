@@ -37,7 +37,7 @@ IncidentLens 用一条 LangGraph `StateGraph` 串起"监控 → 协调 → 调�
 │ 安全层  security/ context.py · authorization.py · scoped_client.py  │
 ├─────────────────────────────────────────────────────────────────────┤
 │ 数据层  data/ incidents/*/public|private · topology · splits        │
-│         incidentbench_v1 · incidentbench_v16_dev                     │
+│         incidentbench_v1 · incidentbench_v16_dev · v2_hardened       │
 ├─────────────────────────────────────────────────────────────────────┤
 │ 评估层  evaluation/ · incidentbench/（独立于运行时，读取已保存状态）  │
 └─────────────────────────────────────────────────────────────────────┘
@@ -129,10 +129,13 @@ sequenceDiagram
 
 | Variant | 协调方式 | 审查 | 说明 |
 | --- | --- | --- | --- |
-| `full` | 动态 1~2 任务，可多轮 | Verifier 必须 `sufficient` | 完整系统；CAES 只允许此变体 |
-| `dynamic_no_verifier` | 动态多轮 | 无 | 去掉独立审查，merge 后直接回 coordinate |
+| `dynamic` | 动态 1~2 任务，可多轮 | 无（Merge + FinalizeGate 确定性接地） | **主架构，运行时默认**；merge 后直接回 coordinate |
+| `full` | 动态 1~2 任务，可多轮 | Verifier 必须 `sufficient` | 消融对照，展示为 *dynamic (with verifier)*；CAES 只允许此变体 |
 | `fixed` | 首轮固定 logs+metrics+changes（benchmark 下可加 database） | 无 | 固定专家批次基线 |
 | `single` | 单一身份自规划、自反思 | 自审（同一身份） | 拥有全工具 ACL；串行执行 |
+
+历史产物中的 `dynamic_no_verifier` / `no_verifier` 是 `dynamic` 的冻结别名：`variants.normalize_variant`
+在运行时入口解析它，`canonical_name` 在聚合时折叠它，新运行不再写出该拼写。
 
 ## 8. 确定性保障（Grounding）
 

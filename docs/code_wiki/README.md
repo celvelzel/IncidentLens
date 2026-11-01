@@ -69,7 +69,7 @@ Coordinator ──► 1~2 个调查任务（logs / metrics / database / changes�
 | --- | --- |
 | 工作流节点 | `monitor → coordinate → dispatch → merge → verify → finalize → remediate → stop → report` |
 | 工作流 profile | `legacy_rca`（默认，直接从 coordinate 开始）、`incident_response`（从 monitor 开始，可 NO_ALERT 提前结束） |
-| 消融变体 | `full`、`single`、`fixed`、`dynamic_no_verifier`（另有 IncidentBench 的 `fixed_four_equivalent_tools` 等 4 条件） |
+| 消融变体 | `dynamic`（主架构，默认）、`full`（*dynamic (with verifier)* 消融对照）、`single`、`fixed`；`dynamic_no_verifier` 为历史别名（另有 IncidentBench 的 `fixed_four_equivalent_tools` 等 4 条件） |
 | 默认预算 | 4 轮 / 12 次工具 / 16 次 LLM 调用 / 600 秒（`configs/system.yaml`） |
 | 响应型预算 | 6 轮 / 24 次工具 / 24 次 LLM / 600 秒（`configs/incident-response.yaml`） |
 | 失败模式 | pool 配置回归、Postgres 连接耗尽、Redis 不可用、外部支付超时、资源饱和、锁竞争、慢查询 |
