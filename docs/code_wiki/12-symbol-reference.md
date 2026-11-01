@@ -22,6 +22,8 @@
 | `.check_signature` | `(check)` **L428** | 请求检查的签名 |
 | `.update_usage` | `(state, usage, role)` **L435** | 回写调用/token |
 | `.exhausted` | `(state)` **L452** | 预算是否耗尽 |
+| `.discriminator_candidates` | `(state)` **L475** | 拿到 `cause_discriminator` 的候选 |
+| `.record_evidence_gap` | `(state)` **L492** | 记录无判别进展的连续轮次；返回是否应提前弃答 |
 | `.coordinate` | `async (value)` **L461** | 节点：协调决策 |
 | `.investigate` | `async (state, task)` **L695** | 调查者的两阶段（plan → execute → analyze） |
 | `.dispatch` | `async (value)` **L815** | 节点：并发/串行派发 |

@@ -230,6 +230,7 @@ next_cursor: str | None
 | `ack_timeout_seconds` | 5.0 | STOP ACK 超时 |
 | `monitoring_max_calls` | 1 | 监控阶段调用上限 |
 | `remediation_max_calls` | 2 | 修复阶段上限 |
+| `evidence_gap_rounds` | 5 | 连续多少轮无候选获得 `cause_discriminator` 后提前弃答；`0` 关闭。只影响预算，不影响可接受性判定 |
 | `snapshot` | `[]` | 手动快照/回放证据 |
 
 `profile_semantics` 校验：

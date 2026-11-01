@@ -66,6 +66,12 @@ TaskManager 限制单任务尝试次数；StopController 冻结任务和工具�
 
 `--max-tokens` 是请求开始前的上限检查。已计量用量达到上限后不再发出新请求，但正在进行的一次响应可能超过上限。缺少 Provider usage 时，Token 和成本保持未知，不按零值计。墙钟、轮次、请求、工具或 Token 预算耗尽属于运行时失败；正常证据不足则应以 `INCONCLUSIVE` 结束，不能混同。
 
+`investigation.evidence_gap_rounds`（默认 5，`0` 关闭）是另一条独立于轮次上限的停止条件：
+连续 5 轮没有任何候选获得 `cause_discriminator` 时提前发布 `INCONCLUSIVE`。它只减少预算，不改变
+`FinalizeGate` 的可接受性判定。注意上表的两个默认配置 `max_rounds` 分别是 4 和 6：默认配置下
+4 轮上限先触发，阈值 5 基本不会生效；若要让它起作用，需同时调高 `max_rounds`。详见
+[评测说明](evaluation.md) 的 “Evidence-gap cost guard”。
+
 根因状态、修复状态和工作流状态分别记录：
 
 - 根因：`RESOLVED`、`INCONCLUSIVE`；旧报告契约还允许 `ERROR`。

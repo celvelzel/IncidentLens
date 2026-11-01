@@ -9,7 +9,7 @@
 | 组件 | 类型 | 作用 |
 | --- | --- | --- |
 | `provider` | `LLMProvider` | 真实 / Mock / Codex Provider |
-| `variant` | `full \| single \| fixed \| dynamic_no_verifier` | 消融变体 |
+| `variant` | `dynamic \| full \| single \| fixed`（默认 `dynamic`） | 消融变体；`dynamic_no_verifier` 作为历史别名被接受 |
 | `workflow` | `WorkflowOptions` | profile、监控模式、修复开关、最大尝试次数 |
 | `limits` | `Budget` | 轮数 / 工具 / LLM / wall / token |
 | `call_budget` | `CallBudget` | 物理请求、token、失败记录、停止快照 |
@@ -49,9 +49,17 @@
 1. **轮次/工具/LLM 预检**：`round_index >= max_rounds`、`registry.call_count >= max_tool_calls` 直接抛错 → `RUNTIME_ERROR`。
 2. **LLM 预算预留**：`reserve = 1 + (full|single)`，`affordable = (remaining - reserve) // 2`；任务数超出则截断并记录 `INVESTIGATION_BUDGET_RESERVED`。保证至少留一次协调 + 一次审查。
 3. **无进展检测**：任务签名（role/allowed_tools/filters/expected_discriminator）+ 当前共享板指纹相同 → `INVESTIGATION_NO_PROGRESS` → `INCONCLUSIVE`。
-4. **空变化范围检测**：若所有任务都是已成功、空结果、无 cursor 的 `query_changes` 且共享板未变 → 直接 `INCONCLUSIVE`。
-5. **任务 ID 新鲜性**：新任务 ID 不得与 `state.tasks` 重复，否则运行时错误。
-6. **fixed 变体**：首轮自动生成 logs+metrics+changes（benchmark 下 +database）；之后不再调查，只在无障碍候选中定稿或弃权。benchmark 模式下若协调器仍想调查，会改写为 `ABSTAIN`。
+4. **证据缺口护栏**（`evidence_gap_rounds`，默认 5，`0` 关闭）：`record_evidence_gap(state)`
+   在每轮记录“是否有任何候选获得了 `cause_discriminator`”——没有则 `evidence_gap_streak += 1`，
+   有则清零，并维护 `evidence_gap_peak`。连续计数达到阈值时写入
+   `stop_reason="INCONCLUSIVE"`、发出 `INVESTIGATION_EVIDENCE_EXHAUSTED`（`details` 含
+   `gap_streak`、`gap_rounds_limit` 与成本快照）并路由到 `report`。它只影响预算，不影响
+   `FinalizeGate` 的可接受性判定；`fixed` 变体不启用。阈值 5 由
+   [`recalibrate.py`](../../analysis/wp_d/reports/evidence-gap-calibration-20261101/recalibrate.py)
+   在冻结 WP-D 轨迹上重放确定：可识别案例峰值 3，mock 无轮次上限时峰值 4。
+5. **空变化范围检测**：若所有任务都是已成功、空结果、无 cursor 的 `query_changes` 且共享板未变 → 直接 `INCONCLUSIVE`。
+6. **任务 ID 新鲜性**：新任务 ID 不得与 `state.tasks` 重复，否则运行时错误。
+7. **fixed 变体**：首轮自动生成 logs+metrics+changes（benchmark 下 +database）；之后不再调查，只在无障碍候选中定稿或弃权。benchmark 模式下若协调器仍想调查，会改写为 `ABSTAIN`。
 
 ### 2.3 `dispatch`（L815）与 `execute_task`（L876）
 
