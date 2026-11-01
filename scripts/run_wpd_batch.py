@@ -24,7 +24,10 @@ from incident_lens.incidentbench.experiment import execution_lock
 from incident_lens.incidentbench.schemas import ExperimentProtocol
 
 PROJECT = Path(__file__).resolve().parents[1]
-VARIANTS = ["single", "fixed", "dynamic_no_verifier", "full"]
+# Canonical runtime names. Frozen historical batches name their slots
+# ``dynamic_no_verifier``; those manifests keep replaying because the child
+# scripts still accept the alias as an input spelling.
+VARIANTS = ["single", "fixed", "dynamic", "full"]
 # Local supervisor bounds, not service-side concurrency entitlements.
 CONCURRENCY_LIMITS = {"bridge": 8, "api": 8, "subscription": 8}
 

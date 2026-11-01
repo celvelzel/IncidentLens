@@ -252,7 +252,7 @@ async def test_reconciliation_rejects_unobserved_ids_and_changed_cause():
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("variant", ["single", "full", "dynamic_no_verifier", "fixed"])
+@pytest.mark.parametrize("variant", ["single", "full", "dynamic", "fixed"])
 @pytest.mark.parametrize("benchmark_rca", [False, True])
 async def test_no_existing_hypotheses_forbids_updates_in_provider_schema(variant, benchmark_rca):
     from pydantic import ValidationError

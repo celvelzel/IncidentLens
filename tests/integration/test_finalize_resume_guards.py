@@ -10,7 +10,9 @@ from incident_lens.tools import EvidenceProvider
 
 @pytest.fixture
 async def pending():
-    state = await run_investigation("incident_001", MockProvider())
+    # The resume guard only applies to ``full``: it decides whether a refreshed
+    # review can discharge an existing FINALIZE.
+    state = await run_investigation("incident_001", MockProvider(), variant="full")
     state.report = None
     state.termination = None
     state.workflow_status = "RUNNING"
@@ -70,7 +72,8 @@ async def test_resume_never_bypasses_acceptance_guards(pending, fault):
     assert not reviewed_finalization_ready(state)
 
 
-@pytest.mark.parametrize("variant", ["single", "fixed", "dynamic_no_verifier"])
+# ``dynamic_no_verifier`` is the pre-rename spelling kept for saved runs.
+@pytest.mark.parametrize("variant", ["single", "fixed", "dynamic", "dynamic_no_verifier"])
 async def test_resume_does_not_change_other_variants(pending, variant):
     assert not reviewed_finalization_ready(pending, variant)
 

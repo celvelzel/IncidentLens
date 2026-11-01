@@ -100,7 +100,7 @@ def test_formal_protocol_rejected_before_dataset_read(tmp_path):
         preflight.prepare_inputs(tmp_path / "absent", path, PROJECT, tmp_path)
 
 
-@pytest.mark.parametrize("variant", ["single", "fixed", "dynamic_no_verifier", "full"])
+@pytest.mark.parametrize("variant", ["single", "fixed", "dynamic", "full"])
 async def test_retest_runner_preserves_variant_metadata(tmp_path, monkeypatch, variant):
     """Exercise the existing runner with injected offline dependencies, no HTTP client."""
     import argparse

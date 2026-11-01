@@ -20,6 +20,7 @@ import {
   EVENT_KIND,
   ROLE_LABEL,
   SOURCE_TYPE_META,
+  variantLabel,
 } from "./api.js";
 import {
   badge,
@@ -198,7 +199,7 @@ function traceTable(traces) {
                 <td><div class="cell-main mono">${escapeHtml(t.incident_id)}</div><div class="cell-sub mono">${escapeHtml(t.run_id || "")}</div></td>
                 <td>${badge(status.label, status.tone, true)}</td>
                 <td>${badge(t.provider === "mock" ? "MOCK" : t.provider === "real" ? "REAL" : "UNKNOWN", t.provider === "mock" ? "accent" : "info")}</td>
-                <td class="mono">${escapeHtml(t.variant || "not recorded")}</td>
+                <td class="mono">${escapeHtml(variantLabel(t.variant))}</td>
                 <td class="mono">${t.rounds ?? "—"}</td>
                 <td class="mono">${formatDuration(t.elapsed_ms)}</td>
                 <td>${formatDateTime(t.modified_at)}</td><td><a class="btn btn-sm" data-demo-link href="#/run?path=${encodeURIComponent(t.path)}&demo=1">演示回放</a></td>
@@ -649,7 +650,7 @@ function drawRun(root, data) {
         <div class="run-head-meta">
           <span>运行 <span class="mono">${escapeHtml(state.run_id)}</span></span>
           <span>模型 <span class="mono">${escapeHtml(trace.model_id || "unknown")}</span></span>
-          <span>变体 <span class="mono">${escapeHtml(trace.variant || "not recorded")}</span></span>
+          <span>变体 <span class="mono">${escapeHtml(variantLabel(trace.variant))}</span></span>
           <span>缓存 <span class="mono">${escapeHtml(trace.cache_mode || "not recorded")}</span></span>
           <span>录制总耗时 <span class="mono">${formatDuration(trace.elapsed_ms)}</span></span>
           <span>来源指纹 <span class="mono">${escapeHtml(trace.source_hash || trace.dataset_hash || "not recorded")}</span></span>

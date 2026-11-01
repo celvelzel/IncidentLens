@@ -91,7 +91,8 @@ async def test_verifier_timeout_emits_stop_and_is_not_correct_abstention():
                 raise ProviderError("PROVIDER_TIMEOUT", usage)
             return output, usage
 
-    state = await run_investigation("incident_006", FailedReview())
+    # Only ``full`` runs the Verifier, so only there can its failure be observed.
+    state = await run_investigation("incident_006", FailedReview(), variant="full")
     assert any(
         e.event_type == "WORKFLOW_STOP_REQUESTED" and e.details.get("stage") == "verify"
         for e in state.events

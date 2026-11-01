@@ -5,6 +5,7 @@ import json
 import re
 
 from incident_lens.schemas import Hypothesis, InvestigationState
+from incident_lens.variants import FULL, normalize_variant
 
 
 def review_fingerprint(hypothesis):
@@ -144,11 +145,13 @@ def competitor_assessments(state: InvestigationState, hypothesis: Hypothesis) ->
     return assessments
 
 
-def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="full") -> list[str]:
+def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant=FULL) -> list[str]:
+    """Grounding plus competitor checks; only ``full`` additionally needs a review."""
+    variant = normalize_variant(variant)
     errors = grounding_errors(state, hypothesis)
     if any(a["blocking"] for a in competitor_assessments(state, hypothesis).values()):
         errors.append("Competing hypothesis remains unresolved")
-    if variant == "full":
+    if variant == FULL:
         review = next(
             (
                 r
@@ -183,9 +186,10 @@ def finalize_errors(state: InvestigationState, hypothesis: Hypothesis, variant="
     return errors
 
 
-def reviewed_finalization_ready(state: InvestigationState, variant="full") -> bool:
+def reviewed_finalization_ready(state: InvestigationState, variant=FULL) -> bool:
     """A refreshed review can discharge an existing FINALIZE, never create one."""
-    if (variant != "full" or not state.decisions or not state.reviews
+    variant = normalize_variant(variant)
+    if (variant != FULL or not state.decisions or not state.reviews
         or state.report is not None or state.termination is not None
         or state.workflow_status != "RUNNING"):
         return False
@@ -198,7 +202,8 @@ def reviewed_finalization_ready(state: InvestigationState, variant="full") -> bo
     return candidate is not None and not finalize_errors(state, candidate, variant)
 
 
-def likely_assessment_errors(state, hypothesis, variant="full"):
+def likely_assessment_errors(state, hypothesis, variant=FULL):
+    variant = normalize_variant(variant)
     """Weaker attribution is explicit and never promoted to a confirmed diagnosis."""
     errors = [error for error in grounding_errors(state, hypothesis)
               if error != "Candidate has unresolved questions or contradictory evidence"]
@@ -218,7 +223,7 @@ def likely_assessment_errors(state, hypothesis, variant="full"):
                    if r.target_hypothesis_id == hypothesis.hypothesis_id), None)
     if review and (review.contradictions or review.verdict == "conflicted" or review.likely_blockers):
         errors.append("Review records a contradiction or material leading-prediction blocker")
-    if variant == "full":
+    if variant == FULL:
         if review is None or not review.likely_hypothesis_supported or not review.cited_evidence_ids:
             errors.append("Independent review has not endorsed a leading explanation")
         else:

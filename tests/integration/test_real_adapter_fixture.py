@@ -41,7 +41,8 @@ async def test_real_adapter_full_graph_with_structured_http_fixture():
         provider = RealChatProvider(
             "https://fixture.invalid/v1", "fixture-secret", "fixture", client=client
         )
-        state = await run_investigation("incident_001", provider)
+        # The fixture records the ``full`` schedule, which includes the Verifier.
+        state = await run_investigation("incident_001", provider, variant="full")
     assert state.report.status == "RESOLVED"
     assert state.llm_calls_used == len(captured) == 15
     assert state.tokens_used == 75

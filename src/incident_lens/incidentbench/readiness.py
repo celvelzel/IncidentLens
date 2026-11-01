@@ -7,6 +7,7 @@ from pathlib import Path
 from uuid import UUID
 
 from incident_lens.evaluation.metrics import report_citations
+from incident_lens.variants import canonical_name
 
 from .experiment import canonical, load_cases, read_json, read_jsonl, run_identity, run_order
 from .manifest import create_lock, digest_tree
@@ -137,8 +138,10 @@ def evaluate_run(raw, oracle=None):
 
 def summarize(rows):
     output = []
-    for variant in sorted({r["variant"] for r in rows}):
-        group = [r for r in rows if r["variant"] == variant]
+    # Saved readiness rows may spell the pre-rename alias; group it with the
+    # canonical ``dynamic`` condition rather than reporting a fifth variant.
+    for variant in sorted({canonical_name(r["variant"]) for r in rows}):
+        group = [r for r in rows if canonical_name(r["variant"]) == variant]
         item = {
             "variant": variant,
             "attempted_n": len(group),

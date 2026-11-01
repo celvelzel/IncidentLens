@@ -106,7 +106,9 @@ if __name__ == "__main__":
     parser.add_argument("--feasibility", type=Path, required=True)
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--incident", required=True)
-    parser.add_argument("--variant", choices=("single", "fixed", "dynamic_no_verifier", "full"), required=True)
+    parser.add_argument("--variant",
+                        choices=("single", "fixed", "dynamic", "full", "dynamic_no_verifier"),
+                        required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--lease-directory", type=Path)
     parser.add_argument("--execute-development-case", action="store_true")

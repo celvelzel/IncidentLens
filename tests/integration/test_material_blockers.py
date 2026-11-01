@@ -10,7 +10,7 @@ from incident_lens.schemas import Hypothesis
 
 @pytest.fixture
 async def supported():
-    state = await run_investigation("incident_001", MockProvider())
+    state = await run_investigation("incident_001", MockProvider(), variant="full")
     candidate = next(h for h in state.hypotheses
                      if h.hypothesis_id == state.report.root_cause.hypothesis_id)
     assert not finalize_errors(state, candidate)

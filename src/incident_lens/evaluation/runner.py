@@ -17,6 +17,7 @@ from incident_lens.llm.usage import aggregate_usage
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
 from incident_lens.tools import EvidenceProvider
+from incident_lens.variants import normalize_variant
 
 from .metrics import VARIANTS, aggregate, score_completed, score_without_oracle
 
@@ -221,7 +222,12 @@ async def evaluate_split(
         raise ValueError("jobs must be an integer from 1 to 4")
     if provider_name not in ("mock", "real"):
         raise ValueError("provider must be mock or real")
-    variants = tuple(variants)
+    # A legacy alias resolves to its canonical variant before deduplication,
+    # so ``dynamic`` and ``dynamic_no_verifier`` cannot run twice as "two".
+    try:
+        variants = tuple(normalize_variant(v) for v in variants)
+    except ValueError:
+        raise ValueError("invalid evaluation variants") from None
     if (
         not variants
         or len(set(variants)) != len(variants)

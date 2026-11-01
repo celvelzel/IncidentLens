@@ -33,6 +33,7 @@ from incident_lens.schemas import (
     TraceEvent,
 )
 from incident_lens.schemas.workflow import WorkflowOptions, termination_result
+from incident_lens.variants import normalize_variant
 
 
 class GraphState(TypedDict):
@@ -48,7 +49,7 @@ class InvestigationRun:
         evidence_provider,
         incident_id,
         limits=None,
-        variant="full",
+        variant="dynamic",
         workspace_id="incident-lens",
         run_id=None,
         cache=None,
@@ -61,13 +62,15 @@ class InvestigationRun:
         self.journal = journal
         self.evidence_provider = evidence_provider
         self.limits = limits or Budget()
-        self.variant = variant
+        # Saved artifacts may still name the pre-rename alias; only the
+        # canonical name is carried into new state and traces.
+        self.variant = normalize_variant(variant)
         self.workflow = workflow or WorkflowOptions()
         if (
             self.workflow.selection_policy != "current_dynamic" or self.workflow.shadow_caes
-        ) and variant != "full":
+        ) and self.variant != "full":
             raise ValueError("CAES requires full dynamic variant")
-        if self.workflow.benchmark_fixed_four and variant != "fixed":
+        if self.workflow.benchmark_fixed_four and self.variant != "fixed":
             raise ValueError("fixed-four option requires fixed variant")
         self.response_profile = self.workflow.profile == "incident_response"
         self.stage_calls = {"monitoring": 0, "remediation": 0}
@@ -137,7 +140,7 @@ class InvestigationRun:
             incident_id, self.run_id, self.runtime_event, self.workflow.ack_timeout_seconds
         )
         self.single_context = (
-            self.registry.create_context("single") if variant == "single" else None
+            self.registry.create_context("single") if self.variant == "single" else None
         )
 
     def event(self, state, event_type, role=None, source="runtime", message="", **details):
@@ -1707,7 +1710,7 @@ async def run_investigation(
     provider,
     data_root=Path("data"),
     budget=None,
-    variant="full",
+    variant="dynamic",
     workspace_id="incident-lens",
     run_id=None,
     cache=None,
@@ -1716,8 +1719,9 @@ async def run_investigation(
 ):
     from incident_lens.tools import EvidenceProvider
 
-    if variant not in {"full", "single", "fixed", "dynamic_no_verifier"}:
-        raise ValueError("Unknown variant")
+    # ``dynamic_no_verifier`` is the pre-rename spelling of ``dynamic`` and is
+    # accepted so saved batches can be replayed unchanged.
+    variant = normalize_variant(variant)
     run = InvestigationRun(
         provider,
         EvidenceProvider(data_root),

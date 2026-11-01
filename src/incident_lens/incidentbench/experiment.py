@@ -17,6 +17,7 @@ from incident_lens.evaluation.runner import MeasuredProvider, csv_rows, usage_me
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.schemas import Budget
 from incident_lens.schemas.workflow import WorkflowOptions
+from incident_lens.variants import BENCHMARK_TO_RUNTIME
 
 from .schemas import BenchmarkCaseMetadata, ExperimentProtocol
 from .scorer import aggregate, score_benchmark_run
@@ -607,10 +608,10 @@ async def _run_experiment(
                 measured,
                 data_root=public,
                 budget=budget,
-                variant={
-                    "strong_single_equivalent_tools": "single",
-                    "fixed_four_equivalent_tools": "fixed",
-                }.get(variant, variant),
+                # Benchmark condition names are frozen; only the runtime
+                # alias changed, so map them explicitly instead of relying on
+                # the two spellings being identical.
+                variant=BENCHMARK_TO_RUNTIME.get(variant, variant),
                 workspace_id="incidentbench",
                 run_id=run_id,
                 cache=None,

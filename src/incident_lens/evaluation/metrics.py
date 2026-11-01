@@ -1,8 +1,12 @@
 """Recomputable scores; citation existence is distinct from semantic support."""
 
+from incident_lens.variants import canonical_name
+
 from .termination import SCORING_VERSION, normalize_termination
 
-VARIANTS = ("single", "fixed", "dynamic_no_verifier", "full")
+# Canonical runtime names. Saved rows may still carry ``dynamic_no_verifier``;
+# aggregate() folds that alias back into ``dynamic`` before grouping.
+VARIANTS = ("single", "fixed", "dynamic", "full")
 
 
 def report_citations(report):
@@ -160,7 +164,7 @@ def aggregate(rows):
         raise ValueError("cannot aggregate mixed scoring versions; recompute all rows first")
     result = []
     for variant in VARIANTS:
-        group = [r for r in rows if r["variant"] == variant]
+        group = [r for r in rows if canonical_name(r["variant"]) == variant]
         if not group:
             continue
 

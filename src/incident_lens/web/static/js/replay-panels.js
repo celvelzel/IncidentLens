@@ -1,4 +1,4 @@
-import { escapeHtml as esc } from './api.js';
+import { escapeHtml as esc, variantLabel } from './api.js';
 import { badge, evidenceChips } from './components.js';
 import { replayWorkflow, replayReliability } from './replay.js';
 
@@ -17,7 +17,7 @@ export function metadataHtml(data) {
     <details id="replay-metadata"><summary>运行来源与限制 · 独立最终产物元数据快照</summary>
       <p class="text-muted">以下是整个已录制运行的元数据，不表示当前播放位置已知的调查结论。来源一致性为内部校验，非签名认证。</p>
       <dl class="replay-metadata-grid">
-      ${Object.entries({Incident:s.incident_id,Variant:t.variant,Model:t.model_id || models.join(', ') || 'not recorded',
+      ${Object.entries({Incident:s.incident_id,Variant:variantLabel(t.variant),Model:t.model_id || models.join(', ') || 'not recorded',
         'Recorded events':s.events?.length ?? 0,'Recorded requests (including failures)':(s.events || []).filter(e => ['LLM_CALL','MODEL_FAILURE'].includes(e.event_type)).reduce((n,e)=>n+(e.details?.llm_calls ?? 1),0),
         'Protocol ID':p.protocol_id || 'not recorded','Protocol valid (saved verification)':v.protocol_valid ?? 'not recorded',
         'Source commit':m.source_commit || 'not recorded','Dataset revision':m.dataset_revision || 'not recorded',

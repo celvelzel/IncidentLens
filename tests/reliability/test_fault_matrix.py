@@ -155,6 +155,7 @@ async def test_verify_stage_transient_fault_retries_instead_of_aborting():
     state = await run_investigation(
         "incident_001",
         FlakyVerifier(),
+        variant="full",
         budget=Budget(max_llm_calls=40, max_tool_calls=24),
         workflow=WorkflowOptions(profile="incident_response"),
     )

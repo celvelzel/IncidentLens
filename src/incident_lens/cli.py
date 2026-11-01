@@ -73,7 +73,7 @@ def main(argv=None):
     run.add_argument("--case", required=True)
     run.add_argument("--provider", choices=["mock", "real"], default="mock")
     run.add_argument(
-        "--variant", choices=["full", "single", "fixed", "dynamic_no_verifier"], default="full"
+        "--variant", choices=["single", "fixed", "dynamic", "full"], default="dynamic"
     )
     run.add_argument("--out", type=Path, required=True)
     run.add_argument("--data-root", type=Path, default=Path("data"))

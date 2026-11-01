@@ -367,8 +367,8 @@ if __name__ == "__main__":
     parser.add_argument("--incident", default="incident_2001")
     parser.add_argument(
         "--variant",
-        choices=("full", "dynamic_no_verifier", "single", "fixed"),
-        default="full",
+        choices=("full", "dynamic", "single", "fixed", "dynamic_no_verifier"),
+        default="dynamic",
     )
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--lease-directory", type=Path)

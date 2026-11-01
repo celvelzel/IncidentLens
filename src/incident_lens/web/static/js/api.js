@@ -112,6 +112,19 @@ export const ROLE_LABEL = {
   "": "运行时",
 };
 
+// Display labels only; a trace keeps whatever variant string it recorded,
+// so historical runs may still read "dynamic_no_verifier".
+export const VARIANT_LABEL = {
+  single: "Single",
+  fixed: "Fixed-4",
+  dynamic: "Dynamic",
+  dynamic_no_verifier: "Dynamic",
+  no_verifier: "Dynamic",
+  full: "Dynamic (with verifier)",
+};
+
+export const variantLabel = (variant) => VARIANT_LABEL[variant] || variant || "not recorded";
+
 export const SOURCE_TYPE_META = {
   logs: { label: "日志", tone: "info" },
   metrics: { label: "指标", tone: "accent" },

@@ -5,6 +5,8 @@ import json
 from collections import Counter
 from statistics import mean
 
+from incident_lens.variants import canonical_name
+
 from .normalizer import normalize
 from .schemas import BenchmarkOracle
 
@@ -98,8 +100,12 @@ def score_benchmark_run(state, oracle=None, annotations=None):
 def aggregate(rows):
     """Core denominators include technical failures; nulls never become zero."""
     output = []
-    for variant in sorted({r["variant"] for r in rows}):
-        group = [r for r in rows if r["variant"] == variant and r.get("cohort", "core") == "core"]
+    # Benchmark condition names are frozen in saved rows; folding the historical
+    # ``dynamic_no_verifier`` spelling into ``dynamic`` keeps one group per
+    # architecture without inventing a fifth condition.
+    for variant in sorted({canonical_name(r["variant"]) for r in rows}):
+        group = [r for r in rows
+                 if canonical_name(r["variant"]) == variant and r.get("cohort", "core") == "core"]
 
         def rate(key):
             values = [r[key] for r in group if r.get(key) is not None]

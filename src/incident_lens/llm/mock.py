@@ -4,6 +4,8 @@ import json
 import time
 from datetime import datetime, timedelta
 
+from incident_lens.variants import canonical_name
+
 from .provider import LLMProvider, ProviderError, json_payload
 
 
@@ -368,7 +370,9 @@ class MockProvider(LLMProvider):
                 reason="Database hypothesis requires internal checks",
                 assignments=[assignment],
             )
-        if p.get("variant") in ("single", "dynamic_no_verifier", "no_verifier"):
+        # The payload carries a canonical runtime name; saved payloads may
+        # still spell the pre-rename alias, which resolves to ``dynamic``.
+        if canonical_name(p.get("variant")) in {"dynamic", "single"}:
             latest = [review(p)]
             if not checks:
                 checks = latest[-1]["requested_checks"]

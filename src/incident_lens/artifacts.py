@@ -6,6 +6,7 @@ from pathlib import Path
 from incident_lens.orchestration.report import render_report
 from incident_lens.schemas import InvestigationState, ToolResult
 from incident_lens.security.context import DATABASE_TOOLS, ROLE_TOOL_ACL
+from incident_lens.variants import is_known_variant
 
 TOOL_SOURCES = {
     "query_logs": {"logs"}, "query_metrics": {"metrics"},
@@ -15,7 +16,7 @@ TOOL_SOURCES = {
 }
 
 
-def save_run(state, output, provider, variant="full", cache_mode="off", elapsed_ms=None):
+def save_run(state, output, provider, variant="dynamic", cache_mode="off", elapsed_ms=None):
     state = InvestigationState.model_validate_json(state.model_dump_json())
     if state.report is None:
         raise ValueError("Cannot save an unfinished run")
@@ -67,7 +68,8 @@ def validate_metadata(trace):
         raise ValueError("Unexpected trace envelope fields")
     if trace.get("provider") not in ("mock", "real"):
         raise ValueError("Invalid trace provider")
-    if trace.get("variant") not in ("full", "single", "fixed", "dynamic_no_verifier"):
+    # Historical traces recorded the pre-rename alias; keep replaying them.
+    if not is_known_variant(trace.get("variant")):
         raise ValueError("Invalid trace variant")
     if trace.get("cache_mode") not in ("off", "exact", "semantic"):
         raise ValueError("Invalid trace cache mode")

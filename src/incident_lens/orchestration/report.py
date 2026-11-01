@@ -1,6 +1,7 @@
 """Deterministic evidence-reference rendering, no provider calls."""
 
 from incident_lens.schemas import RCAReport
+from incident_lens.variants import FULL
 
 from .guards import (
     cause_discriminator,
@@ -17,7 +18,7 @@ def observed_chain(state, hypothesis):
             for r in sorted(records, key=lambda r: (r.observed_at, r.evidence_id))]
 
 
-def populate_assessment(state, variant="full"):
+def populate_assessment(state, variant=FULL):
     """Preserve useful work without promoting a tentative cause to a diagnosis.
 
     This is deterministic rendering of shared observations and assessments. It

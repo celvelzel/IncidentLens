@@ -11,7 +11,8 @@ from incident_lens.tools import EvidenceProvider
 
 
 async def test_rejected_competing_questions_and_stale_review_block_resolution():
-    state = await run_investigation("incident_001", MockProvider())
+    # Review-boundary behaviour is defined for ``full``, which adds the Verifier.
+    state = await run_investigation("incident_001", MockProvider(), variant="full")
     candidate = next(
         h for h in state.hypotheses if h.hypothesis_id == state.report.root_cause.hypothesis_id
     )
@@ -69,7 +70,7 @@ async def test_refreshed_finalize_does_not_request_another_coordinator_decision(
 
     provider = FinalizeThenHang()
     state = await run_investigation(
-        "incident_001", provider, budget=Budget(max_llm_calls=32),
+        "incident_001", provider, budget=Budget(max_llm_calls=32), variant="full",
         workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True),
     )
     assert provider.seen["finalize_calls"] == 1
@@ -90,7 +91,7 @@ async def test_refreshed_finalize_does_not_request_another_coordinator_decision(
 
 
 async def test_role_payload_excludes_tool_history_and_limits_verifier_records():
-    state = await run_investigation("incident_001", MockProvider())
+    state = await run_investigation("incident_001", MockProvider(), variant="full")
     runtime = InvestigationRun(MockProvider(), EvidenceProvider("data"), "incident_001")
     untouched = state.model_dump_json()
     coordinator = runtime.payload(state)
@@ -123,7 +124,7 @@ async def test_reconciliation_requires_fresh_independent_review():
             return result, usage
 
     state = await run_investigation(
-        "incident_001", Reconcile(),
+        "incident_001", Reconcile(), variant="full",
         budget=Budget(max_llm_calls=32),
         workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True),
     )

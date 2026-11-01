@@ -35,12 +35,17 @@ def business(state):
 
 
 async def test_shadow_keeps_original_execution_and_report():
-    plain = await run_investigation("incident_001", MockProvider(), ROOT / "data", run_id="same")
+    # Compare like with like: both runs use the ``full`` variant that CAES is
+    # scoped to, so the shadow path is the only difference.
+    plain = await run_investigation(
+        "incident_001", MockProvider(), ROOT / "data", run_id="same", variant="full"
+    )
     shadow = await run_investigation(
         "incident_001",
         MockProvider(),
         ROOT / "data",
         run_id="same",
+        variant="full",
         workflow=WorkflowOptions(shadow_caes=True),
     )
     assert business(plain) == business(shadow)
@@ -60,6 +65,7 @@ async def test_enabled_really_materializes_selected_tasks():
         MockProvider(),
         ROOT / "data",
         run_id="active",
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     selections = [e.details for e in state.events if e.event_type == "ACTION_SELECTED"]
@@ -102,6 +108,7 @@ async def test_terminal_coordinator_never_calls_caes(monkeypatch, action):
         MockProvider(),
         EvidenceProvider(ROOT / "data"),
         "incident_001",
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     await run.coordinate({"investigation": run.state})
@@ -129,6 +136,7 @@ async def test_stopped_runtime_no_selection_or_new_tasks():
         MockProvider(),
         EvidenceProvider(ROOT / "data"),
         "incident_001",
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     await run.stop_controller.stop("INCONCLUSIVE")
@@ -145,6 +153,7 @@ async def test_tight_budget_no_overflow():
         MockProvider(),
         ROOT / "data",
         budget=Budget(max_llm_calls=3, max_tool_calls=2),
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_no_cost"),
     )
     assert not state.tasks
@@ -172,7 +181,8 @@ async def test_shadow_selector_failure_is_observation_only(monkeypatch):
 
     monkeypatch.setattr(selector, "select_candidates", fail)
     state = await run_investigation(
-        "incident_001", MockProvider(), ROOT / "data", workflow=WorkflowOptions(shadow_caes=True)
+        "incident_001", MockProvider(), ROOT / "data", variant="full",
+        workflow=WorkflowOptions(shadow_caes=True),
     )
     assert state.report.status == "RESOLVED"
     assert (state.llm_calls_used, state.tool_calls_used) == (15, 9)
@@ -193,6 +203,7 @@ async def test_runtime_never_reads_oracle_or_private_files(monkeypatch):
         "incident_001",
         MockProvider(),
         ROOT / "data",
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     assert any(e.event_type == "ACTION_SELECTED" for e in state.events)
@@ -221,6 +232,7 @@ async def test_stop_during_selection_prevents_publication(monkeypatch):
         MockProvider(),
         EvidenceProvider(ROOT / "data"),
         "incident_001",
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
 
@@ -265,6 +277,7 @@ def test_recovery_physical_reserve_normalized_once(physical_reserve, logical_res
         EvidenceProvider(ROOT / "data"),
         "incident_001",
         limits=Budget(max_llm_calls=18),
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     proposal = CoordinatorDecision(
@@ -296,6 +309,7 @@ async def test_selector_reserves_both_final_decision_and_review_before_publishin
     state = await run_investigation(
         "incident_001", MockProvider(), ROOT / "data",
         budget=Budget(max_llm_calls=4),
+        variant="full",
         workflow=WorkflowOptions(selection_policy="active_evidence"),
     )
     selected = [e.details for e in state.events if e.event_type == "ACTION_SELECTED"]

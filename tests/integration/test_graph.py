@@ -28,7 +28,7 @@ async def test_five_seed_graph_runs(number, mode):
 
 
 async def test_verifier_changes_route_and_no_parallel_findings_lost():
-    state = await run_investigation("incident_001", MockProvider())
+    state = await run_investigation("incident_001", MockProvider(), variant="full")
     assert [t.role for t in state.decisions[0].assignments] == ["logs", "metrics"]
     assert {f.role for f in state.findings[:2]} == {"logs", "metrics"}
     assert state.reviews[0].verdict == "insufficient"
@@ -54,8 +54,8 @@ async def test_missing_case_abstains_and_gate_blocks_fabrication():
     assert finalize_errors(state, fake)
 
 
-async def test_no_verifier_replans_from_safe_shared_catalog():
-    state = await run_investigation("incident_001", MockProvider(), variant="dynamic_no_verifier")
+async def test_dynamic_replans_from_safe_shared_catalog():
+    state = await run_investigation("incident_001", MockProvider(), variant="dynamic")
     assert state.report.status == "RESOLVED"
     assert state.report.root_cause.failure_mode == "backend_pool_config_regression"
     assert state.reviews == []
@@ -116,7 +116,7 @@ async def test_benchmark_changes_discovers_diff_with_same_task_and_bounded_calls
     from incident_lens.schemas.workflow import WorkflowOptions
 
     state = await run_investigation(
-        "incident_001", MockProvider(), variant="dynamic_no_verifier",
+        "incident_001", MockProvider(), variant="dynamic",
         workflow=WorkflowOptions(benchmark_rca=True, database_equivalent_tools=True),
     )
     assert state.report.status == "RESOLVED"

@@ -4,6 +4,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from incident_lens.variants import canonical_name
+
 
 def quality_row(row):
     """Consume completion-gated scorer output, never load evaluator labels here."""
@@ -41,8 +43,10 @@ def rate(rows, key):
 
 def summarize(rows):
     output = []
-    for variant in sorted({r["variant"] for r in rows}):
-        group = [r for r in rows if r["variant"] == variant]
+    # Saved WP-D rows record the pre-rename condition name; fold it so one
+    # architecture is reported once, however its artifacts spelled it.
+    for variant in sorted({canonical_name(r["variant"]) for r in rows}):
+        group = [r for r in rows if canonical_name(r["variant"]) == variant]
         item = {"variant": variant, "attempted_n": len(group)}
         for field, name in (
             ("technical_completion", "technical_completion_rate"),

@@ -141,8 +141,11 @@ if __name__ == "__main__":
     parser.add_argument("--runtime-config", type=Path)
     parser.add_argument("--readiness", type=Path)
     parser.add_argument("--incident", default="incident_2001")
-    parser.add_argument("--variant", choices=("full", "dynamic_no_verifier", "single", "fixed"),
-                        default="full")
+    # ``dynamic_no_verifier`` is accepted so frozen WP-D batch manifests, which
+    # name their slots that way, keep executing unchanged.
+    parser.add_argument("--variant", choices=("full", "dynamic", "single", "fixed",
+                                              "dynamic_no_verifier"),
+                        default="dynamic")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--lease-directory", type=Path)
     asyncio.run(run(parser.parse_args()))
