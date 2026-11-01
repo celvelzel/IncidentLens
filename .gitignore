@@ -20,3 +20,8 @@ results/**/*.sqlite*
 
 local_oracles/
 node_modules/
+
+# Deterministically regenerable mock-run bulk output (~13 MB per mock suite):
+# the summary tables, digests and `reproducibility.txt` stay tracked.
+analysis/wp_d/reports/hardened-dataset-validation-20261101/*/raw-runs.jsonl
+analysis/wp_d/reports/hardened-dataset-validation-20261101/*/states/
