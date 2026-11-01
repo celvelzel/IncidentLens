@@ -6,9 +6,15 @@
 
 **项目一句话：** IncidentLens 让日志、指标与依赖、数据库、变更四类调查员分工取证，由协调者根据当前证据缺口动态派出最需要的 1–2 个调查员；只有经过校验、合并和证据门控的记录才能进入共享证据板，证据不足时系统明确输出 `INCONCLUSIVE`。
 
-最新完整 WP-D 测试中，40 个最终槽位全部技术完成。Single、Dynamic（无 Verifier）和 Full 的质量均为 10/10；Fixed-4 只有 7/10，因为在 `incident_3004`、`incident_3005`、`incident_3010` 三个可识别案例上错误弃答。Dynamic 与 Single 质量相同，但平均耗时、请求、工具查询和 Token 分别降低 **40.3% / 20.5% / 21.3% / 43.6%**。这是本项目当前最有说服力的多 Agent 优势：**动态专家选择在质量不降的前提下显著降低资源使用。**
+最新完整 WP-D 测试中，40 个最终槽位全部技术完成。**`dynamic`（无独立 Verifier）是本项目的主架构，也是运行时默认**；`full` 保留为消融对照，文档中显示为 *dynamic (with verifier)*。Single、Dynamic 和 Full 的质量均为 10/10；Fixed-4 只有 7/10，因为在 `incident_3004`、`incident_3005`、`incident_3010` 三个可识别案例上错误弃答。
 
-这些结果来自 10 个开发可见案例、每案例一次重复和候选 oracle，属于描述性开发证据，不是独立盲测、统计显著性或生产部署结论。Full 没有表现出比 Single 更高的质量，反而使用了更多资源；不能把“Agent 数量更多”当作天然优势。
+**为什么以 `dynamic` 为主架构：**
+
+- **对 Single：** 质量相同（10/10），平均耗时、请求、工具查询和 Token 分别降低 **40.3% / 20.5% / 21.3% / 43.6%**，支持“动态分工减少无效查询与上下文”这一设计论点。
+- **对 Full（dynamic with verifier）：** 质量相同（10/10），Full 的耗时、请求、工具和 Token 分别高 **88.0% / 34.3% / 34.7% / 86.0%**，说明独立 Verifier 在本批没有产出可测的质量增益。我们只表述为“未观测到增益”，不据此断言 Verifier 永远无用。
+- **对 Fixed-4：** Fixed 更便宜（96.9s、7.9 请求、56,586 Token），但错弃 3 个可识别案例（3004/3005/3010），证明“一次性固定批次无法补证”，这恰恰是 Dynamic 多轮补查的价值所在。
+
+把 `dynamic` 设为默认**不改变产品风险画像**：它的接地门控、引用校验和弃答行为与实验时完全相同，改变的只是被当作主架构的那一档。这些结果来自 10 个开发可见案例、每案例一次重复和候选 oracle，属于描述性开发证据，不是独立盲测、统计显著性或生产部署结论。不能把“Agent 数量更多”当作天然优势。
 
 ## 课程交付与责任映射
 
@@ -87,8 +93,10 @@ flowchart LR
 | --- | --- | --- | --- |
 | `single` | 一个身份规划、查询全部证据并自我反思，串行 | 同一身份自审 | 强单 Agent 基线 |
 | `fixed` | 首轮一次性固定派出 Logs、Metrics、Database、Changes | 无 | 测试固定四专家批次的成本与覆盖 |
-| `dynamic_no_verifier` | 动态选择专家，多轮补查，确定性接地门控 | 无 | 隔离动态选择与独立审查的贡献 |
-| `full` | 动态选择专家 + Verifier 反馈 + FinalizeGate | 有 | 完整多 Agent 系统 |
+| **`dynamic`（主架构，默认）** | 动态选择专家，多轮补查，Merge + FinalizeGate 确定性接地 | 无 | 主架构：动态分工 + 确定性验收 |
+| `full`（*dynamic (with verifier)*） | 动态选择专家 + Verifier 反馈 + FinalizeGate | 有 | 消融对照：隔离独立审查的贡献 |
+
+历史产物、已保存的 protocol 和 WP-D 结果行中仍会出现 `dynamic_no_verifier`；它是 `dynamic` 的冻结别名，运行时入口和聚合都会解析它，新运行不再写出该拼写。IncidentBench 的条件名（`strong_single_equivalent_tools`、`fixed_four_equivalent_tools`、`dynamic_no_verifier`、`full`）同样是冻结契约，因为已保存的 `protocol.json` 必须继续通过校验。
 
 四种架构使用同一公开数据、等价工具、模型、temperature 0、关闭缓存、相同轮次/工具/请求/墙钟上限和相同运行顺序。架构提示词和控制流差异属于实验处理，不应在批次中途热改。
 
@@ -101,6 +109,12 @@ flowchart LR
 ### 数据与案例
 
 WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident_3010`。公开观测与 evaluator-only oracle 分离；Graph 结束后才评分。8 个案例可识别根因，2 个案例证据不足并要求正常弃答。所有案例为 `development_visible`，oracle 当前为 `pending/candidate-v1`，没有独立人工验收或 blind Test 结论。
+
+另有新增的开发集 `data/incidentbench_v2_hardened`（`incident_4001`–`incident_4036`，36 例，
+29 可识别 / 7 需弃答），由新的编码器血统 `causal-world-v2-hardened` 生成。它带三个难度杠杆
+（`standard` / `boundary` / `competing`），同样全部是 `development_visible` 与候选标签，不能当作
+验证或测试集。旧 Dev10 的 `causal-world-v1` 编码器保持冻结、逐字节可复现。详见
+[优化路线](optimization-roadmap.zh-CN.md) 的 P0-C 章节。
 
 可识别案例要求 `culprit_service` 与 `failure_mode` 同时精确匹配；不可识别案例只有在正常终止且 `INCONCLUSIVE`、无根因时才算正确弃答。技术失败仍在对应分母中；证据不足的正常弃答是有效结果；Provider/网络/预算失败不是弃答。
 
@@ -139,14 +153,14 @@ WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 | 2,571,460 |
 | Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 | 565,863 |
-| Dynamic（无 Verifier） | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 | 1,450,353 |
-| Full | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 | 2,698,325 |
+| **Dynamic（主架构）** | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 | 1,450,353 |
+| Full（*dynamic with verifier*） | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 | 2,698,325 |
 
 ### 多 Agent 优势分析
 
-**Dynamic 相对 Single。** 两者质量同为 10/10，Dynamic 的平均耗时从 391.2 秒降到 233.5 秒（-40.3%），请求从 17.6 降到 14.0（-20.5%），工具从 15.0 降到 11.8（-21.3%），Token 从 257,146 降到 145,035（-43.6%）。这支持“按证据缺口选择专家，减少无关查询与上下文”的设计价值。
+**Dynamic（主架构）相对 Single。** 两者质量同为 10/10，Dynamic 的平均耗时从 391.2 秒降到 233.5 秒（-40.3%），请求从 17.6 降到 14.0（-20.5%），工具从 15.0 降到 11.8（-21.3%），Token 从 257,146 降到 145,035（-43.6%）。这支持“按证据缺口选择专家，减少无关查询与上下文”的设计论点。
 
-**Dynamic 相对 Full。** 两者质量同为 10/10，Full 的耗时、请求、工具和 Token 分别比 Dynamic 高 88.0%、34.3%、34.7% 和 86.0%。本批没有观察到独立 Verifier/Full 带来的额外质量收益，说明完整审查机制在当前 10 个开发案例上成本较高。这不能证明 Verifier 在所有情况下无用，它可能对更难的竞争假设或错误候选更有价值；本批只是没有区分出该收益。
+**Dynamic 相对 Full（dynamic with verifier）。** 两者质量同为 10/10，Full 的耗时、请求、工具和 Token 分别比 Dynamic 高 88.0%、34.3%、34.7% 和 86.0%。本批没有观察到独立 Verifier 带来的可测质量增益，说明完整审查机制在当前 10 个开发案例上成本较高。这不能证明 Verifier 在所有情况下无用，它可能对更难的竞争假设或错误候选更有价值；本批只是没有区分出该收益。
 
 **Fixed-4 相对 Single。** Fixed-4 耗时、请求、工具和 Token 分别降低 75.2%、55.1%、49.3% 和 78.0%，但它在 `incident_3004`、`incident_3005`、`incident_3010` 三个可识别案例错误弃答。它是最低成本的对照，不能作为质量最优架构。
 
@@ -173,7 +187,7 @@ WP-D 使用 `data/incidentbench_v16_dev` 的 Dev10：`incident_3001`–`incident
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Single | 10 | 0 | 0 | 0 | 0.0s | 2,571,460 | 3,911.5s |
 | Fixed-4 | 10 | 0 | 0 | 0 | 0.0s | 565,863 | 969.1s |
-| Dynamic（无 Verifier） | 10 | 0 | 0 | 0 | 0.0s | 1,450,353 | 2,334.7s |
+| Dynamic（主架构） | 10 | 0 | 0 | 0 | 0.0s | 1,450,353 | 2,334.7s |
 | Full | 12 | 1 | 1 | 179,050 | 223.1s | 2,877,375（下界） | 4,612.5s（下界） |
 
 Full/3010 的 attempt 1 因 Provider 结构化输出失败，attempt 2 因终端/监督进程断连被标记 interrupted，attempt 3 成功。失败尝试被保留；中断 attempt 没有完整 verification/cost 记录，因此 Full 的全尝试 Token 与耗时均为下界。不能把 Provider 失败解释成模型已经给出正确诊断，也不能把断连归因为网关网络故障。
@@ -195,6 +209,35 @@ Full/3010 的 attempt 1 因 Provider 结构化输出失败，attempt 2 因终端
 - “Fixed-4 成本最低所以整体最好。”
 - “Mock 结果证明真实模型能力。”
 - “修复建议已执行或生产事故已恢复。”
+
+## 优化路线（先建立可信基础，再提高效率）
+
+主架构定稿后，下一步不是继续增加 Agent，而是先统一成本与质量口径、审计查询覆盖，并推进标签复核
+与独立评测。本批 `incident_3003`、`incident_3008` 两个不可识别案例上，Dynamic 的 Token 是它可识别
+案例均值的 2.39 倍；3008 单案 386.3 秒 / 274,794 Token，最终是正确弃答。两个案例由 Coordinator
+主动 `ABSTAIN`，并非预算耗尽。
+
+**2026-11-01 进展**：这一现象已由证据缺口护栏处理（`WorkflowOptions.evidence_gap_rounds`，
+默认 5，`0` 关闭）。判据不是笼统的“连续两轮无新证据”，而是“连续若干轮没有任何候选获得
+`cause_discriminator`”；触发时发出 `INVESTIGATION_EVIDENCE_EXHAUSTED` 并携带成本快照，只影响
+预算，不改变 `FinalizeGate` 的接受判定。阈值由冻结 WP-D 轨迹重放校准：在 th=5 下 3003 的 Token
+降 44.0%、3008 降 21.9%、Dynamic 十例合计 −12.3%（重放估计，非新批次实测）。注意
+`configs/system.yaml` 的 `max_rounds: 4` 使该阈值在默认配置下无法触发，需同时调高轮次上限。
+
+优先级与验收标准写在 [优化路线](optimization-roadmap.zh-CN.md)，要点：
+
+| 优先级 | 合并后的方向 | 完成标准 |
+| --- | --- | --- |
+| **P0-A** | 评测账本与可观测性 | 原始记录可复算；失败、弃答、全尝试成本与质量口径一致 |
+| **P0-B** | 查询覆盖、去重与搜索收敛 | 停止理由与覆盖范围可审计；3004/3005/3010 仍正确归因 |
+| **P0-C** | 标签验收、未见案例与重复评测 | 标签与数据边界可追踪；同期基线与预定分析方案已冻结 |
+| **P1** | 上下文裁剪；判别价值派单与及时定稿 | 分别消融；报告质量和全流程成本，无质量回归 |
+| **P2** | 按需 Verifier；提供商与结构化输出可靠性 | 独立实验条件；报告触发率、失败类别和收益边界 |
+| **P3** | 模型分工、缓存与并发 | 架构稳定后逐变量实验，计入全尝试成本 |
+
+P0 不改变 `grounding_errors` / `finalize_errors` / 指纹校验。P0-A 与 P0-C 用于改善计数和证据质量；
+P0-B 研究何时停止搜索，必须同时通过质量回归，不能假定它不影响风险。所有优化只在
+**新批次、新目录**上验收，历史产物一字不改。
 
 ## 测试成员上手
 
@@ -304,7 +347,7 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 - 0:00–1:00：问题与一句话价值。
 - 1:00–3:30：Agent 角色、动态派发、Merge/Verifier/门控。
-- 3:30–5:00：四架构与公平实验设计。
+- 3:30–5:00：四架构与公平实验设计，说明 Dynamic 是主架构、Full 是消融对照。
 - 5:00–7:00：总体质量、Dynamic 资源优势、Fixed/Full 反例。
 - 7:00–8:30：Demo 或界面截图、失败处理与明确弃答。
 - 8:30–10:00：限制、下一步和团队贡献。
@@ -318,11 +361,11 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 | 为什么不直接用一个更大的模型？ | 单 Agent 仍可做基线，但动态分工减少无关上下文和查询；本批 Dynamic 与 Single 质量相同且资源显著下降。 |
 | 多 Agent 的优势是不是因为模型变多？ | 不是。优势来自专家边界、按缺口派发、校验合并和明确弃答；Full 在本批并未因更多审查而更准确。 |
 | 为什么 Fixed-4 更便宜却正确率低？ | 它只做一次固定批次，不能根据缺口补查；3004、3005、3010 因此错误弃答。 |
-| Dynamic 没有 Verifier 是否风险更高？ | 它仍保留确定性接地和 FinalizeGate；本批质量与 Single/Full 相同。Verifier 对更难竞争假设的独立价值需要更大数据验证。 |
+| Dynamic 没有 Verifier 是否风险更高？ | 它仍保留 Merge 校验、确定性接地和 FinalizeGate；本批质量与 Single/Full 相同，设为默认不改变风险画像。Verifier 对更难竞争假设的独立价值需要更大数据验证，按需 Verifier 是计划中的后续实验。 |
 | 数据是否独立盲测？ | 不是。10 个 Dev 案例开发可见，oracle 为候选状态，每案例一次；结论是描述性开发证据。 |
 | 为什么 Full 有 12 次 attempt？ | Full/3010 先 Provider 结构化失败，再遇终端/监督断连，第三次成功；前两次保留并计入全尝试成本。 |
 | 弃答是否是失败？ | 在无足够证据案例中，明确弃答是正确业务结果；Provider、网络或预算失败才是技术失败。 |
-| 下一步最重要的验证是什么？ | 扩大独立案例、完成人工标签验收、开展盲测与重复实验，并检验 Verifier 在困难竞争假设上的增益。 |
+| 下一步最重要的验证是什么？ | 先统一指标并审计查询覆盖，再验证搜索收敛、上下文裁剪与判别价值派单；同时完成人工标签验收、扩大独立案例并开展重复评测。按需 Verifier 在代表性困难案例准备后再测试。 |
 
 ## Demo 视频方案
 
@@ -375,6 +418,8 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 | IncidentBench 指南 | [测试指南](incidentbench/README.md) |
 | 运行、模型、权限与缓存 | [运行与配置指南](readme-guide.zh-CN.md) |
 | Demo 回放说明 | [V1.6 replay demo](v16/replay-demo.md)、[WP-C walkthrough](v16/wp-c-demo-walkthrough.md) |
+| 主架构论证报告 | [dynamic-primary-architecture-20261101](../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md) |
+| 优化路线 | [优化路线（优先级、责任与验收）](optimization-roadmap.zh-CN.md) |
 
 ## 交接完成定义
 
@@ -383,8 +428,8 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 1. 本项目为什么需要多 Agent，而不是只调用多个模型？
 2. Coordinator、专家、Verifier、Merge、FinalizeGate 各自做什么，哪些不是 LLM Agent？
 3. 四种架构如何控制变量，Fixed-4 为什么在三个案例错误弃答？
-4. Dynamic 对 Single 的质量与资源变化分别是多少？
-5. 为什么 Full 在本批没有证明优于 Single，下一步需要什么证据？
+4. Dynamic 作为主架构，对 Single、Full、Fixed-4 的质量与资源变化分别是多少？
+5. 为什么 Full（dynamic with verifier）在本批没有证明优于 Single，下一步需要什么证据？
 6. 技术完成、正确根因、正确弃答、全尝试成本分别如何统计？
 7. 新批次如何准备、执行、检查状态、保留失败并显式重试？
 8. 哪些表述会越过开发集、候选 oracle 和单次重复的证据边界？

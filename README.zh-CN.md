@@ -25,13 +25,13 @@ IncidentLens 是一个从零构建的个人研究项目,旨在探索智能体驱
 
 ## 功能亮点
 
-- **动态调查与事件响应** —— 单一 LangGraph 工作流连接监控、协调、四类调查者、验证、定稿、修复建议和统一停止。
+- **动态调查与事件响应** —— 单一 LangGraph 工作流连接监控、协调、四类调查者、定稿、修复建议和统一停止；验证器复核是可选、单独度量的消融。
 - **有据可依，否则弃权** —— 确定性门控检查候选、引用与评审版本，证据不足时输出 `INCONCLUSIVE`。
 - **证据优先的权限体系** —— 按角色授权的只读工具、不可变上下文、实际查询账本与公共文件白名单。
 - **有界 Provider 恢复** — 显式启用故障分类、原子请求 permit、任务局部阶段预算和至多一次定向结构化修复。
 - **可选 CAES 选择** —— 确定性候选生成、启发式行动评分与预算约束选择，默认保持原策略，支持观测式 Shadow。
 - **离线 Mock 提供方** —— 在给定公共证据上确定性运行，无需 API 密钥或模型权重。
-- **可复现评估** —— 四个原有消融变体、数据库配对消融与任务失败恢复实验。
+- **可复现评估** —— `dynamic` 主架构，以及 `single`、`fixed`、`dynamic（with verifier）` 三个对照，加上数据库配对消融与任务失败恢复实验。
 - **IncidentBench** —— 独立证据数据、评测器专用候选标签、等价工具 Graph 对比、离线恢复与保存状态重算。
 - **回放与 UI** —— Web 控制台和保留的 Streamlit 页面展示证据、假设、告警、修复方案、任务与停止事件。
 - **可选解释缓存** —— 精确匹配或保守语义复用，带严格命名空间与引用校验。
@@ -107,11 +107,14 @@ flowchart TD
 
 图中展示完整动态流程：默认 `legacy_rca` 从事件摘要进入协调者；可选
 `incident_response` 可从公开快照或离线回放进入监控，无告警时直接收尾。
-监控默认关闭，事件响应模式也可直接由事件 ID 启动。`full` 使用验证反馈回路，
-`dynamic_no_verifier` 跳过验证器，`fixed` 保留一次原有三专家批次，`single` 使用单智能体基线。
-只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径统一经过停止协议。
-可选 CAES 模块位于 `full` 变体的任务分发之前，负责调查任务排序；证据接纳和最终
-结论仍由原 Verifier 与 FinalizeGate 决定。
+监控默认关闭，事件响应模式也可直接由事件 ID 启动。
+
+`dynamic` 是主架构，也是运行时默认：协调者按轮动态选择专家，Merge 与 FinalizeGate
+保持确定性，不依赖任何模型复核。`full`（显示为 *dynamic（with verifier）*）额外加入
+Verifier 反馈回路，仅作为消融对照保留。`fixed` 保留一次原有三专家批次，`single`
+使用单智能体基线。只有定稿门控接受根因后，启用的修复阶段才生成方案；各阶段终止路径
+统一经过停止协议。可选 CAES 模块位于任务分发之前，目前仍限定在 `full` 变体，负责
+调查任务排序；证据接纳与最终结论仍由 FinalizeGate 决定。
 
 ### Agent 职责
 
@@ -155,8 +158,8 @@ IncidentBench 将公开观测与评测器专用标签分离，并在相同模型
 | --- | --- |
 | `strong_single_equivalent_tools` | 同一运行身份使用全部等价工具并自我反思 |
 | `fixed_four_equivalent_tools` | 日志、指标、数据库和变更专家执行一次固定批次 |
-| `dynamic_no_verifier` | 动态选择专家，不执行独立审核 |
-| `full` | 动态选择专家，并由 Verifier 反馈和 FinalizeGate 定稿 |
+| `dynamic_no_verifier` | 动态选择专家，不执行独立审核（即 `dynamic` 主架构；条件名已冻结以兼容已保存的 protocol） |
+| `full` | 动态选择专家，并由 Verifier 反馈和 FinalizeGate 定稿（即 `dynamic（with verifier）` 消融） |
 
 技术失败保留在尝试案例分母中；正常证据不足的 `INCONCLUSIVE` 计为弃答。
 公开开发夹具共享编码器来源，不是独立盲测 Test。数据、评分和命令见
@@ -171,15 +174,37 @@ IncidentBench 将公开观测与评测器专用标签分离，并在相同模型
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 |
 | Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 |
-| Dynamic（无 Verifier） | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
-| Full | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
+| **Dynamic（主架构）** | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
+| Full（dynamic with verifier） | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
 
-**多 Agent 优势。** Dynamic（无 Verifier）与 Single、Full 的质量同为 10/10，
-但相对 Single 将平均耗时降低 40.3%、请求降低 20.5%、工具查询降低 21.3%、
-Token 降低 43.6%。Fixed-4 最快且最省，但在 3 个可识别案例中错误弃答。
-Full 与 Single 质量相同，却使用更多耗时、请求、工具和 Token。
+**为什么以 `dynamic` 为主架构。** 对 Single：质量相同（10/10），平均耗时降低 40.3%、
+请求降低 20.5%、工具查询降低 21.3%、Token 降低 43.6%，支持"动态分工减少无效查询与
+上下文"这一设计论点。对 Full（dynamic with verifier）：质量相同，耗时高 88.0%、
+请求高 34.3%、工具高 34.7%、Token 高 86.0%，说明独立 Verifier 在本批没有产出可测的
+质量增益——我们只表述为"未观测到增益"，不据此断言 Verifier 永远无用。对 Fixed-4：
+Fixed 更便宜（96.9s、7.9 请求、56,586 Token），但错弃 3 个可识别案例（3004/3005/3010），
+证明"一次性固定批次无法补证"，这恰恰是 Dynamic 多轮补查的价值所在。
+
+以上是单次重复、10 个案例、候选标签的开发可见批次，不是盲测，也不构成生产行为结论。
 [完整报告](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 与 [结构化对比](results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json)。
+[主架构论证报告](analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md)
+逐项复算上表，并说明证据边界；它同时记录了已保存对比文件中 `correctness` 字段的编码问题，
+但不改写该冻结文件。
+
+**已知短板与已做的处理。** 本批两个不可识别案例上，`dynamic` 的 Token 是它可识别案例均值的
+2.39 倍；`incident_3008` 单案耗时 386.3 秒、消耗 274,794 Token，最终仍是正确弃答。两个案例
+由 Coordinator 主动 `ABSTAIN`，并未耗尽预算。
+
+现已加入确定性成本护栏：连续 N 轮没有任何候选获得 `cause_discriminator` 时，发出
+`INVESTIGATION_EVIDENCE_EXHAUSTED`（附成本快照）并发布 `INCONCLUSIVE`
+（`WorkflowOptions.evidence_gap_rounds`，默认 5，`0` 关闭）。它只影响预算，不改变
+`FinalizeGate` 的可接受性判定。在冻结轨迹上重放该判据的估计收益：3003 −44.0%、3008 −21.9%、
+全批 −12.3%；默认 `max_rounds: 4` 时该阈值无法触发，需同时调高轮次上限。
+
+另有可选的新编码器血统 `causal-world-v2-hardened`，新增 36 个开发案例（29 可识别 / 7 需弃答），
+带 `boundary` 与 `competing` 两档难度杠杆。后续仍以独立实验验证上下文裁剪、判别价值派单与
+按需 Verifier。优先级、验收标准和责任分工见 [优化路线](docs/optimization-roadmap.zh-CN.md)。
 
 ## 文档
 
@@ -188,6 +213,7 @@ Full 与 Single 质量相同，却使用更多耗时、请求、工具和 Token�
 - [IncidentBench 测试指南](docs/incidentbench/README.md) —— 数据、协议、评分与命令
 - [排查协议](docs/protocol.md) —— 运行生命周期、门控与预算
 - [评估协议](docs/evaluation.md) —— 变体、指标与计分规则
+- [优化路线](docs/optimization-roadmap.zh-CN.md) —— 面向技术与报告成员的分层计划、优先级、责任和验收标准
 - [缓存设计](docs/cache.md) —— 命名空间、命中与语义复用
 - [数据生成与局限](data/README.md) —— 合成夹具与适用范围
 - [验收证据](docs/acceptance/) —— 验收运行与审计

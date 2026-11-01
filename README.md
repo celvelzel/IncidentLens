@@ -31,7 +31,8 @@ deterministic grounding gates are all inspectable end to end.
 ## Highlights
 
 - **Dynamic investigation and response** — one LangGraph workflow connects monitoring,
-  coordination, four specialist roles, verification, finalization, proposals and unified stopping.
+  coordination, four specialist roles, finalization, proposals and unified stopping; the
+  Verifier review is an optional, separately measured ablation.
 - **Cited or abstain** — deterministic gates check candidates, citations and review versions;
   insufficient evidence produces `INCONCLUSIVE`.
 - **Evidence-first permissions** — role-scoped read-only tools, immutable contexts,
@@ -41,7 +42,8 @@ deterministic grounding gates are all inspectable end to end.
 - **Optional CAES selection** — deterministic candidate generation, heuristic action scoring
   and budget-aware selection, with a default bypass and observational Shadow mode.
 - **Offline Mock provider** — deterministic over supplied public evidence, without API keys or model weights.
-- **Reproducible evaluation** — four original ablation variants, paired database ablations and task recovery experiments.
+- **Reproducible evaluation** — the `dynamic` primary architecture plus `single`, `fixed`
+  and `dynamic (with verifier)` controls, paired database ablations and task recovery experiments.
 - **IncidentBench** — a separate evidence corpus, evaluator-only candidate labels,
   equivalent-tool Graph comparisons, offline resume and saved-state rescoring.
 - **Replay and UI** — Web and retained Streamlit dashboards expose evidence, hypotheses,
@@ -122,12 +124,17 @@ flowchart TD
 The diagram shows the full dynamic workflow: default `legacy_rca` starts from an
 incident summary, while optional `incident_response` can begin with public snapshots
 or offline replay and finish immediately on `NO_ALERT`. Monitoring is disabled by default;
-the response profile can also start directly from an incident ID. `full` uses verifier
-feedback, `dynamic_no_verifier` skips verification, `fixed` retains one original
-three-expert batch, and `single` uses the single-agent baseline. Proposals run only after
-an accepted RCA; terminal paths from every phase pass through the shutdown protocol.
-The optional CAES module sits before dispatch in the `full` variant. It ranks tasks;
-Verifier and FinalizeGate retain authority over evidence acceptance and conclusions.
+the response profile can also start directly from an incident ID.
+
+`dynamic` is the primary architecture and the runtime default: the Coordinator selects
+specialists round by round, while Merge and FinalizeGate remain deterministic and do not
+depend on a model review. `full` — displayed as *dynamic (with verifier)* — adds the
+Verifier feedback loop and is retained only as an ablation control. `fixed` retains one
+original three-expert batch, and `single` uses the single-agent baseline. Proposals run
+only after an accepted RCA; terminal paths from every phase pass through the shutdown
+protocol. The optional CAES module sits before dispatch and is currently scoped to the
+`full` variant. It ranks tasks; FinalizeGate retains authority over evidence acceptance
+and conclusions.
 
 ### Agent responsibilities
 
@@ -174,8 +181,8 @@ tool, budget and cache-off settings:
 | --- | --- |
 | `strong_single_equivalent_tools` | One identity with equivalent tools and self-reflection |
 | `fixed_four_equivalent_tools` | One fixed logs, metrics, database and changes batch |
-| `dynamic_no_verifier` | Dynamic specialist selection without independent review |
-| `full` | Dynamic selection with Verifier feedback and FinalizeGate |
+| `dynamic_no_verifier` | Dynamic specialist selection without independent review (the `dynamic` primary architecture; the condition name is frozen for saved protocols) |
+| `full` | Dynamic selection with Verifier feedback and FinalizeGate (the `dynamic (with verifier)` ablation) |
 
 Technical failures remain in attempted-case denominators. A normal evidence-insufficient
 `INCONCLUSIVE` is scored as abstention. Public development fixtures share encoder lineage
@@ -192,16 +199,42 @@ completed. Only Full/3010 required retries.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Single | 10/10 | 8/8 | 2/2 | 10/10 | 391.2s | 17.6 | 15.0 | 257,146 |
 | Fixed-4 | 10/10 | 5/8 | 2/2 | 7/10 | 96.9s | 7.9 | 7.6 | 56,586 |
-| Dynamic no Verifier | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
-| Full | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
+| **Dynamic (primary)** | 10/10 | 8/8 | 2/2 | 10/10 | 233.5s | 14.0 | 11.8 | 145,035 |
+| Full (dynamic with verifier) | 10/10 | 8/8 | 2/2 | 10/10 | 438.9s | 18.8 | 15.9 | 269,832 |
 
-**Multi-Agent advantage.** Dynamic no Verifier matched Single and Full at 10/10
-quality while reducing average latency by 40.3%, requests by 20.5%, tool queries
-by 21.3% and tokens by 43.6% versus Single. Fixed-4 was fastest and cheapest but
-incorrectly abstained on three identifiable cases. Full tied Single in quality but
-used more latency, requests, tools and tokens. See the
+**Why `dynamic` is the primary architecture.** Against Single: quality is identical
+(10/10) while latency falls 40.3%, requests 20.5%, tool queries 21.3% and tokens 43.6%,
+supporting the design claim that dynamic dispatch removes wasted queries and context.
+Against Full (dynamic with verifier): quality is identical while latency is 88.0% higher,
+requests 34.3% higher, tools 34.7% higher and tokens 86.0% higher — so the independent
+Verifier produced no measurable quality gain in this batch, and we describe that only as
+"no gain observed", not as proof that a Verifier can never help. Against Fixed-4: Fixed
+is far cheaper (96.9s, 7.9 requests, 56,586 tokens) but wrongly abstains on three
+identifiable cases (3004, 3005, 3010), which is exactly what a single fixed batch cannot
+recover and what `dynamic` multi-round follow-up can.
+
+This is one development-visible batch of 10 cases with a single repeat and candidate
+labels; it is not a blind test and does not establish production behaviour. See the
 [full Chinese report](results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md)
 and [structured comparison](results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json).
+The [primary-architecture analysis](analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md)
+recomputes every figure above and states the evidence boundary; it also documents the
+frozen `correctness` field in the saved comparison without rewriting it.
+
+**Known weakness and what was done about it.** On the two unidentifiable cases of this
+batch, `dynamic` used 2.39× the tokens it used on identifiable cases; `incident_3008` alone
+cost 386.3s and 274,794 tokens but still ended in a correct abstention. Both cases were
+actively abstained by the Coordinator rather than exhausted by a budget ceiling. A
+deterministic cost guard now arms on "no candidate gained a cause-specific discriminator
+for N consecutive rounds" (`WorkflowOptions.evidence_gap_rounds`, default 5, `0` disables),
+emits `INVESTIGATION_EVIDENCE_EXHAUSTED` with a cost snapshot and publishes `INCONCLUSIVE`.
+It changes only the budget, never what `FinalizeGate` would accept. Replaying it over the
+frozen traces estimates −44.0% tokens on 3003, −21.9% on 3008 and −12.3% across the batch;
+the default `max_rounds: 4` means the threshold cannot fire under the stock configuration.
+A separate opt-in encoder lineage `causal-world-v2-hardened` adds 36 development cases
+(29 identifiable, 7 abstaining) with boundary and competing-rival difficulty levers.
+Priority, ownership and acceptance criteria are in the
+[optimization roadmap](docs/optimization-roadmap.zh-CN.md).
 
 ## Documentation
 
@@ -210,6 +243,7 @@ and [structured comparison](results/v16/wp-d/full40-local-gateway-c4-20261031/fi
 - [IncidentBench tests](docs/incidentbench/README.md) — datasets, protocols, scoring and commands
 - [Investigation protocol](docs/protocol.md) — run lifecycle, gates and budgets
 - [Evaluation protocol](docs/evaluation.md) — variants, metrics and scoring rules
+- [Optimization roadmap](docs/optimization-roadmap.zh-CN.md) — prioritized work with ownership and acceptance criteria
 - [Cache design](docs/cache.md) — namespaces, hits and semantic reuse
 - [Data generation and limitations](data/README.md) — synthetic fixtures and scope
 - [Acceptance evidence](docs/acceptance/) — runs and audits
