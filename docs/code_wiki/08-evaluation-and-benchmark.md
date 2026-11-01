@@ -16,8 +16,8 @@
 | --- | --- | --- |
 | `single` | `strong_single_equivalent_tools` | 单智能体自规划、自反思，等价数据库工具 |
 | `fixed` + `benchmark_fixed_four` | `fixed_four_equivalent_tools` | 固定 logs+metrics+database+changes 四专家 |
-| `dynamic_no_verifier` | `dynamic_no_verifier` | 动态协调但无独立审查 |
-| `full` | `full` | 完整系统（含 Verifier） |
+| `dynamic`（主架构，默认） | `dynamic_no_verifier` | 动态协调、确定性接地、无独立审查；条件名因已保存的 protocol 而冻结 |
+| `full` | `full` | 消融对照 *dynamic (with verifier)*（含 Verifier） |
 
 `legacy fixed`（三专家）与 `fixed_four` 是不同条件，不能混用。
 
@@ -85,7 +85,8 @@
 
 ### 4.2 `aggregate(rows)`
 
-- 按 `VARIANTS = (single, fixed, dynamic_no_verifier, full)` 分组；
+- 按 `VARIANTS = (single, fixed, dynamic, full)` 分组；已保存行里的 `dynamic_no_verifier` 由
+  `canonical_name` 折叠回 `dynamic`，同一架构只报一次；
 - 混合 `scoring_version` 直接报错；
 - 每个指标输出 `_successes` / `_failures` / `_denominator` / `_unknown` / `_rate`；
 - 成本类（tool_calls、llm_requests、tokens、cost、latency）只有在全部非空时才求和；
@@ -186,13 +187,37 @@ data/incidentbench_v1/
 
 | 模块 | 职责 |
 | --- | --- |
-| `builder.py` | `build_dataset(config, out, oracle_root)`：生成 public 包与 oracle，写 public index、splits、manifest |
-| `scenarios/world.py` | `World`、`simulate(spec, variant)`、`encode(world, incident_id)`：从故障世界模型生成一致的日志/指标/变更/数据库证据 |
+| `builder.py` | `build_dataset(config, out, oracle_root)`：生成 public 包与 oracle，写 public index、splits、manifest；`encoder_lineage` 选择编码器血统 |
+| `scenarios/world.py` | `World`、`simulate(spec, variant)`、`encode(world, incident_id)`：从故障世界模型生成一致的日志/指标/变更/数据库证据（`causal-world-v1`，冻结） |
+| `scenarios/hardened.py` | `encode_hardened(world, incident_id, difficulty)`：可选的更难血统 `causal-world-v2-hardened`，`difficulty` 取 `standard` / `boundary` / `competing` |
 | `validator.py` | `validate_dataset`: 文件完整性、public/oracle 分离、哈希、可解性、无泄漏 |
 | `manifest.py` | `digest_tree`、`create_lock` / `verify_lock`、`label_commitment`、`seal_dataset` |
 | `family_split.py` | 按故障族分层切分，避免同族跨 split 泄漏 |
 | `normalizer.py` | `normalize(state)` → 统一评分行 |
 | `oracle_store.py` | `OracleStore`：路径白名单 + 只能读 oracle 目录 |
+
+`BUILDER_VERSION` 保持 `causal-world-v1`（它描述数据集契约，不描述编码器），实际血统记录在
+`manifest.json` 与 `coverage.json` 的 `encoder_lineage` 字段。`ENCODERS` 表把血统名映射到
+`(编码器, 是否支持难度杠杆)`：`causal-world-v1` 不支持，传 `difficulty` 会直接报错；
+未知血统在写盘前报错。
+
+### 7.5 难度杠杆（`causal-world-v2-hardened`）
+
+| 杠杆 | 做法 | 它惩罚的读法 |
+| --- | --- | --- |
+| `standard` | 幅度同 v1，但带竞争机制和同服务干扰 | 只比较幅度、忽略竞争 |
+| `boundary` | 机制特征值恰好落在验收契约上（`cpu_percent` 91、`connection_count == limit`、`p95_latency_ms` 3000、`duration_ms` 1001/3001、`db_pool_max 20 -> 18`） | “真故障一定给出夸张数字” |
+| `competing` | 竞争机制在**自己服务**上发布症状但从不发布判别证据；晚期非因果变更落在**元凶自己的服务** | “先看到哪条异常就选哪条” |
+
+`RIVALS` 定义可混淆的对手机制，`MECHANISM_SERVICE` 给出机制所属服务，`COMPETING_SYMPTOM`
+的措辞刻意不含 `cause_discriminator` 与 mock 分类器识别的任何机制短语，因此对手症状在构造上
+永远不可确认。生成脚本：`scripts/build_hardened_incidentbench.py`；回归测试：
+`tests/incidentbench/test_hardened_lineage.py`。
+
+难度不能由 `MockProvider` 证明：它是固定规则策略，读的正是 `cause_discriminator` 的同一批
+契约判据，在四个难度臂上结果完全相同。可复算的度量在
+[`analysis/wp_d/reports/hardened-difficulty-20261101/measure.py`](../../analysis/wp_d/reports/hardened-difficulty-20261101/measure.py)：
+契约读者在两个数据集上均零错，幅度读者从 v1 的 8/8 掉到 v2 的 23/29（6 错）。
 
 ## 8. IncidentBench 实验（`incidentbench/experiment.py`）
 
@@ -259,7 +284,8 @@ data/incidentbench_v1/
 | `scripts/run_cache_eval.py` | 缓存命中与节省 |
 | `scripts/run_incidentbench.py` | IncidentBench 实验 |
 | `scripts/analyze_incidentbench.py` | 统计与配对分析 |
-| `scripts/build_incidentbench.py` | 生成数据集 |
+| `scripts/build_incidentbench.py` | 生成数据集（`causal-world-v1`） |
+| `scripts/build_hardened_incidentbench.py` | 生成 `causal-world-v2-hardened` 开发集（36 例，三档难度） |
 | `scripts/validate_incidentbench.py` | 数据校验 |
 | `scripts/seal_incidentbench.py` | 冻结数据集 |
 | `scripts/prepare_citation_review.py` | 生成引用复核包 |
@@ -270,7 +296,7 @@ data/incidentbench_v1/
 
 ```bash
 # 1. 离线消融
-python scripts/run_eval.py --split dev --variants single fixed dynamic_no_verifier full \
+python scripts/run_eval.py --split dev --variants single fixed dynamic full \
   --provider mock --out runs/ablation-dev
 
 # 2. 聚合

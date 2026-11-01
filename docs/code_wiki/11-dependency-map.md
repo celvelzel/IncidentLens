@@ -162,7 +162,8 @@ from .scenarios import encode, simulate
 - `data/monitoring/{normal,anomaly}.json` → 监控 profile 的快照样本；
 - `data/dataset_manifest.json` → 生成器版本、计数与已知局限；
 - `data/incidentbench_v1/{public_case_index.json, rca/**, splits/**, manifest.json, coverage.json}` → IncidentBench 公开包；
-- `data/incidentbench_v16_dev/` → v1.6 开发用公开包；
+- `data/incidentbench_v16_dev/` → v1.6 开发用公开包（`causal-world-v1`，冻结）；
+- `data/incidentbench_v2_hardened/` → 可选的更难开发包（`causal-world-v2-hardened`，36 例，带难度杠杆）；
 - `<oracle_root>/oracle/incident_XXX.json` → 评测私有标签（运行时不可见）。
 
 ### 5.2 输出

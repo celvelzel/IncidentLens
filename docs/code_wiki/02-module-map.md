@@ -117,7 +117,8 @@ incidentlens/
 | 文件 | 作用 |
 | --- | --- |
 | `builder.py` | 从世界模型生成案例、公开/私有分层 |
-| `scenarios/world.py` | 7 类故障的世界模型/证据生成器 |
+| `scenarios/world.py` | 7 类故障的世界模型/证据生成器（`causal-world-v1`，冻结） |
+| `scenarios/hardened.py` | 可选的更难编码器血统 `causal-world-v2-hardened`（`standard`/`boundary`/`competing` 三档难度） |
 | `validator.py` | 数据完整性、泄漏、可解性校验 |
 | `normalizer.py` | 证据文本归一化 |
 | `manifest.py` | 数据集清单与哈希 |

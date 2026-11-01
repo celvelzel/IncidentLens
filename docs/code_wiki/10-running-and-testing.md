@@ -253,6 +253,7 @@ INCIDENT_LENS_OFFLINE_TESTS: '1'
 | `scripts/run_eval.py` / `analyze_eval.py` | 消融评估与聚合 |
 | `scripts/run_incidentbench.py` / `analyze_incidentbench.py` | IncidentBench |
 | `scripts/build_incidentbench.py` / `validate_incidentbench.py` / `seal_incidentbench.py` | 数据集生成/校验/冻结 |
+| `scripts/build_hardened_incidentbench.py` | 生成 `causal-world-v2-hardened` 更难开发集 |
 | `scripts/run_reliability_eval.py` | 可靠性评估 |
 | `scripts/run_cache_eval.py` | 缓存收益评估 |
 | `scripts/run_v15_active_eval.py` / `analyze_v15_active.py` | CAES 实验 |
