@@ -28,3 +28,6 @@ analysis/wp_d/reports/hardened-dataset-validation-20261101/*/states/
 
 # local agent tooling
 .claude/scheduled_tasks.lock
+
+# submission archive is built locally at submission time, never tracked
+COMP5584+GroupProject+Group5.zip

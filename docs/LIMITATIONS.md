@@ -125,8 +125,11 @@ These mechanisms should not be described as production reliability features.
 - A deck export is present at `presentation/IncidentLens_Final.pptx` with a PDF and rendered
   slides, but its delivery date, room and approval are not recorded here, and no demo video is
   present. A video must not be claimed until it is recorded and verified.
-- The submission archive is built and size-checked as the last step of the submission
-  checklist; this document does not record its contents.
+- The submission archive was built from a clean tracked tree on 2026-11-02, opened, checked
+  for secrets and smoke-tested from its own extraction; the build record is in
+  `submission/SUBMISSION_CHECKLIST.md` §8. It is rebuilt after the group completes the
+  contribution statement and slide-1 names, so the delivered file will not be byte-identical
+  to that build.
 
 ## 3. Empirical limitations
 

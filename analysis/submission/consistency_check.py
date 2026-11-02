@@ -33,6 +33,14 @@ MARKDOWN = [
     "submission/SUBMISSION_CHECKLIST.md",
 ]
 
+# Files outside the documentation set that also carry the failure breakdown. The
+# Chinese handoff Q&A repeats it, and the rendered deck is generated from build_deck.py.
+EXTRA_GUARDED = [
+    "presentation/build_deck.py",
+    "src/incident_lens/web/static/js/knowledge.js",
+    "docs/handoff/project-handoff.zh-CN.md",
+]
+
 BATCH_JSON = (
     ROOT / "results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json"
 )
@@ -194,8 +202,7 @@ def check_numbers() -> None:
     # The eight failures were six STRUCTURED_OUTPUT_INVALID (five with no string
     # content, one truncated after repair) plus two identity mismatches. Only one of
     # the six was a truncation, so a "six truncated" claim is wrong wherever it appears.
-    for rel in MARKDOWN + ["presentation/build_deck.py",
-                           "src/incident_lens/web/static/js/knowledge.js"]:
+    for rel in MARKDOWN + EXTRA_GUARDED:
         path = ROOT / rel
         if not path.exists():
             continue

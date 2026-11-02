@@ -164,6 +164,21 @@ zip -r "COMP5584+GroupProject+Group5.zip" . -x ".venv/*" "results/*" ".git/*" "*
 Then confirm the archive opens, contains no `.env`, and is under the Canvas upload limit.
 Report the final size in the group's submission note.
 
+**Build record (2026-11-02):**
+
+| Property | Value |
+| --- | --- |
+| File | `COMP5584+GroupProject+Group5.zip` at the repository root (ignored by git, not committed) |
+| Source | `git archive HEAD` from a clean `main` working tree, so only tracked files are included |
+| Size | about 22 MB compressed, 74.3 MB uncompressed, 3,418 files — well under a typical Canvas limit, but confirm the course setting |
+| Integrity | archive opens; per-entry CRC check passes; extraction yields all 3,418 files |
+| Secrets | only `.env.example`, whose values are blank; no `.env`, key, token, `.venv`, `__pycache__`, cache, `.sqlite` or `local_oracles/` |
+| Smoke test on the extracted copy | `validate-data` returns `ok`; `incident_001` Mock Dynamic ends `RESOLVED`; `incident_006` ends `INCONCLUSIVE`; `replay` reads the saved trace; `analysis/submission/consistency_check.py` prints `PASS` |
+
+The archive is rebuilt after the group adds the completed Individual Contribution Statement and
+any member names to slide 1, so the delivered file will not be byte-identical to this build.
+Re-measure the size at that point.
+
 ---
 
 ## 9. Final ten minutes
@@ -171,6 +186,7 @@ Report the final size in the group's submission note.
 - [ ] Deck and PDF open on the presentation machine.
 - [ ] Console running; recorded trace tab preloaded.
 - [ ] Contribution statement filled, signed, exported to PDF.
-- [ ] Archive built, opened once, size checked.
+- [x] Archive built from a clean tree, opened once, size checked (see §8 build record).
+- [ ] Archive rebuilt after the contribution statement and slide-1 names are added.
 - [ ] One member has the Canvas submission page open and logged in.
 - [ ] Everyone knows which speaker block they take and which backup slide they own.

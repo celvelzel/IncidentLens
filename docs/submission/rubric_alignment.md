@@ -79,8 +79,9 @@ configuration or web assets.
 - [x] Q&A preparation with correct, bounded answers.
 - [x] Blank Individual Contribution Statement template.
 - [x] Submission checklist and cross-artifact consistency audit.
-- [ ] Final package organized and size-checked. (The archive is built and verified at
-  submission time; see `submission/SUBMISSION_CHECKLIST.md` §9.)
+- [x] Package organized, archived from a clean tree, opened, secret-checked and smoke-tested
+  from its own extraction on 2026-11-02 (build record in `submission/SUBMISSION_CHECKLIST.md`
+  §8). The group rebuilds it after adding the contribution statement and slide-1 names.
 
 ## Presentation-specific rubric (if separately assessed)
 

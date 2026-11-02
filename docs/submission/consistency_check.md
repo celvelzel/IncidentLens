@@ -166,10 +166,12 @@ deliberately not produced.
 | 31 | Variant label "Dynamic + Verifier" in the site | `knowledge.js` ×3 | "Dynamic (with verifier)", matching the CLI display name |
 | 32 | Causal clause tied the pytest count to the evaluation denominator policy | `Presentation_Script.md` slide 8 | Two separate sentences |
 | 33 | Audit script failed from a clean clone: the batch JSON is gitignored | `analysis/submission/consistency_check.py` | Prefers a tracked scored projection in `analysis/wp_d/reports/hardened144-20261101/` |
+| 34 | The Chinese handoff Q&A still called all six structured-output failures truncations, outside the guard's file list | `docs/handoff/project-handoff.zh-CN.md` | Same five-plus-one breakdown; the guard now covers this file |
+| 35 | The archive checklist and the two documents describing it disagreed about whether it had been built | `submission/SUBMISSION_CHECKLIST.md` §8–9, `docs/LIMITATIONS.md` §2.8, `rubric_alignment.md` §5 | Built from a clean tree, opened, secret-checked and smoke-tested; size and result recorded once, in the checklist |
 
 No fix changed a measured number, and no fix required re-running the evaluation. The two
 figures that did change — the test-suite duration and the PDF size — were re-measured, not
-adjusted.
+adjusted. The archive size was measured from the built file, not estimated.
 
 ---
 
