@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "incidentlens",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "incident_lens.web", "--port", "8022"],
+      "port": 8022
+    }
+  ]
+}
