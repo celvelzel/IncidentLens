@@ -5,12 +5,15 @@
 import { getMeta } from "./api.js";
 import { closeDrawer, initDrawer } from "./components.js";
 import { renderInvestigate, renderLibrary, renderOverview, renderRun } from "./views.js";
+import { renderEvaluation, renderSystem } from "./knowledge.js";
 
 const ROUTES = {
   overview: { match: /^\/$/, title: "总览", view: renderOverview },
   investigate: { match: /^\/investigate$/, title: "新建调查", view: renderInvestigate },
   run: { match: /^\/run$/, title: "运行详情", view: renderRun },
   library: { match: /^\/library$/, title: "痕迹档案库", view: renderLibrary },
+  system: { match: /^\/system$/, title: "系统设计", view: renderSystem },
+  evaluation: { match: /^\/evaluation$/, title: "评测结果", view: renderEvaluation },
 };
 
 const main = document.getElementById("main");
@@ -131,7 +134,8 @@ function initTheme() {
     applyTheme(saved);
     return;
   }
-  applyTheme(window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  // Academic demo default: the light editorial theme reads better on a projector.
+  applyTheme("light");
 }
 
 document.getElementById("theme-toggle").addEventListener("click", () => {

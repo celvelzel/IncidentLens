@@ -59,38 +59,59 @@ Object.assign(EVENT_KIND, {
 export async function renderOverview(root) {
   root.innerHTML = `
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-kicker">Evidence-Driven RCA Console</div>
-      <h1 class="hero-title" id="hero-title">让每一次根因结论，都有据可查</h1>
-      <p class="hero-desc">
-        IncidentLens 以多智能体协作调查软件故障：协调者分派任务、专家代理在权限边界内取证、
-        验证者交叉核对，最终输出带引用的根因报告 —— 或在证据不足时明确存疑。
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary btn-lg" href="#/investigate">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/><path d="M11 8v6M8 11h6"/></svg>
-          开始调查
-        </a>
-        <a class="btn btn-lg" href="#/library">
-          <svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2.5h6.5A1.5 1.5 0 0 1 20 8v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg>
-          浏览痕迹档案
-        </a>
+      <div class="hero-split">
+        <div>
+          <div class="hero-kicker">Evidence-Driven RCA Console</div>
+          <h1 class="hero-title" id="hero-title">让每一次根因结论，都有据可查</h1>
+          <p class="hero-desc">
+            IncidentLens 以多智能体协作调查软件故障：协调者分派任务、专家代理在权限边界内取证、
+            验证者交叉核对，最终输出带引用的根因报告 —— 或在证据不足时明确存疑。
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="#/investigate">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/><path d="M11 8v6M8 11h6"/></svg>
+              开始调查
+            </a>
+            <a class="btn btn-lg" href="#/library">
+              <svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2.5h6.5A1.5 1.5 0 0 1 20 8v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg>
+              浏览痕迹档案
+            </a>
+          </div>
+        </div>
+        <aside class="contract-card" aria-labelledby="contract-title">
+          <h2 id="contract-title">接受一份结论，需要三件事</h2>
+          <div class="contract-row"><strong>引用</strong><span>每个根因都指向本次运行实际观察到的记录，而不是模型的记忆。</span></div>
+          <div class="contract-row"><strong>权限</strong><span>日志、指标、变更代理各自只持有只读工具；越权调用被代码拒绝。</span></div>
+          <div class="contract-row"><strong>停止</strong><span>轮次、工具、请求与时间都有硬上限；证据不足时输出存疑，而不是猜测。</span></div>
+          <a class="btn btn-sm" href="#/system" style="margin-top:var(--sp-4)">查看系统设计 →</a>
+        </aside>
       </div>
     </section>
 
     <div class="stack" style="margin-top:var(--sp-6)">
       <section aria-labelledby="stats-title">
-        <h2 class="section-title" id="stats-title">运行概况</h2>
-        <div class="kpi-grid" id="overview-stats">${skeletonRows(1, 92)}</div>
+        <h2 class="section-title" id="stats-title">档案库概况</h2>
+        <div class="kpi-grid stat-strip" id="overview-stats">${skeletonRows(1, 92)}</div>
       </section>
 
-      <section aria-labelledby="pipeline-title">
-        <h2 class="section-title" id="pipeline-title">调查流水线</h2>
-        <div class="pipeline">
-          <div class="pipeline-stage"><h3>协调分派</h3><p>协调者阅读公开事件摘要，提出 1–2 个带判别标准的调查任务。</p></div>
-          <div class="pipeline-stage"><h3>专家取证</h3><p>日志 / 指标 / 变更代理仅能调用各自角色被允许的工具。</p></div>
-          <div class="pipeline-stage"><h3>校验合并</h3><p>批次结果对照签发身份与实际查询台账验证后统一合并。</p></div>
-          <div class="pipeline-stage"><h3>验证审查</h3><p>验证者基于授权获取的记录给出充分 / 不足 / 冲突裁定。</p></div>
-          <div class="pipeline-stage"><h3>落地报告</h3><p>通过接地门禁后输出引用报告；证据不足则明确存疑。</p></div>
+      <section class="result-teaser" aria-labelledby="teaser-title">
+        <div>
+          <p class="eyebrow">Recorded batch · 2026-11-01</p>
+          <h2 id="teaser-title">协调是否值得它的成本？</h2>
+          <p>
+            同一模型、同一批 36 个加固案例、同一预算下，四种架构各跑一次。
+            动态架构用约四成的时间与 token 换到与单代理相同或更好的质量。
+          </p>
+          <div class="result-actions">
+            <a class="btn btn-primary" href="#/evaluation">查看完整评测</a>
+            <a class="btn" href="#/library">观看一次回放</a>
+          </div>
+        </div>
+        <div class="mini-rows" aria-label="质量成功数（满分 36）">
+          <div class="mini-row"><span>Single</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:88.9%"></span></span><b>32</b></div>
+          <div class="mini-row"><span>Fixed-4</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:61.1%"></span></span><b>22</b></div>
+          <div class="mini-row"><span>Dynamic</span><span class="bar"><span class="bar-fill" data-tone="brand" style="width:91.7%"></span></span><b>33</b></div>
+          <div class="mini-row"><span>+ Verifier</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:83.3%"></span></span><b>30</b></div>
         </div>
       </section>
 
@@ -491,7 +512,7 @@ export async function renderInvestigate(root) {
         `调查完成 · ${metaStatus ? metaStatus.label : status}`,
         status === "RESOLVED" ? "success" : status === "INCONCLUSIVE" ? "info" : "error"
       );
-      if (root.isConnected) location.hash = `#/run?path=${encodeURIComponent(result.path)}`;
+      if (root.isConnected) location.hash = `#/run?path=${encodeURIComponent(result.path)}&live=1`;
     } catch (err) {
       btn.disabled = false;
       btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 4.8v14.4L19 12z"/></svg> 发起调查';
@@ -545,10 +566,10 @@ export async function renderRun(root, params) {
     })}</div>`;
     return;
   }
-  mountReplay(root, data,params.get('demo') === '1');
+  mountReplay(root, data, params.get("demo") === "1", params.get("live") === "1", params.get("step"));
 }
 
-function mountReplay(root, data,demoMode = false) {
+function mountReplay(root, data, demoMode = false, live = false, startAt = null) {
   const events = data.trace.state?.events || [];
   const bookmarks = replayBookmarks(data.trace);
   root.innerHTML = `<section class="card replay-console" aria-label="Investigation Replay">
@@ -570,6 +591,9 @@ function mountReplay(root, data,demoMode = false) {
     <details><summary>Provider Timeout / Recovery · 可靠性事件</summary><div id="replay-reliability"></div></details>
   </section><div id="replay-detail"></div>`;
   let position = 0, timer = null, activeTab = 'timeline', selectedRole = '', category = 'all';
+  // Deep link to a saved position: ?step=last or ?step=<n>. Useful for demos and review links.
+  const requested = startAt === 'last' ? events.length : Number(startAt);
+  if (startAt && Number.isFinite(requested)) position = Math.max(0, Math.min(events.length, Math.trunc(requested)));
   const play = root.querySelector('#replay-play');
   const pause = () => { clearTimeout(timer); timer = null; play.textContent = '播放'; play.setAttribute('aria-pressed', 'false'); };
   const resetInspector = () => {
@@ -586,7 +610,7 @@ function mountReplay(root, data,demoMode = false) {
     state.provenance = evidenceContext(state);
     const detail = root.querySelector('#replay-detail');
     activeTab = detail.querySelector('[aria-selected="true"]')?.dataset.tab || activeTab;
-    drawRun(detail, { ...data, recorded: true, activeTab, trace: { ...data.trace, state }, report_md: state.report ? data.report_md : '' });
+    drawRun(detail, { ...data, recorded: true, live, activeTab, trace: { ...data.trace, state }, report_md: state.report ? data.report_md : '' });
     root.querySelector('#replay-position').textContent = `${position} / ${events.length} 已保存事件`;
     root.querySelector('#replay-seek').value = position;
     root.querySelector('#replay-jump').value = position;
@@ -629,7 +653,7 @@ function mountReplay(root, data,demoMode = false) {
 }
 
 function drawRun(root, data) {
-  const { trace, report_md: reportMd, recorded } = data;
+  const { trace, report_md: reportMd, recorded, live } = data;
   const state = trace.state;
   const report = state.report || { status: "not recorded" };
   const status = STATUS_META[report.status] || { tone: "neutral", label: report.status };
@@ -645,7 +669,7 @@ function drawRun(root, data) {
           ${badge(status.label, status.tone, true)}
           ${badge(state.workflow_status || "not recorded")}
           ${trace.provider === "mock" ? badge("MOCK", "accent") : trace.provider === "real" ? badge("REAL", "info") : badge("PROVIDER UNKNOWN", "warning")}
-          ${badge("Recorded Replay", "neutral")}
+          ${live ? badge("Live run · saved trace", "success") : badge("Recorded Replay", "neutral")}
         </div>
         <div class="run-head-meta">
           <span>运行 <span class="mono">${escapeHtml(state.run_id)}</span></span>
@@ -668,6 +692,8 @@ function drawRun(root, data) {
         </a>` : '<span class="text-muted">完整 Trace / Report 下载在 REPORT 事件后解锁</span>'}
       </div>
     </div>
+
+    ${live ? `<div class="alert alert-success" style="margin-bottom:var(--sp-5)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.4l2.6 2.6L16 9.6"/></svg><div class="alert-msg"><strong>本次调查刚刚完成</strong> —— 以下时间线回放的是刚写入磁盘的痕迹；重新加载页面会得到相同结果。</div></div>` : ""}
 
     ${trace.provider === "mock" ? `<div class="alert alert-info" style="margin-bottom:var(--sp-5)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></svg><div class="alert-msg"><strong>MOCK 离线确定性策略</strong> —— 以下结果用于演示流水线正确性，不代表真实模型的准确性。</div></div>` : ""}
 

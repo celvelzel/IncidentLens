@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark light">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#9a0907">
   <title>IncidentLens · 证据驱动的事件调查控制台</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236366f1'/%3E%3Ccircle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M19 19 L25 25' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%239a0907'/%3E%3Ccircle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M19 19 L25 25' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/core.css">
   <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/institutional.css">
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -22,6 +24,7 @@
           <strong>IncidentLens</strong>
           <small>Evidence-driven RCA</small>
         </span>
+        <span class="brand-rule" aria-hidden="true"></span>
       </div>
       <nav class="sidebar-nav" aria-label="页面导航">
         <a class="nav-item" href="#/" data-nav="overview">
@@ -40,12 +43,22 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6z"/></svg>
           <span>运行详情</span>
         </a>
+        <div class="nav-divider" role="presentation"></div>
+        <a class="nav-item" href="#/system" data-nav="system">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.4"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.4"/><path d="M14.5 17.2h5.8M17.4 14.3v5.8"/></svg>
+          <span>系统设计</span>
+        </a>
+        <a class="nav-item" href="#/evaluation" data-nav="evaluation">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg>
+          <span>评测结果</span>
+        </a>
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-meta" id="sidebar-meta">
           <span class="dot" aria-hidden="true"></span>
           <span id="sidebar-meta-text">正在连接…</span>
         </div>
+        <p class="sidebar-course">COMP5584 · Group Project<br><span>2026/27 Semester 1</span></p>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换主题">
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4L19 19M19 5l-1.6 1.6M6.6 17.4L5 19"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.5A8.3 8.3 0 0 1 9.5 3.8a8.3 8.3 0 1 0 10.7 10.7z"/></svg>

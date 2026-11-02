@@ -9,8 +9,15 @@
   /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-serif: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
   --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono",
     Consolas, "Liberation Mono", monospace;
+
+  /* Institutional brand layer (chrome only; never a status colour) */
+  --brand-red: #9a0907;
+  --brand-red-soft: rgba(154, 9, 7, 0.07);
+  --brand-navy: #003070;
+  --brand-light: #e8e9ef;
 
   --text-xs: 11.5px;
   --text-sm: 12.5px;
@@ -78,11 +85,16 @@
   --text-2: #a3a3af;
   --text-3: #90909d;
 
-  --accent: #8b93f8;
-  --accent-strong: #a8affc;
-  --accent-contrast: #0a0a14;
-  --accent-soft: rgba(139, 147, 248, 0.13);
-  --accent-border: rgba(139, 147, 248, 0.34);
+  --accent: #86a9e0;
+  --accent-strong: #aac6ee;
+  --accent-contrast: #06101f;
+  --accent-soft: rgba(134, 169, 224, 0.14);
+  --accent-border: rgba(134, 169, 224, 0.36);
+
+  --brand-red: #d0574e;
+  --brand-red-soft: rgba(208, 87, 78, 0.14);
+  --brand-navy: #86a9e0;
+  --brand-light: #22232a;
 
   --success: #3dd68c;
   --success-soft: rgba(61, 214, 140, 0.12);
@@ -127,11 +139,16 @@
   --text-2: #4c4c57;
   --text-3: #666673;
 
-  --accent: #4f52e0;
-  --accent-strong: #3f42c4;
+  --accent: #003070;
+  --accent-strong: #00224f;
   --accent-contrast: #ffffff;
-  --accent-soft: rgba(79, 82, 224, 0.09);
-  --accent-border: rgba(79, 82, 224, 0.32);
+  --accent-soft: rgba(0, 48, 112, 0.07);
+  --accent-border: rgba(0, 48, 112, 0.26);
+
+  --brand-red: #9a0907;
+  --brand-red-soft: rgba(154, 9, 7, 0.07);
+  --brand-navy: #003070;
+  --brand-light: #e8e9ef;
 
   --success: #087b4d;
   --success-soft: rgba(15, 157, 99, 0.1);
