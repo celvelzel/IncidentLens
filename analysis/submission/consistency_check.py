@@ -36,6 +36,13 @@ MARKDOWN = [
 BATCH_JSON = (
     ROOT / "results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json"
 )
+# The batch directory is local run output and is gitignored, so a clean clone only has
+# the scored projection committed next to the tracked report. Prefer the projection and
+# fall back to the local batch file when it is present.
+SCORED_JSON = (
+    ROOT
+    / "analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json"
+)
 
 failures: list[str] = []
 
@@ -127,10 +134,11 @@ def check_markdown() -> None:
 
 # ---------------------------------------------------------------- C3 numbers
 def check_numbers() -> None:
-    if not BATCH_JSON.exists():
-        fail("C3", f"batch JSON missing at {BATCH_JSON}")
+    source = BATCH_JSON if BATCH_JSON.exists() else SCORED_JSON
+    if not source.exists():
+        fail("C3", f"no batch summary at {BATCH_JSON} or {SCORED_JSON}")
         return
-    summary = json.loads(BATCH_JSON.read_text(encoding="utf-8"))
+    summary = json.loads(source.read_text(encoding="utf-8"))
     records = summary["records"]
     variants = summary["summary"]
 
@@ -179,6 +187,19 @@ def check_numbers() -> None:
             fail("C3", "pytest log no longer records 1179 passed, 3 skipped")
     else:
         fail("C3", "results/pytest-current.log missing")
+
+    # The eight failures were six STRUCTURED_OUTPUT_INVALID (five with no string
+    # content, one truncated after repair) plus two identity mismatches. Only one of
+    # the six was a truncation, so a "six truncated" claim is wrong wherever it appears.
+    for rel in MARKDOWN + ["presentation/build_deck.py",
+                           "src/incident_lens/web/static/js/knowledge.js"]:
+        path = ROOT / rel
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for pattern in (r"six truncated", r"6 truncated", r"6 次结构化输出截断"):
+            if re.search(pattern, text, re.I):
+                fail("C3", f"{rel} claims six truncated outputs; only one of six was a truncation")
 
 
 # ---------------------------------------------------------------- C4 deck

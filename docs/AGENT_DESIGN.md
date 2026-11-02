@@ -281,7 +281,7 @@ zero wrong root causes among completed runs. That trade-off is intentional but n
 | Insufficient evidence | FinalizeGate / coordinator | Normal `INCONCLUSIVE` | Correct abstention when the case is unidentifiable; over-abstention when identifiable |
 | Citation of unobserved record | Agent analysis / gates | Runtime validation error or rejection | Reject; no publication |
 | Finding identity mismatch | `analyze()` | Technical failure | Recorded as `FINDING_IDENTITY_MISMATCH` |
-| Structured output invalid | Provider/adapter | Technical failure after one repair | Recorded as `STRUCTURED_OUTPUT_INVALID` |
+| Structured output invalid | Provider/adapter | Technical failure after one repair | Recorded as `STRUCTURED_OUTPUT_INVALID` (envelope, JSON, schema or truncation) |
 | Missing verifier review | FinalizeGate for `full` | Gate rejection | Return to coordinate if budget remains |
 | Competing observed mechanism | FinalizeGate | Gate rejection | Keep hypothesis open; investigate or abstain |
 | Budget exhausted | Runtime accounting | `BUDGET_EXHAUSTED` | Runtime failure, not abstention |

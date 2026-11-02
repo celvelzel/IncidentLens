@@ -46,8 +46,10 @@ vs fixed 12/1/23, vs full 5/2/29.
 
 ## Technical failures (8/144)
 
-Six `STRUCTURED_OUTPUT_INVALID` and two `FINDING_IDENTITY_MISMATCH`, spread over
-all four variants (single 1, fixed 2, dynamic 3, full 2) — a provider/structured-output
+Six `STRUCTURED_OUTPUT_INVALID` (five provider responses carrying no string content,
+one truncated output that stayed invalid after its one repair) and two
+`FINDING_IDENTITY_MISMATCH`, spread over all four variants (single 1, fixed 2, dynamic 3,
+full 2) — a provider/structured-output
 layer issue rather than an architecture defect. Per the batch plan they were not
 retried and remain in the denominator; they account for 0.92 M of the 24.4 M tokens
 spent.

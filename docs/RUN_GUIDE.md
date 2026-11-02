@@ -318,10 +318,12 @@ them to make a demo look better, and do not present a replayed trace as a live r
 
 ## 10. Tests
 
-A fresh full-suite run is required before submission. Older recorded test artifacts predate
-the current tree, and this documentation task did not execute the suite, so no current pass
-count is claimed. Record the command, date, interpreter, collected count, failures, errors and
-skips in the release acceptance record.
+A fresh full-suite run is required before submission. The recorded run is
+`1179 passed, 3 skipped in 450.01s`, exit 0, on 2026-11-02 against the tree that ships this
+documentation (`results/pytest-current.log`). It is a point-in-time record, not a standing
+guarantee: re-run it after any change to source, tests, configuration or web assets. Record
+the command, date, interpreter, collected count, failures, errors and skips in the release
+acceptance record.
 
 ```powershell
 .venv\Scripts\python.exe -m pytest -q
@@ -357,7 +359,7 @@ with cases `incident_4001`–`incident_4036`. Its labels are candidate labels wi
 `annotator_status: pending`; scores from it are provisional.
 
 The recorded four-architecture statistics were produced with non-default round, tool,
-logical-request and timeout budgets. Reproducing the numbers requires the recorded settings
+request and timeout budgets. Reproducing the numbers requires the recorded settings
 and the same provider/model, not just the commands. Treat
 `analysis/wp_d/reports/hardened144-20261101/` as the authoritative record of what was run.
 

@@ -250,15 +250,17 @@ All 27 completed unidentifiable slots correctly abstained (Dynamic 6/6 because o
 unidentifiable Dynamic slot failed technically; the other architectures 7/7). The observed
 failure mode is **over-abstention, not fabrication**.
 
-**Technical failures (8/144):** 6 `STRUCTURED_OUTPUT_INVALID` + 2
+**Technical failures (8/144):** 6 `STRUCTURED_OUTPUT_INVALID` (five provider responses
+with no string content, one truncated output invalid after its one repair) + 2
 `FINDING_IDENTITY_MISMATCH`; by architecture Single 1, Fixed 2, Dynamic 3,
 Dynamic (with verifier) 2. They were not retried and remain in the denominator. Described
 as a provider/structured-output layer issue, not evidence of an architecture defect.
 
 ### 7.2 Earlier 10-case batch (MEASURED)
 
-Batch `full40-local-gateway-c4-20261031`, same model/settings, 40 slots, 40/40 completed.
-Runtime 739.7 s. Source:
+Batch `full40-local-gateway-c4-20261031`, same model/settings, 40 slots, 40/40 completed
+over three executions (3,104.9 s for 39/40, an interrupted resume, then 739.7 s for 40/40).
+Source:
 `results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json`.
 
 | Architecture | Technical | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |
@@ -315,9 +317,10 @@ only the numeric fields.
   Live runs write `results/ui/<run_id>/`; replay is confined to `results/**/trace.json`.
   The web API's `WorkflowOptions` supports the response workflow; the dashboard runs the
   default dynamic architecture.
-- Tests: 88 Python test files; **1,182 tests collected**. Full suite run on 2026-11-02:
-  `1179 passed, 3 skipped in 381.18s`, exit 0 (`results/pytest-current.log`). Re-run before
-  submission if the tree changes after that date.
+- Tests: 88 Python test files; `pytest --collect-only -q` reports **1182 tests collected**.
+  Full suite run on 2026-11-02 against this tree: `1179 passed, 3 skipped in 450.01s`,
+  exit 0 (`results/pytest-current.log`). Re-run after any change to source, tests,
+  configuration or web assets.
 - Web acceptance: Playwright scripts in `tests/web/` (real HTTP, no route interception).
 
 ---

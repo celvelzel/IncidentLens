@@ -10,7 +10,7 @@ Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
 | --- | ---: | --- | --- | --- | ---: | --- |
 | **1. Problem Formulation & Motivation** | 15% | A clear, significant problem; precise scope; why multi-agent LLM design is appropriate; testable objectives | Incident RCA requires cross-source evidence and calibrated abstention; generic LLM agents over-claim. The project defines a cited-or-abstain contract and four matched architectures. Scope is synthetic, read-only incidents. | `README.md` §"Why this project"; `docs/ARCHITECTURE.md` §1; `docs/LIMITATIONS.md` §1 | 2–3 | Show an `INCONCLUSIVE` report and ask "why not guess?" |
 | **2. Multi-Agent System Design** | 30% | Role decomposition; coordination; communication; state; failure handling; justified design choices | 1 coordinator + 4 specialists + verifier ablation + deterministic merge/finalize + remediation + monitoring; LangGraph state machine; max 2 tasks/round; role ACL; stable hypothesis IDs; partial-failure handling; unified stop. | `docs/ARCHITECTURE.md`; `docs/AGENT_DESIGN.md`; `docs/reference/protocol.md` | 4–7 | Open **System** and **Run → Workflow**; click a specialist |
-| **3. Technical Implementation & Functionality** | 25% | Working system; code quality; reproducibility; tests; actual demo | 40 public packs; mock and real providers; CLI + web; replay without re-execution; 1,179 tests passed, 3 skipped, 0 failed (2026-11-02, 381 s); strict Pydantic contracts; retry and stop protocol; no secrets in repo. | `README.md`; `docs/RUN_GUIDE.md`; `docs/ARCHITECTURE.md` §5–8 | 8–9 | Run `incident_001` live (Mock), then replay it; show trace and evidence drawer |
+| **3. Technical Implementation & Functionality** | 25% | Working system; code quality; reproducibility; tests; actual demo | 40 public packs; mock and real providers; CLI + web; replay without re-execution; 1,179 tests passed, 3 skipped, 0 failed (2026-11-02, 450 s); strict Pydantic contracts; retry and stop protocol; no secrets in repo. | `README.md`; `docs/RUN_GUIDE.md`; `docs/ARCHITECTURE.md` §5–8 | 8–9 | Run `incident_001` live (Mock), then replay it; show trace and evidence drawer |
 | **4. Analysis & Innovation** | 15% | Measurement; insight; comparison; honest limitations; novelty | Matched 4-architecture benchmark; 144 slots; quality/cost metrics; difficulty levers; zero wrong root causes; verifier ablation; deterministic grounding gates; replay-estimated guard analysis with explicit boundary. | `docs/EVALUATION.md`; `analysis/wp_d/reports/hardened144-20261101/README.md`; `docs/incidentbench/README.md` | 10–14 (backup 17–19) | **Evaluation** page: 33/36 vs 32/36, 27/27 root correct, token/latency comparison |
 | **5. Presentation & Submission Quality** | 15% | Clear narrative; visual quality; timing; Q&A; complete, consistent package | PolyU-aligned deck and site; 9–10 min script; six-speaker allocation; Q&A with limitations; blank contribution template; checklist; consistency audit; reproducible package. | `presentation/Presentation_Script.md`; `presentation/QA_Preparation.md`; `docs/submission/`; `submission/` | all | Coherent red/navy design across deck and site; rehearsed hand-offs |
 
@@ -51,8 +51,9 @@ Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
 - [x] UI labels Live vs Recorded Replay and Mock vs Real.
 - [x] No secrets, `.venv`, caches or demo video in the submission archive.
 
-**Verified:** full suite run on 2026-11-02 — `1179 passed, 3 skipped in 381.18s`, exit 0
-(`results/pytest-current.log`). Re-run before submission if the tree changes after this date.
+**Verified:** full suite run on 2026-11-02 against this tree — `1179 passed, 3 skipped in
+450.01s`, exit 0 (`results/pytest-current.log`). Re-run after any change to source, tests,
+configuration or web assets.
 
 ### 4. Analysis & Innovation (15%)
 
@@ -78,7 +79,8 @@ Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
 - [x] Q&A preparation with correct, bounded answers.
 - [x] Blank Individual Contribution Statement template.
 - [x] Submission checklist and cross-artifact consistency audit.
-- [x] Final package organized and size-checked.
+- [ ] Final package organized and size-checked. (The archive is built and verified at
+  submission time; see `submission/SUBMISSION_CHECKLIST.md` §9.)
 
 ## Presentation-specific rubric (if separately assessed)
 

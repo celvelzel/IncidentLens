@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Final.pptx`
-(21 slides) and `presentation/IncidentLens_Final.pdf` (912,306 bytes).
+(21 slides) and `presentation/IncidentLens_Final.pdf` (912,344 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be
@@ -34,7 +34,11 @@ Run from the repository root with the project virtualenv.
 .venv/Scripts/python.exe analysis/submission/consistency_check.py
 ```
 
-The script exits non-zero on any failure and prints one line per defect. It performs C1–C6.
+The script exits non-zero on any failure and prints one line per defect. It performs C1–C6
+and reads the batch summary from the tracked scored projection
+`analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json`, falling
+back to the local batch file under `results/v16/` when that directory is present. A clean
+clone therefore reproduces the number checks without the gitignored run output.
 
 ---
 
@@ -69,10 +73,10 @@ same column count as its header, including the nine-column result tables.
 | Wrong root causes | same | 0 |
 | Batch runtime | same | 16,737.6 s |
 | Batch tokens | same | 24,376,395 |
-| Tests | `results/pytest-current.log` | 1,179 passed, 3 skipped, 0 failed |
+| Tests | `results/pytest-current.log` | 1,179 passed, 3 skipped, 0 failed (450.01 s, exit 0) |
 
-Arithmetic note: 1,179 passed + 3 skipped = 1,182 collected, so the `1,182 tests collected`
-clause in `docs/submission/source_of_truth.md` agrees with the run and is not a contradiction.
+Collection count: `pytest --collect-only -q` reports 1182 tests collected; the recorded run
+is 1,179 passed plus 3 skipped, so the two agree and there is no contradiction.
 
 ### C4 — Deck versus script
 
@@ -140,7 +144,7 @@ deliberately not produced.
 | 9 | `export-schemas` undocumented | `docs/RUN_GUIDE.md` §2 | One-paragraph entry added |
 | 10 | Cited a non-existent README section | `docs/submission/rubric_alignment.md` | §"Why this project" |
 | 11 | Said "four typed terminals", listed three | `presentation/QA_Preparation.md` | "Three coordinator terminals" |
-| 12 | Stale PDF byte count | `submission/SUBMISSION_CHECKLIST.md` | 912,306 bytes (current export) |
+| 12 | Stale PDF byte count | `submission/SUBMISSION_CHECKLIST.md` | Re-exported; size recorded at each build |
 | 13 | Deep link pointed at a gitignored trace | `presentation/Presentation_Script.md` | `results/acceptance/demo001/trace.json` (tracked) |
 | 14 | Remediation described as receiving accepted evidence | deck slide 5 | "none (accepted findings only)" |
 | 15 | Charts labelled "Full", ambiguous on stage | deck slides 11–12, 18 | "Dynamic + Verifier" / "Dyn + Ver" |
@@ -149,8 +153,23 @@ deliberately not produced.
 | 18 | Discriminator list duplicated verbatim | `docs/LIMITATIONS.md` §2.2 | Links to ARCHITECTURE §6 |
 | 19 | Merge rules restated | `docs/AGENT_DESIGN.md` §6 | Four guarantees; procedure linked |
 | 20 | Stop reasons restated | `docs/ARCHITECTURE.md` §8 | Failure classes only; protocol linked |
+| 21 | All six structured-output failures described as truncations; only one was | `Presentation_Script.md`, `build_deck.py` (slides 13, 19, 8), `knowledge.js` | "Six invalid structured outputs (five envelopes with no string content, one truncated after repair)" |
+| 22 | Average-requests column called "logical" | `docs/EVALUATION.md` §4 | Defined as HTTP requests actually issued; `score_batch.py` reads `actual_http_requests` |
+| 23 | Budget described as 16 "logical LLM calls" | `docs/ARCHITECTURE.md` §7, `docs/RUN_GUIDE.md` §8, `docs/EVALUATION.md` §11 | "16 LLM request permits", counting retries and repairs |
+| 24 | "Evaluation page absent" fallback premise no longer true | `docs/DEMO_GUIDE.md` §8 | "Evaluation view will not render" |
+| 25 | §10 said the suite was not executed and no count claimed, contradicting six other documents | `docs/RUN_GUIDE.md` §10 | Records the 2026-11-02 run and when to re-run it |
+| 26 | Test figures were from an older tree (381 s) | `rubric_alignment.md`, `QA_Preparation.md`, `SUBMISSION_CHECKLIST.md`, deck slide 8, `source_of_truth.md` | Re-ran the suite: 1,179 passed, 3 skipped, 450.01 s, exit 0 |
+| 27 | "1,182 collected" asserted without a collection record | `docs/submission/source_of_truth.md` | Cites `pytest --collect-only -q`, which reports 1182 |
+| 28 | 10-case batch runtime quoted as the whole batch | `docs/EVALUATION.md` §6, `source_of_truth.md` §7.2 | 739.7 s is the final execution; the three executions span 4,700.6 s |
+| 29 | "Final package organized and size-checked" ticked before it was built | `docs/submission/rubric_alignment.md` | Unticked, pointing at the checklist |
+| 30 | Deck quick-start used `results/demo`, elsewhere `results/quickstart` | deck slide 8 | `results/quickstart` |
+| 31 | Variant label "Dynamic + Verifier" in the site | `knowledge.js` ×3 | "Dynamic (with verifier)", matching the CLI display name |
+| 32 | Causal clause tied the pytest count to the evaluation denominator policy | `Presentation_Script.md` slide 8 | Two separate sentences |
+| 33 | Audit script failed from a clean clone: the batch JSON is gitignored | `analysis/submission/consistency_check.py` | Prefers a tracked scored projection in `analysis/wp_d/reports/hardened144-20261101/` |
 
-No fix changed a measured number, and no fix required re-running the evaluation.
+No fix changed a measured number, and no fix required re-running the evaluation. The two
+figures that did change — the test-suite duration and the PDF size — were re-measured, not
+adjusted.
 
 ---
 

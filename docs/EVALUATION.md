@@ -107,7 +107,7 @@ review. They do not differ in access to private oracles; no runtime variant can 
 | Correct abstention | `INCONCLUSIVE` with no asserted root cause on an unidentifiable case | Unidentifiable runs that completed |
 | Quality success | Root correct or correct abstention; a technical failure is not a success | All attempted slots |
 | Average latency | Mean wall-clock seconds | Completed runs only |
-| Average requests | Mean logical LLM requests | Completed runs only |
+| Average requests | Mean HTTP requests actually issued, including transport retries and structured-output repairs | Completed runs only |
 | Average tools | Mean tool queries | Completed runs only |
 | Average tokens | Mean reported tokens | Completed runs only |
 
@@ -160,8 +160,9 @@ not evidence that dynamic selection caused the difference.
 
 ## 6. Earlier 10-case replication
 
-Batch `full40-local-gateway-c4-20261031`, same model and settings, 40 slots, 40/40 completed,
-runtime 739.7 s.
+Batch `full40-local-gateway-c4-20261031`, same model and settings, 40 slots, 40/40 completed.
+It ran as three executions: 3,104.9 s (39/40 completed), an interrupted resume, and 739.7 s
+(40/40); the 739.7 s figure is the final execution only, not the whole batch.
 
 | Architecture | Technical | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -279,7 +280,9 @@ one, and the measured cost of that preference is 19 missed identifiable cases.
 
 There were 8 technical failures in 144 slots:
 
-- 6 `STRUCTURED_OUTPUT_INVALID`;
+- 6 `STRUCTURED_OUTPUT_INVALID` — five `UNKNOWN_PROVIDER_ERROR` where the provider
+  returned no string content in the first choice, and one `RESPONSE_TRUNCATED` whose
+  one permitted repair produced `INVALID_JSON`;
 - 2 `FINDING_IDENTITY_MISMATCH`;
 - by architecture: Single 1, Fixed-4 2, Dynamic 3, Dynamic (with verifier) 2.
 
@@ -385,6 +388,6 @@ the audit surface for a rerun. See [IncidentBench](incidentbench/README.md) for 
 reproduction workflow and [Run Guide](RUN_GUIDE.md#11-incidentbench-reproduction) for
 commands.
 
-The hardened batch used non-default round, tool, logical-request and timeout budgets.
+The hardened batch used non-default round, tool, request and timeout budgets.
 Reproducing the recorded numbers requires the recorded settings and the same provider/model.
 A different run is a new result, not a reproduction.

@@ -279,7 +279,7 @@ Close with the contract and the documentation map:
 | Dashboard will not start | Use CLI replay and open `report.md` in the editor |
 | Case data missing | Run `validate-data` and `list-cases`; use a case that exists |
 | No abstention case | Use `docs/EVALUATION.md` and explain the five missing-evidence packs, without showing an unverified report |
-| Evaluation page absent | Open `docs/EVALUATION.md` or the tracked hardened report |
+| Evaluation view will not render | Open `docs/EVALUATION.md` or the tracked hardened report |
 | Time is short | Cut the architecture segment and the replay segment; keep provenance and abstention |
 
 A recorded replay is the primary fallback because it requires no provider, no network and no

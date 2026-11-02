@@ -884,7 +884,7 @@ def slide_implementation():
             color=RED, bold=True)
     bullets(slide, 8.00, 2.65, 4.80, 2.5, [
         "Bounded provider recovery with atomic request permits and classified transport errors.",
-        "One targeted structured-output repair per stage; truncation is recorded as a technical failure.",
+        "One targeted structured-output repair per stage; a failed repair becomes a technical failure.",
         "Task-local stage budgets; partial batch failure can continue when safe.",
         "Unified stop protocol with acknowledgement and a bounded timeout.",
     ], size=9.8, color=BODY, after=7)
@@ -895,14 +895,14 @@ def slide_implementation():
     textbox(slide, LEFT + 0.18, 4.64, 5.1, 0.40,
             "1,179 passed · 3 skipped · no failures", size=16.5, color=INK, bold=True, font=SERIF)
     textbox(slide, 8.55, 4.55, 4.15, 0.45,
-            "Full pytest run · 2026-11-02 · 381 s\nExit code 0",
+            "Full pytest run · 2026-11-02 · 450 s\nExit code 0",
             size=8.6, color=MUTED, align=PP_ALIGN.RIGHT, spacing=1.1)
 
     rect(slide, LEFT, 5.52, 9.9, 1.18, PALE, LIGHT)
     textbox(slide, LEFT + 0.18, 5.63, 1.3, 0.25, "RUN IT", size=8.5, color=RED, bold=True)
     code = (".venv/Scripts/python.exe -m incident_lens.cli validate-data\n"
-            ".venv/Scripts/python.exe -m incident_lens.cli run --case incident_001 --provider mock --out results/demo\n"
-            ".venv/Scripts/python.exe -m incident_lens.cli replay --trace results/demo/trace.json")
+            ".venv/Scripts/python.exe -m incident_lens.cli run --case incident_001 --provider mock --out results/quickstart\n"
+            ".venv/Scripts/python.exe -m incident_lens.cli replay --trace results/quickstart/trace.json")
     textbox(slide, LEFT + 0.18, 5.90, 9.55, 0.72, code, size=8.8, color=INK, font="Consolas",
             spacing=1.12)
     notes(slide, """
@@ -1080,7 +1080,7 @@ def slide_failures():
     textbox(slide, 9.45, 1.58, 3.4, 0.3, "WHAT WENT WRONG", size=9.5, color=RED, bold=True)
     stats = [
         ("19", "identifiable misses", "all ended INCONCLUSIVE — none named a wrong cause"),
-        ("8 / 144", "technical failures", "6 truncated structured outputs · 2 identity mismatches"),
+        ("8 / 144", "technical failures", "6 invalid structured outputs · 2 identity mismatches"),
         ("12 / 27", "Fixed-4 over-abstentions", "one fixed batch cannot recover a missed gap"),
     ]
     for i, (value, label, note) in enumerate(stats):
@@ -1098,7 +1098,7 @@ def slide_failures():
 Speaker 5 (38 s):
 This slide is the honest failure analysis. The dominant error is over-abstention: 19
 identifiable cases ended INCONCLUSIVE, including 12 under Fixed-4. There were eight
-technical failures out of 144, six truncated structured outputs and two identity
+technical failures out of 144, six invalid structured outputs and two identity
 mismatches, and we keep them in the denominator. Dynamic is strongest on competing
 causes and counterfactual pairs. The risk profile is conservative: missed conclusions,
 not fabricated causes.
@@ -1284,10 +1284,10 @@ def slide_backup_paired():
 
 def slide_backup_failures():
     slide = new_slide("Backup · Failures and evidence", "EVALUATION",
-                      "Eight technical failures, six of one kind")
+                      "Eight technical failures, six of one class")
     rows = [
         ["Failure", "Count", "Handling"],
-        ["Truncated structured output", "6", "One targeted repair; if still invalid, technical failure"],
+        ["Invalid structured output", "6", "Five invalid response envelopes; one truncated output that stayed invalid after its one repair"],
         ["Identity-mismatched finding", "2", "Merge rejects the finding; run fails or continues without it"],
         ["Wrong root cause", "0", "No accepted answer contradicted the evaluator label"],
         ["Total", "8 / 144", "All retained in attempted denominators"],

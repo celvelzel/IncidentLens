@@ -245,7 +245,7 @@ are the numbers you may be asked to defend; do not quote any figure you cannot t
 | Wrong root causes | 0 of 144 |
 | Identifiable misses | 19, all `INCONCLUSIVE` (Fixed-4 12, Verifier 4, Single 3, Dynamic 0) |
 | Guard replay estimate | −44.0% (3003), −21.9% (3008), −12.3% (10-case batch), threshold 5 |
-| Tests | 1,179 passed, 3 skipped, 0 failed; 2026-11-02; 381 s |
+| Tests | 1,179 passed, 3 skipped, 0 failed; 2026-11-02; 450 s |
 | Corpus | 40 public packs; hardened 36 cases, 29/7, 10 families |
 | Budgets | 4 rounds, 12 tool calls, 16 LLM requests, 600 s |
 | Batch runtime | 16,737.6 s (4 h 38 m 58 s); 24,376,395 tokens |

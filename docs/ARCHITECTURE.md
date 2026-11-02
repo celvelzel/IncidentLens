@@ -136,8 +136,9 @@ context; task records; workflow status; and termination.
 The state is governed by Pydantic v2 models with `extra=forbid` and strict validation.
 Important contracts:
 
-- **`Budget`** defaults to 4 rounds, 12 tool calls, 16 logical LLM calls, 600 wall-clock
-  seconds and no mandatory token cap. Token usage is recorded when a provider reports it.
+- **`Budget`** defaults to 4 rounds, 12 tool calls, 16 LLM request permits, 600 wall-clock
+  seconds and no mandatory token cap. The permit cap counts HTTP requests actually issued,
+  so a transport retry or a structured-output repair consumes one. Token usage is recorded when a provider reports it.
 - **`AgentContext`** is a frozen descriptor of role, task, permitted tools and scope. It
   cannot be widened after construction; a runtime validator rejects a tool set above the
   role ceiling.
@@ -245,7 +246,7 @@ treated as new evidence.
 ## 8. Budgets, failure handling and recovery
 
 Budget accounting is centralized in the run, not delegated to agents. The runtime tracks
-rounds, tool calls, logical LLM calls, physical requests, retries, structured-output repair
+rounds, tool calls, LLM request permits, physical requests, retries, structured-output repair
 attempts, tokens when reported, and wall-clock time. A request permit is acquired atomically
 so concurrent specialists cannot overshoot a shared cap.
 

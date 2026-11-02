@@ -28,7 +28,7 @@
 - [x] 21 slides, 16:9 (13.333 × 7.5 in), editable `.pptx` — not images.
 - [x] Main track 15 slides; 6 backup slides for Q&A.
 - [x] Every slide rendered to PNG and visually inspected (`presentation/rendered/`).
-- [x] PDF exported (`presentation/IncidentLens_Final.pdf`, 912,306 bytes).
+- [x] PDF exported (`presentation/IncidentLens_Final.pdf`, 912,344 bytes).
 - [x] Speaker notes present on every main-track slide with timings totalling 9:57.
 - [x] Title slide carries `Group ID: ____________` and "Team members to be completed by the
       group" — no invented names.
@@ -79,7 +79,8 @@ Windows and macOS Office; if the venue machine lacks them, the PDF is the fallba
 - [x] `.venv/`, `__pycache__/`, `.pytest_cache/`, build output and `results/` bulk are ignored.
 - [x] `requirements.lock` present for reproducible install.
 - [x] Mock provider needs no key and produces deterministic output.
-- [x] Full test suite: `1179 passed, 3 skipped, 0 failed` on 2026-11-02 (381 s, exit 0).
+- [x] Full test suite: `1179 passed, 3 skipped, 0 failed` on 2026-11-02 (450 s, exit 0),
+  re-run against the final tree.
 - [x] Replay confined to `results/**/trace.json`; companion metadata bound by identity.
 - [ ] Re-run the suite if the tree changes after 2026-11-02 and update
       `docs/submission/source_of_truth.md` with the new result.

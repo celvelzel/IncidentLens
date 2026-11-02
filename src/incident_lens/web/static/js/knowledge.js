@@ -16,7 +16,7 @@ const STAGES = [
   { n: "02", name: "Coordinate", note: "读取证据缺口并分派" },
   { n: "03", name: "Dispatch", note: "1–2 个专家任务，并发执行" },
   { n: "04", name: "Merge", note: "确定性校验与发布" },
-  { n: "05", name: "Verify", note: "仅 Dynamic + Verifier", optional: true },
+  { n: "05", name: "Verify", note: "仅 Dynamic (with verifier)", optional: true },
   { n: "06", name: "Finalize", note: "接地门禁 · 接受或存疑" },
   { n: "07", name: "Report", note: "确定性渲染" },
 ];
@@ -232,7 +232,7 @@ const BATCH = {
     { name: "Single", completed: "35/36", root: "25/28", abstain: "7/7", quality: 32, latency: 680.9, tokens: 245971 },
     { name: "Fixed-4", completed: "34/36", root: "15/27", abstain: "7/7", quality: 22, latency: 196.3, tokens: 58042 },
     { name: "Dynamic", primary: true, completed: "33/36", root: "27/27", abstain: "6/6", quality: 33, latency: 412.9, tokens: 149216 },
-    { name: "Dynamic + Verifier", completed: "34/36", root: "23/27", abstain: "7/7", quality: 30, latency: 503.8, tokens: 233772 },
+    { name: "Dynamic (with verifier)", completed: "34/36", root: "23/27", abstain: "7/7", quality: 30, latency: 503.8, tokens: 233772 },
   ],
   levers: [
     { name: "竞争性原因", values: ["6/7", "4/7", "7/7", "6/7"], ratio: [6 / 7, 4 / 7, 1, 6 / 7] },
@@ -376,7 +376,7 @@ export function renderEvaluation(root) {
           <p>质量 +1（33 对 32），平均耗时 <strong>−39.4%</strong>，tokens <strong>−39.3%</strong>。配对结果为 3 胜 2 负 31 平。</p>
         </article>
         <article class="finding">
-          <h3>Dynamic vs Dynamic + Verifier</h3>
+          <h3>Dynamic vs Dynamic (with verifier)</h3>
           <p>质量 +3，耗时 <strong>−18.0%</strong>，tokens <strong>−36.2%</strong>。独立验证者多花 <strong>56.7%</strong> tokens，未带来可测收益。</p>
         </article>
         <article class="finding">
@@ -425,7 +425,7 @@ export function renderEvaluation(root) {
         <ul>
           <li><strong>不是盲测。</strong>36 个案例来自公开开发集，标签是评估者侧的候选标签，人工确认数为 0。</li>
           <li><strong>没有显著性。</strong>单模型（deepseek-v4.1-flash）、单次重复、温度 0；差异是描述性的，没有置信区间。</li>
-          <li><strong>技术失败计入质量分母。</strong>8 次失败为 6 次结构化输出截断与 2 次 finding 身份不匹配，分布在四个架构上。</li>
+          <li><strong>技术失败计入质量分母。</strong>8 次失败为 6 次结构化输出无效（5 次响应包缺少字符串内容、1 次截断且修复后仍无效）与 2 次 finding 身份不匹配，分布在四个架构上。</li>
           <li><strong>成本守卫是回放估计。</strong>−44.0% / −21.9% 来自冻结痕迹的重放估算，不是新的测量运行。</li>
           <li><strong>缓存与故障恢复只在 Mock 上测过。</strong>真实提供方的恢复行为没有独立测量。</li>
         </ul>

@@ -125,7 +125,8 @@ These mechanisms should not be described as production reliability features.
 - A deck export is present at `presentation/IncidentLens_Final.pptx` with a PDF and rendered
   slides, but its delivery date, room and approval are not recorded here, and no demo video is
   present. A video must not be claimed until it is recorded and verified.
-- The submission archive has not been built or size-checked in this documentation task.
+- The submission archive is built and size-checked as the last step of the submission
+  checklist; this document does not record its contents.
 
 ## 3. Empirical limitations
 
@@ -177,7 +178,8 @@ than quality differences.
 
 ### 3.4 Technical failures and denominator effects
 
-Eight of 144 slots failed technically: six `STRUCTURED_OUTPUT_INVALID` and two
+Eight of 144 slots failed technically: six `STRUCTURED_OUTPUT_INVALID` (five provider
+responses with no string content, one truncated output invalid after repair) and two
 `FINDING_IDENTITY_MISMATCH`, spread across all four architectures (Single 1, Fixed-4 2,
 Dynamic 3, Dynamic with verifier 2). They were not retried and remain in the quality
 denominator.

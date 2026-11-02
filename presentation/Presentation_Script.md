@@ -224,7 +224,7 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 >
 > Failure handling is explicit: bounded recovery, request permits, one structured-output
 > repair per stage, task budgets and a unified stop protocol. The current suite is
-> 1,179 tests passed, 3 skipped, no failures — because the evaluation counts technical
+> 1,179 tests passed, 3 skipped, no failures. Separately, the evaluation counts technical
 > failures instead of hiding them.
 
 **中文提示**
@@ -343,8 +343,10 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 > This is the honest failure analysis. The dominant error is over-abstention: 19
 > identifiable cases ended INCONCLUSIVE — 12 under Fixed-4, and none under Dynamic.
 >
-> There were eight technical failures out of 144: six truncated structured outputs and two
-> identity mismatches. We did not retry them; they stay in the denominator.
+> There were eight technical failures out of 144: six invalid structured outputs — five
+> response envelopes the provider returned without string content, and one truncated output
+> that stayed invalid after its one repair — plus two identity mismatches. We did not retry
+> them; they stay in the denominator.
 >
 > The pattern is consistent across the lever table: Dynamic is strongest where causes
 > compete or where a counterfactual pair must be separated. The risk profile is
@@ -412,7 +414,7 @@ Jump to the slide, say one sentence, then answer. Do not read the table aloud.
 | 16 · Decision semantics | "How does the loop terminate? What if it just keeps going?" | "Every terminal path is typed: investigate, finalize, abstain, or a runtime failure that stays in the denominator." |
 | 17 · Metrics and denominators | "Why 33/36 and not 33/33?" | "Quality counts technical failures; root correctness and abstention each use their own eligible denominator." |
 | 18 · Paired outcomes and levers | "Is the difference real, or noise?" / "Which cases did Dynamic win?" | "Case by case: 12 wins, 1 loss, 23 ties against Fixed-4; ties dominate because most cases are solvable by every architecture." |
-| 19 · Failures and evidence | "What failed? Were failures retried?" / "Where do labels come from?" | "Eight technical failures, six truncated structured outputs and two identity mismatches, all retained; labels are evaluator-only and provisional." |
+| 19 · Failures and evidence | "What failed? Were failures retried?" / "Where do labels come from?" | "Eight technical failures, six invalid structured outputs and two identity mismatches, all retained; labels are evaluator-only and provisional." |
 | 20 · Security and replay | "Can an agent read the answer key? Can replay escape the results directory?" | "Role ACLs, immutable context, an actual-query ledger, a public allowlist, and replay paths confined to `results/` with a fixed filename." |
 | 21 · Reproduce | "Can we run it now?" | "Yes — install, validate, run with Mock, replay, then open the web console. No API key is needed for the Mock path." |
 
