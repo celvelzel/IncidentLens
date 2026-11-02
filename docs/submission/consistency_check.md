@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Deck.pptx`
-(21 slides) and `presentation/IncidentLens_Deck.pdf` (915,732 bytes).
+(21 slides) and `presentation/IncidentLens_Deck.pdf` (915,978 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be
@@ -180,10 +180,11 @@ deliberately not produced.
 | 42 | Residual "Logical LLM calls" profile label | `docs/RUN_GUIDE.md` §8 | "LLM request permits", matching defect 23's fix |
 | 43 | Documents named "non-default budgets" without the values | `docs/RUN_GUIDE.md` §11, `docs/EVALUATION.md` §11 | Names `max_rounds: 8`, `max_tool_calls: 40`, `max_llm_calls: 64`, `max_wall_seconds: 7200` with the `protocol.json` citation |
 | 44 | Slide-9 script deep link pointed at a `full`-variant trace that no longer matched the demo narrative | `presentation/Presentation_Script.md` | Deep link now `results/acceptance/demo-live-20261102/trace.json` (tracked) |
+| 45 | Guard disclosures reported the 27-stop total without the per-architecture split, underselling the measured result: on Dynamic all 6 stops are correct abstentions with zero quality loss, and all 7 identifiable losses sit on the Verifier/Single ablation controls | `docs/EVALUATION.md` §8.2 and §11, `docs/LIMITATIONS.md` §2.6, `docs/submission/source_of_truth.md` §11, `presentation/QA_Preparation.md` Q6 and memorised-numbers table, `build_deck.py` slide 14 and backup failures slide, `Presentation_Script.md` slide 14 | Verified from per-slot traces (`event_type: INVESTIGATION_EVIDENCE_EXHAUSTED`, joined to `final-success-comparison.json` records); every location now states the split: Dynamic 6/6 correct abstentions, zero quality loss; identifiable losses Verifier 4 + Single 3 |
 
 No fix changed a measured number, and no fix required re-running the evaluation. The three
 figures that did change — the test-suite duration (re-run against the final tree: 463.23 s),
-the PDF size (re-exported: 915,736 bytes) and the deck's slide-9 screenshot (recaptured from
+the PDF size (re-exported: 915,978 bytes) and the deck's slide-9 screenshot (recaptured from
 the running app) — were re-measured from real artifacts, not adjusted. The archive size was
 measured from the built file, not estimated.
 

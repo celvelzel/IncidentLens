@@ -28,7 +28,7 @@
 - [x] 21 slides, 16:9 (13.333 × 7.5 in), editable `.pptx` — not images.
 - [x] Main track 15 slides; 6 backup slides for Q&A.
 - [x] Every slide rendered to PNG and visually inspected (`presentation/rendered/`).
-- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 915,732 bytes).
+- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 915,978 bytes).
 - [x] Speaker notes present on every main-track slide with timings totalling 9:57.
 - [x] Title slide carries `Group ID: ____________` and "Team members to be completed by the
       group" — no invented names.
