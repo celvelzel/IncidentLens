@@ -101,13 +101,16 @@ result. We keep the variant so the ablation is reproducible, not because we reco
 
 ### Q6. "Your guard saves 44% tokens — why isn't that in the headline?"
 
-**Short answer.** Because it is a **replay estimate**, not a measured run, and it cannot fire
-in the stock configuration.
+**Short answer.** Because the saving is a **replay estimate**, not a measured run, and under
+the stock 4-round budget the guard never fires.
 
 **Detail.** Threshold 5 on the frozen 10-case batch gives −44.0% on `incident_3003`, −21.9%
-on `incident_3008`, and −12.3% across the batch. The default budget is `max_rounds: 4`, and
-the guard only triggers beyond that, so under default settings it never fires. It changes
-budget allocation, never gate acceptance. Reporting it as a runtime saving would be wrong.
+on `incident_3008`, and −12.3% across the batch. The stock budget is `max_rounds: 4` and the
+guard needs five consecutive gap rounds, so under default settings it never fires. The
+hardened batch ran 8 rounds, so there it did fire: 27 of 144 traces stopped through the
+guard, all `INCONCLUSIVE`, and 7 were identifiable cases that lost quality. We therefore
+report the saving as an estimate and the firing as a measured cost, not as a headline win.
+The guard changes budget allocation, never gate acceptance.
 
 ---
 
@@ -175,7 +178,7 @@ latency under load are all `UNVERIFIED`.
 | --- | --- |
 | Why 36 cases? | The hardened corpus is 36 cases, 29 identifiable / 7 intended to abstain, 10 families — enough for a matched four-way comparison, small enough to inspect every failure. |
 | Why four architectures? | To separate two design claims: dynamic selection vs a fixed schedule (Fixed-4), and coordination vs no roles (Single); the verifier is the ablation. |
-| How does the loop stop? | Three coordinator terminals — `INVESTIGATE`, `FINALIZE`, `ABSTAIN` — plus a unified shutdown with a `TerminationResult`; budgets are 4 rounds, 12 tool calls, 16 model requests, 600 s. |
+| How does the loop stop? | Three coordinator terminals — `INVESTIGATE`, `FINALIZE`, `ABSTAIN` — plus a unified shutdown with a `TerminationResult`; the stock budget is 4 rounds, 12 tool calls, 16 model requests, 600 s, and the benchmark raised it to 8 / 40 / 64 / 7,200 s. |
 | What is `BEST_SUPPORTED_AVAILABLE`? | The strongest accepted state; deliberately weaker than proof, and it still requires citations and a discriminator. |
 | What is `RESOLVED` vs `INCONCLUSIVE`? | `RESOLVED` requires a supported root cause with evidence and a causal chain; `INCONCLUSIVE` asserts no root cause and may carry up to three cited `OPEN` provisional hypotheses. |
 | Why 8 technical failures? | Six `STRUCTURED_OUTPUT_INVALID`, two `FINDING_IDENTITY_MISMATCH`; a provider/structured-output layer issue, not retried, retained in the denominator. |
@@ -245,9 +248,10 @@ are the numbers you may be asked to defend; do not quote any figure you cannot t
 | Wrong root causes | 0 of 144 |
 | Identifiable misses | 19, all `INCONCLUSIVE` (Fixed-4 12, Verifier 4, Single 3, Dynamic 0) |
 | Guard replay estimate | −44.0% (3003), −21.9% (3008), −12.3% (10-case batch), threshold 5 |
-| Tests | 1,179 passed, 3 skipped, 0 failed; 2026-11-02; 450 s |
+| Tests | 1,179 passed, 3 skipped, 0 failed; 2026-11-02; 463.2 s |
 | Corpus | 40 public packs; hardened 36 cases, 29/7, 10 families |
-| Budgets | 4 rounds, 12 tool calls, 16 LLM requests, 600 s |
+| Guard stops | 27 of 144 traces ended through the guard, all `INCONCLUSIVE`; 7 were identifiable and all 7 lost quality (Verifier 4, Single 3) |
+| Budgets | stock 4 rounds / 12 tool calls / 16 LLM requests / 600 s; benchmark 8 / 40 / 64 / 7,200 s |
 | Batch runtime | 16,737.6 s (4 h 38 m 58 s); 24,376,395 tokens |
 
 ---

@@ -56,8 +56,10 @@ Sum = **9:57**. That is the whole 8–10 minute window; if a block runs long, cu
   总览 `#/` · 新建调查 `#/investigate` · 痕迹档案库 `#/library` · 运行详情 `#/run` ·
   系统设计 `#/system` · 评测结果 `#/evaluation`. Warm up `#/library` first.
 - One recorded trace already loaded in a second browser tab:
-  `#/run?path=results/acceptance/demo001/trace.json&step=last&demo=1`
+  `#/run?path=results/acceptance/demo-live-20261102/trace.json&step=last&demo=1`
   (the `step=last` parameter opens the completed state; `demo=1` opens the demo chapters).
+  This is the same command the live run uses — Mock, `dynamic`, `incident_001`, stock budget —
+  captured from the running app, so the screenshot on slide 9 and the replay show one trace.
 - If the network or provider fails: switch to the PDF and the recorded trace. Never run a
   live provider call on stage without a fallback.
 

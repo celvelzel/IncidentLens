@@ -457,7 +457,7 @@ def slide_title():
             size=25, color=WHITE, italic=True, font=SERIF, spacing=1.0)
     line(slide, 4.08, 4.02, 4.1, 0.035, RGBColor(0xF0, 0xC9, 0xC6))
     textbox(slide, 4.05, 4.28, 8.2, 0.95,
-            "Cited root causes, or explicit abstention — measured against three\n"
+            "Cited root causes, or explicit abstention — measured against four\n"
             "matched multi-agent architectures.",
             size=15, color=RGBColor(0xFA, 0xE6, 0xE4), spacing=1.15)
 
@@ -684,7 +684,7 @@ def slide_architecture():
     arrow(slide, 9.22, 1.94, 0.20, 0.18, GREY, MSO_SHAPE.RIGHT_ARROW)
 
     textbox(slide, LEFT, 5.98, 9.8, 0.8,
-            "Budgets: 4 rounds · 12 tool calls · 16 LLM requests · 600 s.  Dynamic = primary runtime; "
+            "Stock budget: 4 rounds · 12 tool calls · 16 LLM requests · 600 s.  Dynamic = primary runtime; "
             "single, fixed-4 and dynamic+verifier are ablation controls.",
             size=9.4, color=MUTED, spacing=1.1)
     notes(slide, """
@@ -773,15 +773,15 @@ def slide_coordination():
         textbox(slide, 8.72, y + 0.10, 1.5, 0.26, name, size=10.3, color=color, bold=True)
         textbox(slide, 8.72, y + 0.38, 3.95, 0.28, desc, size=8.8, color=BODY)
 
-    textbox(slide, 8.55, 4.92, 4.3, 0.3, "HARD BOUNDS", size=9.5, color=RED, bold=True)
+    textbox(slide, 8.55, 4.92, 4.3, 0.3, "HARD BOUNDS (STOCK)", size=9.5, color=RED, bold=True)
     budget = [("4", "rounds"), ("12", "tool calls"), ("16", "LLM requests"), ("600 s", "wall clock")]
     for i, (value, label) in enumerate(budget):
         x = 8.55 + (i % 2) * 2.18
         y = 5.26 + (i // 2) * 0.72
         textbox(slide, x, y, 0.9, 0.3, value, size=15, color=RED, bold=True, font=SERIF)
         textbox(slide, x + 0.72, y + 0.06, 1.3, 0.26, label, size=8.8, color=MUTED)
-    textbox(slide, 8.55, 6.66, 4.3, 0.25,
-            "Exhaustion = runtime failure; insufficiency = INCONCLUSIVE.", size=8.3,
+    textbox(slide, 8.55, 6.58, 4.3, 0.52,
+            "Exhaustion = runtime failure; insufficiency = INCONCLUSIVE.\nThe benchmark raised these to 8 rounds · 40 tool calls · 64 requests · 7,200 s.", size=7.6,
             color=MUTED, italic=True)
     rect(slide, LEFT, 5.98, 5.25, 0.58, PALE, None, 0)
     textbox(slide, LEFT + 0.14, 6.09, 5.0, 0.38,
@@ -895,7 +895,7 @@ def slide_implementation():
     textbox(slide, LEFT + 0.18, 4.64, 5.1, 0.40,
             "1,179 passed · 3 skipped · no failures", size=16.5, color=INK, bold=True, font=SERIF)
     textbox(slide, 8.55, 4.55, 4.15, 0.45,
-            "Full pytest run · 2026-11-02 · 450 s\nExit code 0",
+            "Full pytest run · 2026-11-02 · 463.2 s\nExit code 0",
             size=8.6, color=MUTED, align=PP_ALIGN.RIGHT, spacing=1.1)
 
     rect(slide, LEFT, 5.52, 9.9, 1.18, PALE, LIGHT)
@@ -1299,7 +1299,7 @@ def slide_backup_failures():
             "explain the quality ordering. The corpus labels are evaluator-only and provisional; "
             "the public development packs share encoder lineage and are not independent blind Test data.\n\n"
             "The cost-guard figures on the limitations slide are replay estimates over frozen traces, "
-            "not live savings; the default 4-round budget means the 5-round guard cannot fire in the stock configuration.",
+            "not live savings; under the stock 4-round budget the 5-round guard cannot fire, so the recorded 27 guard stops come from the hardened 8-round batch and are counted as measured cost, not saving.",
             size=9.4, color=BODY, spacing=1.12)
     notes(slide, "Backup: use if asked about failures or label provenance.")
 
