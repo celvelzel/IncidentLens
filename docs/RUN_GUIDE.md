@@ -274,7 +274,7 @@ Two shipped profiles set different defaults:
 | --- | ---: | ---: |
 | Rounds | 4 | 6 |
 | Tool calls | 12 | 24 |
-| Logical LLM calls | 16 | 24 |
+| LLM request permits | 16 | 24 |
 | Wall clock | 600 s | 600 s |
 | Monitoring | off; graph starts at coordinate | off in shipped config; legacy or snapshot modes selectable |
 | Database tools | enabled (default) | enabled |
@@ -319,7 +319,7 @@ them to make a demo look better, and do not present a replayed trace as a live r
 ## 10. Tests
 
 A fresh full-suite run is required before submission. The recorded run is
-`1179 passed, 3 skipped in 450.01s`, exit 0, on 2026-11-02 against the tree that ships this
+`1179 passed, 3 skipped in 463.23s`, exit 0, on 2026-11-02 against the tree that ships this
 documentation (`analysis/submission/pytest-20261102.log`, a tracked copy of the run log). It is a point-in-time record, not a standing
 guarantee: re-run it after any change to source, tests, configuration or web assets. Record
 the command, date, interpreter, collected count, failures, errors and skips in the release
@@ -358,10 +358,12 @@ does not need it. The hardened 36-case development set is `data/incidentbench_v2
 with cases `incident_4001`–`incident_4036`. Its labels are candidate labels with
 `annotator_status: pending`; scores from it are provisional.
 
-The recorded four-architecture statistics were produced with non-default round, tool,
-request and timeout budgets. Reproducing the numbers requires the recorded settings
-and the same provider/model, not just the commands. Treat
-`analysis/wp_d/reports/hardened144-20261101/` as the authoritative record of what was run.
+The recorded four-architecture statistics were produced with non-default budgets:
+`max_rounds: 8`, `max_tool_calls: 40`, `max_llm_calls: 64` and `max_wall_seconds: 7200`
+(recorded in `results/acceptance/full144-hardened-c4-20261101/protocol.json`). Reproducing
+the numbers requires the recorded settings and the same provider/model, not just the
+commands. Treat `analysis/wp_d/reports/hardened144-20261101/` as the authoritative record of
+what was run.
 
 ## 12. Troubleshooting
 

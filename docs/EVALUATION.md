@@ -235,12 +235,25 @@ can never help.
 
 ### 8.2 Evidence-gap guard replay estimate
 
-The evidence-gap guard was evaluated by replay estimation, not a new measured run. With
-threshold 5 on the frozen 10-case batch, the estimate is 44.0% fewer tokens on case 3003,
-21.9% fewer on case 3008 and 12.3% fewer across the batch. The default `max_rounds: 4` means
-the guard cannot fire under the stock configuration. The guard changes budget allocation; it
-never changes gate acceptance. These are estimates from recorded traces and should be
-labelled as such.
+The evidence-gap guard's saving was evaluated by replay estimation, not a new measured run.
+With threshold 5 on the frozen 10-case batch, the estimate is 44.0% fewer tokens on case
+3003, 21.9% fewer on case 3008 and 12.3% fewer across the batch. The guard changes budget
+allocation; it never changes gate acceptance. These are estimates from recorded traces and
+should be labelled as such.
+
+Whether the guard fires depends on the round cap, and the two configurations differ. Under
+the stock cap of `max_rounds: 4` it cannot fire at all, because it needs five consecutive
+rounds without a cause-specific discriminator. The hardened batch raised the cap to 8 rounds,
+so it did fire, and that is a measured result rather than an estimate: **27 of the 144 traces
+terminated through `INVESTIGATION_EVIDENCE_EXHAUSTED`** (verifier variant 11, Single 10,
+Dynamic 6), and all 27 ended `INCONCLUSIVE`. Seven of those were identifiable cases and all
+seven lost quality — verifier variant `incident_4023`, `4020`, `4036`, `4021`; Single `4036`,
+`4025`, `4020`. Those seven are part of the 19 identifiable misses; the remaining twelve are
+Fixed-4 coordinator abstentions, not guard terminations. Each guard event fired at round
+index 4 with `remaining_rounds: 4`, `remaining_requests: 42–49`, `remaining_tool_calls: 20–26`
+and an empty `discriminator_candidate_ids` list, so the stop was a deliberate cost decision
+taken with budget left, not budget exhaustion. The cost figure above is still an estimate;
+the firing counts are not.
 
 ### 8.3 Cache experiment
 
@@ -351,8 +364,9 @@ case. Its cost advantage should not be read as efficiency without the quality de
 - The cache result is Mock-only, one case, with null token and cost figures.
 - The recovery result is a Mock injection with denominator 2 per variant; the real retest had
   no failure to recover.
-- The evidence-gap guard result is replay-estimated and cannot fire under the default round
-  cap.
+- The evidence-gap guard's *cost* figure is replay-estimated. Its firing is measured: under
+  the hardened 8-round cap it terminated 27 traces, all `INCONCLUSIVE`, 7 of them identifiable
+  and all 7 losing quality; under the stock 4-round cap it cannot fire at all.
 - The 10-case batch has a quality ceiling for three variants and mojibake `correctness`
   strings; only numeric fields are used.
 
@@ -388,6 +402,8 @@ the audit surface for a rerun. See [IncidentBench](incidentbench/README.md) for 
 reproduction workflow and [Run Guide](RUN_GUIDE.md#11-incidentbench-reproduction) for
 commands.
 
-The hardened batch used non-default round, tool, request and timeout budgets.
-Reproducing the recorded numbers requires the recorded settings and the same provider/model.
-A different run is a new result, not a reproduction.
+The hardened batch used non-default budgets: `max_rounds: 8`, `max_tool_calls: 40`,
+`max_llm_calls: 64` and `max_wall_seconds: 7200`, as recorded in
+`results/acceptance/full144-hardened-c4-20261101/protocol.json`. Reproducing the recorded
+numbers requires the recorded settings and the same provider/model. A different run is a new
+result, not a reproduction.

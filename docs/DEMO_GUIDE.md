@@ -287,6 +287,8 @@ live model. Keep at least one saved trace with a resolved result and one with an
 The repository also contains tracked acceptance traces you can use if your own pre-runs are
 missing:
 
+- `results/acceptance/demo-live-20261102/trace.json` — Mock, `dynamic`, `incident_001`,
+  stock budget, `RESOLVED`; the slide-9 screenshot is this trace;
 - `results/acceptance/demo001/trace.json` — Mock, `full`, `incident_001`, `RESOLVED`;
 - `results/acceptance/demo006/trace.json` — Mock, `full`, `incident_006`, `INCONCLUSIVE`;
 - `results/acceptance/baselines/dynamic_no_verifier/trace.json` — Mock, frozen dynamic alias,

@@ -293,8 +293,10 @@ only the numeric fields.
   denominator 2 per variant; the real retest had zero failures to recover).
 - The evidence-gap guard's token reduction is **replay-estimated**, not a new measured run:
   threshold 5 on the frozen 10-case batch gives −44.0% on 3003, −21.9% on 3008, −12.3%
-  across the batch. The default `max_rounds: 4` means the guard cannot fire under the
-  stock configuration; it changes budget, never gate acceptance.
+  across the batch. Guard *firing* is measured: the hardened batch ran an 8-round cap and 27
+  of 144 traces terminated through `INVESTIGATION_EVIDENCE_EXHAUSTED`, all `INCONCLUSIVE`; 7
+  were identifiable and all 7 lost quality (verifier 4, Single 3), which is 7 of the 19
+  identifiable misses. Under the stock `max_rounds: 4` it cannot fire.
 - The synthetic corpus does not establish production generalization. Variants share causal
   templates and encoder lineage; `accepted_labels = 0`, `independent_audited_families = 0`.
 
@@ -318,7 +320,7 @@ only the numeric fields.
   The web API's `WorkflowOptions` supports the response workflow; the dashboard runs the
   default dynamic architecture.
 - Tests: 88 Python test files; `pytest --collect-only -q` reports **1182 tests collected**.
-  Full suite run on 2026-11-02 against this tree: `1179 passed, 3 skipped in 450.01s`,
+  Full suite run on 2026-11-02 against this tree: `1179 passed, 3 skipped in 463.23s`,
   exit 0 (`analysis/submission/pytest-20261102.log`, a tracked copy of the run log). Re-run after any change to source, tests,
   configuration or web assets.
 - Web acceptance: Playwright scripts in `tests/web/` (real HTTP, no route interception).

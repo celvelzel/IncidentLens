@@ -97,8 +97,11 @@ security posture, not a measured guarantee.
   reports, tokens and cost null. There is no real-provider cache experiment.
 - The evidence-gap guard's token reduction is replay-estimated, not a new measured run:
   threshold 5 gives 44.0% fewer tokens on case 3003, 21.9% on case 3008 and 12.3% across the
-  frozen 10-case batch. The default `max_rounds: 4` means it cannot fire under stock
-  configuration, and it changes budget allocation, never gate acceptance.
+  frozen 10-case batch. Its firing, by contrast, is measured: the hardened batch raised the
+  round cap to 8, and 27 of its 144 traces stopped through the guard, all `INCONCLUSIVE`; 7
+  were identifiable and all 7 lost quality. Under the stock `max_rounds: 4` the guard cannot
+  fire, because it needs five consecutive rounds without a cause-specific discriminator. It
+  changes budget allocation, never gate acceptance.
 
 These mechanisms should not be described as production reliability features.
 
