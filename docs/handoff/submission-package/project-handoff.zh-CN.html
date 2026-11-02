@@ -652,7 +652,7 @@ footer { padding: 40px 0 56px; }
   <!-- ================= HERO ================= -->
   <section class="hero" id="top" aria-labelledby="hero-title">
     <div class="wrap">
-      <p class="eyebrow">COMP5584 · 小组交接 · 2026-11-01</p>
+      <p class="eyebrow">COMP5584 · 小组交接 · 2026-11-02</p>
       <h1 id="hero-title">让 Agent 学会说<br><span class="accent">「查不出来」</span></h1>
       <p class="hero-lead">
         IncidentLens 把日志、指标与依赖、数据库、变更四类取证交给不同调查员，
@@ -663,6 +663,7 @@ footer { padding: 40px 0 56px; }
         <span class="chip"><span class="dot"></span>主架构 Dynamic</span>
         <span class="chip ok"><span class="dot"></span>144 槽位 · 4 小时 39 分</span>
         <span class="chip ok"><span class="dot"></span>0 次根因误判</span>
+        <span class="chip ok"><span class="dot"></span>测试 1179 通过 · 2026-11-02</span>
         <span class="chip warn"><span class="dot"></span>开发可见 · 标签临时</span>
       </div>
 
@@ -1027,6 +1028,15 @@ footer { padding: 40px 0 56px; }
         <p class="tfoot-note">完成内质量成功率：Dynamic 33/33（100%）、Single 32/35（91.4%）、Full 30/34（88.2%）、Fixed-4 22/34（64.7%）。两个口径不能混着讲。</p>
       </div>
 
+      <div class="note" style="margin-top:var(--sp-4)">
+        <strong>证据缺口护栏：实测触发已入账（2026-11-02）。</strong> 硬化批次把轮次上限提到 8，
+        护栏真实触发 <strong>27 次</strong>（full 11、single 10、dynamic 6），全部以 <code>INCONCLUSIVE</code> 结束。
+        分布是关键：Dynamic 的 6 次护栏停止全部落在只应弃答的案例上，6/6 正确弃答、零质量损失；
+        7 次可识别案例的提前释放全部发生在消融对照（full 4、single 3）。
+        所以对外的表述仍是：<strong>节省是重放估计（th=5 下 −12.3%），触发是实测事实</strong>；
+        在主架构上护栏是纯成本停止。库存配置 <code>max_rounds: 4</code> 下护栏无法触发。
+      </div>
+
       <div class="note">
         <strong>三个可以直接讲的结论：</strong>
         <ol style="margin-top:8px">
@@ -1138,7 +1148,7 @@ footer { padding: 40px 0 56px; }
           <div class="fail-list">
             <div class="fail-item">
               <span class="dot"></span>
-              <p><strong>结构化输出被截断</strong>：模型输出在 token 上限处被截断，schema 校验失败。</p>
+              <p><strong>结构化输出无效</strong>：5 次响应包缺少字符串内容，1 次输出被截断且修复后仍无效，schema 校验失败。</p>
               <span class="cnt">6 次</span>
             </div>
             <div class="fail-item">
@@ -1281,6 +1291,7 @@ footer { padding: 40px 0 56px; }
               <li>成功 attempt 的 scope/trace/result 身份一致，verification 通过协议与 STOP 检查。</li>
               <li>失败 attempt 保留在 <code>batch-state.json</code> 与分母中，不重试、不替换。</li>
               <li>成功均值不混入失败 attempt；质量按 evaluator oracle 离线评分。</li>
+              <li><strong>当前测试基线：</strong>2026-11-02 对最终代码树全量重跑 1179 通过、3 跳过、0 失败（463.23 s，退出码 0），日志 <code>analysis/submission/pytest-20261102.log</code>；代码再变动就要重跑并更新记录。</li>
             </ul>
             <div class="cmd">
               <pre>.venv\Scripts\python.exe analysis/wp_d/reports/hardened144-20261101/score_batch.py</pre>
@@ -1323,8 +1334,8 @@ footer { padding: 40px 0 56px; }
           <div class="card">
             <h3>完整报告在哪</h3>
             <p style="font-size:13.5px">中文报告含 144 行明细、失败表与复现命令：</p>
-            <p style="margin-top:10px"><a href="../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md</a></p>
-            <p style="margin-top:8px"><a href="../../analysis/wp_d/reports/hardened144-20261101/README.md">英文摘要（analysis/wp_d/reports/hardened144-20261101/README.md）</a></p>
+            <p style="margin-top:10px"><a href="../../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md</a></p>
+            <p style="margin-top:8px"><a href="../../../analysis/wp_d/reports/hardened144-20261101/README.md">英文摘要（analysis/wp_d/reports/hardened144-20261101/README.md）</a></p>
           </div>
         </div>
       </div>
@@ -1332,21 +1343,18 @@ footer { padding: 40px 0 56px; }
       <div class="tabpanel" id="panel-ppt" role="tabpanel" aria-labelledby="tab-ppt" hidden>
         <div class="role-grid">
           <div class="card">
-            <h3>10–12 页结构</h3>
-            <ol class="steps">
-              <li>标题、团队、一句话价值。</li>
-              <li>事故 RCA 痛点与为什么需要多 Agent。</li>
-              <li>系统总览：四专家、协调、共享证据、门控。</li>
-              <li>一轮证据流：缺口 → 1–2 任务 → Merge → 补查/定稿。</li>
-              <li>权限、引用、弃答与 STOP。</li>
-              <li>四架构消融与公平控制变量。</li>
-              <li>结果表：技术完成 136/144 与质量 33/32/30/22 分开。</li>
-              <li>Dynamic 对 Single 的 39.4% 耗时 / 39.3% Token 下降。</li>
-              <li>零误判、Fixed-4 错弃 12 次、Full 无额外质量收益。</li>
-              <li>UI / Demo 截图：调度、共享证据、报告。</li>
-              <li>失败分类、限制与下一步。</li>
-              <li>贡献声明与结论。</li>
+            <h3>演示文稿已完成</h3>
+            <p style="font-size:13.5px"><strong><a href="IncidentLens_Deck.pptx">IncidentLens_Deck.pptx</a></strong>（同目录有 PDF）：
+            21 页 = 15 页主线 + 6 页备用问答页，每页有讲者备注，主线计时合计 <strong>9:57</strong>，
+            符合 8–10 分钟要求。标题页已带 Group 5 与六位成员学号。</p>
+            <ol class="steps" style="margin-top:12px">
+              <li>主线 1–5：标题（Group 5 + 成员）、问题动机、系统总览、证据流与预算、角色与弃答边界。</li>
+              <li>主线 6–10：四架构消融、评估方法、测试基线（1179 通过）、真实控制台演示、配对比较。</li>
+              <li>主线 11–15：结果总表、成本对比、失败分析（零误判领先）、范围与护栏实测、结论。</li>
+              <li>备用 16–21：协议细节、护栏、失败分类、快速启动命令等 Q&A 弹药。</li>
             </ol>
+            <p style="font-size:13.5px;margin-top:10px">逐页讲稿：<a href="Presentation_Script.md">Presentation_Script.md</a>（9:57 计时、六人分工）；
+            问答准备：<a href="QA_Preparation.md">QA_Preparation.md</a>。</p>
           </div>
           <div class="card">
             <h3>结果页怎么写</h3>
@@ -1373,7 +1381,7 @@ footer { padding: 40px 0 56px; }
           </details>
           <details class="qa">
             <summary>为什么批次以“有错误”结束、退出码是 1？</summary>
-            <div class="answer">8 个槽位发生技术失败（6 次结构化输出截断、2 次 finding 身份不匹配），<code>batch_finished_with_errors</code> 是协议允许的合法终态。按预案不重试、不替换，失败保留在分母；分布覆盖四个架构，属 provider 层偶发问题。</div>
+            <div class="answer">8 个槽位发生技术失败（6 次结构化输出无效：5 次响应包缺少字符串内容、1 次截断且修复后仍无效；另 2 次 finding 身份不匹配），<code>batch_finished_with_errors</code> 是协议允许的合法终态。按预案不重试、不替换，失败保留在分母；分布覆盖四个架构，属 provider 层偶发问题。</div>
           </details>
           <details class="qa">
             <summary>Dynamic 没有 Verifier 是否风险更高？</summary>
@@ -1409,37 +1417,37 @@ footer { padding: 40px 0 56px; }
       </div>
 
       <div class="link-grid">
-        <a class="link-card" href="../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">
+        <a class="link-card" href="../../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">
           <span class="lc-kicker">报告</span>
           <span class="lc-title">硬化集完整中文报告</span>
           <span class="lc-path">analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../../analysis/wp_d/reports/hardened144-20261101/README.md">
+        <a class="link-card" href="../../../analysis/wp_d/reports/hardened144-20261101/README.md">
           <span class="lc-kicker">摘要</span>
           <span class="lc-title">英文摘要与结论边界</span>
           <span class="lc-path">analysis/wp_d/reports/hardened144-20261101/README.md</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../../analysis/wp_d/reports/hardened144-20261101/score_batch.py">
+        <a class="link-card" href="../../../analysis/wp_d/reports/hardened144-20261101/score_batch.py">
           <span class="lc-kicker">复现</span>
           <span class="lc-title">离线评分脚本</span>
           <span class="lc-path">analysis/wp_d/reports/hardened144-20261101/score_batch.py</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../../results/acceptance/full144-hardened-c4-20261101/protocol.json">
+        <a class="link-card" href="../../../results/acceptance/full144-hardened-c4-20261101/protocol.json">
           <span class="lc-kicker">协议</span>
           <span class="lc-title">批次协议与预算</span>
           <span class="lc-path">results/acceptance/full144-hardened-c4-20261101/protocol.json</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../../results/acceptance/full144-hardened-c4-20261101/plan.json">
+        <a class="link-card" href="../../../results/acceptance/full144-hardened-c4-20261101/plan.json">
           <span class="lc-kicker">计划</span>
           <span class="lc-title">144 槽位冻结计划</span>
           <span class="lc-path">results/acceptance/full144-hardened-c4-20261101/plan.json</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json">
+        <a class="link-card" href="../../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json">
           <span class="lc-kicker">状态（本地生成，未提交）</span>
           <span class="lc-title">批次最终状态</span>
           <span class="lc-path">results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json</span>
@@ -1448,16 +1456,34 @@ footer { padding: 40px 0 56px; }
         <a class="link-card" href="project-handoff.zh-CN.md">
           <span class="lc-kicker">主文档</span>
           <span class="lc-title">课程项目交接指南</span>
-          <span class="lc-path">docs/handoff/project-handoff.zh-CN.md</span>
+          <span class="lc-path">docs/handoff/submission-package/project-handoff.zh-CN.md</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../guides/optimization-roadmap.zh-CN.md">
+        <a class="link-card" href="RUN_GUIDE.md">
+          <span class="lc-kicker">运行</span>
+          <span class="lc-title">运行指南（安装、命令、回放、网站）</span>
+          <span class="lc-path">docs/handoff/submission-package/RUN_GUIDE.md</span>
+          <span class="lc-ext">打开 →</span>
+        </a>
+        <a class="link-card" href="SUBMISSION_CHECKLIST.md">
+          <span class="lc-kicker">提交</span>
+          <span class="lc-title">提交清单（Canvas 打包与核对）</span>
+          <span class="lc-path">docs/handoff/submission-package/SUBMISSION_CHECKLIST.md</span>
+          <span class="lc-ext">打开 →</span>
+        </a>
+        <a class="link-card" href="Individual_Contribution_Statement.md">
+          <span class="lc-kicker">贡献</span>
+          <span class="lc-title">个人贡献声明（成员 1–2 已填）</span>
+          <span class="lc-path">docs/handoff/submission-package/Individual_Contribution_Statement.md</span>
+          <span class="lc-ext">打开 →</span>
+        </a>
+        <a class="link-card" href="../../../docs/guides/optimization-roadmap.zh-CN.md">
           <span class="lc-kicker">路线</span>
           <span class="lc-title">优化路线与验收标准</span>
           <span class="lc-path">docs/guides/optimization-roadmap.zh-CN.md</span>
           <span class="lc-ext">打开 →</span>
         </a>
-        <a class="link-card" href="../incidentbench/README.md">
+        <a class="link-card" href="../../../docs/incidentbench/README.md">
           <span class="lc-kicker">评测</span>
           <span class="lc-title">IncidentBench 测试指南</span>
           <span class="lc-path">docs/incidentbench/README.md</span>
@@ -1487,10 +1513,11 @@ footer { padding: 40px 0 56px; }
         <label class="check"><input type="checkbox" data-check="5"><span><strong>5.</strong> 为什么 Full 在本批没有证明优于 Dynamic 甚至 Single，下一步需要什么证据？</span></label>
         <label class="check"><input type="checkbox" data-check="6"><span><strong>6.</strong> 技术完成、正确根因、正确弃答、全尝试成本分别如何统计？</span></label>
         <label class="check"><input type="checkbox" data-check="7"><span><strong>7.</strong> 新批次如何准备、执行、检查状态、保留失败并显式重试？</span></label>
+        <label class="check"><input type="checkbox" data-check="8"><span><strong>8.</strong> 哪些表述会越过开发集、候选 oracle 和单次重复的证据边界？</span></label>
       </div>
 
       <div class="check-progress" aria-live="polite">
-        <span id="check-label">0 / 7</span>
+        <span id="check-label">0 / 8</span>
         <div class="track"><div class="fill" id="check-fill"></div></div>
         <span>已勾选</span>
       </div>
@@ -1501,8 +1528,8 @@ footer { padding: 40px 0 56px; }
 <footer>
   <div class="wrap footer-inner">
     <p>
-      本页是 <a href="project-handoff.zh-CN.md">课程项目交接指南</a> 的配套简报，数据截至 2026-11-01。
-      数字与口径以交接文档、<a href="../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">硬化集报告</a>
+      本页是 <a href="project-handoff.zh-CN.md">课程项目交接指南</a> 的配套简报，数据截至 2026-11-02。
+      数字与口径以交接文档、<a href="../../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md">硬化集报告</a>
       和冻结批次产物为准；本页不替代原始证据。
     </p>
     <span class="footer-mark">IncidentLens · COMP5584 · 2026</span>

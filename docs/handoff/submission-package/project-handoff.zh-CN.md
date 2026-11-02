@@ -1,14 +1,16 @@
 # IncidentLens 课程项目交接指南
 
-本文供后续负责测试验收、报告撰写、PPT 制作、Demo 视频和现场汇报的成员使用。非技术成员可以先读“项目一句话”和“如何解释结果”，再按自己的角色进入对应章节；技术成员可从运行命令、证据路径和限制直接接手。
+本文供后续负责测试验收、报告撰写、PPT 制作、现场汇报和提交打包的成员使用。非技术成员可以先读“项目一句话”和“如何解释结果”，再按自己的角色进入对应章节；技术成员可从运行命令、证据路径和限制直接接手。
 
 > **配套网页版：** [project-handoff.zh-CN.html](project-handoff.zh-CN.html) —— 用浏览器直接打开，含图表、按角色的上手标签页和可勾选的自检清单，适合快速浏览与小组内分享。本 Markdown 是权威版本，网页版数字与之同步。
+>
+> **当前状态（2026-11-02）：** 演示文稿、讲稿、问答准备和提交清单已经产出，全部在 [submission-package](README.md) 里：`IncidentLens_Deck.pptx/.pdf`（21 页：15 主线 + 6 备用）、`Presentation_Script.md`（9:57 计时）、`QA_Preparation.md`、`RUN_GUIDE.md`、`SUBMISSION_CHECKLIST.md` 和已填好 Group 5 与成员 1–2 的 Individual Contribution Statement（成员 3–6 与百分比留待全组确认）。下面凡是与这些文件重叠的章节，都以 package 里的版本为准。
 
 ## 先看结论
 
 **项目一句话：** IncidentLens 让日志、指标与依赖、数据库、变更四类调查员分工取证，由协调者根据当前证据缺口动态派出最需要的 1–2 个调查员；只有经过校验、合并和证据门控的记录才能进入共享证据板，证据不足时系统明确输出 `INCONCLUSIVE`。
 
-最新完整批次是 **硬化集 36 案例 × 四架构 = 144 槽位**（`full144-hardened-c4-20261101`，2026-11-01，4 小时 39 分）：136 槽位技术完成，8 次技术失败按协议保留在分母中，0 中断。**`dynamic`（无独立 Verifier）是本项目的主架构，也是运行时默认**；`full` 保留为消融对照，文档中显示为 *dynamic (with verifier)*。
+最新完整批次是 **硬化集 36 案例 × 四架构 = 144 槽位**（`full144-hardened-c4-20261101`，2026-11-01，4 小时 39 分）：136 槽位技术完成，8 次技术失败按协议保留在分母中，0 中断。**`dynamic`（无独立 Verifier）是本项目的主架构，也是运行时默认**；`full` 保留为消融对照，文档中显示为 *dynamic (with verifier)*。测试基线是 2026-11-02 对最终代码树全量重跑的测试套件：**1179 通过、3 跳过、0 失败（463.23 秒，退出码 0）**，日志存档在 `analysis/submission/pytest-20261102.log`。
 
 | 架构 | 技术完成 | 根因正确 | 正确弃答 | 质量成功 | 平均耗时 | 平均请求 | 平均工具 | 平均 Token |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -35,12 +37,12 @@
 | --- | --- | --- | --- |
 | 测试与验收 | 可复现命令、批次状态、保留的失败尝试、评分表 | 144 槽位状态（136 完成 / 8 技术失败保留在分母）、失败分类、四架构同条件设置、离线评分脚本 | 测试负责人 + 技术负责人复核 |
 | 课程报告 | 方法、架构、实验设置、结果、失败案例、限制 | Dynamic 零误判与四项资源优势；Fixed-4 的 12 次错误弃答；Full 无额外质量收益；8 次技术失败的分类 | 报告负责人 |
-| PPT | 10–12 页，覆盖课程四部分 | 角色与协作图、证据流、四架构消融、质量与成本双轴结果 | PPT 负责人 + 技术审阅 |
-| Demo 视频 | 不超过 10 分钟，展示真实工作流和代表性案例 | 动态调度、共享证据、Verifier/门控、明确弃答、离线 replay | 视频负责人 |
-| 现场汇报 | 8–10 分钟主讲稿、问答准备、计时演练 | 一句话价值、架构设计、关键数据、证据边界 | 主讲人 |
-| 贡献声明 | 每人负责的模块、与其他模块的接口、可核对证据 | 实际提交、测试、文档、汇报或数据工作 | 每位成员确认 |
+| PPT | 覆盖课程四部分的演示文稿 | 角色与协作图、证据流、四架构消融、质量与成本双轴结果 | **已完成**：[IncidentLens_Deck.pptx](IncidentLens_Deck.pptx)，21 页（15 主线 + 6 备用），见 [Presentation_Script.md](Presentation_Script.md) 与 [QA_Preparation.md](QA_Preparation.md) |
+| Demo 视频 | 不超过 10 分钟，展示真实工作流和代表性案例 | 动态调度、共享证据、Verifier/门控、明确弃答、离线 replay | **未产出（有意保留）**：录制计划在 `docs/DEMO_GUIDE.md`，全组自行录制 |
+| 现场汇报 | 8–10 分钟主讲稿、问答准备、计时演练 | 一句话价值、架构设计、关键数据、证据边界 | **已完成**：`Presentation_Script.md` 主线合计 9:57，六人分工已按页分配 |
+| 贡献声明 | 每人负责的模块、与其他模块的接口、可核对证据 | 实际提交、测试、文档、汇报或数据工作 | **已完成初稿**：[Individual_Contribution_Statement.md](Individual_Contribution_Statement.md)，Group 5 与成员 1–2（YANG Ziting、MA Jiyuan）已填，成员 3–6 与百分比待全组补齐 |
 
-课程截止时间为 **2026-11-23 23:59**，通过 Canvas 提交，一人代表全组上传；建议 ZIP 命名为 `COMP5584+GroupProject+GroupX.zip`。TA 为 Qi Peng，`qi0125.peng@connect.polyu.hk`，邮件主题建议以 `COMP5584+GroupProject+Group[ID]` 开头。
+课程截止时间为 **2026-11-23 23:59**，通过 Canvas 提交，一人代表全组上传；建议 ZIP 命名为 `COMP5584+GroupProject+Group5.zip`。TA 为 Qi Peng，`qi0125.peng@connect.polyu.hk`，邮件主题建议以 `COMP5584+GroupProject+Group5` 开头。
 
 ## Agent 流设计
 
@@ -132,7 +134,7 @@ flowchart LR
 
 公开观测与 evaluator-only oracle 分离；Graph 结束后才评分。所有案例为 `development_visible`，oracle 仍为 `pending` / `candidate-v1`，没有独立人工验收或 blind Test 结论，**不能当作验证集或测试集**。
 
-上一批使用的 Dev10（`data/incidentbench_v16_dev` 的 `incident_3001`–`incident_3010`，8 可识别 / 2 需弃答）保持冻结、逐字节可复现，作为早期证据保留在附录与 README 中。详见 [优化路线](../guides/optimization-roadmap.zh-CN.md) 的 P0-C 章节。
+上一批使用的 Dev10（`data/incidentbench_v16_dev` 的 `incident_3001`–`incident_3010`，8 可识别 / 2 需弃答）保持冻结、逐字节可复现，作为早期证据保留在附录与 README 中。详见 [优化路线](../../guides/optimization-roadmap.zh-CN.md) 的 P0-C 章节。
 
 可识别案例要求 `culprit_service` 与 `failure_mode` 同时精确匹配；不可识别案例只有在正常终止且 `INCONCLUSIVE`、无根因时才算正确弃答。技术失败仍在对应分母中；证据不足的正常弃答是有效结果；Provider/网络/预算失败不是弃答。
 
@@ -243,8 +245,8 @@ Full 30/34（88.2%）、Fixed-4 22/34（64.7%）。报告里这两个口径必�
 
 8 次失败分两类：
 
-- **6 次 `STRUCTURED_OUTPUT_INVALID`**：模型输出在 token 上限处被截断，schema 校验失败
-  （`dispatch` 阶段 4 次、`coordinate` 阶段 2 次）。
+- **6 次 `STRUCTURED_OUTPUT_INVALID`**：5 次响应包完全缺少字符串内容，1 次输出在 token
+  上限处截断且修复后仍无效，schema 校验失败（`dispatch` 阶段 4 次、`coordinate` 阶段 2 次）。
 - **2 次 `FINDING_IDENTITY_MISMATCH`**：工具返回的 finding 与本轮身份不匹配，被确定性门禁拦下
   （都在 `dispatch` 阶段）。
 
@@ -302,12 +304,19 @@ Full 271,306、Single 273,905。Fixed-4 单看成本最低，但它少答对 11 
 降 44.0%、3008 降 21.9%、Dynamic 十例合计 −12.3%（重放估计，非新批次实测）。注意
 `configs/system.yaml` 的 `max_rounds: 4` 使该阈值在默认配置下无法触发，需同时调高轮次上限。
 
+**2026-11-02 补充：护栏在硬化批上的触发已实测。** 硬化批次把 `max_rounds` 提到 8，护栏因此真实
+触发了 **27 次**（144 条 trace 中，`INVESTIGATION_EVIDENCE_EXHAUSTED`：full 11、single 10、
+dynamic 6），全部以 `INCONCLUSIVE` 结束。关键是分布：**Dynamic 的 6 次护栏停止全部落在只应弃答的
+案例上，6/6 都是正确弃答，零质量损失；7 次可识别案例的提前释放全部发生在消融对照上（full 4、
+single 3）**。所以在主架构上护栏是纯成本停止，不构成成本-准确率权衡；对外的表述仍是“节省是重放
+估计、触发是实测事实”。
+
 **2026-11-01 晚：P0-C 的数据集已跑完一轮正式规模批次。** 硬化集 36 案例 × 四架构 = 144 槽位全部
 落盘（4 小时 39 分），评分脚本 `analysis/wp_d/reports/hardened144-20261101/score_batch.py` 可离线复算
 全部数字。仍**未完成**的是：oracle 标签仍是 `pending`（没有人工复核）、只有单次重复、没有 blind Test
 分区。因此 P0-C 的完成标准仍未满足，下一步是把标签送审并做重复评测，而不是再加大并发或换模型。
 
-优先级与验收标准写在 [优化路线](../guides/optimization-roadmap.zh-CN.md)，要点：
+优先级与验收标准写在 [优化路线](../../guides/optimization-roadmap.zh-CN.md)，要点：
 
 | 优先级 | 合并后的方向 | 完成标准 |
 | --- | --- | --- |
@@ -411,22 +420,32 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 
 ## PPT 成员上手
 
-建议 10–12 页，直接映射评分重点：
+**演示文稿已经完成**，不需要再从零做页：`presentation/IncidentLens_Deck.pptx`（同目录有 PDF，
+917,076 字节），共 **21 页 = 15 页主线 + 6 页备用问答页**。每页主线页都有讲者备注，单页计时合计
+9:57，符合 8–10 分钟要求。下面是主线 15 页的实际结构（备用页 16–21 覆盖协议细节、护栏、失败分类、
+快速启动命令等 Q&A 弹药）：
 
-| 页 | 内容 | 评分对应 |
-| --- | --- | --- |
-| 1 | 标题、团队、一句话价值 | 展示质量 |
-| 2 | 事故 RCA 的痛点与为什么需要多 Agent | 问题与动机 15% |
-| 3 | 系统总览：四专家、协调、共享证据、门控 | 多 Agent 设计 30% |
-| 4 | 一轮证据流：缺口 → 1–2 任务 → Merge → 补查/定稿 | 设计 30% |
-| 5 | 权限、引用、弃答与 STOP：为什么系统有边界 | 设计 30% |
-| 6 | 四架构消融与公平控制变量 | 分析 15% |
-| 7 | 总体结果表：技术完成 136/144 与质量成功 33/32/30/22 分开 | 实现 25% + 分析 15% |
-| 8 | Dynamic 对 Single 的 39.4% 耗时 / 39.3% Token 下降图 | 分析 15% |
-| 9 | 零误判：19 次失分全是弃答；Fixed-4 错弃 12 次；Full 无额外质量收益 | 分析 15% |
-| 10 | UI/Demo 截图：调度、共享证据、审查、报告 | 实现 25% |
-| 11 | 限制、失败分类、下一步验证 | 分析 15% |
-| 12 | 贡献声明与结论 | 展示与提交 15% |
+| 页 | 内容 |
+| --- | --- |
+| 1 | 标题：题目、Group 5 与六位成员学号 |
+| 2 | 问题与动机：软件事故调查为什么要跨证据域交叉验证 |
+| 3 | 系统总览：四专家 + 协调者 + 共享证据板 + 确定性门控 |
+| 4 | 一轮证据流：缺口 → 1–2 任务派发 → Merge → 补查/定稿（含库存与基准预算对照） |
+| 5 | 角色、ACL、引用校验与弃答边界 |
+| 6 | 四架构消融与控制变量 |
+| 7 | 评估方法：36 硬化案例、六类难度杠杆、同模型同预算 |
+| 8 | 工程可信度：全量测试 1179 通过（2026-11-02，463.2s）+ 可复现命令 |
+| 9 | 演示：真实运行的控制台（live trace 深链） |
+| 10 | 配对比较：同案例内 Dynamic 对其余架构 |
+| 11 | 结果总表：质量 33/32/22/30 与四项资源开销 |
+| 12 | 成本对比图：Dynamic vs Single/Verifier |
+| 13 | 失败分析：零误判领先，19 次失分全是弃答 |
+| 14 | 范围与有效性：护栏实测分布、成本契约、设计决策 |
+| 15 | 结论与下一步验证 |
+
+讲稿逐页文本、中文提示和演示提示在 [Presentation_Script.md](Presentation_Script.md)；
+最可能被问的 10 个问题、快速应答表、拒答口径和背熟的数字表在 [QA_Preparation.md](QA_Preparation.md)。
+小组要做的只剩：指定每页主讲人（讲稿已按六块分好）、两次完整计时排练（其中一次故意让演示失败）。
 
 架构图突出“证据如何流经角色”，少放代码类名。结果页大字写 `33/36 vs 32/36`（质量成功），副标题写 `-39.4% latency / -39.3% tokens vs Single`，再用一行小字补“136/144 技术完成、零根因误判、开发集与 pending oracle”。不要将四个架构画成完全并行的独立 LLM；本项目展示的是中央协调、结构化交接、共享证据和门控。
 
@@ -456,64 +475,71 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 | 弃答是否是失败？ | 在无足够证据案例中，明确弃答是正确业务结果；Provider、网络或预算失败才是技术失败。本批 19 次可识别失分全是弃答，没有一次根因误判。 |
 | 下一步最重要的验证是什么？ | 先把 oracle 标签送人工复核、做重复评测并划分 blind Test 分区；再验证搜索收敛、上下文裁剪与判别价值派单。按需 Verifier 在代表性困难案例准备后再测试。 |
 
-## Demo 视频方案
+## 演示网站与 Demo 视频方案
 
-使用已保存 trace 的离线 replay，不调用模型、工具或私有 oracle。推荐 5–8 分钟：
+**演示网站**（中文界面，代码在 `src/incident_lens/web/`，Starlette + 原生 ES 模块单页应用）默认端口
+**8022**：
+
+```powershell
+.venv\Scripts\python.exe -m incident_lens.cli web --port 8022
+```
+
+打开 `http://127.0.0.1:8022/`。六个页面：总览、新建调查、痕迹档案库、运行详情、系统设计、评估结果。
+痕迹档案库（Trace Library）里已保存多份真实运行的 trace（含 `results/acceptance/` 下的验收演示
+trace，已被 git 跟踪，克隆后即可用）；所有运行与回放在界面上都明确标注 Live / Recorded Replay 与
+MOCK / REAL。回放不调用任何 graph、工具或 Provider，是从保存的事件日志重建状态。
+
+**Demo 视频尚未录制**（有意保留给全组），录制计划在 `docs/DEMO_GUIDE.md`。录制时建议用已保存
+trace 的离线 replay，不调用模型、工具或私有 oracle，5–8 分钟：
 
 1. 打开 Web 控制台，说明公开证据边界与当前运行身份。
 2. 展示 Coordinator 实际派发、专家任务状态和共享 finding；不要伪造聊天或隐藏推理。
 3. 展开一条 Evidence ID，核对来源工具、角色、时间和实际查询 provenance。
-4. 展示 Verifier 的 blocking/optional 补查请求与下一轮实际调度；区分“审查建议”和“已执行任务”。
-5. 展示竞争假设、FinalizeGate 阻断或接受、最终引用报告和 STOP。
-6. 打开一个正确弃答案例，说明系统没有把证据不足包装成根因。
-7. 最后展示四架构结果页，重复质量、资源和限制。
+4. 展示竞争假设、FinalizeGate 阻断或接受、最终引用报告和 STOP。
+5. 打开一个正确弃答案例，说明系统没有把证据不足包装成根因。
+6. 最后展示四架构结果页，重复质量、资源和限制。
 
-启动命令：
+所有演示记录必须标明来源；如果使用 Mock，要在画面和讲解中明确它是离线契约演示，而不是真实模型质量证明。视频应避免逐条播放全部事件，优先选择有证据、审查、补查和终态的章节。
 
-```powershell
-.venv\Scripts\python.exe -m incident_lens.cli web --port 8767
-```
+## 贡献声明
 
-打开 `http://127.0.0.1:8767/` 的 Trace Library，选择已保存的真实或明确标注的 Mock/Replay trace。所有演示记录必须标明来源；如果使用 Mock，要在画面和讲解中明确它是离线契约演示，而不是真实模型质量证明。视频应避免逐条播放全部事件，优先选择有证据、审查、补查和终态的章节。
+贡献声明已经建立了初稿：[Individual_Contribution_Statement.md](Individual_Contribution_Statement.md)。
+已填内容：Group 5、课程题目，以及成员 1–2 的具体分工——
 
-## 贡献声明模板
+- **YANG Ziting（25050315G）**：系统评估与系统集成、系统架构优化（evaluation protocol、四架构对比、
+  orchestration/gates/CLI/web/测试的集成、架构优化；消费 MA Jiyuan 的工作流接口）。
+- **MA Jiyuan（25116696G）**：系统架构、agent 工作流开发（LangGraph StateGraph、coordinator 决策、
+  专家、Merge/FinalizeGate、cited-or-abstain 契约；向评估侧提供工作流接口）。
 
-每人的声明应写实际负责的模块、工作接口和证据，不能按代码目录机械分配。可使用：
+**待全组补齐**：成员 3–6（Song Xiaowen、Zhang Boxin、YE Mingxi、WANG Huixuechun）的分工行、
+每个人的工作占比百分比，以及文件末尾的签名。填完后按 `SUBMISSION_CHECKLIST.md` §8 重建提交 ZIP。
+每人的声明应写实际负责的模块、工作接口和证据，不能按代码目录机械分配。
 
-```text
-成员：
-负责模块：
-与其他模块的接口：
-本人实际完成的工作：
-对应提交 / 文档 / 测试 / 产物：
-已知未完成事项或外部依赖：
-本人确认：
-```
-
-提交前由全组核对：项目源码和运行说明齐全；Demo 视频不超过 10 分钟且文件可播放；slides 覆盖课程四个部分；每人贡献声明与实际工作一致；ZIP 命名与 Canvas 要求一致；不包含密钥、私有 oracle、原始私有运行路径或不必要的超大产物。
+提交前由全组核对：项目源码和运行说明齐全；Demo 视频不超过 10 分钟且文件可播放；slides 覆盖课程四个部分；每人贡献声明与实际工作一致；ZIP 命名与 Canvas 要求一致（`COMP5584+GroupProject+Group5.zip`）；不包含密钥、私有 oracle、原始私有运行路径或不必要的超大产物。逐项清单见
+[SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md)。
 
 ## 证据路径索引
 
 | 证据 | 路径 |
 | --- | --- |
-| 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
-| 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../../analysis/wp_d/reports/hardened144-20261101/README.md) |
-| 硬化集离线评分脚本 | [score_batch.py](../../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
-| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
-| 硬化集最终批次状态 | [supervisor-status.json](../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
-| 硬化集实验计划 | [plan.json](../../results/acceptance/full144-hardened-c4-20261101/plan.json) |
-| 硬化集协议与预算 | [protocol.json](../../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
-| 硬化集 Provider readiness | [readiness.json](../../results/acceptance/full144-hardened-c4-20261101/readiness.json) |
-| 早期 10 案例完整中文报告（40 行明细） | [WP-D 报告](../../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
-| 早期 10 案例机器可读对比 | [final-success-comparison.json](../../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
-| 早期 10 案例计划 / 协议 / readiness | [plan](../../results/acceptance/local-gateway-full40-20261031/plan.json)、[protocol](../../results/acceptance/local-gateway-full40-20261031/protocol.json)、[readiness](../../results/acceptance/local-gateway-full40-20261031/readiness.json) |
-| 架构与实现契约 | [架构总览](../code_wiki/01-architecture.md)、[编排层](../code_wiki/03-orchestration.md) |
-| 指标与评分 | [评估说明](../guides/evaluation.md)、[V16 协议](../evaluation/v16-protocol.md) |
-| IncidentBench 指南 | [测试指南](../incidentbench/README.md) |
-| 运行、模型、权限与缓存 | [运行与配置指南](../guides/readme-guide.zh-CN.md) |
-| Demo 回放说明 | [V1.6 replay demo](../v16/replay-demo.md)、[WP-C walkthrough](../v16/wp-c-demo-walkthrough.md) |
-| 主架构论证报告 | [dynamic-primary-architecture-20261101](../../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md) |
-| 优化路线 | [优化路线（优先级、责任与验收）](../guides/optimization-roadmap.zh-CN.md) |
+| 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
+| 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../../../analysis/wp_d/reports/hardened144-20261101/README.md) |
+| 硬化集离线评分脚本 | [score_batch.py](../../../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
+| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../../../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
+| 硬化集最终批次状态 | [supervisor-status.json](../../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
+| 硬化集实验计划 | [plan.json](../../../results/acceptance/full144-hardened-c4-20261101/plan.json) |
+| 硬化集协议与预算 | [protocol.json](../../../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
+| 硬化集 Provider readiness | [readiness.json](../../../results/acceptance/full144-hardened-c4-20261101/readiness.json) |
+| 早期 10 案例完整中文报告（40 行明细） | [WP-D 报告](../../../results/v16/wp-d/full40-local-gateway-c4-20261031/report-final-all-success.zh-CN.md) |
+| 早期 10 案例机器可读对比 | [final-success-comparison.json](../../../results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json) |
+| 早期 10 案例计划 / 协议 / readiness | [plan](../../../results/acceptance/local-gateway-full40-20261031/plan.json)、[protocol](../../../results/acceptance/local-gateway-full40-20261031/protocol.json)、[readiness](../../../results/acceptance/local-gateway-full40-20261031/readiness.json) |
+| 架构与实现契约 | [架构总览](../../code_wiki/01-architecture.md)、[编排层](../../code_wiki/03-orchestration.md) |
+| 指标与评分 | [评估说明](../../guides/evaluation.md)、[V16 协议](../../evaluation/v16-protocol.md) |
+| IncidentBench 指南 | [测试指南](../../incidentbench/README.md) |
+| 运行、模型、权限与缓存 | [运行与配置指南](../../guides/readme-guide.zh-CN.md) |
+| Demo 回放说明 | [V1.6 replay demo](../../v16/replay-demo.md)、[WP-C walkthrough](../../v16/wp-c-demo-walkthrough.md) |
+| 主架构论证报告 | [dynamic-primary-architecture-20261101](../../../analysis/wp_d/reports/dynamic-primary-architecture-20261101/README.md) |
+| 优化路线 | [优化路线（优先级、责任与验收）](../../guides/optimization-roadmap.zh-CN.md) |
 
 ## 交接完成定义
 
@@ -529,3 +555,11 @@ Get-Content results/v16/wp-d/NEW-BATCH/final-success-comparison.json -Raw
 8. 哪些表述会越过开发集、候选 oracle 和单次重复的证据边界？
 
 最新完整报告、结构化数据和批次状态是结果事实的权威入口；本指南负责解释如何接手，不替代原始证据。
+
+## 更新记录
+
+- **2026-11-01：** 初版，硬化集 144 槽位批次完成当日。
+- **2026-11-02：** 随提交包整理彻底更新——演示文稿（21 页）、讲稿（9:57）、问答准备、提交清单、
+  运行指南和贡献声明初稿已经产出并放入本目录（`submission-package`）；本指南与网页版一并迁入；
+  演示网站端口更正为 8022；结构化输出失败更正为 5+1 明细；补充护栏在硬化批上的实测触发（27 次，
+  Dynamic 6/6 正确弃答零损失）；测试基线记录为 1179 通过 / 463.23 s（2026-11-02，最终代码树）。

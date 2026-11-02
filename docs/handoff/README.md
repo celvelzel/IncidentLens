@@ -8,12 +8,13 @@ removed on 2026-11-02 at the group's request; they remain in git history.
 
 | Item | Use |
 | --- | --- |
-| [submission-package/](submission-package/) | Everything a member needs for the presentation and submission: editable deck (`.pptx` + PDF), script, Q&A sheet, a copy of the run guide, the submission checklist and the contribution statement. Its [README](submission-package/README.md) also records the demo-website startup command and code layout. |
+| [submission-package/](submission-package/) | Everything a member needs for the presentation and submission: editable deck (`.pptx` + PDF), script, Q&A sheet, a copy of the run guide, the submission checklist, the contribution statement and the Chinese handoff guide (`project-handoff.zh-CN.md` with its companion `.html` briefing page — the thorough project overview for non-technical members). Its [README](submission-package/README.md) also records the demo-website startup command and code layout. |
 
 ## What the package records
 
 - Deck, PDF, script, Q&A sheet, run-guide copy, submission checklist,
-  contribution statement — grouped for members who did not build them.
+  contribution statement, and the Chinese handoff guide + briefing page —
+  grouped for members who did not build them.
 - The demo website: how to start it, where the code lives, the pre-run demo
   commands and the tracked demo traces.
 - The verification baseline: 21 slides built and inspected, PDF exported,

@@ -16,6 +16,8 @@
 | `RUN_GUIDE.md` | `docs/RUN_GUIDE.md` 的副本：安装、全部命令、变体、预算、replay、测试、故障排查 |
 | `SUBMISSION_CHECKLIST.md` | 提交清单：课程要求核对、打包规则、临交前十分钟检查 |
 | `Individual_Contribution_Statement.md` | 贡献声明：成员 1–2（YANG Ziting、MA Jiyuan）的职责已填入，百分比与成员 3–6 行由小组补齐后导出 PDF |
+| `project-handoff.zh-CN.md` | **中文项目交接指南（权威版本）**：项目结论、架构与评测设计、结果解读边界、按角色（测试/报告/PPT/汇报）的上手指南、护栏实测更新、证据索引。特别适合非技术成员了解全项目 |
+| `project-handoff.zh-CN.html` | 中文交接指南的配套网页简报：图表、按角色标签页、可勾选自检清单，浏览器直接打开 |
 
 ## 前端演示网站：启动方式与代码目录
 
