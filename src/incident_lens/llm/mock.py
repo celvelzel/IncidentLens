@@ -379,7 +379,7 @@ class MockProvider(LLMProvider):
         if latest and latest[-1]["verdict"] == "sufficient":
             return dict(
                 action="FINALIZE",
-                reason="Verifier accepted causal evidence",
+                reason="Internal causal check accepted the evidence",
                 selected_hypothesis_id=latest[-1]["target_hypothesis_id"],
                 stop_reason="Evidence sufficient",
             )
@@ -406,7 +406,7 @@ class MockProvider(LLMProvider):
         if checks:
             return dict(
                 action="INVESTIGATE",
-                reason="Follow verifier discriminating check",
+                reason="Follow internal discriminating check",
                 assignments=checks[:2],
             )
         if not tasks:

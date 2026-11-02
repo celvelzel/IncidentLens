@@ -32,7 +32,10 @@ export function metadataHtml(data) {
 
 export function workflowHtml(state, selectedRole = '') {
   const {roles,dispatches,requests} = replayWorkflow(state), current = state.events.at(-1);
-  return `<p class="text-muted">Coordinator → 专家任务 → Public Evidence → Shared Findings / Hypotheses → Verifier → FinalizeGate</p>
+  // The verifier is an ablation: only name it when this trace actually ran one, so a
+  // Dynamic or Single replay does not advertise a stage its evidence never contains.
+  const hasVerifier = roles.includes('verifier');
+  return `<p class="text-muted">Coordinator → 专家任务 → Public Evidence → Shared Findings / Hypotheses${hasVerifier ? ' → Verifier' : ''} → FinalizeGate</p>
     <div class="replay-workflow">${roles.map(role => {
       const actual = state.events.some(e => e.role === role);
       return `<button class="btn replay-role" data-role="${esc(role)}" aria-pressed="${selectedRole === role}" data-current="${current?.role === role}"><strong>${esc(roleNames[role] || role)}</strong><span>${esc(actual ? state.roles[role] || '有已记录动作' : dispatches.some(t=>t.role === role) ? '已调度 · 尚无执行记录' : '仅审查建议 · 未调度')}</span></button>`;
