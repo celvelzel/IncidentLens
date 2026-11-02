@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Final.pptx`
-(21 slides) and `presentation/IncidentLens_Final.pdf` (912,344 bytes).
+(21 slides) and `presentation/IncidentLens_Final.pdf` (915,732 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be
@@ -71,9 +71,12 @@ same column count as its header, including the nine-column result tables.
 | Root correct | same | 25/28 · 15/27 · 27/27 · 23/27 |
 | Correct abstention | same | 7/7 · 7/7 · 6/6 · 7/7 |
 | Wrong root causes | same | 0 |
-| Batch runtime | same | 16,737.6 s |
+| Identifiable misses | same, `root_cause_correct is False` among identifiable cases | 19 (Fixed-4 12, verifier 4, Single 3, Dynamic 0) |
+| Guard terminations | per-slot traces under `results/v16/…/runs/slot-NNN/attempt-NNN/trace.json` | 27 of 144 `INVESTIGATION_EVIDENCE_EXHAUSTED` (verifier 11, Single 10, Dynamic 6); all `INCONCLUSIVE`; 7 identifiable and all 7 lost quality — 7 of the 19 misses |
+| Batch runtime | `final-success-comparison.json` | 16,737.6 s |
 | Batch tokens | same | 24,376,395 |
-| Tests | `analysis/submission/pytest-20261102.log` (tracked copy of the live run log) | 1,179 passed, 3 skipped, 0 failed (450.01 s, exit 0) |
+| Batch budgets | `results/acceptance/full144-hardened-c4-20261101/protocol.json` | `max_rounds: 8`, `max_tool_calls: 40`, `max_llm_calls: 64`, `max_wall_seconds: 7200` |
+| Tests | `analysis/submission/pytest-20261102.log` (tracked copy of the live run log) | 1,179 passed, 3 skipped, 0 failed (463.23 s, exit 0) |
 
 Collection count: `pytest --collect-only -q` reports 1182 tests collected; the recorded run
 is 1,179 passed plus 3 skipped, so the two agree and there is no contradiction.
@@ -168,10 +171,21 @@ deliberately not produced.
 | 33 | Audit script failed from a clean clone: the batch JSON is gitignored | `analysis/submission/consistency_check.py` | Prefers a tracked scored projection in `analysis/wp_d/reports/hardened144-20261101/` |
 | 34 | The Chinese handoff Q&A still called all six structured-output failures truncations, outside the guard's file list | `docs/handoff/project-handoff.zh-CN.md` | Same five-plus-one breakdown; the guard now covers this file |
 | 35 | The archive checklist and the two documents describing it disagreed about whether it had been built | `submission/SUBMISSION_CHECKLIST.md` §8–9, `docs/LIMITATIONS.md` §2.8, `rubric_alignment.md` §5 | Built from a clean tree, opened, secret-checked and smoke-tested; size and result recorded once, in the checklist |
+| 36 | Subtitle said "measured against three matched multi-agent architectures" while the evaluation compares four | `build_deck.py` slide 1 | "four matched multi-agent architectures" |
+| 37 | Documents said the evidence-gap guard "cannot fire", but the hardened 8-round batch recorded 27 guard terminations | `docs/EVALUATION.md` §8.2, `docs/LIMITATIONS.md` §2.6, `docs/submission/source_of_truth.md` §11, `build_deck.py` backup slide | Distinguished: the saving figure is replay-estimated; the firing is measured — 27 of 144 traces ended `INVESTIGATION_EVIDENCE_EXHAUSTED`, all `INCONCLUSIVE`, 7 identifiable and all 7 losing quality; under the stock `max_rounds: 4` it cannot fire |
+| 38 | Slide hard-bounds box did not say the measured batch used different budgets | `build_deck.py` slide 4 | "HARD BOUNDS (STOCK)" plus a line naming the 8 / 40 / 64 / 7,200 s benchmark caps |
+| 39 | Slide-9 screenshot was a Mock `full` trace while the live-demo command and script described Mock `dynamic` | `presentation/assets/demo_console.png`, `Presentation_Script.md` | Generated `results/acceptance/demo-live-20261102/` with the exact live-demo command, recaptured the screenshot from the running app, and pointed the script's deep link at the same trace |
+| 40 | Replay workflow strip always displayed a Verifier stage | `src/incident_lens/web/static/js/replay-panels.js` | Names Verifier only when the trace's roles include one |
+| 41 | Mock coordinator reasons named a verifier on verifier-free variants | `src/incident_lens/llm/mock.py` | "Internal causal check accepted the evidence" / "Follow internal discriminating check" |
+| 42 | Residual "Logical LLM calls" profile label | `docs/RUN_GUIDE.md` §8 | "LLM request permits", matching defect 23's fix |
+| 43 | Documents named "non-default budgets" without the values | `docs/RUN_GUIDE.md` §11, `docs/EVALUATION.md` §11 | Names `max_rounds: 8`, `max_tool_calls: 40`, `max_llm_calls: 64`, `max_wall_seconds: 7200` with the `protocol.json` citation |
+| 44 | Slide-9 script deep link pointed at a `full`-variant trace that no longer matched the demo narrative | `presentation/Presentation_Script.md` | Deep link now `results/acceptance/demo-live-20261102/trace.json` (tracked) |
 
-No fix changed a measured number, and no fix required re-running the evaluation. The two
-figures that did change — the test-suite duration and the PDF size — were re-measured, not
-adjusted. The archive size was measured from the built file, not estimated.
+No fix changed a measured number, and no fix required re-running the evaluation. The three
+figures that did change — the test-suite duration (re-run against the final tree: 463.23 s),
+the PDF size (re-exported: 915,736 bytes) and the deck's slide-9 screenshot (recaptured from
+the running app) — were re-measured from real artifacts, not adjusted. The archive size was
+measured from the built file, not estimated.
 
 ---
 
