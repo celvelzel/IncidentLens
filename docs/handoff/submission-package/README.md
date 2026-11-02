@@ -10,13 +10,12 @@
 | 文件 | 用途 |
 | --- | --- |
 | `IncidentLens_Deck.pptx` | 21 页 16:9 **可编辑**幻灯片（主线 15 页 + 备份 6 页），每页含演讲者备注 |
-| `IncidentLens_Deck.pdf` | 幻灯片的 PDF 导出（915,732 字节），现场机器缺字体时的后备 |
-| `slide01.png` … `slide21.png` | 每页的高清渲染图（2×），快速预览/截图引用用 |
+| `IncidentLens_Deck.pdf` | 幻灯片的 PDF 导出（917,076 字节），现场机器缺字体时的后备 |
 | `Presentation_Script.md` | 英文逐页讲稿 + 中文演讲者备注、计时、转场、演示提示；六人分配，总时长 9:57 |
 | `QA_Preparation.md` | 10 个预答问题、快速应答表、记忆数字表、Mock 演练 |
 | `RUN_GUIDE.md` | `docs/RUN_GUIDE.md` 的副本：安装、全部命令、变体、预算、replay、测试、故障排查 |
 | `SUBMISSION_CHECKLIST.md` | 提交清单：课程要求核对、打包规则、临交前十分钟检查 |
-| `Individual_Contribution_Statement_TEMPLATE.md` | **空白**贡献声明模板，六名成员各自填写后导出 PDF |
+| `Individual_Contribution_Statement.md` | 贡献声明：成员 1–2（YANG Ziting、MA Jiyuan）的职责已填入，百分比与成员 3–6 行由小组补齐后导出 PDF |
 
 ## 前端演示网站：启动方式与代码目录
 

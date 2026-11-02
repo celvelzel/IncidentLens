@@ -216,7 +216,7 @@ The full technical, empirical, ethical and scope discussion is in
 | [Data notes](data/README.md) | Synthetic fixture generation and scope |
 | [Hardened batch report](analysis/wp_d/reports/hardened144-20261101/README.md) | Recomputation source and English summary |
 | [Code wiki](docs/code_wiki/README.md) | Deep module and implementation reference |
-| [Course handoff](docs/handoff/project-handoff.zh-CN.md) | Chinese onboarding guide for testing, reporting, slides and presentation |
+| [Submission package handoff](docs/handoff/submission-package/README.md) | Chinese package README for the group: deck, script, Q&A, run-guide copy, checklist, contribution statement and the demo-website startup guide |
 
 ## Project status
 

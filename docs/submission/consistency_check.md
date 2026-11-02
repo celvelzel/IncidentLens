@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Deck.pptx`
-(21 slides) and `presentation/IncidentLens_Deck.pdf` (915,978 bytes).
+(21 slides) and `presentation/IncidentLens_Deck.pdf` (917,076 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be
@@ -184,7 +184,7 @@ deliberately not produced.
 
 No fix changed a measured number, and no fix required re-running the evaluation. The three
 figures that did change — the test-suite duration (re-run against the final tree: 463.23 s),
-the PDF size (re-exported: 915,978 bytes) and the deck's slide-9 screenshot (recaptured from
+the PDF size (re-exported: 917,076 bytes) and the deck's slide-9 screenshot (recaptured from
 the running app) — were re-measured from real artifacts, not adjusted. The archive size was
 measured from the built file, not estimated.
 
@@ -195,6 +195,7 @@ measured from the built file, not estimated.
 - It does not verify that the *prose* is true about the world — only that documents agree with
   code and saved artifacts. Judgement about the evaluation's validity is in
   `docs/EVALUATION.md` §10 and `docs/LIMITATIONS.md`.
-- It does not verify the rendered appearance of the deck; that is the visual inspection log
-  behind `presentation/rendered/`.
+- It does not verify the rendered appearance of the deck; the 21 slides were rendered and
+  visually inspected during production (slides 01/04/06/08/09/19 checked page by page), and
+  the PNG copies were removed from the repository afterwards.
 - It cannot verify member contributions, which are intentionally unasserted.

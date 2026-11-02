@@ -461,11 +461,12 @@ def slide_title():
             "matched multi-agent architectures.",
             size=15, color=RGBColor(0xFA, 0xE6, 0xE4), spacing=1.15)
 
-    textbox(slide, 4.05, 6.18, 5.6, 0.6,
-            "Final Project  ·  Fall 2026  ·  Group ID: ____________",
+    textbox(slide, 4.05, 6.05, 5.6, 0.35,
+            "Final Project  ·  Fall 2026  ·  Group 5",
             size=11.5, color=WHITE, bold=True)
-    textbox(slide, 4.05, 6.50, 6.4, 0.35,
-            "Team members to be completed by the group",
+    textbox(slide, 4.05, 6.38, 8.6, 0.65,
+            "YANG Ziting 25050315G · MA Jiyuan 25116696G · Song Xiaowen 25058859G · "
+            "Zhang Boxin 25054717G · YE Mingxi 25065994G · WANG Huixuechun 25064113G",
             size=9.5, color=RGBColor(0xE8, 0xBF, 0xBC), italic=True)
     textbox(slide, 10.35, 6.55, 2.15, 0.35, "LangGraph · Python · Starlette",
             size=8.5, color=RGBColor(0xE8, 0xBF, 0xBC), align=PP_ALIGN.RIGHT)

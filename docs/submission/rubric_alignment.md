@@ -113,7 +113,7 @@ configuration or web assets.
 | Source code + instructions | repository root, `README.md`, `docs/RUN_GUIDE.md` | verify fresh clone install |
 | Demo video (≤10 min) | **not produced here** | group records using `docs/DEMO_GUIDE.md` |
 | Slides | `presentation/IncidentLens_Deck.pptx` + `.pdf` | review, add names if desired |
-| Individual Contribution Statement | `submission/Individual_Contribution_Statement_TEMPLATE.md` | each member completes |
+| Individual Contribution Statement | `submission/Individual_Contribution_Statement.md` | members 1–2 filled; group completes percentages and members 3–6 |
 | Submission checklist | `submission/SUBMISSION_CHECKLIST.md` | tick before zipping |
 | Consistency audit | `docs/submission/consistency_check.md` | re-run after any edit |
 | Rubric alignment | this file | use as rehearsal checklist |

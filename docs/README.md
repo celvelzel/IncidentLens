@@ -20,7 +20,7 @@ as history and the disagreement reported rather than silently copied.
 | inspect the measurements, denominators and validity threats | [EVALUATION.md](EVALUATION.md) |
 | record or deliver an 8-10 minute demo | [DEMO_GUIDE.md](DEMO_GUIDE.md) |
 | see what the project does not establish | [LIMITATIONS.md](LIMITATIONS.md) |
-| take over the course project (testing, report, slides, demo, presentation) | [handoff/project-handoff.zh-CN.md](handoff/project-handoff.zh-CN.md) (中文) or the [HTML briefing](handoff/project-handoff.zh-CN.html) |
+| take over the course submission (deck, script, demo website, checklist) | [handoff/](handoff/) — see [handoff/submission-package/README.md](handoff/submission-package/README.md) (中文) |
 | run or configure the system with the older deep guide | [guides/readme-guide.md](guides/readme-guide.md) · [中文](guides/readme-guide.zh-CN.md) |
 | understand the architecture module by module | [code_wiki/README.md](code_wiki/README.md) |
 | record a demo using the older guide | [guides/demo.md](guides/demo.md) |
