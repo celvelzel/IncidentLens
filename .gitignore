@@ -25,3 +25,6 @@ node_modules/
 # the summary tables, digests and `reproducibility.txt` stay tracked.
 analysis/wp_d/reports/hardened-dataset-validation-20261101/*/raw-runs.jsonl
 analysis/wp_d/reports/hardened-dataset-validation-20261101/*/states/
+
+# local agent tooling
+.claude/scheduled_tasks.lock
