@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
-**Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Final.pptx`
-(21 slides) and `presentation/IncidentLens_Final.pdf` (915,732 bytes).
+**Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Deck.pptx`
+(21 slides) and `presentation/IncidentLens_Deck.pdf` (915,732 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be

@@ -4,7 +4,7 @@
 Total: **100%**. This matrix maps each criterion to evidence and to the final artifacts.
 **Deck map (21 slides):** 1 title · 2–3 Problem · 4–7 Design · 8–9 System · 10–13
 Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
-`presentation/IncidentLens_Final.pptx`; update them if the deck is reordered.
+`presentation/IncidentLens_Deck.pptx`; update them if the deck is reordered.
 
 | Rubric category | Weight | What the assessor is looking for | Evidence in IncidentLens | Documents | Slides | Demo cue |
 | --- | ---: | --- | --- | --- | ---: | --- |
@@ -112,7 +112,7 @@ configuration or web assets.
 | --- | --- | --- |
 | Source code + instructions | repository root, `README.md`, `docs/RUN_GUIDE.md` | verify fresh clone install |
 | Demo video (≤10 min) | **not produced here** | group records using `docs/DEMO_GUIDE.md` |
-| Slides | `presentation/IncidentLens_Final.pptx` + `.pdf` | review, add names if desired |
+| Slides | `presentation/IncidentLens_Deck.pptx` + `.pdf` | review, add names if desired |
 | Individual Contribution Statement | `submission/Individual_Contribution_Statement_TEMPLATE.md` | each member completes |
 | Submission checklist | `submission/SUBMISSION_CHECKLIST.md` | tick before zipping |
 | Consistency audit | `docs/submission/consistency_check.md` | re-run after any edit |

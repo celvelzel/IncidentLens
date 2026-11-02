@@ -1,7 +1,7 @@
 # IncidentLens — Presentation Script
 
-**Deck:** `presentation/IncidentLens_Final.pptx` (21 slides: 15 main + 6 backup)
-**PDF:** `presentation/IncidentLens_Final.pdf`
+**Deck:** `presentation/IncidentLens_Deck.pptx` (21 slides: 15 main + 6 backup)
+**PDF:** `presentation/IncidentLens_Deck.pdf`
 **Target length:** 9 min 57 s of speaking (8–10 min window) + Q&A
 **Language:** spoken English; 中文提示 is for rehearsal only and is not read aloud.
 
@@ -372,15 +372,18 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 > we report descriptive differences with no confidence intervals.
 >
 > The dominant error is over-abstention. The cost-guard savings are replay estimates, not
-> live savings, and cache and recovery were validated on Mock traces rather than production
-> traffic.
+> live savings — but its measured firing favours our primary architecture: all six Dynamic
+> stops were correct abstentions, and every identifiable loss sat on an ablation control.
+> Cache and recovery were validated on Mock traces rather than production traffic.
 >
 > It is a research and teaching prototype. We do not claim production readiness,
 > state-of-the-art performance, or that hallucination is eliminated.
 
 **中文提示**
-六张卡片不用全念，念前两张（非盲测、单模型单次），再念"over-abstention"。最后一句
-"Not claimed" 是防御性最强的一句，放慢说。不要在此处补充未经测量的数字。
+六张卡片不用全念，念前两张（非盲测、单模型单次），再念"over-abstention"。守卫卡片
+可以主动反打一句：省 token 是估算，但触发是实测——Dynamic 的 6 次终止全部正确弃权，
+误伤全部在消融对照组。最后一句 "Not claimed" 是防御性最强的一句，放慢说。不要在此处
+补充未经测量的数字。
 
 **Transition:** "So what should someone take away from this?" *(hand to S6)*
 

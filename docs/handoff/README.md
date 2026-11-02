@@ -4,6 +4,15 @@ A handoff document transfers ownership of a workstream: what was built, what was
 verified, what remains open, and where the evidence lives. This folder keeps all
 of them together so the version archives stay focused on design and results.
 
+## Submission package (course deliverables, 2026-11-02)
+
+The group-facing copies of the presentation and submission materials live in
+[submission-package/](submission-package/): the editable deck (`.pptx` + PDF),
+all 21 slide renders, the script and Q&A sheet, a copy of the run guide, the
+submission checklist and the blank contribution-statement template. Its
+[README](submission-package/README.md) also records how to start the demo
+website and where its code lives.
+
 ## Current project handoff
 
 | Document | Language | Use |

@@ -392,7 +392,7 @@ Include:
   only; never an evaluator oracle root;
 - `pyproject.toml`, `requirements.lock`, `README.md`, `README.zh-CN.md`, `docs/`, and the
   tracked analysis report;
-- the `presentation/` directory, including `IncidentLens_Final.pptx`, its PDF export and
+- the `presentation/` directory, including `IncidentLens_Deck.pptx`, its PDF export and
   rendered slides, plus any completed contribution statement;
 - a fresh test and acceptance record produced for the final tree.
 

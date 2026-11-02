@@ -13,7 +13,7 @@
 | ---: | --- | --- | --- |
 | 1 | System source code with instructions for running it | repository root, `README.md`, `docs/RUN_GUIDE.md` | [x] |
 | 2 | Demo video, ≤ 10 minutes, whole workflow + representative examples | **not produced here**; plan in `docs/DEMO_GUIDE.md` | [ ] group records |
-| 3 | Presentation slides | `presentation/IncidentLens_Final.pptx` (+ `.pdf`) | [x] |
+| 3 | Presentation slides | `presentation/IncidentLens_Deck.pptx` (+ `.pdf`) | [x] |
 | 4 | Individual Contribution Statement | `submission/Individual_Contribution_Statement_TEMPLATE.md` | [ ] group completes |
 | 5 | Slides cover: problem & motivation, multi-agent design, implementation, demo & results | slides 2–15 | [x] |
 
@@ -28,7 +28,7 @@
 - [x] 21 slides, 16:9 (13.333 × 7.5 in), editable `.pptx` — not images.
 - [x] Main track 15 slides; 6 backup slides for Q&A.
 - [x] Every slide rendered to PNG and visually inspected (`presentation/rendered/`).
-- [x] PDF exported (`presentation/IncidentLens_Final.pdf`, 915,732 bytes).
+- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 915,732 bytes).
 - [x] Speaker notes present on every main-track slide with timings totalling 9:57.
 - [x] Title slide carries `Group ID: ____________` and "Team members to be completed by the
       group" — no invented names.
@@ -151,7 +151,7 @@ Include:
 - `README.md`, `docs/` (current guides; archives may be trimmed)
 - `data/incidentbench_v2_hardened/` and `data/incidents/` if the archive size allows —
   otherwise document how to regenerate them
-- `presentation/IncidentLens_Final.pptx`, `.pdf`
+- `presentation/IncidentLens_Deck.pptx`, `.pdf`
 - `submission/Individual_Contribution_Statement.pdf` (filled by the group)
 - `analysis/wp_d/reports/hardened144-20261101/` summary and scoring script
 

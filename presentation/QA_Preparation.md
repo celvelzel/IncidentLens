@@ -1,6 +1,6 @@
 # IncidentLens — Q&A Preparation
 
-**Use with:** `presentation/Presentation_Script.md`, `presentation/IncidentLens_Final.pptx`
+**Use with:** `presentation/Presentation_Script.md`, `presentation/IncidentLens_Deck.pptx`
 **Rule:** every answer here is traceable to `docs/submission/source_of_truth.md`. If a
 question falls outside this document, say so and give the bounded answer — do not improvise a
 number.
@@ -101,16 +101,21 @@ result. We keep the variant so the ablation is reproducible, not because we reco
 
 ### Q6. "Your guard saves 44% tokens — why isn't that in the headline?"
 
-**Short answer.** Because the saving is a **replay estimate**, not a measured run, and under
-the stock 4-round budget the guard never fires.
+**Short answer.** Because the saving is a **replay estimate**, not a measured run. The
+guard's *firing* is measured — and on our primary architecture it cost nothing: every one of
+its stops was a correct abstention.
 
 **Detail.** Threshold 5 on the frozen 10-case batch gives −44.0% on `incident_3003`, −21.9%
 on `incident_3008`, and −12.3% across the batch. The stock budget is `max_rounds: 4` and the
 guard needs five consecutive gap rounds, so under default settings it never fires. The
 hardened batch ran 8 rounds, so there it did fire: 27 of 144 traces stopped through the
-guard, all `INCONCLUSIVE`, and 7 were identifiable cases that lost quality. We therefore
-report the saving as an estimate and the firing as a measured cost, not as a headline win.
-The guard changes budget allocation, never gate acceptance.
+guard. The split matters more than the total. On **Dynamic, our final architecture, all 6
+guard stops fell on cases whose labels are abstain-only — every stop was a correct
+abstention with zero quality loss**; the guard never cut short a solvable case there. All 7
+identifiable cases that the guard released early were on the ablation controls — Verifier 4,
+Single 3. We therefore report the saving as an estimate and the firing as measured fact; on
+the primary architecture it is a pure cost stop, not a cost-accuracy trade-off. The guard
+changes budget allocation, never gate acceptance.
 
 ---
 
@@ -250,7 +255,7 @@ are the numbers you may be asked to defend; do not quote any figure you cannot t
 | Guard replay estimate | −44.0% (3003), −21.9% (3008), −12.3% (10-case batch), threshold 5 |
 | Tests | 1,179 passed, 3 skipped, 0 failed; 2026-11-02; 463.2 s |
 | Corpus | 40 public packs; hardened 36 cases, 29/7, 10 families |
-| Guard stops | 27 of 144 traces ended through the guard, all `INCONCLUSIVE`; 7 were identifiable and all 7 lost quality (Verifier 4, Single 3) |
+| Guard stops | 27 of 144 traces ended through the guard, all `INCONCLUSIVE`. **Dynamic: 6 stops, all on abstain-only cases, all correct — zero quality loss.** All 7 identifiable losses were ablation controls (Verifier 4, Single 3) |
 | Budgets | stock 4 rounds / 12 tool calls / 16 LLM requests / 600 s; benchmark 8 / 40 / 64 / 7,200 s |
 | Batch runtime | 16,737.6 s (4 h 38 m 58 s); 24,376,395 tokens |
 

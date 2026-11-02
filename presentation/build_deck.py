@@ -1113,7 +1113,7 @@ def slide_limits():
         ("No blind test", "The corpus is development-visible; labels are evaluator-only and provisional."),
         ("One model, one repeat", "No confidence intervals, significance tests or cross-model replication."),
         ("Over-abstention", "19 identifiable runs ended INCONCLUSIVE (Fixed-4 12, verifier variant 4, Single 3, Dynamic 0); none named a wrong cause."),
-        ("Replay-estimated guard", "The −44% / −22% / −12% token estimates are replayed, not live."),
+        ("Replay-estimated guard", "Token savings are replayed, not live; measured firing: Dynamic 6/6 correct abstentions, all 7 identifiable losses on ablation controls."),
         ("Mock-only recovery", "Cache and recovery paths are validated on Mock traces, not production traffic."),
         ("Synthetic corpus", "Read-only packs; no production telemetry, users or remediation execution."),
     ]
@@ -1135,7 +1135,9 @@ def slide_limits():
 Speaker 5 (36 s):
 We are explicit about the boundary: no blind test, provisional labels, one model, one
 repeat, and no significance claim. The dominant error is over-abstention. The cost-guard
-savings are replay estimates, not live savings, and cache and recovery were validated on
+savings are replay estimates, not live savings — but its measured firing is a positive
+result on our primary architecture: all 6 Dynamic stops were correct abstentions, and
+every identifiable loss sat on an ablation control. Cache and recovery were validated on
 Mock traces. This is a research and teaching prototype: we do not claim production
 readiness or state-of-the-art performance.
 """)
@@ -1299,7 +1301,7 @@ def slide_backup_failures():
             "explain the quality ordering. The corpus labels are evaluator-only and provisional; "
             "the public development packs share encoder lineage and are not independent blind Test data.\n\n"
             "The cost-guard figures on the limitations slide are replay estimates over frozen traces, "
-            "not live savings; under the stock 4-round budget the 5-round guard cannot fire, so the recorded 27 guard stops come from the hardened 8-round batch and are counted as measured cost, not saving.",
+            "not live savings; under the stock 4-round budget the 5-round guard cannot fire, so the recorded 27 guard stops come from the hardened 8-round batch. Measured split: Dynamic 6 stops, all correct abstentions, zero quality loss; the 7 identifiable losses are Verifier 4 and Single 3.",
             size=9.4, color=BODY, spacing=1.12)
     notes(slide, "Backup: use if asked about failures or label provenance.")
 
@@ -1384,7 +1386,7 @@ def main():
     chart_quality()
     chart_levers()
 
-    out = ROOT / "IncidentLens_Final.pptx"
+    out = ROOT / "IncidentLens_Deck.pptx"
     prs.save(out)
     print(f"Wrote {out} ({len(prs.slides)} slides)")
 

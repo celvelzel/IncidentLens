@@ -220,7 +220,7 @@ def check_deck() -> None:
         fail("C4", "python-pptx not installed; cannot inspect the deck")
         return
 
-    deck_path = ROOT / "presentation/IncidentLens_Final.pptx"
+    deck_path = ROOT / "presentation/IncidentLens_Deck.pptx"
     if not deck_path.exists():
         fail("C4", "deck missing")
         return
@@ -261,7 +261,7 @@ def check_timing() -> None:
     except ImportError:
         return
 
-    deck_path = ROOT / "presentation/IncidentLens_Final.pptx"
+    deck_path = ROOT / "presentation/IncidentLens_Deck.pptx"
     if not deck_path.exists():
         return
 

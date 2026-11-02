@@ -246,14 +246,18 @@ the stock cap of `max_rounds: 4` it cannot fire at all, because it needs five co
 rounds without a cause-specific discriminator. The hardened batch raised the cap to 8 rounds,
 so it did fire, and that is a measured result rather than an estimate: **27 of the 144 traces
 terminated through `INVESTIGATION_EVIDENCE_EXHAUSTED`** (verifier variant 11, Single 10,
-Dynamic 6), and all 27 ended `INCONCLUSIVE`. Seven of those were identifiable cases and all
-seven lost quality — verifier variant `incident_4023`, `4020`, `4036`, `4021`; Single `4036`,
-`4025`, `4020`. Those seven are part of the 19 identifiable misses; the remaining twelve are
-Fixed-4 coordinator abstentions, not guard terminations. Each guard event fired at round
-index 4 with `remaining_rounds: 4`, `remaining_requests: 42–49`, `remaining_tool_calls: 20–26`
-and an empty `discriminator_candidate_ids` list, so the stop was a deliberate cost decision
-taken with budget left, not budget exhaustion. The cost figure above is still an estimate;
-the firing counts are not.
+Dynamic 6), and all 27 ended `INCONCLUSIVE`. The per-architecture split is the finding that
+matters. **On Dynamic, the primary architecture, all 6 guard stops fell on the 7
+abstain-label cases' slots — every stop was a correct abstention with zero quality loss; the
+guard never cut short a solvable case on the architecture the project ships.** All 7
+identifiable cases the guard released early were on the ablation controls — verifier variant
+`incident_4023`, `4020`, `4036`, `4021`; Single `4036`, `4025`, `4020`. Those seven are part
+of the 19 identifiable misses; the remaining twelve are Fixed-4 coordinator abstentions, not
+guard terminations. Each guard event fired at round index 4 with `remaining_rounds: 4`,
+`remaining_requests: 42–49`, `remaining_tool_calls: 20–26` and an empty
+`discriminator_candidate_ids` list, so the stop was a deliberate cost decision taken with
+budget left, not budget exhaustion. The cost figure above is still an estimate; the firing
+counts are not.
 
 ### 8.3 Cache experiment
 
@@ -365,8 +369,9 @@ case. Its cost advantage should not be read as efficiency without the quality de
 - The recovery result is a Mock injection with denominator 2 per variant; the real retest had
   no failure to recover.
 - The evidence-gap guard's *cost* figure is replay-estimated. Its firing is measured: under
-  the hardened 8-round cap it terminated 27 traces, all `INCONCLUSIVE`, 7 of them identifiable
-  and all 7 losing quality; under the stock 4-round cap it cannot fire at all.
+  the hardened 8-round cap it terminated 27 traces, all `INCONCLUSIVE`; on Dynamic every stop
+  was a correct abstention with zero quality loss, and all 7 identifiable losses were
+  Verifier or Single; under the stock 4-round cap it cannot fire at all.
 - The 10-case batch has a quality ceiling for three variants and mojibake `correctness`
   strings; only numeric fields are used.
 

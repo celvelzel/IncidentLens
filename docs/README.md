@@ -50,7 +50,7 @@ as history and the disagreement reported rather than silently copied.
 | --- | --- | --- |
 | `RUN_GUIDE.md`, `ARCHITECTURE.md`, `AGENT_DESIGN.md`, `EVALUATION.md`, `DEMO_GUIDE.md`, `LIMITATIONS.md` | Current submission documents | First-class entry points; older deep guides below remain discoverable |
 | `submission/` | Authoritative submission facts and rubric mapping | [source_of_truth.md](submission/source_of_truth.md) wins conflicts with older docs; [rubric_alignment.md](submission/rubric_alignment.md) maps criteria to artifacts |
-| `../presentation/` | Final deck, PDF, renders, script, Q&A and the build script | `IncidentLens_Final.pptx` is the editable source; `build_deck.py` regenerates it |
+| `../presentation/` | Final deck, PDF, renders, script, Q&A and the build script | `IncidentLens_Deck.pptx` is the editable source; `build_deck.py` regenerates it |
 | `../submission/` | Contribution statement template and submission checklist | The statement is blank by design; the group completes it |
 | `project_guidelines/` | Course brief | `COMP5584_project_guidelines.pdf`; assessment weights are summarized in the rubric alignment |
 | `handoff/` | Ownership-transfer documents | Index: [handoff/README.md](handoff/README.md). Current onboarding, IncidentBench handoffs and per-version (v1.5/v1.6) handoffs. |

@@ -98,10 +98,12 @@ security posture, not a measured guarantee.
 - The evidence-gap guard's token reduction is replay-estimated, not a new measured run:
   threshold 5 gives 44.0% fewer tokens on case 3003, 21.9% on case 3008 and 12.3% across the
   frozen 10-case batch. Its firing, by contrast, is measured: the hardened batch raised the
-  round cap to 8, and 27 of its 144 traces stopped through the guard, all `INCONCLUSIVE`; 7
-  were identifiable and all 7 lost quality. Under the stock `max_rounds: 4` the guard cannot
-  fire, because it needs five consecutive rounds without a cause-specific discriminator. It
-  changes budget allocation, never gate acceptance.
+  round cap to 8, and 27 of its 144 traces stopped through the guard, all `INCONCLUSIVE`. The
+  split is the finding: on Dynamic all 6 stops were correct abstentions on abstain-label
+  cases with zero quality loss; all 7 identifiable losses were Verifier (4) or Single (3).
+  Under the stock `max_rounds: 4` the guard cannot fire, because it needs five consecutive
+  rounds without a cause-specific discriminator. It changes budget allocation, never gate
+  acceptance.
 
 These mechanisms should not be described as production reliability features.
 
@@ -125,7 +127,7 @@ These mechanisms should not be described as production reliability features.
 - Member names, IDs and individual contributions are unavailable in this checkout. No
   attribution is invented. The individual contribution statement remains for the group to
   complete.
-- A deck export is present at `presentation/IncidentLens_Final.pptx` with a PDF and rendered
+- A deck export is present at `presentation/IncidentLens_Deck.pptx` with a PDF and rendered
   slides, but its delivery date, room and approval are not recorded here, and no demo video is
   present. A video must not be claimed until it is recorded and verified.
 - The submission archive was built from a clean tracked tree on 2026-11-02, opened, checked

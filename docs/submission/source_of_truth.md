@@ -294,9 +294,11 @@ only the numeric fields.
 - The evidence-gap guard's token reduction is **replay-estimated**, not a new measured run:
   threshold 5 on the frozen 10-case batch gives −44.0% on 3003, −21.9% on 3008, −12.3%
   across the batch. Guard *firing* is measured: the hardened batch ran an 8-round cap and 27
-  of 144 traces terminated through `INVESTIGATION_EVIDENCE_EXHAUSTED`, all `INCONCLUSIVE`; 7
-  were identifiable and all 7 lost quality (verifier 4, Single 3), which is 7 of the 19
-  identifiable misses. Under the stock `max_rounds: 4` it cannot fire.
+  of 144 traces terminated through `INVESTIGATION_EVIDENCE_EXHAUSTED`, all `INCONCLUSIVE`.
+  Split: Dynamic 6 stops, all on abstain-label cases, all correct abstentions, zero quality
+  loss; Verifier 11 stops (4 identifiable, all losing quality); Single 10 stops (3
+  identifiable, all losing quality). The 7 identifiable losses are 7 of the 19 identifiable
+  misses and all sit on ablation controls. Under the stock `max_rounds: 4` it cannot fire.
 - The synthetic corpus does not establish production generalization. Variants share causal
   templates and encoder lineage; `accepted_labels = 0`, `independent_audited_families = 0`.
 
