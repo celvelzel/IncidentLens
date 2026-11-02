@@ -52,7 +52,7 @@ Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
 - [x] No secrets, `.venv`, caches or demo video in the submission archive.
 
 **Verified:** full suite run on 2026-11-02 against this tree — `1179 passed, 3 skipped in
-450.01s`, exit 0 (`results/pytest-current.log`). Re-run after any change to source, tests,
+450.01s`, exit 0 (`analysis/submission/pytest-20261102.log`). Re-run after any change to source, tests,
 configuration or web assets.
 
 ### 4. Analysis & Innovation (15%)

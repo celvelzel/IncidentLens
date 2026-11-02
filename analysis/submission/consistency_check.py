@@ -180,13 +180,16 @@ def check_numbers() -> None:
                 f"quality {variant}: batch says {row['quality_success']}, docs claim {want}",
             )
 
-    log = ROOT / "results/pytest-current.log"
-    if log.exists():
-        text = log.read_text(encoding="utf-8", errors="replace")
+    # The live run log lands in gitignored results/; the tracked copy beside this
+    # script is what a clean clone has. Check the tracked one when present.
+    candidates = [ROOT / "analysis/submission/pytest-20261102.log",
+                  ROOT / "results/pytest-current.log"]
+    texts = [c.read_text(encoding="utf-8", errors="replace") for c in candidates if c.exists()]
+    if not texts:
+        fail("C3", "no pytest log found in analysis/submission/ or results/")
+    for text in texts:
         if "1179 passed, 3 skipped" not in text:
-            fail("C3", "pytest log no longer records 1179 passed, 3 skipped")
-    else:
-        fail("C3", "results/pytest-current.log missing")
+            fail("C3", "a pytest log no longer records 1179 passed, 3 skipped")
 
     # The eight failures were six STRUCTURED_OUTPUT_INVALID (five with no string
     # content, one truncated after repair) plus two identity mismatches. Only one of

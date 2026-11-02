@@ -61,7 +61,7 @@ same column count as its header, including the nine-column result tables.
 ### C3 — Numbers
 
 **PASS.** Every quoted figure resolves to `results/v16/wp-d/full144-hardened-c4-20261101/`
-`final-success-comparison.json` or `results/pytest-current.log`.
+`final-success-comparison.json` and the tracked test log `analysis/submission/pytest-20261102.log`.
 
 | Claim | Authoritative source | Value |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ same column count as its header, including the nine-column result tables.
 | Wrong root causes | same | 0 |
 | Batch runtime | same | 16,737.6 s |
 | Batch tokens | same | 24,376,395 |
-| Tests | `results/pytest-current.log` | 1,179 passed, 3 skipped, 0 failed (450.01 s, exit 0) |
+| Tests | `analysis/submission/pytest-20261102.log` (tracked copy of the live run log) | 1,179 passed, 3 skipped, 0 failed (450.01 s, exit 0) |
 
 Collection count: `pytest --collect-only -q` reports 1182 tests collected; the recorded run
 is 1,179 passed plus 3 skipped, so the two agree and there is no contradiction.

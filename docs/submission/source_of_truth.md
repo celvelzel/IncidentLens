@@ -319,7 +319,7 @@ only the numeric fields.
   default dynamic architecture.
 - Tests: 88 Python test files; `pytest --collect-only -q` reports **1182 tests collected**.
   Full suite run on 2026-11-02 against this tree: `1179 passed, 3 skipped in 450.01s`,
-  exit 0 (`results/pytest-current.log`). Re-run after any change to source, tests,
+  exit 0 (`analysis/submission/pytest-20261102.log`, a tracked copy of the run log). Re-run after any change to source, tests,
   configuration or web assets.
 - Web acceptance: Playwright scripts in `tests/web/` (real HTTP, no route interception).
 

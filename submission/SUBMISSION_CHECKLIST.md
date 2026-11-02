@@ -123,7 +123,7 @@ python -m venv .venv
 | Dynamic quality / root / abstain | 33/36 · 27/27 · 6/6 | same |
 | Wrong root causes | 0 of 144 | same |
 | Identifiable misses | 19, all `INCONCLUSIVE` (Fixed-4 12, Verifier 4, Single 3, Dynamic 0) | same |
-| Tests | 1,179 passed, 3 skipped, 0 failed | `results/pytest-current.log` |
+| Tests | 1,179 passed, 3 skipped, 0 failed | `analysis/submission/pytest-20261102.log` |
 | Corpus | 40 public packs; 36 hardened cases (29/7), 10 families | `data/`, `docs/submission/source_of_truth.md` |
 
 Recompute the batch table with:

@@ -320,7 +320,7 @@ them to make a demo look better, and do not present a replayed trace as a live r
 
 A fresh full-suite run is required before submission. The recorded run is
 `1179 passed, 3 skipped in 450.01s`, exit 0, on 2026-11-02 against the tree that ships this
-documentation (`results/pytest-current.log`). It is a point-in-time record, not a standing
+documentation (`analysis/submission/pytest-20261102.log`, a tracked copy of the run log). It is a point-in-time record, not a standing
 guarantee: re-run it after any change to source, tests, configuration or web assets. Record
 the command, date, interpreter, collected count, failures, errors and skips in the release
 acceptance record.
