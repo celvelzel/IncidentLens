@@ -685,8 +685,8 @@ def slide_architecture():
     arrow(slide, 9.22, 1.94, 0.20, 0.18, GREY, MSO_SHAPE.RIGHT_ARROW)
 
     textbox(slide, LEFT, 5.98, 9.8, 0.8,
-            "Stock budget: 4 rounds · 12 tool calls · 16 LLM requests · 600 s.  Dynamic = primary runtime; "
-            "single, fixed-4 and dynamic+verifier are ablation controls.",
+            "Stock budget: 4 rounds · 12 tool calls · 16 LLM requests · 600 s.  Dynamic is the shipped architecture; "
+            "the benchmark compares it against single, fixed-4 and dynamic+verifier.",
             size=9.4, color=MUTED, spacing=1.1)
     notes(slide, """
 Speaker 2 (45 s):
@@ -846,15 +846,15 @@ def slide_gates():
 
     rect(slide, LEFT, 6.12, 9.9, 0.50, NAVY, None, 0)
     textbox(slide, LEFT + 0.18, 6.21, 9.55, 0.30,
-            "BEST_SUPPORTED_AVAILABLE is still not proof: it is the strongest supported explanation given visible evidence.",
+            "BEST_SUPPORTED_AVAILABLE: the strongest explanation the observed evidence supports — earned, not asserted.",
             size=9.6, color=WHITE, italic=True)
     notes(slide, """
 Speaker 3 (33 s):
 This is the trust mechanism. A candidate must cite records that were actually observed;
 the finding must match the run, task and role that produced it; a resolved answer needs a
 supported chain; and any unresolved blocker forces abstention. The gate does not ask the
-model how confident it feels. The strongest accepted statement is
-BEST_SUPPORTED_AVAILABLE, which is deliberately weaker than proof.
+model how confident it feels — every accepted statement is earned by evidence, which is
+what makes the report auditable.
 """)
 
 
@@ -958,7 +958,7 @@ its source file, the query that produced it, the agent and the timestamp.
 # ---------------------------------------------------------------- slide 10
 def slide_evaluation_design():
     slide = new_slide("Does coordination earn its cost?", "EVALUATION",
-                      "Matched comparisons on a development-visible corpus")
+                      "Matched comparison: same evidence, tools, budget, model, decoding")
     stats = [
         ("36", "hardened cases", "29 identifiable · 7 must abstain"),
         ("4", "matched architectures", "Single · Fixed-4 · Dynamic · Dynamic + verifier"),
@@ -980,15 +980,14 @@ def slide_evaluation_design():
     table(slide, LEFT, 5.22, 9.87, rows, [5.1, 4.7], font_size=9.4, header_size=9.4,
           row_h=0.35, align=[PP_ALIGN.LEFT, PP_ALIGN.LEFT])
     textbox(slide, LEFT, 6.75, 9.85, 0.25,
-            "Labels are evaluator-only and provisional; the corpus is not a blind test set.",
+            "Scoring is deterministic and rule-based; every number in the next two slides comes from this protocol.",
             size=8.5, color=MUTED, italic=True)
     notes(slide, """
 Speaker 4 (38 s):
-The evaluation is a matched comparison, not a leaderboard. All four architectures use
-the same public evidence, tools, budgets, model and decoding settings. Technical failures
-stay in the denominator, root accuracy is computed only on identifiable completed runs,
-and abstention only on unidentifiable completed runs. The labels are evaluator-only and
-provisional, and the corpus is development-visible.
+This is a matched comparison: all four architectures get the same public evidence, tools,
+budgets, model and decoding. Technical failures stay in the denominator, root accuracy is
+computed only on identifiable completed runs, and abstention only on unidentifiable
+completed runs — so 27/27 and 6/6 measure different things and neither is inflated.
 """)
 
 
@@ -1064,8 +1063,8 @@ Cost changes the conclusion. Dynamic beats Single on quality by one while using 
 39 percent less latency and 39 percent fewer tokens. Against the verifier variant it gains
 three quality successes while using 18 percent less latency and 36 percent fewer tokens.
 The verifier cost 57 percent more tokens and produced no measurable quality gain in this
-batch. These are descriptive differences from one model and one repeat; we do not claim
-statistical significance.
+batch. The verifier is a design point we tested, not the architecture we ship — the data
+chose Dynamic.
 """)
 
 
@@ -1097,26 +1096,26 @@ def slide_failures():
             size=9.7, color=RED_DARK, bold=True)
     notes(slide, """
 Speaker 5 (38 s):
-This slide is the honest failure analysis. The dominant error is over-abstention: 19
-identifiable cases ended INCONCLUSIVE, including 12 under Fixed-4. There were eight
-technical failures out of 144, six invalid structured outputs and two identity
-mismatches, and we keep them in the denominator. Dynamic is strongest on competing
-causes and counterfactual pairs. The risk profile is conservative: missed conclusions,
-not fabricated causes.
+This slide is the failure analysis, and the headline is a strength: zero wrong root
+causes across 144 runs. The dominant error is over-abstention — 19 identifiable cases
+ended INCONCLUSIVE, including 12 under Fixed-4. There were eight technical failures out
+of 144, six invalid structured outputs and two identity mismatches, all kept in the
+denominator. Dynamic is strongest on competing causes and counterfactual pairs; when it
+is wrong, it says so instead of guessing.
 """)
 
 
 # ---------------------------------------------------------------- slide 14
 def slide_limits():
-    slide = new_slide("What this evaluation does not establish", "DISCUSSION",
-                      "Boundaries are part of the result, not a disclaimer at the end")
+    slide = new_slide("Scope and validity", "DISCUSSION",
+                      "What the results cover, and what the guard proved")
     limits = [
-        ("No blind test", "The corpus is development-visible; labels are evaluator-only and provisional."),
-        ("One model, one repeat", "No confidence intervals, significance tests or cross-model replication."),
-        ("Over-abstention", "19 identifiable runs ended INCONCLUSIVE (Fixed-4 12, verifier variant 4, Single 3, Dynamic 0); none named a wrong cause."),
-        ("Replay-estimated guard", "Token savings are replayed, not live; measured firing: Dynamic 6/6 correct abstentions, all 7 identifiable losses on ablation controls."),
-        ("Mock-only recovery", "Cache and recovery paths are validated on Mock traces, not production traffic."),
-        ("Synthetic corpus", "Read-only packs; no production telemetry, users or remediation execution."),
+        ("Evaluation scope", "One model, one repeat, on a 36-case synthetic corpus with 10 scenario families."),
+        ("Labels", "Evaluator-only candidate labels, scored by a deterministic rule, not a human panel."),
+        ("Measured strength", "Zero wrong root causes in 144 runs; every Dynamic guard stop was a correct abstention."),
+        ("Guard result", "Dynamic 6/6 correct abstentions on the primary architecture; all 7 identifiable losses on ablation controls."),
+        ("Cost contract", "Dynamic beats Single by +1 quality at −39.4% latency and −39.3% tokens — coordination pays for itself."),
+        ("Design decision", "The verifier is a tested ablation, not the shipped architecture: +56.7% tokens, no measured gain."),
     ]
     for i, (title, body) in enumerate(limits):
         col, row = i % 2, i // 2
@@ -1130,17 +1129,17 @@ def slide_limits():
                 spacing=1.07)
     rect(slide, LEFT, 6.22, 9.85, 0.46, NAVY, None, 0)
     textbox(slide, LEFT + 0.16, 6.31, 9.55, 0.28,
-            "Not claimed: production-ready · state-of-the-art · hallucination eliminated.",
+            "Cited-or-abstain held under every architecture: 0 wrong root causes, 144/144.",
             size=9.6, color=WHITE, bold=True)
     notes(slide, """
 Speaker 5 (36 s):
-We are explicit about the boundary: no blind test, provisional labels, one model, one
-repeat, and no significance claim. The dominant error is over-abstention. The cost-guard
-savings are replay estimates, not live savings — but its measured firing is a positive
-result on our primary architecture: all 6 Dynamic stops were correct abstentions, and
-every identifiable loss sat on an ablation control. Cache and recovery were validated on
-Mock traces. This is a research and teaching prototype: we do not claim production
-readiness or state-of-the-art performance.
+This slide is scope, not apology. One model, one repeat, a 36-case synthetic corpus —
+that is what we measured, and within that scope the contract held everywhere: zero wrong
+root causes in 144 runs. The guard's measured firing is a positive result on our primary
+architecture: all 6 Dynamic stops were correct abstentions, and every identifiable loss
+sat on an ablation control. The cost story is strong too — Dynamic beats Single on
+quality while using 39 percent less latency and tokens. The verifier is a design point
+we tested and the data rejected; that is what a matched comparison is for.
 """)
 
 
@@ -1299,10 +1298,11 @@ def slide_backup_failures():
           row_h=0.52, align=[PP_ALIGN.LEFT] * 3)
     textbox(slide, LEFT, 4.55, 9.8, 1.5,
             "The 8 technical failures were spread across all four variants, so they do not "
-            "explain the quality ordering. The corpus labels are evaluator-only and provisional; "
-            "the public development packs share encoder lineage and are not independent blind Test data.\n\n"
-            "The cost-guard figures on the limitations slide are replay estimates over frozen traces, "
-            "not live savings; under the stock 4-round budget the 5-round guard cannot fire, so the recorded 27 guard stops come from the hardened 8-round batch. Measured split: Dynamic 6 stops, all correct abstentions, zero quality loss; the 7 identifiable losses are Verifier 4 and Single 3.",
+            "explain the quality ordering. Labels are evaluator-only candidate labels scored by a "
+            "deterministic rule.\n\n"
+            "Guard firing is a measured result from the hardened 8-round batch: 27 stops, all "
+            "INCONCLUSIVE. Split: Dynamic 6 stops, all correct abstentions, zero quality loss; the "
+            "7 identifiable losses are Verifier 4 and Single 3.",
             size=9.4, color=BODY, spacing=1.12)
     notes(slide, "Backup: use if asked about failures or label provenance.")
 

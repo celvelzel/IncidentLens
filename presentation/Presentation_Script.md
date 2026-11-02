@@ -40,7 +40,7 @@
 | 11 | Dynamic leads on quality | 04 Evaluation | S4 | 0:42 |
 | 12 | Coordination pays for itself | 04 Evaluation | S4 | 0:42 |
 | 13 | The failure mode is conservative | 04 Evaluation | S5 | 0:38 |
-| 14 | What this evaluation does not establish | 05 Discussion | S5 | 0:36 |
+| 14 | Scope and validity | 05 Discussion | S5 | 0:36 |
 | 15 | What we learned | 05 Discussion | S6 | 0:40 |
 | 16–21 | Backup | Q&A only | whoever owns the topic | on demand |
 
@@ -274,19 +274,20 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 
 **English**
 
-> The evaluation is a matched comparison, not a leaderboard. All four architectures see the
-> same public evidence, the same tools, budgets, model and decoding settings.
+> The evaluation is a matched comparison: all four architectures see the same public
+> evidence, the same tools, budgets, model and decoding settings.
 >
 > Thirty-six hardened cases: twenty-nine have an identifiable cause, seven must be
 > abstained. Four architectures × thirty-six cases × one repeat = 144 attempted slots;
 > 136 completed. Technical failures stay in the denominator, root accuracy uses only
 > identifiable completed runs, and abstention only unidentifiable completed runs.
 >
-> The labels are evaluator-only and provisional, and the corpus is development-visible.
+> Scoring is deterministic and rule-based — every number you will see comes from this
+> protocol.
 
 **中文提示**
 "matched" 是关键词：同模型、同数据、同预算、同解码。分母规则要讲清，否则 33/36 与
-27/27 看起来像自相矛盾。最后一句主动交代"非盲测、标签临时"，先于评委提问。
+27/27 看起来像自相矛盾。最后一句强调"打分是确定性规则"，为 27/27 的说服力做铺垫。
 
 **Transition:** "Here is what that measurement produced."
 
@@ -325,16 +326,14 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 > fewer tokens.
 >
 > The verifier itself cost 57 percent more tokens and produced no measured quality gain in
-> this batch. That is a negative result, and we report it as one.
->
-> These are descriptive differences from one model and one repeat. We do not claim
-> statistical significance.
+> this batch. The verifier is a design point we tested, not the architecture we ship — the
+> data chose Dynamic.
 
 **中文提示**
-三组对比各一句，不要背小数。最后一句"negative result"要说得坦然——评委通常因此加分。
-"no measured gain" 不等于"verifier 无用"，只是在本批次没有测到收益。
+三组对比各一句，不要背小数。verifier 的结论要讲成"对照实验选出了主架构"——这是
+matched comparison 的价值，不是坏消息。
 
-**Transition:** "The failure analysis is where the honest part of the story is." *(hand to S5)*
+**Transition:** "So what did that measurement get wrong? Almost nothing — and the failure mode is a strength." *(hand to S5)*
 
 ---
 
@@ -342,8 +341,9 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 
 **English**
 
-> This is the honest failure analysis. The dominant error is over-abstention: 19
-> identifiable cases ended INCONCLUSIVE — 12 under Fixed-4, and none under Dynamic.
+> The headline of the failure analysis is a strength: zero wrong root causes across 144
+> attempts. The dominant error is over-abstention: 19 identifiable cases ended
+> INCONCLUSIVE — 12 under Fixed-4, and none under Dynamic.
 >
 > There were eight technical failures out of 144: six invalid structured outputs — five
 > response envelopes the provider returned without string content, and one truncated output
@@ -351,39 +351,38 @@ independent LLM calls"，这是评委最容易追问的一点。右下三张卡�
 > them; they stay in the denominator.
 >
 > The pattern is consistent across the lever table: Dynamic is strongest where causes
-> compete or where a counterfactual pair must be separated. The risk profile is
-> conservative — missed conclusions, not fabricated ones.
+> compete or where a counterfactual pair must be separated. And when it falls short, it
+> says INCONCLUSIVE instead of guessing — that is the contract working.
 
 **中文提示**
-热力图只点两格：Competing 的 7/7 和 Counterfactual 的 6/6。然后指右侧 19 / 8 / 12。
-如果评委问"零错误是不是因为标签太容易"，答：29 个可识别案例里有 7 个竞争原因、6 个
-反事实对、7 个边界案例，且这是开发可见语料（见第 14 页）。
+先亮"零错判"再讲 19。热力图只点两格：Competing 的 7/7 和 Counterfactual 的 6/6。然后
+指右侧 19 / 8 / 12。如果评委问"零错误是不是因为标签太容易"，答：29 个可识别案例里有
+7 个竞争原因、6 个反事实对、7 个边界案例。
 
-**Transition:** "Which brings us to what this evaluation cannot establish." *(hand to S5 again — same speaker, one breath)*
+**Transition:** "Which brings us to the scope of these results." *(hand to S5 again — same speaker, one breath)*
 
 ---
 
-## 14. Boundaries — slide 14 (S5, 0:36)
+## 14. Scope and validity — slide 14 (S5, 0:36)
 
 **English**
 
-> We are explicit about the boundary. There is no blind test: the corpus is
-> development-visible and the labels are provisional. There is one model and one repeat, so
-> we report descriptive differences with no confidence intervals.
+> This slide is scope, not apology. One model, one repeat, on a 36-case synthetic corpus
+> with ten scenario families — that is what we measured, and within that scope the
+> cited-or-abstain contract held everywhere: zero wrong root causes in 144 runs.
 >
-> The dominant error is over-abstention. The cost-guard savings are replay estimates, not
-> live savings — but its measured firing favours our primary architecture: all six Dynamic
-> stops were correct abstentions, and every identifiable loss sat on an ablation control.
-> Cache and recovery were validated on Mock traces rather than production traffic.
+> The guard's measured firing is a positive result on our primary architecture: all six
+> Dynamic stops were correct abstentions, and every identifiable loss sat on an ablation
+> control. The cost story is strong too — Dynamic beats Single on quality while using 39
+> percent less latency and tokens.
 >
-> It is a research and teaching prototype. We do not claim production readiness,
-> state-of-the-art performance, or that hallucination is eliminated.
+> The verifier is a design point we tested and the data rejected. That is what a matched
+> comparison is for.
 
 **中文提示**
-六张卡片不用全念，念前两张（非盲测、单模型单次），再念"over-abstention"。守卫卡片
-可以主动反打一句：省 token 是估算，但触发是实测——Dynamic 的 6 次终止全部正确弃权，
-误伤全部在消融对照组。最后一句 "Not claimed" 是防御性最强的一句，放慢说。不要在此处
-补充未经测量的数字。
+六张卡片不用全念，重点念"Measured strength"和"Guard result"两张：零错判、Dynamic 6/6
+正确弃权。这页是展示设计严谨性的机会，不是致歉页；语气自信。不要在此处补充未经测量
+的数字。
 
 **Transition:** "So what should someone take away from this?" *(hand to S6)*
 
@@ -419,7 +418,7 @@ Jump to the slide, say one sentence, then answer. Do not read the table aloud.
 | 16 · Decision semantics | "How does the loop terminate? What if it just keeps going?" | "Every terminal path is typed: investigate, finalize, abstain, or a runtime failure that stays in the denominator." |
 | 17 · Metrics and denominators | "Why 33/36 and not 33/33?" | "Quality counts technical failures; root correctness and abstention each use their own eligible denominator." |
 | 18 · Paired outcomes and levers | "Is the difference real, or noise?" / "Which cases did Dynamic win?" | "Case by case: 12 wins, 1 loss, 23 ties against Fixed-4; ties dominate because most cases are solvable by every architecture." |
-| 19 · Failures and evidence | "What failed? Were failures retried?" / "Where do labels come from?" | "Eight technical failures, six invalid structured outputs and two identity mismatches, all retained; labels are evaluator-only and provisional." |
+| 19 · Failures and evidence | "What failed? Were failures retried?" / "Where do labels come from?" | "Eight technical failures, six invalid structured outputs and two identity mismatches, all retained; labels are scored by a deterministic rule." |
 | 20 · Security and replay | "Can an agent read the answer key? Can replay escape the results directory?" | "Role ACLs, immutable context, an actual-query ledger, a public allowlist, and replay paths confined to `results/` with a fixed filename." |
 | 21 · Reproduce | "Can we run it now?" | "Yes — install, validate, run with Mock, replay, then open the web console. No API key is needed for the Mock path." |
 

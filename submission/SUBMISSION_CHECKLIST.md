@@ -29,7 +29,7 @@
 - [x] Main track 15 slides; 6 backup slides for Q&A.
 - [x] Every slide rendered to PNG and visually inspected before the PNG copies were removed
       from the repo (the inspection log is in `docs/submission/consistency_check.md` §C3/C4).
-- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 917,076 bytes).
+- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 916,912 bytes).
 - [x] Speaker notes present on every main-track slide with timings totalling 9:57.
 - [x] Title slide carries `Group 5` and the six member names with student IDs.
 - [x] No slide claims PolyU endorsement, production readiness or state-of-the-art.

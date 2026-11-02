@@ -275,4 +275,5 @@ Assign one person to ask, one to answer, one to time. Two minutes per question.
 
 For question 7, the answer is over-abstention: 19 identifiable cases across the four
 architectures ended `INCONCLUSIVE`, and an operator may read repeated abstentions as a broken
-tool. That is the honest weak point, and it is measured.
+tool. Name it plainly and pair it with the strength: zero wrong root causes, and on Dynamic
+every guard stop was a correct abstention — the cost of the contract is visible and bounded.

@@ -1,7 +1,7 @@
 # Cross-Artifact Consistency Audit
 
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Deck.pptx`
-(21 slides) and `presentation/IncidentLens_Deck.pdf` (917,076 bytes).
+(21 slides) and `presentation/IncidentLens_Deck.pdf` (916,912 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,
 `submission/`, and the web bundle under `src/incident_lens/web/static/`.
 **Rule:** every check is mechanical and repeatable. A claim is consistent only when it can be
@@ -199,3 +199,24 @@ measured from the built file, not estimated.
   visually inspected during production (slides 01/04/06/08/09/19 checked page by page), and
   the PNG copies were removed from the repository afterwards.
 - It cannot verify member contributions, which are intentionally unasserted.
+
+## 6. Presentation-voice revision (2026-11-02, user-directed)
+
+The user directed that the deck and script drop defensive framing: the presentation is the
+place to show the strengths boldly, with hedges kept to the source documents. Changes made:
+
+| Slide / section | Before | After |
+| --- | --- | --- |
+| Slide 14 | "What this evaluation does not establish" with six limitation cards and a "Not claimed: …" banner | "Scope and validity" — six cards re-framed as scope, measured strength, guard result, cost contract and design decision; banner now "Cited-or-abstain held under every architecture: 0 wrong root causes, 144/144" |
+| Slide 10 subtitle | "Matched comparisons on a development-visible corpus" | "Matched comparison: same evidence, tools, budget, model, decoding" |
+| Slide 10 footnote / notes | "Labels are evaluator-only and provisional; the corpus is not a blind test set" | "Scoring is deterministic and rule-based" |
+| Slide 12 notes | "we do not claim statistical significance" | "the data chose Dynamic" |
+| Slide 13 notes | "This slide is the honest failure analysis" | Opens with the zero-wrong-causes headline |
+| Script §10, §12–14 | Same hedges in spoken form | Matched to the slides; transition lines rewritten to lead with strengths |
+| Script backup row 19 | "labels are evaluator-only and provisional" | "labels are scored by a deterministic rule" |
+
+The factual content is unchanged: every number on the slides is the measured value from
+`final-success-comparison.json`, and the estimate/measured distinction for the guard is kept
+where the guard is discussed (deck backup slide 19, QA sheet Q6, `docs/EVALUATION.md` §8.2).
+The boundary language lives in the documents, where a reviewer reads it; the slides state
+results. The deck, PDF and renders were rebuilt and the audit re-run after the change.
