@@ -6,14 +6,14 @@ fired on both unidentifiable ones. These tests pin that behaviour without
 depending on a real provider.
 """
 
-import pytest
-
 from datetime import datetime, timezone
+
+import pytest
 
 from incident_lens.llm.mock import MockProvider
 from incident_lens.orchestration.graph import run_investigation
 from incident_lens.orchestration.guards import cause_discriminator
-from incident_lens.schemas import Budget, CoordinatorDecision, EvidenceRecord, Hypothesis
+from incident_lens.schemas import Budget, EvidenceRecord, Hypothesis
 from incident_lens.schemas.workflow import WorkflowOptions
 
 
