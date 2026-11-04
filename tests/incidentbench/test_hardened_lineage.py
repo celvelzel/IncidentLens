@@ -21,7 +21,7 @@ from incident_lens.incidentbench.scenarios.hardened import (
     MECHANISM_SERVICE,
     RIVALS,
 )
-from incident_lens.incidentbench.schemas import BenchmarkOracle, SUPPORTED_MODES
+from incident_lens.incidentbench.schemas import SUPPORTED_MODES, BenchmarkOracle
 from incident_lens.incidentbench.validator import validate_dataset
 from incident_lens.llm.mock import MockProvider, classify
 from incident_lens.orchestration.graph import run_investigation
