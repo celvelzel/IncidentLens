@@ -412,18 +412,67 @@ LLM_CALL / MODEL_* / CACHE_* / other          → (skip, keep scanning)
 
 Per-stage `state`:
 `skipped` if `!available`; else `current` if `id === currentStageId`; else `done` if `reached`;
-else `pending`. `review.available = hasVerifier` where `hasVerifier = any REVIEW || any event role
-'verifier'`; all other stages `available = true`.
+else `pending`. `review.available = resolveHasVerifier(state, opts)` — **variant-level, not
+prefix-only** (§4.8.1); all other stages `available = true`.
+
+#### 4.8.1 Verifier availability is variant-level (implemented rule)
+
+Verifier presence must **not** be inferred from the replay prefix alone. At early positions a
+verifier-capable trace has simply not reached its first `REVIEW` yet — that is *pending*, not
+*"this variant has no verifier"*. The recorded trace variant is the authoritative capability
+signal; the prefix is only corroborating evidence:
+
+```js
+// orchestration.js — implemented, exported
+const VERIFIER_VARIANTS = {
+  full: true, single: false, fixed: false,
+  dynamic_no_verifier: false, no_verifier: false,
+};
+export function variantVerifierCapability(variant) {   // true | false | null (unknown)
+  if (variant == null || variant === '') return null;
+  return Object.hasOwn(VERIFIER_VARIANTS, variant) ? VERIFIER_VARIANTS[variant] : null;
+}
+export function prefixHasVerifier(state) {             // any REVIEW or verifier-role event
+  return (state.events || []).some(e => e.event_type === 'REVIEW' || e.role === 'verifier');
+}
+export function resolveHasVerifier(state, opts = {}) { // opts.variant = trace.variant
+  if (prefixHasVerifier(state)) return true;           // real prefix REVIEW/verifier overrides variant-no
+  const capability = variantVerifierCapability(opts.variant);
+  if (capability === true) return true;                // variant says yes → available, stage = pending
+  if (capability === false) return false;              // variant says no  → skipped, honest note
+  return false;                                        // ambiguous/unknown → fall back to prefix evidence
+}
+```
+
+Resolution order (do not reorder):
+
+1. **A real prefix `REVIEW` or verifier-role event always wins** — it overrides a variant-no.
+   Evidence beats declaration.
+2. **Variant says yes** → `review` stage is available even before the first `REVIEW`
+   (`state = pending`, normal gloss, gate reads `当前前缀尚无验证审查`).
+3. **Variant says no** (`single`/`fixed`/`dynamic_no_verifier`/`no_verifier`) → `review` skipped,
+   gloss `该变体无验证者 · 未审查`.
+4. **Unknown/absent variant** (`null`, `''`, or a key not in `VERIFIER_VARIANTS`) → falls back to
+   prefix evidence, i.e. the same predicate as (1); with no prefix evidence the stage is skipped.
+
+`opts.variant` is threaded from `views.js` (`workflowHtml(state, role, bookmarks, { provider,
+variant: data.trace.variant })`). §13.4 records why this deviates from the earlier prefix-only
+draft, and the D1 repair round (§13.3) is the defect this rule fixes.
 
 **Golden RICH:** `4 / 4 / 15 / 2 / 3 / 1 / 1`; at last event the CURRENT stage = `报告`.
 **Golden SIMPLE:** `4 / 4 / 15 / 2 / 0 / 1 / 1` with `review` **skipped**
 (`该变体无验证者 · 未审查`), CURRENT at last = `报告`.
+**Golden RICH @ prefix 0–19:** `review` is `pending` (not skipped) with normal gloss and badge
+`0 审查`; the gate section reads `当前前缀尚无验证审查` — the variant *does* have a verifier.
 
 ### 4.9 Availability / degradation rules (both traces)
 
 1. **RICH** (`mock-success.json`, 71 events, 5 roles, 3 REVIEW, `round_index 3`) → full panel.
-2. **SIMPLE** (`demo-simple/trace.json`, 53 events, 4 roles, 0 REVIEW) → review stage skipped and
-   review-gate node replaced by a compact note; everything else full.
+2. **SIMPLE** (`demo-simple/trace.json`, 53 events, 4 roles, 0 REVIEW, recorded variant `dynamic`)
+   → review stage skipped and review-gate node replaced by a compact note; everything else full.
+   `dynamic` is not a key of `VERIFIER_VARIANTS`, so the capability is *unknown* and
+   `resolveHasVerifier` falls back to prefix evidence (§4.8.1); the prefix has no
+   `REVIEW`/verifier-role event, so the stage is honestly `skipped`.
 3. `optional_checks` is empty in both → every check section renders `未记录可选检查`.
 4. `contradictions` only on insufficient reviews → sufficient review renders `无矛盾记录`.
 5. No `FINALIZE_REJECTED`, and no `backend_resource_saturation` hypothesis → those chapters are
@@ -431,6 +480,10 @@ else `pending`. `review.available = hasVerifier` where `hasVerifier = any REVIEW
 6. `finding.claim` is generic prose → never headline it; lead with `role / task / relation /
    evidence chips / finding_id`.
 7. Evidence counts count **unique** ids (15), not verifier re-observations.
+8. **Never degrade a variant-capable trace early.** A RICH/`full` trace at prefix 0–19 must keep
+   `review` available (`pending`), never `skipped` — the capability is variant-level (§4.8.1), and
+   a later `REVIEW` in the same prefix would also override any variant-no. `skipped` is reserved
+   for genuinely verifier-less variants (or unknown variants with no prefix evidence at all).
 
 ### 4.10 Toolbar & budget chips (deterministic from `state`)
 
@@ -463,10 +516,10 @@ type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 type StageId = 'coordinator' | 'experts' | 'evidence' | 'hypotheses'
              | 'review' | 'finalize' | 'report';
 
-export function buildStages(state): StageView[];
+export function buildStages(state, opts = {}): StageView[];        // opts.variant → resolveHasVerifier (§4.8.1)
 export function buildRounds(state): { rounds: RoundView[]; finalize: FinalizeView };
 export function buildRoleStats(state): RoleStatView[];
-export function buildReviewGates(state): ReviewGateView;
+export function buildReviewGates(state, opts = {}): ReviewGateView; // opts.variant → enabled (§4.8.1)
 export function buildEvidenceFlow(state): EvidenceFlowView;
 export function buildNarrative(state, bookmarks = []): NarrativeView;
 ```
@@ -480,7 +533,7 @@ interface StageView {
   count: number;                 // badge number
   countUnit: string;             // "决策"|"任务"|"证据"|"假设"|"审查"|"定案"|"报告"
   reached: boolean;
-  available: boolean;            // false only for review w/o verifier
+  available: boolean;            // false only for review w/o verifier (§4.8.1 variant-level rule)
   state: 'done' | 'current' | 'pending' | 'skipped';
   isCurrent: boolean;
   ariaCurrent: 'step' | null;    // 'step' when isCurrent
@@ -574,7 +627,7 @@ interface FindingRowView {
 
 ```ts
 interface ReviewGateView {
-  enabled: boolean;              // any REVIEW or verifier role
+  enabled: boolean;              // resolveHasVerifier(state, opts) — variant-level (§4.8.1)
   summary: { reviewCount: number; insufficient: number; sufficient: number };
   gates: ReviewGateNode[];
   finalize: FinalizeView;
@@ -676,7 +729,8 @@ export function bindWorkflowInteractions(panelEl, ctx): void;
 `views.js` `draw()` already binds `[data-seek]` (global) and `#replay-workflow [data-role]`
 (role toggle). `bindWorkflowInteractions` additionally wires: narrative prev/next buttons,
 stage/round/gate `data-seek` jump buttons (they can rely on the global `[data-seek]` binding), and
-re-applies the active-chapter highlight / `aria-current` after each re-render. Keep the legacy
+re-applies the active-chapter highlight (`.is-highlighted`) after each re-render; `aria-current`
+stays on the actual current stage and is never reassigned by the demo highlight (§6.6, §13.4). Keep the legacy
 `data-role` toggle behavior exactly (aria-pressed toggle, re-draw).
 
 `orchestration.js` **must stay free of DOM calls** so `node --test` can import it directly.
@@ -687,7 +741,7 @@ re-applies the active-chapter highlight / `aria-current` after each re-render. K
 
 ### 6.1 (a) Stage stepper — `.orch-stepper`
 
-**Model:** `buildStages(state)`.
+**Model:** `buildStages(state, opts)` (opts.variant → `resolveHasVerifier`, §4.8.1).
 
 **DOM (desktop horizontal, `<ol>`):**
 
@@ -870,9 +924,14 @@ Rules:
 
 ### 6.4 (d) Verifier REVIEW-GATE node — `.orch-gates`
 
-**Model:** `buildReviewGates(state)`.
+**Model:** `buildReviewGates(state, opts)`.
 
-Conditional: if `!enabled` (SIMPLE, no REVIEW/verifier), render only a compact note:
+`enabled = resolveHasVerifier(state, opts)` — the **variant-level** capability rule of §4.8.1
+(`opts.variant` is the recorded trace variant, threaded from `views.js`), never "any REVIEW in the
+prefix". Three render states:
+
+1. `!enabled` (genuinely verifier-less variant, e.g. `single`/`fixed`, or an unknown variant with
+   no prefix verifier evidence) → compact note only:
 
 ```html
 <section class="orch-gates orch-gates--skipped" aria-label="验证审查门">
@@ -880,7 +939,19 @@ Conditional: if `!enabled` (SIMPLE, no REVIEW/verifier), render only a compact n
 </section>
 ```
 
-If enabled (RICH), render the gate timeline + finalize node:
+2. `enabled` but **no `REVIEW` in the current prefix yet** (verifier-capable variant at an early
+   replay position) → honest *pending* note + finalize status, never the "no verifier" note:
+
+```html
+<section class="orch-gates" aria-label="验证审查门">
+  <header class="orch-section-title">验证审查门 Verifier Review Gate <span class="orch-badge">0 审查</span></header>
+  <p class="orch-empty">当前前缀尚无验证审查</p>
+  <article class="orch-finalize" data-blocked="false">…定案状态…</article>
+</section>
+```
+
+3. `enabled` **with** `REVIEW` events (RICH from the first review on), render the gate timeline +
+   finalize node:
 
 ```html
 <section class="orch-gates" aria-label="验证审查门">
@@ -933,6 +1004,9 @@ Rules:
 - Loop-back edges only for insufficient reviews with a matching later re-dispatch round.
 - Finalize node: honest status per §4.7. If a future trace has `FINALIZE_REJECTED`, render
   `已阻断 · FINALIZE_REJECTED` with `data-blocked="true"` and tone `danger`.
+- **Never derive availability from the prefix alone** — see §4.8.1. `0 REVIEW` at an early
+  position is `pending`, not "该变体无验证者"; only a variant-no (or unknown variant with no
+  prefix evidence) may render the skipped note.
 
 ### 6.5 (e) Evidence flow — `.orch-flow`
 
@@ -1041,9 +1115,20 @@ Rules:
   closure and re-applies highlight after each draw.
 - **Auto mode** (`#replay-demo` checked, i.e. demo mode): when the replay position lands on/after a
   chapter, `.orch-narrative` auto-updates the visible line, adds `.is-highlighted` to the matching
-  `.orch-stage`, sets `aria-current="step"` on it, expands the relevant `<details>` if collapsed,
-  and calls `stageEl.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' :
-  'smooth' })`. In non-demo mode the narrative remains manually operable but does **not** auto-scroll.
+  `.orch-stage`, expands the relevant `<details>` if collapsed, and calls
+  `stageEl.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' : 'smooth' })`.
+  In non-demo mode the narrative remains manually operable but does **not** auto-scroll.
+- **Demo highlight uses `.is-highlighted`, *not* a second `aria-current`** (deliberate,
+  a11y-safer — see §13.4). Exactly **one** element in the panel carries `aria-current="step"`: the
+  stage matching the replay position (`data-state="current"`), because that is what a screen reader
+  should announce as "current". The demo-highlighted stage is marked only with
+  `.is-highlighted` (a 2 px accent outline, CSS-only) plus the narration line — two simultaneous
+  `aria-current` values would announce conflicting "current" items. The earlier draft of this
+  section asked for `aria-current="step"` on the demo-highlighted stage; the implementation
+  deliberately does not do that, and §13.4 records the deviation.
+  When the demo chapter's target stage *is* the current stage, both marks land on the same
+  element (no conflict). Toggling demo off clears `.is-highlighted` only; `aria-current` stays on
+  the true current stage.
 - `currentIndex` = last chapter with `position <= state.events.length`; before the first, `-1` and
   the line reads `从 0 开始播放，按「下一关键节点」开始演示。`
 
@@ -1100,6 +1185,16 @@ namespaced `orch-`** to avoid collisions. Use existing tokens only (`--sp-*`, `-
 `.orch-narrative__next`, `.orch-narrative__pos`, `.orch-chapters`, `.orch-chapter`,
 `.orch-chapter[aria-current="true"]`, `.orch-chapter-label`, `.orch-stage.is-highlighted`.
 
+**Legacy review panel (structured cards, `#replay-review-panel`)**
+`.replay-review__head`, `.replay-review__chips`, `.replay-review__sub`, `.replay-review__title`,
+`.replay-review__kv`, `.replay-review__section`, `.replay-review__label`, `.replay-review__list`,
+`.replay-review__hash`, `.replay-review__note`, `.replay-review__raw`,
+`.replay-review[data-outcome="accepted|blocked|recorded|unknown"]`. These reuse the existing `.replay-review`
+card shell (border/padding), `.kv-list`/`.kv-row`, `.cite-wrap`, `.badge`, `.evidence-chip`,
+`.json-block` tokens — no new colour values. `#replay-reviews .evidence-chip` is added to the
+existing `@media (pointer: coarse), (max-width: 680px)` 44 px touch-target rule so the new cards
+are touch-safe at 390 px.
+
 ### 7.2 Existing selectors that must keep working
 
 `#replay-workflow`, `[data-role]`, `.replay-role`, `.replay-role-detail`, `.replay-workflow` (may be
@@ -1134,7 +1229,11 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
 ### 8.1 Accessibility
 
 - **Status not colour-only:** every status = badge shape + inline SVG icon + text (see §7.3).
-- **Current stage:** `aria-current="step"` + `data-state="current"` + visible `当前` tag.
+- **Current stage:** `aria-current="step"` + `data-state="current"` + visible `当前` tag — exactly
+  one such element **inside `#replay-workflow`**. (The 调查时间线 list below the fold carries its own
+  `aria-current="step"` on the current-event button — a separate, pre-existing landmark owned by
+  `views.js`, which is out of this change set; the panel never duplicates it.) The demo highlight
+  is `.is-highlighted` only and never a second `aria-current` (§6.6, §13.4).
 - **Keyboard reachable:** stages, task cards and narrative chapters are real `<button>`s (or
   `tabindex="0"` with Enter/Space) — no click-only `<div>`s. Jump buttons are `<button data-seek>`.
 - **Focus-visible:** `:focus-visible { outline: 2px solid var(--focus-ring-color); outline-offset:
@@ -1170,8 +1269,14 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
   wrap (`overflow-wrap:anywhere`); swimlane uses an internal `.orch-swimlane-scroll{overflow-x:auto}`
   only if a lane grid must scroll (never the page). CI asserts
   `document.documentElement.scrollWidth <= innerWidth`.
-- **44 px targets** on mobile / `(pointer:coarse)`: `.orch-stage`, `.replay-role`, `.orch-task-card__jump`,
-  `.orch-narrative button`, `.evidence-chip` get `min-height:44px` (and adequate min-width).
+- **44 px targets** on mobile / `(pointer:coarse)`: exactly these selectors get
+  `min-height:44px` — `.orch-stage`, `.orch-role-toggle`, `.orch-task-card__jump`,
+  `.orch-narrative button`, `.orch-panel .evidence-chip`, and **`#replay-reviews .evidence-chip`**
+  (the legacy review-card chips). The last selector is the fix for a real gap: when the cards
+  first shipped, the rule only covered `.orch-panel .evidence-chip`, so the new review-card chips
+  measured **32 px** at 390/coarse. The rule was extended to `#replay-reviews .evidence-chip`
+  and the chips now measure **44 px** at 390 / `pointer:coarse` (verified in-browser, 0 overflow).
+  Evidence chips anywhere else keep their compact legacy sizing — the rule is scoped, not global.
 
 ### 8.4 Motion
 
@@ -1205,6 +1310,53 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
   fine to visually restyle it but keep one `<article class="replay-review">` per REVIEW event
   (`#replay-reviews article` count = REVIEW count) and render `DIAGNOSIS_ACCEPTED` as a `<div>`,
   not an `<article>`.
+- **Legacy review panel renders structured cards, not raw JSON** (fixes the last remaining raw
+  `<pre>` dump). For events in `reviewTimelineHtml` that have no `details.review`:
+  - `DIAGNOSIS_ACCEPTED` → 定案门 pass card `<div class="replay-review" data-outcome="accepted">`:
+    `badge('诊断已通过','success')` + event id/type + jump; from
+    `details.root_cause` show `culprit_service`, `failure_mode` as the headline, `status` badge,
+    `support_ids`/`against_ids` as `evidenceChips(...)`, `predicted_observations` and
+    `open_questions` as short lists; plus `details.supporting_evidence_ids` chips and a
+    `degraded_call_ids` count. The long `hypothesis_id` is truncated in display
+    (`hyp-2354bf4d…`) but the full value stays in the `title` attribute — never dropped.
+  - `FINALIZE_REJECTED` / `FINALIZE_ACCEPTED` / other `FINALIZE*` → structured summary card
+    (action, reason, blocking checks, selected hypothesis / hypothesis+evidence hashes) as
+    `kv-row`s; a `candidate_assessments` object is reported as a count and pointed at the two
+    places where the full JSON actually lives — the current event's collapsed
+    `原始结构化事件详情` in `#replay-selection`, and the event's expanded row in the
+    **调查时间线 tab** (`.tl-body` → `timelineBody`). It is deliberately **not** claimed to be in
+    the 编排视图 (`reviewGateHtml`/`buildRounds` never render `candidate_assessments`), and not
+    claimed to be in the `#replay-events` category list, which renders jump buttons only.
+    Only an unrecognisable shape falls back to a **collapsed**
+    `<details><summary>原始结构化事件</summary><pre>…</pre></details>` — never the default view.
+  - **Every list field is normalised before rendering.** `TraceEvent.details` is
+    `dict[str, Any]`, so `support_ids`/`against_ids`/`predicted_observations`/`open_questions`/
+    `supporting_evidence_ids`/`degraded_call_ids`/blocking-check sources may legally arrive as a
+    scalar (`"incident_001-C001"`) or be absent; `asList(v)` wraps a scalar and treats
+    `null`/`''` as empty, so a schema-valid scalar-typed field renders instead of throwing.
+    The `diagnosisCard`/`finalizeCard` dispatch — in fact **the whole per-event render** — is
+    wrapped in `try/catch` → a collapsed `rawDetails(e)` card for that event only (the REVIEW
+    branch keeps its exact markup and strings; the guard simply surrounds it), so an unexpected
+    shape degrades to raw JSON instead of throwing out of the `.map()` and blanking
+    `#replay-reviews`, `#replay-selection`, `#replay-reliability` and every `[data-seek]` binding
+    in `draw()`.
+    Evidence-id lists go through `asIdList`, which resolves an id object to its text field
+    (`evidence_id`/`id`/…) and **drops entries with no renderable text** (`{}`, `null`, `''`), so a
+    chip is never labelled `[object Object]` and never blank (verified: `[{}]`, `[null]`, `['']`
+    and `[{a:{b:1}}]` all yield 0 chips, while `[{evidence_id:'incident_001-C001'}]` yields a
+    normal chip).
+  - Blocking-check sources (`errors` / `blocking_checks` / `checks` / `failed_checks`) are
+    normalised and the **first non-empty** one wins, so `errors: []` never masks a populated
+    `blocking_checks`. A source that exists but is empty renders `阻断检查 · blocking checks：0 条
+    （记录为空）`; the `未记录阻断检查` copy is used only when **no blocking-source field is present
+    at all**. The precise invariant is therefore: **the contradiction is prevented only when a
+    blocking-source field is PRESENT** — any present source, including an empty `[]`, renders a
+    count, so `定案被阻断` + `未记录阻断检查` is unreachable in that case. When **no** blocking
+    source is present (`details: {}`), the card legitimately shows `未记录阻断检查` alongside
+    `定案被阻断`; that is the honest reading of "this event recorded no blocking checks", and it
+    is not a contradiction but a true statement. All 12 real `FINALIZE_REJECTED` events carry
+    `errors`, so no live data hits that case.
+  - The REVIEW branch keeps its existing `<article class="replay-review">` markup and strings.
 - `metadataHtml(data, opts = {})`: default call `metadataHtml(data)` is byte-compatible with today
   and still emits `PROVIDER UNKNOWN`, `SOURCE DRIFT` (when drift), `独立最终产物`. `opts` only
   splits heading vs snapshot for the new placement; defaults preserve all strings.
@@ -1249,7 +1401,8 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
 │ ▸ 编排视图 · 共享状态与工作流                                          (open)    │
 │  ┌─ [MOCK][Dynamic (with verifier)] 轮次 3/4 工具 9/12 ──────────────┐        │
 │  │ 协调者(4) → 专家(4) → 合并证据(15) → 假设(2) → [验证审查(3)] → 定案门(1) → 报告(1) │  ← stepper
-│  │                                   ▲当前                            │        │
+│  │  ▲当前 = aria-current=step（回放位置；#replay-workflow 内唯一）  │        │
+│  │  演示模式另加 .is-highlighted 轮廓，不加第二个 aria-current      │        │
 │  │ 第 4 章 · 首次证据不足审查：验证者判定证据不足，要求补充变更检查。   [上一][3/6][下一] │  ← narrative
 │  ├──────────────────────────────────────────────────────────────────┤        │
 │  │ 第 1 轮  Compare symptoms with service health            [跳决策] │        │
@@ -1325,6 +1478,19 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
 │ 来源 Agent ↓ 证据 ↓ 发现/假设 ↓ 报告│
 └─────────────────────────────┘
 ```
+
+Wireframe conventions (both layouts):
+
+- `▲当前` = the stage whose `aria-current="step"` / `data-state="current"` follows the **replay
+  position** — exactly one inside `#replay-workflow` (the separate 调查时间线 list keeps its own
+  `aria-current="step"` on the current-event button; `views.js`, unchanged). Demo mode adds a
+  separate `.is-highlighted` accent outline to the chapter's target stage; it does **not** move or
+  duplicate `aria-current` (§6.6, §13.4).
+- The review stage/badge is derived from `resolveHasVerifier(state, opts)` (§4.8.1): RICH
+  (`full`) keeps `验证审查` available even at prefix 0–19 (`pending`, `0 审查`, gate note
+  `当前前缀尚无验证审查`); only a genuinely verifier-less variant (SIMPLE/unknown with no prefix
+  evidence) renders `该变体无验证者 · 未审查`. The wireframe's `[验证审查(3)]` bracket is the RICH
+  full-prefix state, not the only valid state.
 
 ---
 
@@ -1418,9 +1584,9 @@ Run from `IncidentLens-hpc/` with Node 22 (`export PATH=$HOME/.nvm/versions/node
 | File | Change |
 |---|---|
 | `src/incident_lens/web/static/js/orchestration.js` | **New** pure view-model + render helpers (`buildStages`, `buildRounds`, `buildRoleStats`, `buildReviewGates`, `buildEvidenceFlow`, `buildNarrative`, `stagesHtml`, `swimlaneHtml`, `roleStatsHtml`, `reviewGateHtml`, `evidenceFlowHtml`, `narrativeHtml`, `statusBadge`, `orchestrationHtml`, `variantVerifierCapability`, `prefixHasVerifier`, `resolveHasVerifier`). No DOM, no `fetch`, no side effects. |
-| `src/incident_lens/web/static/js/replay-panels.js` | `workflowHtml(state, selectedRole, bookmarks?, opts?)` now delegates to `orchestrationHtml` (legacy 2-arg call still valid); `metadataHtml(data, opts?)` split into heading vs sunk snapshot; new `bindWorkflowInteractions(panelEl, ctx)` for narrative prev/next + demo highlight. `reviewTimelineHtml` untouched. |
+| `src/incident_lens/web/static/js/replay-panels.js` | `workflowHtml(state, selectedRole, bookmarks?, opts?)` now delegates to `orchestrationHtml` (legacy 2-arg call still valid); `metadataHtml(data, opts?)` split into heading vs sunk snapshot; new `bindWorkflowInteractions(panelEl, ctx)` for narrative prev/next + demo highlight; `reviewTimelineHtml` (legacy `#replay-review-panel`) now renders `DIAGNOSIS_ACCEPTED` / `FINALIZE*` as structured cards instead of a raw `<pre>` JSON dump (REVIEW branch unchanged). |
 | `src/incident_lens/web/static/js/views.js` | `mountReplay` mounts `#replay-workflow` under the controls (`<details open id="replay-workflow-panel">`), passes `bookmarks` + provider/variant opts to `workflowHtml`, sinks the metadata snapshot to the panel bottom, and re-renders on demo toggle so the deep link `&demo=1` highlights on first paint. |
-| `src/incident_lens/web/static/css/app.css` | +850 lines of `orch-*` styling (stepper, swimlane, role grid, gates, evidence flow, narrative), both themes, 390 px-safe, `prefers-reduced-motion`, focus-visible. |
+| `src/incident_lens/web/static/css/app.css` | +850 lines of `orch-*` styling (stepper, swimlane, role grid, gates, evidence flow, narrative), both themes, 390 px-safe, `prefers-reduced-motion`, focus-visible; plus `.replay-review__*` styling for the structured legacy review cards. |
 | `docs/ui/orchestration-redesign.md` | This spec (t2) + §13 implementation notes. |
 | `docs/ui/orchestration-redesign/*.png` | Post-repair BEFORE/AFTER composites + per-defect evidence crops. |
 
@@ -1458,28 +1624,53 @@ gitignored `results/ui-redesign/orchestration/` (`before/`, `after/`, `after-r2/
 | D3 | Narrative counter used the total chapter count (8) instead of the navigable ones, and had no start chapter. | Counter counts only available chapters (`1 / 7` at start for RICH, `1 / 4`-style for SIMPLE); synthetic `调查开始前` start chapter at position 0; prev/next clamp to available chapters. |
 | D4 | 8 inline relation labels (`supports`/`neutral`) had no icon wrapper. | `relationBadge` now emits icon + text wrapper for every relation label (21/21 in the audit), text assertions unchanged. |
 
-### 13.4 Deliberate deviations from §4.8/§4.9 and §6.6 (documented, not defects)
+### 13.4 Deliberate design decisions (spec now documents the implemented rule)
 
-1. **Verifier availability is variant-level, not prefix-only.** §4.8/§4.9 and the wireframes describe
-   deriving verifier presence from the replay prefix. The implementation instead uses
-   `VERIFIER_VARIANTS` + `resolveHasVerifier(state, opts)` with the recorded trace variant as the
-   authoritative capability signal, because a verifier-capable trace has simply not reached its first
-   `REVIEW` at early positions ("pending" ≠ "this variant has no verifier"). A real prefix `REVIEW` or
-   verifier-role event overrides a variant-no. Ambiguous/unknown variants fall back to prefix evidence.
-2. **`aria-current` stays on the actual current stage only.** §6.6 asks for `aria-current="step"` on the
-   demo-highlighted stage. The implementation keeps `aria-current` on exactly one element (the stage
-   matching the replay position, which is what a screen reader should hear as "current") and marks the
-   demo-highlighted stage with `.is-highlighted` instead. This is an intentional accessibility-safer
-   choice: two simultaneous `aria-current` values would announce conflicting "current" items.
+These were originally written as "deviations" because the first spec draft specified otherwise. The
+spec has since been corrected in place (§4.8.1, §4.9 rule 8, §6.4, §6.6, §10); the decisions
+themselves are unchanged and remain deliberate:
+
+1. **Verifier availability is variant-level, not prefix-only.** §4.8/§4.9 previously derived
+   verifier presence from the replay prefix. The implemented and now-specified rule is
+   `VERIFIER_VARIANTS` + `variantVerifierCapability` + `prefixHasVerifier` +
+   `resolveHasVerifier(state, opts)` (§4.8.1), with the recorded trace variant as the authoritative
+   capability signal, because a verifier-capable trace has simply not reached its first `REVIEW` at
+   early positions ("pending" ≠ "this variant has no verifier"). A real prefix `REVIEW` or
+   verifier-role event overrides a variant-no; ambiguous/unknown variants fall back to prefix
+   evidence. The D1 repair round (§13.3) is the defect this rule fixes.
+2. **`aria-current` stays on the actual current stage only.** §6.6 previously asked for
+   `aria-current="step"` on the demo-highlighted stage. The implementation keeps `aria-current` on
+   exactly one element **inside `#replay-workflow`** (the stage matching the replay position, which
+   is what a screen reader should hear as "current") and marks the demo-highlighted stage with
+   `.is-highlighted` instead. The 调查时间线 list below the fold keeps its own pre-existing
+   `aria-current="step"` on the current-event button (`views.js`, out of scope), so the page-wide
+   count is 2 by design — one per landmark.
+   This is an intentional accessibility-safer choice: two simultaneous `aria-current` values would
+   announce conflicting "current" items. §6.6 and §8.1 now document this behaviour rather than the
+   unimplemented alternative.
+3. **The legacy `#replay-review-panel` is structured too.** The earlier implementation left
+   `DIAGNOSIS_ACCEPTED`/`FINALIZE*` as raw `<pre>` JSON in the legacy timeline because it sits
+   outside `#replay-workflow`. It now renders 定案门/终局 cards (badge + kv rows + evidence chips,
+   collapsed raw fallback only for unrecognisable shapes), so no panel in the replay demo dumps raw
+   JSON by default.
 
 ### 13.5 Verification (current bytes)
 
-Bytes verified: `orchestration.js` `985215e9…`, `replay-panels.js` `a8fed41f…`, `views.js` `db17d9ba…`,
-`app.css` `7305b445…`, on branch `ui/ux-redesign-2026-11` at base HEAD `0fe9ba4`.
+Bytes verified: `orchestration.js` `985215e9…` (unchanged), `views.js` `db17d9ba…` (unchanged),
+`replay-panels.js` `28fd1ec1…` (was `a8fed41f…` at base HEAD before the structured legacy review
+cards + robustness pass), `app.css` `36001fe0…` (was `7305b445…` before the `.replay-review__*`
+card styling and the `#replay-reviews` 44 px touch-target rule), on branch
+`ui/ux-redesign-2026-11` at base HEAD `fea028a` (the working tree on top of that commit; nothing
+is committed by this change set).
 
 | Gate | Result |
 |---|---|
 | Browser sweep, RICH + SIMPLE × 1440/834/390 × light/dark (`after-r2/r2-report.json`) | 0 page errors, 0 console errors, 0 horizontal overflow; stepper `4/4/15/2/3/1/1` + `aria-current`, 3-round swimlane with gate + 2 loop-backs, 5 role stats, **0 `<pre>` inside `#replay-workflow`**, 15-chip evidence flow with report `C001/D001/M009`, narrative prev/next |
+| Review round 5 (F7–F10 doc residuals) | F7: the dangling *The `diagnosisCard`/* clause is completed — it now reads "The `diagnosisCard`/`finalizeCard` dispatch — in fact the whole per-event render — is wrapped in `try/catch`". F8: `asIdList` strengthened to drop non-renderable entries — verified `[{}]`, `[{a:{b:1}}]`, `[null]`, `['']` all yield **0 chips** (no `[object Object]`, no blank chip) while `[{evidence_id:'incident_001-C001'}]` yields a normal chip, so the strong claim is now literally true. F9: the absolute claim is replaced by the true narrower rule — the contradiction is prevented only when a blocking-source field is **present** (any present source, including `[]`, renders a count); when none is present (`details: {}`) the card legitimately shows `未记录阻断检查` alongside `定案被阻断`, which is a true statement rather than a contradiction. No real event hits that case (all 12 `FINALIZE_REJECTED` carry `errors`). F10: the in-box `（回放位置，每页恰好一个）` claim replaced with `（回放位置；#replay-workflow 内唯一）`, ASCII box width preserved at exactly 80 display columns and the inner `│` border columns still align. |
+| Review round 4 (t5 re-review fixes) | F2 probe matrix: array/scalar/null/undefined/''/object `support_ids` all render a card (no throw) and the object id is flattened for chips; `predicted_observations`/`open_questions` × string/null/''/object/array all render; hostile getter-throwing `root_cause` **and** `review` shapes degrade to the collapsed raw card instead of aborting `draw()`. Live dashboard with a scalar trace: all four panels populated and 116 `[data-seek]` bound with a working jump. F1 copy names the two locations that actually hold the JSON (`#replay-selection` → 原始结构化事件详情, and the 调查时间线 tab's expanded `.tl-body`), both verified in-browser. F3 `errors` string/object/array all render with a correct count, `errors: []` + populated `blocking_checks` prefers the non-empty source, and a blocked card renders a check count whenever any blocking source is present, so the `定案被阻断` + `未记录阻断检查` pair is unreachable in that case (it is shown only when no blocking-source field exists at all, which is a true statement rather than a contradiction). F4 page-wide `aria-current="step"` = 2 (1 in `#replay-workflow`, 1 in the 调查时间线), stated as such. F5 measured 44 px on `#replay-reviews .evidence-chip` at 390/coarse with 0 overflow; the rule is named selector-by-selector. F6 base HEAD `fea028a` with the correct fea028a blob hashes as "was". `node --test` 23/23, ruff PASS, integration trio 20 passed, mock browser PASS, full `pytest -ra` 1180 passed / 2 skipped. |
+| Review round 3 (strict-review findings) | F2 scalar list fields render as 1-item chips (116 `[data-seek]` bound, `#replay-reviews`/`#replay-selection`/`#replay-reliability` all populated, jump works); a throwing shape degrades to the collapsed raw card; F1 copy points at `原始结构化事件详情` which really holds `candidate_assessments`; F3 `errors: "Unknown hypothesis"` renders 1 check with no "none" copy, `errors: []` renders `0 条（记录为空）`, absent source keeps `未记录阻断检查`; F5 `#replay-reviews .evidence-chip` computes `min-height: 44px` and measures 44 px at 390/coarse (overflow 0); F4 page-wide `aria-current="step"` = 2 (1 in `#replay-workflow`, 1 in the 调查时间线) — docs scoped accordingly; F6 base HEAD `fea028a`. `npm test` 23/23, ruff PASS, integration trio 20 passed, mock browser PASS, full `pytest -ra` 1180 passed / 2 skipped. |
+| Legacy `#replay-review-panel` (robustness) | Scalar-typed list fields (`support_ids: "incident_001-C001"`) render as a 1-item chip row instead of throwing; a throwing/unexpected shape renders the collapsed raw card for that event only; `errors: "Unknown hypothesis"` renders as one blocking check; `errors: []` renders `0 条（记录为空）`; no `errors`/`checks` field keeps `未记录阻断检查`. Verified with synthetic fixtures (node) — all five cases pass and the panel keeps rendering. |
+| Legacy `#replay-review-panel` (structured cards) | `reviewTimelineHtml` renders **no `<pre>` in the default view** (Playwright 1440 light/dark + 390: 0 expanded `<details>`; the only `<pre>`s are the pre-existing collapsed REVIEW contradictions, 2 at full RICH prefix). `DIAGNOSIS_ACCEPTED` → `诊断已通过` card: culprit service `backend`, failure-mode headline `backend_pool_config_regression`, `SUPPORTED` badge, 3 `support_ids` chips + 3 `supporting_evidence_ids` chips + 0 `against_ids`, predicted-observation list, `降级调用 degraded_call_ids：0`, truncated `hyp-2354bf4d…` with the full 68-char id in `title`; `FINALIZE*` → kv summary (action/reason/blocking checks/hashes, `定案被阻断` for REJECTED); raw JSON only inside a collapsed `<details>` for unrecognisable shapes. REVIEW branch strings (`未按此 task_id 调度`) unchanged; `#replay-reviews article` count = REVIEW count. |
 | Accessibility probe (`after/a11y-report.json`) | focus-visible 2px, tab order reaches stages/cards/narrative, reduced motion 0 s, status = icon + text (never colour-only) |
 | `ruff check src tests scripts` (Node 22) | PASS |
 | `npm test` (Node 22) | 23/23 pass |
@@ -1493,7 +1684,7 @@ Playwright capture was running concurrently (50 ms wall-timeout budget vs a 0.2 
 starvation). It passed on 3 isolated re-runs and 5/5 parametrized runs, and the clean full run is
 1180 passed / 2 skipped. No `.py` file is in this change set.
 
-**Known non-blocking items for a future pass:** the legacy `#replay-review-panel` timeline below the
-fold still renders `DIAGNOSIS_ACCEPTED` details as a `<pre>` block (outside `#replay-workflow`, so not
-part of deliverable (c)); the narrative chapter list intentionally keeps unavailable bookmarks visible
-but disabled (`… · 未记录`) rather than hiding them.
+**Known non-blocking items for a future pass:** the narrative chapter list intentionally keeps
+unavailable bookmarks visible but disabled (`… · 未记录`) rather than hiding them. (The legacy
+`#replay-review-panel` raw-JSON dump is no longer an open item: `DIAGNOSIS_ACCEPTED`/`FINALIZE*`
+now render as structured cards — see §6.3 export contract and §13.4 item 3.)

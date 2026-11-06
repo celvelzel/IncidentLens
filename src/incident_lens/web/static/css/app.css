@@ -1366,6 +1366,107 @@ section {
   overflow-wrap: anywhere;
 }
 
+/* --- legacy Verifier Review / FinalizeGate cards --------------------- */
+/* Structured review-gate cards for `#replay-review-panel` (DIAGNOSIS_ACCEPTED
+   and FINALIZE*). Same design language as `.orch-gate`: badge + kv rows +
+   evidence chips, never a raw JSON dump. Token-driven, both themes, 390-safe. */
+.replay-review__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.replay-review__chips {
+  align-items: center;
+}
+
+.replay-review__sub {
+  margin: 0;
+  font-size: var(--text-2xs);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__title {
+  margin: var(--sp-2) 0;
+  font-size: var(--text-md, 16px);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__kv {
+  margin: var(--sp-2) 0 var(--sp-3);
+}
+
+.replay-review__section {
+  margin: var(--sp-2) 0;
+  min-width: 0;
+}
+
+.replay-review__label {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__list {
+  margin: 0;
+  padding-left: var(--sp-4);
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__list li {
+  margin-bottom: var(--sp-1);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__hash {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.replay-review__note {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--text-2xs);
+  overflow-wrap: anywhere;
+}
+
+.replay-review__raw {
+  margin-top: var(--sp-2);
+}
+
+.replay-review[data-outcome="accepted"] {
+  border-color: var(--success-border);
+}
+
+.replay-review[data-outcome="blocked"] {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.replay-review[data-outcome="recorded"] {
+  border-color: var(--border-strong);
+}
+
+.replay-review[data-outcome="unknown"] {
+  border-color: var(--border-strong);
+}
+
+@media (max-width: 680px) {
+  .replay-review__kv .kv-row {
+    grid-template-columns: 1fr;
+    gap: var(--sp-1);
+  }
+}
+
 .replay-demo .replay-console {
   font-size: var(--text-md, 16px);
 }
@@ -2484,7 +2585,8 @@ section {
   .orch-role-toggle,
   .orch-task-card__jump,
   .orch-narrative button,
-  .orch-panel .evidence-chip {
+  .orch-panel .evidence-chip,
+  #replay-reviews .evidence-chip {
     min-height: 44px;
   }
 }
