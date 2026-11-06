@@ -1,37 +1,107 @@
 /* ============================================================
-   IncidentLens Design Tokens
-   Dark-first operations console; light theme via [data-theme].
-   Inspired by Linear/Vercel layered neutrals + shadcn token
-   architecture + Sentry/Datadog incident-status semantics.
+   IncidentLens Design Tokens — two-layer token system (v2)
+
+   Layer 1 (--core-*): raw, theme-independent palette. Never
+     consumed by components directly — only aliased below.
+   Layer 2 (semantic): role-based aliases (surface / border /
+     text / icon / action / state) redefined per theme.
+
+   Light is the default theme (projector-friendly console);
+   dark is first-class via [data-theme="dark"]. Every semantic
+   token is declared for BOTH themes — no token may fall
+   through to a browser default.
+
+   Contract: docs/ui/redesign-v2.md §3 + Appendix B.
    ============================================================ */
 
+/* ------------------------------------------------------------
+   Layer 1 — raw core palette (theme-independent)
+   ------------------------------------------------------------ */
+
 :root {
-  /* Typography */
+  /* Brand red — institutional chrome/identity only, never a status colour */
+  --core-red-700: #9a0907; /* 8.7:1 on white */
+  --core-red-300: #d0574e; /* 4.7:1 on #0e0e13 */
+  --core-red-50: #f7e9e8;
+
+  /* Brand navy — interactive accent */
+  --core-navy-800: #003070; /* 12.7:1 on white */
+  --core-navy-900: #00224f;
+  --core-navy-300: #86a9e0; /* 8.0:1 on #0e0e13 */
+  --core-navy-350: #aac6ee;
+
+  /* Neutral ramp */
+  --core-neutral-0: #ffffff;
+  --core-neutral-25: #f7f7f9;
+  --core-neutral-50: #f6f6f8;
+  --core-neutral-75: #f1f1f4;
+  --core-neutral-100: #e8e9ef;
+  --core-neutral-200: #d5d5dd;
+  --core-neutral-300: #b9b9c2;
+  --core-neutral-400: #90909d;
+  --core-neutral-450: #80808b;
+  --core-neutral-500: #666673; /* 5.7:1 on white */
+  --core-neutral-600: #4c4c57; /* 8.5:1 on white */
+  --core-neutral-700: #2b2b33;
+  --core-neutral-800: #1f1f27;
+  --core-neutral-850: #17171e;
+  --core-neutral-900: #131318;
+  --core-neutral-950: #0e0e13;
+  --core-neutral-1000: #0b0b0f;
+  --core-neutral-1050: #09090c;
+
+  /* Semantic state palettes (light / dark pairs) */
+  --core-green-600: #087b4d; /* 5.3:1 on white */
+  --core-green-300: #3dd68c; /* 10.3:1 on #0e0e13 */
+  --core-amber-700: #a85f06; /* 4.9:1 on white */
+  --core-amber-300: #f5b93d; /* 10.9:1 on #0e0e13 */
+  --core-danger-600: #d23b3f; /* 4.7:1 on white */
+  --core-danger-300: #f47174; /* 6.8:1 on #0e0e13 */
+  --core-blue-700: #1f6fd6; /* 4.9:1 on white */
+  --core-blue-300: #5eb0f6; /* 8.3:1 on #0e0e13 */
+}
+
+/* ------------------------------------------------------------
+   Theme-independent scales: type, spacing, radius, motion,
+   z-index, layout, focus geometry, font stacks.
+   ------------------------------------------------------------ */
+
+:root {
+  /* Root scale: rem is exact (1rem = 16px). No clamp() anywhere. */
+  font-size: 16px;
+
+  /* One refined system CJK sans stack — no webfont, no serif display face. */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-serif: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+    "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", system-ui,
+    sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono",
     Consolas, "Liberation Mono", monospace;
 
-  /* Institutional brand layer (chrome only; never a status colour) */
-  --brand-red: #9a0907;
-  --brand-red-soft: rgba(154, 9, 7, 0.07);
-  --brand-navy: #003070;
-  --brand-light: #e8e9ef;
+  /* ---- Type scale: fixed rem, closed step list ---- */
+  --text-2xs: 0.75rem; /* 12px */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.75rem; /* 28px */
+  --text-4xl: 2rem; /* 32px */
+  --text-5xl: 2.5rem; /* 40px */
 
-  --text-xs: 11.5px;
-  --text-sm: 12.5px;
-  --text-base: 13.5px;
-  --text-md: 15px;
-  --text-lg: 17px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
+  --leading-tight: 1.2;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
 
-  --leading-tight: 1.25;
-  --leading-normal: 1.55;
+  --tracking-tight: -0.02em; /* large headings only */
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em; /* Latin micro-labels only, never CJK */
 
-  /* Spacing scale (4px grid) */
+  /* ---- Spacing scale (4px grid, closed) ---- */
+  --sp-0: 0;
+  --sp-0-5: 2px;
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
@@ -40,135 +110,220 @@
   --sp-6: 24px;
   --sp-8: 32px;
   --sp-10: 40px;
+  --sp-12: 48px;
   --sp-14: 56px;
+  --sp-16: 64px;
 
-  /* Radius */
+  /* ---- Radius scale (nested formula: inner = outer − gap, >2px) ---- */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius: 8px;
+  --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 24px;
   --radius-full: 999px;
 
-  /* Layout */
+  /* ---- Layout ---- */
   --sidebar-width: 232px;
   --topbar-height: 56px;
   --content-max: 1280px;
+  --content-pad: var(--sp-6);
+  --content-pad-compact: var(--sp-4);
+  --measure: 70ch;
+  --prose-max: 720px;
 
-  /* Motion */
-  --ease: cubic-bezier(0.32, 0.72, 0.24, 1);
-  --dur-fast: 120ms;
-  --dur: 180ms;
-  --dur-slow: 280ms;
+  /* ---- Motion: state-driven, 150–260ms, transform/opacity ---- */
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-slow: 250ms;
+  --dur-overlay: 260ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
-  /* Focus */
-  --focus-ring: 0 0 0 2px var(--bg-app), 0 0 0 4px var(--accent);
+  /* ---- Z-index layers ---- */
+  --z-base: 0;
+  --z-sticky: 40;
+  --z-scrim: 55;
+  --z-sidebar: 60;
+  --z-overlay-backdrop: 90;
+  --z-overlay: 100;
+  --z-toast: 120;
+  --z-skip-link: 200;
+
+  /* ---- Focus ring geometry (outline, never a box-shadow radius reset) ---- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--accent);
 }
 
-/* ---------- Dark theme (default) ---------- */
+/* ------------------------------------------------------------
+   Layer 2 — semantic tokens, LIGHT theme (default)
+   ------------------------------------------------------------ */
+
 :root,
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --bg-app: #09090c;
-  --bg-surface: #0e0e13;
-  --bg-raised: #131318;
-  --bg-overlay: #17171e;
-  --bg-inset: #0b0b0f;
-  --bg-hover: rgba(255, 255, 255, 0.045);
-  --bg-active: rgba(255, 255, 255, 0.08);
-
-  --border-subtle: rgba(255, 255, 255, 0.055);
-  --border: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.16);
-
-  --text-1: #f2f2f5;
-  --text-2: #a3a3af;
-  --text-3: #90909d;
-
-  --accent: #86a9e0;
-  --accent-strong: #aac6ee;
-  --accent-contrast: #06101f;
-  --accent-soft: rgba(134, 169, 224, 0.14);
-  --accent-border: rgba(134, 169, 224, 0.36);
-
-  --brand-red: #d0574e;
-  --brand-red-soft: rgba(208, 87, 78, 0.14);
-  --brand-navy: #86a9e0;
-  --brand-light: #22232a;
-
-  --success: #3dd68c;
-  --success-soft: rgba(61, 214, 140, 0.12);
-  --success-border: rgba(61, 214, 140, 0.32);
-  --warning: #f5b93d;
-  --warning-soft: rgba(245, 185, 61, 0.12);
-  --warning-border: rgba(245, 185, 61, 0.32);
-  --danger: #f47174;
-  --danger-soft: rgba(244, 113, 116, 0.12);
-  --danger-border: rgba(244, 113, 116, 0.34);
-  --info: #5eb0f6;
-  --info-soft: rgba(94, 176, 246, 0.12);
-  --info-border: rgba(94, 176, 246, 0.32);
-  --neutral-soft: rgba(163, 163, 175, 0.12);
-  --neutral-border: rgba(163, 163, 175, 0.3);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.42);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
-
-  --code-bg: rgba(255, 255, 255, 0.05);
-  --scroll-thumb: rgba(255, 255, 255, 0.14);
-}
-
-/* ---------- Light theme ---------- */
 [data-theme="light"] {
   color-scheme: light;
 
-  --bg-app: #f6f6f8;
-  --bg-surface: #ffffff;
-  --bg-raised: #ffffff;
-  --bg-overlay: #ffffff;
-  --bg-inset: #f1f1f4;
+  /* Surface */
+  --bg-app: var(--core-neutral-50);
+  --bg-surface: var(--core-neutral-0);
+  --bg-raised: var(--core-neutral-0);
+  --bg-overlay: var(--core-neutral-0);
+  --bg-inset: var(--core-neutral-75);
   --bg-hover: rgba(23, 23, 30, 0.045);
   --bg-active: rgba(23, 23, 30, 0.08);
+  --surface-2: var(--core-neutral-25);
+  --bg-scrim: rgba(9, 9, 12, 0.44);
 
+  /* Border */
   --border-subtle: rgba(23, 23, 30, 0.07);
   --border: rgba(23, 23, 30, 0.12);
   --border-strong: rgba(23, 23, 30, 0.22);
+  --border-control: #8a8a96; /* 3.4:1 on white — form boundaries */
 
-  --text-1: #17171e;
-  --text-2: #4c4c57;
-  --text-3: #666673;
+  /* Text */
+  --text-1: var(--core-neutral-850);
+  --text-2: var(--core-neutral-600);
+  --text-3: var(--core-neutral-500);
+  --text-inverse: #ffffff;
+  --text-link: var(--accent);
 
-  --accent: #003070;
-  --accent-strong: #00224f;
+  /* Icon */
+  --icon-1: var(--core-neutral-850);
+  --icon-2: var(--core-neutral-600);
+  --icon-3: var(--core-neutral-500);
+
+  /* Action — one interactive accent (navy) */
+  --accent: var(--core-navy-800);
+  --accent-strong: var(--core-navy-900);
+  --accent-active: #001b3f;
   --accent-contrast: #ffffff;
   --accent-soft: rgba(0, 48, 112, 0.07);
   --accent-border: rgba(0, 48, 112, 0.26);
+  --action-primary: var(--accent);
+  --action-hover: var(--accent-strong);
+  --action-pressed: var(--accent-active);
+  --action-disabled-bg: rgba(23, 23, 30, 0.05);
+  --action-disabled-text: #8a8a96;
 
-  --brand-red: #9a0907;
+  /* Brand chrome (identity, never status) */
+  --brand-red: var(--core-red-700);
   --brand-red-soft: rgba(154, 9, 7, 0.07);
-  --brand-navy: #003070;
-  --brand-light: #e8e9ef;
+  --brand-navy: var(--core-navy-800);
+  --brand-light: var(--core-neutral-100);
 
-  --success: #087b4d;
-  --success-soft: rgba(15, 157, 99, 0.1);
-  --success-border: rgba(15, 157, 99, 0.3);
-  --warning: #b26a08;
-  --warning-soft: rgba(178, 106, 8, 0.1);
-  --warning-border: rgba(178, 106, 8, 0.3);
-  --danger: #d23b3f;
+  /* State */
+  --success: var(--core-green-600);
+  --success-soft: rgba(8, 123, 77, 0.1);
+  --success-border: rgba(8, 123, 77, 0.3);
+  --warning: var(--core-amber-700);
+  --warning-soft: rgba(168, 95, 6, 0.1);
+  --warning-border: rgba(168, 95, 6, 0.3);
+  --danger: var(--core-danger-600);
   --danger-soft: rgba(210, 59, 63, 0.09);
   --danger-border: rgba(210, 59, 63, 0.3);
-  --info: #1f6fd6;
+  --info: var(--core-blue-700);
   --info-soft: rgba(31, 111, 214, 0.09);
   --info-border: rgba(31, 111, 214, 0.3);
   --neutral-soft: rgba(76, 76, 87, 0.09);
   --neutral-border: rgba(76, 76, 87, 0.26);
 
-  --shadow-sm: 0 1px 2px rgba(23, 23, 30, 0.06);
-  --shadow-md: 0 4px 16px rgba(23, 23, 30, 0.09);
-  --shadow-lg: 0 16px 48px rgba(23, 23, 30, 0.16);
+  /* Elevation — tinted, soft, offset; one light direction */
+  --shadow-xs: 0 1px 2px rgba(23, 23, 30, 0.05);
+  --shadow-sm: 0 1px 3px rgba(23, 23, 30, 0.07), 0 1px 2px rgba(23, 23, 30, 0.05);
+  --shadow-md: 0 4px 12px rgba(23, 23, 30, 0.09);
+  --shadow-lg: 0 12px 32px rgba(23, 23, 30, 0.14);
+  --shadow-overlay: 0 16px 48px rgba(23, 23, 30, 0.2);
 
+  /* Browser surfaces */
   --code-bg: rgba(23, 23, 30, 0.05);
   --scroll-thumb: rgba(23, 23, 30, 0.18);
+  --selection-bg: var(--accent-soft);
+  --caret-color: var(--accent);
+}
+
+/* ------------------------------------------------------------
+   Layer 2 — semantic tokens, DARK theme (first-class)
+   ------------------------------------------------------------ */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surface */
+  --bg-app: var(--core-neutral-1050);
+  --bg-surface: var(--core-neutral-950);
+  --bg-raised: var(--core-neutral-900);
+  --bg-overlay: #17171e;
+  --bg-inset: var(--core-neutral-1000);
+  --bg-hover: rgba(255, 255, 255, 0.045);
+  --bg-active: rgba(255, 255, 255, 0.08);
+  --surface-2: #121217;
+  --bg-scrim: rgba(0, 0, 0, 0.62);
+
+  /* Border */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-control: #6f6f7a; /* 3.9:1 on #0e0e13 */
+
+  /* Text */
+  --text-1: #f2f2f5;
+  --text-2: #a3a3af;
+  --text-3: var(--core-neutral-400);
+  --text-inverse: #09090c;
+  --text-link: var(--accent);
+
+  /* Icon */
+  --icon-1: #f2f2f5;
+  --icon-2: #a3a3af;
+  --icon-3: var(--core-neutral-400);
+
+  /* Action */
+  --accent: var(--core-navy-300);
+  --accent-strong: var(--core-navy-350);
+  --accent-active: #c3d7f5;
+  --accent-contrast: #06101f;
+  --accent-soft: rgba(134, 169, 224, 0.14);
+  --accent-border: rgba(134, 169, 224, 0.36);
+  --action-primary: var(--accent);
+  --action-hover: var(--accent-strong);
+  --action-pressed: var(--accent-active);
+  --action-disabled-bg: rgba(255, 255, 255, 0.06);
+  --action-disabled-text: #6f6f7a;
+
+  /* Brand chrome */
+  --brand-red: var(--core-red-300);
+  --brand-red-soft: rgba(208, 87, 78, 0.14);
+  --brand-navy: var(--core-navy-300);
+  --brand-light: #22232a;
+
+  /* State */
+  --success: var(--core-green-300);
+  --success-soft: rgba(61, 214, 140, 0.12);
+  --success-border: rgba(61, 214, 140, 0.32);
+  --warning: var(--core-amber-300);
+  --warning-soft: rgba(245, 185, 61, 0.12);
+  --warning-border: rgba(245, 185, 61, 0.32);
+  --danger: var(--core-danger-300);
+  --danger-soft: rgba(244, 113, 116, 0.12);
+  --danger-border: rgba(244, 113, 116, 0.34);
+  --info: var(--core-blue-300);
+  --info-soft: rgba(94, 176, 246, 0.12);
+  --info-border: rgba(94, 176, 246, 0.32);
+  --neutral-soft: rgba(163, 163, 175, 0.12);
+  --neutral-border: rgba(163, 163, 175, 0.3);
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.7);
+
+  /* Browser surfaces */
+  --code-bg: rgba(255, 255, 255, 0.05);
+  --scroll-thumb: rgba(255, 255, 255, 0.14);
+  --selection-bg: var(--accent-soft);
+  --caret-color: var(--accent);
 }

@@ -11,7 +11,7 @@ export function metadataHtml(data) {
   const t = data.trace, s = t.state || {}, m = data.replay_metadata || {}, v = m.verification || {}, p = m.protocol || {};
   const label = t.provider === 'real' ? 'REAL LLM' : t.provider === 'mock' ? 'MOCK' : 'PROVIDER UNKNOWN';
   const models = [...new Set((s.events || []).map(e => e.details?.model_id).filter(Boolean))];
-  return `<div class="replay-heading"><div><div class="hero-kicker">${esc(label)} / RECORDED REPLAY</div><h2 class="section-title">Investigation Replay</h2></div><label class="chip"><input type="checkbox" id="replay-demo"> 演示模式</label></div>
+  return `<div class="replay-heading"><div><div class="chip-row replay-badges">${badge(label, t.provider === 'real' ? 'info' : t.provider === 'mock' ? 'accent' : 'warning')}${badge('RECORDED REPLAY', 'neutral')}</div><h2 class="section-title type-title-2">Investigation Replay</h2></div><label class="chip chip-toggle"><input type="checkbox" id="replay-demo"> 演示模式</label></div>
     <p class="text-secondary">按保存顺序重建共享状态。选择章节会跳到对应事件；不会重新调用模型或工具。</p>
     ${v.source_unchanged === false ? '<p class="replay-provenance" data-drift="true"><strong>SOURCE DRIFT · 已保存来源检查发现变化；本录制不代表冻结正式实验。</strong></p>' : ''}
     <details id="replay-metadata"><summary>运行来源与限制 · 独立最终产物元数据快照</summary>
