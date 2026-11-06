@@ -1,5 +1,9 @@
 # IncidentLens Console — Design Requirements & System Spec (v2)
 
+> **Palette updated (v3, PolyU):** the colour hex values in §3 are superseded by
+> [`docs/ui/palette-v3-polyu.md`](palette-v3-polyu.md). Token names, type/spacing/radius/motion
+> scales, component contracts and all other rules are unchanged.
+
 **Task:** `t2` — design requirements & system spec for the IncidentLens web console redesign.
 **Branch:** `ui/ux-redesign-2026-11` (off `origin/main` @ `424a4ae`). **Never merged by this work.**
 **Surface:** the vanilla-JS SPA served by `src/incident_lens/web/` (routes `#/`, `#/investigate`,

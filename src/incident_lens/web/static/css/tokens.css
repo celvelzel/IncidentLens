@@ -19,46 +19,46 @@
    ------------------------------------------------------------ */
 
 :root {
-  /* Brand red — institutional chrome/identity only, never a status colour */
-  --core-red-700: #9a0907; /* 8.7:1 on white */
-  --core-red-300: #d0574e; /* 4.7:1 on #0e0e13 */
-  --core-red-50: #f7e9e8;
+  /* Brand red — PolyU red, institutional chrome/identity only, never a status colour */
+  --core-red-700: #a02337; /* PolyU red; 7.5:1 on white */
+  --core-red-300: #e08a93; /* dark-theme chrome; 7.3:1 on #121212 */
+  --core-red-50: #f8e9ec;
 
-  /* Brand navy — interactive accent */
-  --core-navy-800: #003070; /* 12.7:1 on white */
-  --core-navy-900: #00224f;
-  --core-navy-300: #86a9e0; /* 8.0:1 on #0e0e13 */
-  --core-navy-350: #aac6ee;
+  /* Brand navy/blue — PolyU deep-blue family; interactive accent */
+  --core-navy-800: #123663; /* PolyU deep blue; 12.1:1 on white */
+  --core-navy-900: #0d274a;
+  --core-navy-300: #7fb4e6; /* dark-theme accent; 8.5:1 on #121212 */
+  --core-navy-350: #a7cdf0;
 
-  /* Neutral ramp */
+  /* Neutral ramp — true PolyU grays (#454545 / #58595b / #717171 family) */
   --core-neutral-0: #ffffff;
-  --core-neutral-25: #f7f7f9;
-  --core-neutral-50: #f6f6f8;
-  --core-neutral-75: #f1f1f4;
-  --core-neutral-100: #e8e9ef;
-  --core-neutral-200: #d5d5dd;
-  --core-neutral-300: #b9b9c2;
-  --core-neutral-400: #90909d;
-  --core-neutral-450: #80808b;
-  --core-neutral-500: #666673; /* 5.7:1 on white */
-  --core-neutral-600: #4c4c57; /* 8.5:1 on white */
-  --core-neutral-700: #2b2b33;
-  --core-neutral-800: #1f1f27;
-  --core-neutral-850: #17171e;
-  --core-neutral-900: #131318;
-  --core-neutral-950: #0e0e13;
-  --core-neutral-1000: #0b0b0f;
-  --core-neutral-1050: #09090c;
+  --core-neutral-25: #f8f8f8;
+  --core-neutral-50: #f4f4f4;
+  --core-neutral-75: #ededed;
+  --core-neutral-100: #e4e4e4;
+  --core-neutral-200: #d5d5d5;
+  --core-neutral-300: #c0c0c0;
+  --core-neutral-400: #a8a8a8;
+  --core-neutral-450: #8f8f8f;
+  --core-neutral-500: #6b6b6b; /* 4.9:1 on #f4f4f4 */
+  --core-neutral-600: #58595b; /* PolyU gray; 7.0:1 on white */
+  --core-neutral-700: #454545; /* PolyU body gray */
+  --core-neutral-800: #333333; /* 12.6:1 on white */
+  --core-neutral-850: #262626;
+  --core-neutral-900: #1f1f1f;
+  --core-neutral-950: #181818;
+  --core-neutral-1000: #121212;
+  --core-neutral-1050: #0d0d0d;
 
   /* Semantic state palettes (light / dark pairs) */
-  --core-green-600: #087b4d; /* 5.3:1 on white */
-  --core-green-300: #3dd68c; /* 10.3:1 on #0e0e13 */
-  --core-amber-700: #a85f06; /* 4.9:1 on white */
-  --core-amber-300: #f5b93d; /* 10.9:1 on #0e0e13 */
-  --core-danger-600: #d23b3f; /* 4.7:1 on white */
-  --core-danger-300: #f47174; /* 6.8:1 on #0e0e13 */
-  --core-blue-700: #1f6fd6; /* 4.9:1 on white */
-  --core-blue-300: #5eb0f6; /* 8.3:1 on #0e0e13 */
+  --core-green-600: #2b8054; /* PolyU green; 4.9:1 on white */
+  --core-green-300: #4cc38a; /* 8.5:1 on #121212 */
+  --core-amber-700: #8a6d10; /* 4.9:1 on white */
+  --core-amber-300: #e7c15a; /* PolyU gold; 10.9:1 on #121212 */
+  --core-danger-600: #c62828; /* 5.6:1 on white */
+  --core-danger-300: #f08a86; /* 7.8:1 on #121212 */
+  --core-blue-700: #1c6bb0; /* PolyU blue; 5.6:1 on white */
+  --core-blue-300: #6fb2e8; /* 8.2:1 on #121212 */
 }
 
 /* ------------------------------------------------------------
@@ -171,74 +171,74 @@
   --bg-raised: var(--core-neutral-0);
   --bg-overlay: var(--core-neutral-0);
   --bg-inset: var(--core-neutral-75);
-  --bg-hover: rgba(23, 23, 30, 0.045);
-  --bg-active: rgba(23, 23, 30, 0.08);
+  --bg-hover: rgba(0, 0, 0, 0.045);
+  --bg-active: rgba(0, 0, 0, 0.08);
   --surface-2: var(--core-neutral-25);
-  --bg-scrim: rgba(9, 9, 12, 0.44);
+  --bg-scrim: rgba(0, 0, 0, 0.45);
 
   /* Border */
-  --border-subtle: rgba(23, 23, 30, 0.07);
-  --border: rgba(23, 23, 30, 0.12);
-  --border-strong: rgba(23, 23, 30, 0.22);
-  --border-control: #8a8a96; /* 3.4:1 on white — form boundaries */
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --border-control: #8a8a8a; /* 3.4:1 on white — form boundaries */
 
   /* Text */
-  --text-1: var(--core-neutral-850);
+  --text-1: var(--core-neutral-800);
   --text-2: var(--core-neutral-600);
   --text-3: var(--core-neutral-500);
   --text-inverse: #ffffff;
   --text-link: var(--accent);
 
   /* Icon */
-  --icon-1: var(--core-neutral-850);
+  --icon-1: var(--core-neutral-800);
   --icon-2: var(--core-neutral-600);
   --icon-3: var(--core-neutral-500);
 
-  /* Action — one interactive accent (navy) */
+  /* Action — one interactive accent (PolyU deep blue) */
   --accent: var(--core-navy-800);
   --accent-strong: var(--core-navy-900);
-  --accent-active: #001b3f;
+  --accent-active: #0a1f3d;
   --accent-contrast: #ffffff;
-  --accent-soft: rgba(0, 48, 112, 0.07);
-  --accent-border: rgba(0, 48, 112, 0.26);
+  --accent-soft: rgba(18, 54, 99, 0.08);
+  --accent-border: rgba(18, 54, 99, 0.28);
   --action-primary: var(--accent);
   --action-hover: var(--accent-strong);
   --action-pressed: var(--accent-active);
-  --action-disabled-bg: rgba(23, 23, 30, 0.05);
-  --action-disabled-text: #8a8a96;
+  --action-disabled-bg: rgba(0, 0, 0, 0.05);
+  --action-disabled-text: #8a8a8a;
 
-  /* Brand chrome (identity, never status) */
+  /* Brand chrome (identity, never status) — PolyU red */
   --brand-red: var(--core-red-700);
-  --brand-red-soft: rgba(154, 9, 7, 0.07);
+  --brand-red-soft: rgba(160, 35, 55, 0.08);
   --brand-navy: var(--core-navy-800);
   --brand-light: var(--core-neutral-100);
 
   /* State */
   --success: var(--core-green-600);
-  --success-soft: rgba(8, 123, 77, 0.1);
-  --success-border: rgba(8, 123, 77, 0.3);
+  --success-soft: rgba(43, 128, 84, 0.1);
+  --success-border: rgba(43, 128, 84, 0.3);
   --warning: var(--core-amber-700);
-  --warning-soft: rgba(168, 95, 6, 0.1);
-  --warning-border: rgba(168, 95, 6, 0.3);
+  --warning-soft: rgba(138, 109, 16, 0.1);
+  --warning-border: rgba(138, 109, 16, 0.3);
   --danger: var(--core-danger-600);
-  --danger-soft: rgba(210, 59, 63, 0.09);
-  --danger-border: rgba(210, 59, 63, 0.3);
+  --danger-soft: rgba(198, 40, 40, 0.09);
+  --danger-border: rgba(198, 40, 40, 0.3);
   --info: var(--core-blue-700);
-  --info-soft: rgba(31, 111, 214, 0.09);
-  --info-border: rgba(31, 111, 214, 0.3);
-  --neutral-soft: rgba(76, 76, 87, 0.09);
-  --neutral-border: rgba(76, 76, 87, 0.26);
+  --info-soft: rgba(28, 107, 176, 0.09);
+  --info-border: rgba(28, 107, 176, 0.3);
+  --neutral-soft: rgba(69, 69, 69, 0.09);
+  --neutral-border: rgba(69, 69, 69, 0.26);
 
   /* Elevation — tinted, soft, offset; one light direction */
-  --shadow-xs: 0 1px 2px rgba(23, 23, 30, 0.05);
-  --shadow-sm: 0 1px 3px rgba(23, 23, 30, 0.07), 0 1px 2px rgba(23, 23, 30, 0.05);
-  --shadow-md: 0 4px 12px rgba(23, 23, 30, 0.09);
-  --shadow-lg: 0 12px 32px rgba(23, 23, 30, 0.14);
-  --shadow-overlay: 0 16px 48px rgba(23, 23, 30, 0.2);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.09);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
+  --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.2);
 
   /* Browser surfaces */
-  --code-bg: rgba(23, 23, 30, 0.05);
-  --scroll-thumb: rgba(23, 23, 30, 0.18);
+  --code-bg: rgba(0, 0, 0, 0.05);
+  --scroll-thumb: rgba(0, 0, 0, 0.18);
   --selection-bg: var(--accent-soft);
   --caret-color: var(--accent);
 }
@@ -252,67 +252,67 @@
 
   /* Surface */
   --bg-app: var(--core-neutral-1050);
-  --bg-surface: var(--core-neutral-950);
+  --bg-surface: var(--core-neutral-1000);
   --bg-raised: var(--core-neutral-900);
-  --bg-overlay: #17171e;
-  --bg-inset: var(--core-neutral-1000);
+  --bg-overlay: #1f1f1f;
+  --bg-inset: #0a0a0a;
   --bg-hover: rgba(255, 255, 255, 0.045);
   --bg-active: rgba(255, 255, 255, 0.08);
-  --surface-2: #121217;
+  --surface-2: #161616;
   --bg-scrim: rgba(0, 0, 0, 0.62);
 
   /* Border */
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.18);
-  --border-control: #6f6f7a; /* 3.9:1 on #0e0e13 */
+  --border-control: #7a7a7a; /* 4.4:1 on #121212 */
 
   /* Text */
-  --text-1: #f2f2f5;
-  --text-2: #a3a3af;
-  --text-3: var(--core-neutral-400);
-  --text-inverse: #09090c;
+  --text-1: #f5f5f5;
+  --text-2: #b3b3b3;
+  --text-3: var(--core-neutral-450);
+  --text-inverse: #0d0d0d;
   --text-link: var(--accent);
 
   /* Icon */
-  --icon-1: #f2f2f5;
-  --icon-2: #a3a3af;
-  --icon-3: var(--core-neutral-400);
+  --icon-1: #f5f5f5;
+  --icon-2: #b3b3b3;
+  --icon-3: var(--core-neutral-450);
 
   /* Action */
   --accent: var(--core-navy-300);
   --accent-strong: var(--core-navy-350);
-  --accent-active: #c3d7f5;
-  --accent-contrast: #06101f;
-  --accent-soft: rgba(134, 169, 224, 0.14);
-  --accent-border: rgba(134, 169, 224, 0.36);
+  --accent-active: #cfe4f8;
+  --accent-contrast: #0a1420;
+  --accent-soft: rgba(127, 180, 230, 0.14);
+  --accent-border: rgba(127, 180, 230, 0.36);
   --action-primary: var(--accent);
   --action-hover: var(--accent-strong);
   --action-pressed: var(--accent-active);
   --action-disabled-bg: rgba(255, 255, 255, 0.06);
-  --action-disabled-text: #6f6f7a;
+  --action-disabled-text: #7a7a7a;
 
   /* Brand chrome */
   --brand-red: var(--core-red-300);
-  --brand-red-soft: rgba(208, 87, 78, 0.14);
+  --brand-red-soft: rgba(224, 138, 147, 0.15);
   --brand-navy: var(--core-navy-300);
-  --brand-light: #22232a;
+  --brand-light: #242424;
 
   /* State */
   --success: var(--core-green-300);
-  --success-soft: rgba(61, 214, 140, 0.12);
-  --success-border: rgba(61, 214, 140, 0.32);
+  --success-soft: rgba(76, 195, 138, 0.12);
+  --success-border: rgba(76, 195, 138, 0.32);
   --warning: var(--core-amber-300);
-  --warning-soft: rgba(245, 185, 61, 0.12);
-  --warning-border: rgba(245, 185, 61, 0.32);
+  --warning-soft: rgba(231, 193, 90, 0.12);
+  --warning-border: rgba(231, 193, 90, 0.32);
   --danger: var(--core-danger-300);
-  --danger-soft: rgba(244, 113, 116, 0.12);
-  --danger-border: rgba(244, 113, 116, 0.34);
+  --danger-soft: rgba(240, 138, 134, 0.12);
+  --danger-border: rgba(240, 138, 134, 0.34);
   --info: var(--core-blue-300);
-  --info-soft: rgba(94, 176, 246, 0.12);
-  --info-border: rgba(94, 176, 246, 0.32);
-  --neutral-soft: rgba(163, 163, 175, 0.12);
-  --neutral-border: rgba(163, 163, 175, 0.3);
+  --info-soft: rgba(111, 178, 232, 0.12);
+  --info-border: rgba(111, 178, 232, 0.32);
+  --neutral-soft: rgba(179, 179, 179, 0.12);
+  --neutral-border: rgba(179, 179, 179, 0.3);
 
   /* Elevation */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
