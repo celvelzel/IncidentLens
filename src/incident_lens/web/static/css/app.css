@@ -1691,3 +1691,853 @@ section {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------
+   9. Replay orchestration panel (`#replay-workflow`) — presentation only
+   Namespaced `orch-*`; uses design tokens only (no hard-coded colours).
+   ------------------------------------------------------------ */
+
+.orch-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  margin-block: var(--sp-4);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.orch-panel h3,
+.orch-panel h4,
+.orch-panel h5 {
+  margin: 0;
+}
+
+/* --- toolbar / badges ------------------------------------------------ */
+.orch-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.orch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+  background: var(--bg-inset);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.orch-badge--provider {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.orch-badge--muted {
+  color: var(--text-3);
+}
+
+.orch-badge__unit {
+  color: var(--text-3);
+  font-weight: 400;
+}
+
+.orch-legend {
+  margin-left: auto;
+  color: var(--text-3);
+  font-size: var(--text-2xs);
+}
+
+.orch-section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-md);
+  font-weight: 600;
+  margin-bottom: var(--sp-3);
+}
+
+.orch-role-en {
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+  font-weight: 400;
+}
+
+.orch-mono,
+.orch-flow__col .mono,
+.orch-gate .mono {
+  font-family: var(--font-mono);
+}
+
+.orch-empty {
+  margin: 0;
+  padding: var(--sp-2);
+  color: var(--text-3);
+}
+
+.orch-text-sm {
+  font-size: var(--text-sm);
+}
+
+/* --- status badge (icon + text + tone, never colour alone) ----------- */
+.orch-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  white-space: nowrap;
+  color: var(--text-2);
+  background: var(--bg-inset);
+}
+
+.orch-status__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.orch-status[data-tone="success"] {
+  color: var(--success);
+  border-color: var(--success-border);
+  background: var(--success-soft);
+}
+
+.orch-status[data-tone="warning"] {
+  color: var(--warning);
+  border-color: var(--warning-border);
+  background: var(--warning-soft);
+}
+
+.orch-status[data-tone="danger"] {
+  color: var(--danger);
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.orch-status[data-tone="info"] {
+  color: var(--info);
+  border-color: var(--info-border);
+  background: var(--info-soft);
+}
+
+/* --- stage stepper --------------------------------------------------- */
+.orch-stepper {
+  min-width: 0;
+}
+
+.orch-stepper-track {
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-3);
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-2);
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+}
+
+.orch-stepper-item {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+}
+
+.orch-stepper-item:not(:last-child)::after {
+  content: "";
+  flex: 0 0 auto;
+  align-self: center;
+  width: var(--sp-2);
+  height: 2px;
+  background: var(--border-strong);
+  margin-inline: 2px;
+}
+
+.orch-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  font: inherit;
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-3);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.orch-stage__num {
+  font-size: var(--text-2xs);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.orch-stage__label {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.orch-stage__gloss {
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+  line-height: 1.3;
+}
+
+.orch-stage__badge {
+  margin-top: 2px;
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.orch-stage__current-tag {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--accent-strong);
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-full);
+  padding: 0 6px;
+}
+
+.orch-stage[data-state="done"] {
+  border-color: var(--success-border);
+}
+
+.orch-stage[data-state="done"] .orch-stage__num {
+  color: var(--success);
+}
+
+.orch-stage[data-state="current"],
+.orch-stage[aria-current="step"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.orch-stage[data-state="skipped"] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.orch-stage.is-highlighted {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- swimlane -------------------------------------------------------- */
+.orch-swimlane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.orch-round {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3);
+  background: var(--bg-surface);
+  min-width: 0;
+}
+
+.orch-round__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.orch-round__index {
+  font-weight: 600;
+}
+
+.orch-round__parallel {
+  font-size: var(--text-2xs);
+  color: var(--accent-strong);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+}
+
+.orch-round__reason {
+  flex: 1 1 160px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.orch-lanes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: stretch;
+  min-width: 0;
+}
+
+.orch-lane {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+}
+
+.orch-lane--coord {
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.orch-node {
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+}
+
+.orch-node--coordinator {
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+
+.orch-task-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+  background: var(--bg-inset);
+}
+
+.orch-task-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.orch-task-card__role {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.orch-task-card__id {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.orch-task-card__q {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.orch-task-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  font-size: var(--text-2xs);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.orch-merge-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.orch-node--merge {
+  font-weight: 600;
+}
+
+.orch-gate-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--border-strong);
+}
+
+.orch-edge--loopback {
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+}
+
+.orch-footnote {
+  margin: 0;
+  font-size: var(--text-2xs);
+}
+
+/* --- role cards / structured drilldown ------------------------------ */
+.orch-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.orch-role-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3);
+  background: var(--bg-surface);
+}
+
+.orch-role-card .replay-role,
+.orch-role-toggle {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.orch-role-status {
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+}
+
+.orch-role-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.orch-stat {
+  min-width: 0;
+}
+
+.orch-stat dt {
+  margin: 0;
+  font-size: var(--text-2xs);
+  color: var(--text-3);
+}
+
+.orch-stat__value {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.orch-role-detail {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  background: var(--bg-inset);
+  min-width: 0;
+}
+
+.orch-task-rows {
+  list-style: none;
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.orch-task-row {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+  background: var(--bg-surface);
+}
+
+.orch-task-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.orch-task-row__id {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}
+
+.orch-task-row__q {
+  margin: var(--sp-1) 0;
+  font-size: var(--text-sm);
+}
+
+.orch-task-row__result {
+  margin: 0 0 var(--sp-2);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.orch-task-row__evidence {
+  margin-bottom: var(--sp-2);
+}
+
+.orch-task-row__error {
+  margin: 0 0 var(--sp-2);
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  overflow-wrap: anywhere;
+}
+
+.orch-finding-rows {
+  list-style: none;
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.orch-finding-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  min-width: 0;
+}
+
+.orch-finding-row code {
+  overflow-wrap: anywhere;
+}
+
+.orch-checks {
+  margin-top: var(--sp-3);
+  min-width: 0;
+}
+
+.orch-checks h4 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-sm);
+}
+
+.orch-checks ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.orch-check {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.orch-check__kind {
+  font-size: var(--text-2xs);
+  color: var(--text-3);
+}
+
+.orch-check p {
+  margin: var(--sp-1) 0;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.orch-check__status {
+  font-size: var(--text-2xs);
+  color: var(--text-2);
+}
+
+.orch-check--optional {
+  color: var(--text-3);
+}
+
+/* --- review gate ----------------------------------------------------- */
+.orch-gates {
+  min-width: 0;
+}
+
+.orch-gates--skipped {
+  padding: var(--sp-3);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+
+.orch-gate {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3);
+  margin-top: var(--sp-3);
+  background: var(--bg-surface);
+}
+
+.orch-gate[data-verdict="insufficient"] {
+  border-color: var(--warning-border);
+}
+
+.orch-gate[data-verdict="sufficient"] {
+  border-color: var(--success-border);
+}
+
+.orch-gate__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.orch-gate__target {
+  margin: var(--sp-2) 0;
+  overflow-wrap: anywhere;
+}
+
+.orch-gate__rationale {
+  margin: 0 0 var(--sp-2);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.orch-contradictions {
+  margin: var(--sp-2) 0;
+  padding-left: var(--sp-4);
+  color: var(--warning);
+  font-size: var(--text-sm);
+}
+
+.orch-finalize {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+}
+
+.orch-finalize[data-blocked="true"] {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.orch-finalize p {
+  margin: 0;
+}
+
+/* --- evidence flow --------------------------------------------------- */
+.orch-flow {
+  min-width: 0;
+}
+
+.orch-flow__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.orch-flow__col {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3);
+  background: var(--bg-surface);
+  max-height: 320px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.orch-flow__col h4 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-sm);
+}
+
+.orch-flow__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-sm);
+  min-width: 0;
+}
+
+.orch-flow__group {
+  margin-bottom: var(--sp-2);
+}
+
+.orch-flow__group h5 {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--text-2xs);
+  color: var(--text-3);
+}
+
+/* --- narrative ------------------------------------------------------- */
+.orch-narrative {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3);
+}
+
+.orch-narrative__line {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.orch-chapter-label {
+  font-weight: 600;
+}
+
+.orch-narrative__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.orch-narrative__pos {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.orch-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.orch-chapter {
+  min-width: 0;
+}
+
+.orch-chapter[aria-current="true"] .btn {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.orch-chapter--unavailable {
+  opacity: 0.6;
+}
+
+/* --- focus + touch targets ------------------------------------------ */
+.orch-panel button:focus-visible,
+.orch-panel [data-seek]:focus-visible,
+.orch-panel .evidence-chip:focus-visible {
+  outline: 2px solid var(--focus-ring-color, var(--accent));
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse), (max-width: 680px) {
+  .orch-stage,
+  .orch-role-toggle,
+  .orch-task-card__jump,
+  .orch-narrative button,
+  .orch-panel .evidence-chip {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .orch-role-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .orch-flow__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .orch-stepper-track {
+    flex-direction: column;
+  }
+
+  .orch-stepper-item {
+    flex: 1 1 auto;
+  }
+
+  .orch-stepper-item:not(:last-child)::after {
+    display: none;
+  }
+
+  .orch-lanes {
+    flex-direction: column;
+  }
+
+  .orch-lane {
+    flex: 1 1 auto;
+  }
+
+  .orch-role-grid,
+  .orch-flow__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .orch-flow__col {
+    max-height: none;
+  }
+
+  .orch-narrative__controls .btn {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orch-panel * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

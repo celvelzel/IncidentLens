@@ -1,20 +1,28 @@
 import { escapeHtml as esc, variantLabel } from './api.js';
 import { badge, evidenceChips } from './components.js';
 import { replayWorkflow, replayReliability } from './replay.js';
+import { orchestrationHtml, buildNarrative } from './orchestration.js';
 
 const json = value => `<pre class="json-block">${esc(JSON.stringify(value, null, 2))}</pre>`;
 const empty = '<p class="text-muted">当前前缀尚无记录 / not recorded</p>';
-const roleNames = {coordinator:'Coordinator',logs:'Logs Agent',metrics:'Metrics / Dependencies',database:'Database Agent',changes:'Changes Agent',verifier:'Verifier',reporter:'Reporter'};
 export const jumpButton = (position, label, extra = '') => `<button class="btn btn-sm" data-seek="${position}" ${extra}>${esc(label)}</button>`;
 
-export function metadataHtml(data) {
+/**
+ * Replay metadata block. Backward compatible: `metadataHtml(data)` emits the full
+ * heading + provenance snapshot exactly as before. `opts` lets the redesigned
+ * mount split the heading (under the controls) from the sunk metadata snapshot.
+ *   opts.snapshot === false → heading block only (badges/title/demo toggle/intro/drift)
+ *   opts.heading  === false → metadata `<details>` snapshot only
+ */
+export function metadataHtml(data, opts = {}) {
+  const { heading = true, snapshot = true } = opts;
   const t = data.trace, s = t.state || {}, m = data.replay_metadata || {}, v = m.verification || {}, p = m.protocol || {};
   const label = t.provider === 'real' ? 'REAL LLM' : t.provider === 'mock' ? 'MOCK' : 'PROVIDER UNKNOWN';
   const models = [...new Set((s.events || []).map(e => e.details?.model_id).filter(Boolean))];
-  return `<div class="replay-heading"><div><div class="chip-row replay-badges">${badge(label, t.provider === 'real' ? 'info' : t.provider === 'mock' ? 'accent' : 'warning')}${badge('RECORDED REPLAY', 'neutral')}</div><h2 class="section-title type-title-2">Investigation Replay</h2></div><label class="chip chip-toggle"><input type="checkbox" id="replay-demo"> 演示模式</label></div>
+  const headHtml = heading ? `<div class="replay-heading"><div><div class="chip-row replay-badges">${badge(label, t.provider === 'real' ? 'info' : t.provider === 'mock' ? 'accent' : 'warning')}${badge('RECORDED REPLAY', 'neutral')}</div><h2 class="section-title type-title-2">Investigation Replay</h2></div><label class="chip chip-toggle"><input type="checkbox" id="replay-demo"> 演示模式</label></div>
     <p class="text-secondary">按保存顺序重建共享状态。选择章节会跳到对应事件；不会重新调用模型或工具。</p>
-    ${v.source_unchanged === false ? '<p class="replay-provenance" data-drift="true"><strong>SOURCE DRIFT · 已保存来源检查发现变化；本录制不代表冻结正式实验。</strong></p>' : ''}
-    <details id="replay-metadata"><summary>运行来源与限制 · 独立最终产物元数据快照</summary>
+    ${v.source_unchanged === false ? '<p class="replay-provenance" data-drift="true"><strong>SOURCE DRIFT · 已保存来源检查发现变化；本录制不代表冻结正式实验。</strong></p>' : ''}` : '';
+  const snapshotHtml = snapshot ? `<details id="replay-metadata"><summary>运行来源与限制 · 独立最终产物元数据快照</summary>
       <p class="text-muted">以下是整个已录制运行的元数据，不表示当前播放位置已知的调查结论。来源一致性为内部校验，非签名认证。</p>
       <dl class="replay-metadata-grid">
       ${Object.entries({Incident:s.incident_id,Variant:variantLabel(t.variant),Model:t.model_id || models.join(', ') || 'not recorded',
@@ -27,30 +35,52 @@ export function metadataHtml(data) {
       <div class="replay-provenance" data-drift="${v.source_unchanged === false ? 'true' : 'unknown'}"><strong>${v.source_unchanged === false ? 'SOURCE DRIFT · 非冻结正式实验' : v.source_unchanged === true ? 'Saved source check: unchanged' : 'Source drift: not recorded'}</strong>
       <p>${esc(v.source_unchanged === false ? '运行期间记录的源码指纹发生变化；可展示真实开发调查过程，不能视为完全冻结的正式实验。' : '仅显示产物记录的来源检查，不推断当前源码与录制时一致。')}</p>${v.source_drift?.length ? json(v.source_drift) : ''}</div>
       ${m.warnings?.length ? json(m.warnings) : ''}
-    </details>`;
+    </details>` : '';
+  return headHtml + snapshotHtml;
 }
 
-export function workflowHtml(state, selectedRole = '') {
-  const {roles,dispatches,requests} = replayWorkflow(state), current = state.events.at(-1);
-  // The verifier is an ablation: only name it when this trace actually ran one, so a
-  // Dynamic or Single replay does not advertise a stage its evidence never contains.
-  const hasVerifier = roles.includes('verifier');
-  return `<p class="text-muted">Coordinator → 专家任务 → Public Evidence → Shared Findings / Hypotheses${hasVerifier ? ' → Verifier' : ''} → FinalizeGate</p>
-    <div class="replay-workflow">${roles.map(role => {
-      const actual = state.events.some(e => e.role === role);
-      return `<button class="btn replay-role" data-role="${esc(role)}" aria-pressed="${selectedRole === role}" data-current="${current?.role === role}"><strong>${esc(roleNames[role] || role)}</strong><span>${esc(actual ? state.roles[role] || '有已记录动作' : dispatches.some(t=>t.role === role) ? '已调度 · 尚无执行记录' : '仅审查建议 · 未调度')}</span></button>`;
-    }).join('') || empty}</div>
-    <div class="replay-dataflow">${dispatches.map(t=>`<div><span>Coordinator → ${esc(roleNames[t.role] || t.role)}</span> ${jumpButton(state.events.findIndex(e=>e.event_id === t.event_id)+1,t.task_id)}<p>${esc(t.question)}</p></div>`).join('')}</div>
-    ${selectedRole ? roleDetail(state, selectedRole, dispatches, requests) : ''}`;
+/**
+ * #replay-workflow inner HTML. Legacy call `workflowHtml(state, selectedRole)` stays
+ * valid — bookmarks/opts are optional. Rendering lives in orchestration.js.
+ */
+export function workflowHtml(state, selectedRole = '', bookmarks = [], opts = {}) {
+  return orchestrationHtml(state, selectedRole, bookmarks, opts);
 }
 
-function roleDetail(state, role, dispatches, requests) {
-  const tasks=state.task_records.filter(t=>t.role === role), findings=state.findings.filter(f=>f.role === role);
-  return `<div class="replay-role-detail"><h3>${esc(roleNames[role] || role)} · 真实任务与结果</h3>
-    ${dispatches.filter(t=>t.role === role).map(t=>`<details><summary>${esc(t.task_id)} · ${esc(t.question)}</summary>${json(t)}</details>`).join('')}
-    ${tasks.length ? json(tasks) : '<p>没有执行记录。审查建议不等于已执行工具查询。</p>'}
-    ${findings.map(f=>`<details><summary>Finding · ${esc(f.claim)}</summary><p>${esc(f.finding_id)} · ${esc(f.task_id)} · ${esc(f.relation)}</p>${evidenceChips(f.evidence_ids,state.evidence_index)}</details>`).join('')}
-    <details><summary>Verifier 对该角色的检查建议（含未执行）</summary>${json(requests.filter(t=>t.role === role))}</details></div>`;
+/**
+ * DOM wiring for the orchestration panel. Role toggling and generic [data-seek]
+ * jumps are bound by views.js `draw()`; this adds narrative prev/next and the
+ * demo-mode auto highlight/scroll.
+ */
+export function bindWorkflowInteractions(panelEl, ctx = {}) {
+  if (!panelEl) return;
+  const seek = typeof ctx.seek === 'function' ? ctx.seek : () => {};
+  const state = typeof ctx.getState === 'function' ? ctx.getState() : ctx.state || { events: [] };
+  const bookmarks = ctx.bookmarks || [];
+  let model = null;
+  try { model = buildNarrative(state, bookmarks); } catch { model = null; }
+  if (model) {
+    const ch = model.chapters;
+    const cur = typeof ctx.narrativeIndex === 'number' ? ctx.narrativeIndex : model.currentIndex;
+    const avail = ch.map((c, i) => ({ c, i })).filter(o => o.c.available);
+    const posInAvail = avail.findIndex(o => o.i === cur);
+    const prev = posInAvail > 0 ? avail[posInAvail - 1] : null;
+    const next = posInAvail < 0 ? avail[0] || null : posInAvail < avail.length - 1 ? avail[posInAvail + 1] : null;
+    const prevBtn = panelEl.querySelector('[data-narrative-prev]');
+    const nextBtn = panelEl.querySelector('[data-narrative-next]');
+    if (prevBtn) { prevBtn.disabled = !prev; prevBtn.onclick = () => { if (prev) seek(prev.c.position); }; }
+    if (nextBtn) { nextBtn.disabled = !next; nextBtn.onclick = () => { if (next) seek(next.c.position); }; }
+  }
+  const demo = typeof ctx.demo === 'function' ? ctx.demo() : !!ctx.demo;
+  const nar = panelEl.querySelector('.orch-narrative');
+  if (demo && nar && nar.dataset.activeStage) {
+    const stageEl = panelEl.querySelector(`.orch-stage[data-stage="${nar.dataset.activeStage}"]`);
+    if (stageEl) {
+      stageEl.classList.add('is-highlighted');
+      const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try { stageEl.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }); } catch { /* ignore */ }
+    }
+  }
 }
 
 export function historyHtml(state) {

@@ -1,5 +1,5 @@
 import { replayPrefix, replayBookmarks, eventCategory, evidenceContext } from "./replay.js";
-import { metadataHtml, workflowHtml, historyHtml, reviewTimelineHtml, reliabilityHtml, jumpButton } from "./replay-panels.js";
+import { metadataHtml, workflowHtml, historyHtml, reviewTimelineHtml, reliabilityHtml, jumpButton, bindWorkflowInteractions } from "./replay-panels.js";
 /**
  * IncidentLens views: overview, investigate, run detail, library.
  */
@@ -592,7 +592,7 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
   const events = data.trace.state?.events || [];
   const bookmarks = replayBookmarks(data.trace);
   root.innerHTML = `<section class="card replay-console" aria-label="Investigation Replay">
-    ${metadataHtml(data)}
+    ${metadataHtml(data, { snapshot: false })}
     <div class="replay-controls">
       <button class="btn" data-step="first">首步</button><button class="btn" data-step="prev">上一步</button>
       <button class="btn btn-primary" id="replay-play">播放</button>
@@ -601,13 +601,14 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
       <output id="replay-position" aria-live="polite"></output>
     </div>
     <div class="replay-seek"><label for="replay-seek">Seek · 保存事件位置</label><input id="replay-seek" type="range" min="0" max="${events.length}" value="0"><label for="replay-jump">Jump</label><input class="input" id="replay-jump" type="number" min="0" max="${events.length}" value="0"><button class="btn" id="replay-jump-go">跳转</button></div>
+    <details open id="replay-workflow-panel"><summary>编排视图 · 共享状态与工作流</summary><div id="replay-workflow" aria-label="Workflow Overview"></div></details>
     <details id="replay-chapters"><summary>演示章节 · 基于事件语义查找</summary><p class="text-muted">章节名称用于导航；只有跳转后才展示对应历史状态。</p><div class="replay-bookmarks">${bookmarks.map(b=>b.position == null ? `<button class="btn btn-sm" disabled title="Trace 未记录对应事件">${escapeHtml(b.label)} · 未记录</button>` : jumpButton(b.position,b.label,`data-bookmark="${b.id}"`)).join('')}</div></details>
-    <details open><summary>Workflow · 共享状态编排与数据流</summary><div id="replay-workflow" aria-label="Workflow Overview"></div></details>
     <details><summary>Communication Timeline · 有序事件导航</summary><label for="replay-category">事件类别</label><select class="select" id="replay-category"><option value="all">全部</option>${['dispatch','task','evidence','findings','hypothesis','review','reliability','finalization','termination','other'].map(c=>`<option value="${c}">${c}</option>`).join('')}</select><div id="replay-events" class="replay-event-list"></div></details>
     <div id="replay-selection" aria-label="当前事件详情"></div>
     <div class="replay-analysis-grid"><details id="replay-hypotheses"><summary>Hypothesis Evolution · 已提交状态变化</summary><div id="replay-history"></div></details>
     <details id="replay-review-panel"><summary>Verifier Review / FinalizeGate</summary><div id="replay-reviews"></div></details></div>
     <details><summary>Provider Timeout / Recovery · 可靠性事件</summary><div id="replay-reliability"></div></details>
+    ${metadataHtml(data, { heading: false })}
   </section><div id="replay-detail"></div>`;
   let position = 0, timer = null, activeTab = 'timeline', selectedRole = '', category = 'all';
   // Deep link to a saved position: ?step=last or ?step=<n>. Useful for demos and review links.
@@ -635,7 +636,8 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
     root.querySelector('#replay-jump').value = position;
     root.querySelectorAll('[data-step]').forEach(b => { b.disabled = ['first','prev'].includes(b.dataset.step) ? position === 0 : position === events.length; });
     play.disabled = !events.length || position === events.length;
-    root.querySelector('#replay-workflow').innerHTML = workflowHtml(state,selectedRole);
+    const workflowEl = root.querySelector('#replay-workflow');
+    workflowEl.innerHTML = workflowHtml(state, selectedRole, bookmarks, { provider: data.trace.provider, variant: data.trace.variant });
     root.querySelector('#replay-events').innerHTML = events.map((e,i)=>({e,i})).filter(({e})=>category === 'all' || eventCategory(e) === category).map(({e,i})=>jumpButton(i+1,`${i+1} · ${i < position ? `${e.role || 'runtime'} · ${e.event_type}` : '未播放事件'}`,`aria-current="${i+1 === position ? 'step' : 'false'}"`)).join('');
     root.querySelector('#replay-history').innerHTML = historyHtml(state);
     root.querySelector('#replay-reviews').innerHTML = reviewTimelineHtml(state);
@@ -645,6 +647,7 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
     box.innerHTML = e ? `<h3 class="type-title-3">${escapeHtml(e.event_id)} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)}</h3><p class="text-muted">执行事件时间：${escapeHtml(e.timestamp)} · ${escapeHtml(e.task_id || 'task not recorded')}</p>${e.details?.decision?.reason ? `<p>${escapeHtml(e.details.decision.reason)}</p>` : ''}${e.details?.decision?.hypothesis_updates?.length ? '<p class="text-muted">DECISION 包含提议；假设面板仅在 MERGE / HYPOTHESIS_RECONCILED 提交后更新。</p>' : ''}<details><summary>原始结构化事件详情</summary>${timelineBody(e)}</details><div class="cite-wrap">${evidenceChips(ids,state.evidence_index,{emptyText:'此事件没有公开证据引用'})}</div>` : `<h3 class="type-title-3">调查开始前</h3><p>${escapeHtml(state.public_summary.title || '')}</p><p>${escapeHtml((state.public_summary.observed_symptoms || []).join(' · '))}</p><p class="text-muted">仅已知公开事故摘要；尚未观察工具证据或形成假设。</p>`;
     root.querySelectorAll('[data-seek]').forEach(button=>button.onclick=()=>seek(button.dataset.seek));
     root.querySelectorAll('#replay-workflow [data-role]').forEach(button=>button.onclick=()=>{ selectedRole=selectedRole === button.dataset.role ? '' : button.dataset.role; draw(); });
+    bindWorkflowInteractions(workflowEl, { getState: () => state, seek, bookmarks, demo: () => !!root.querySelector('#replay-demo')?.checked });
     bindEvidenceChips(root.querySelector('.replay-console'),state.evidence_index,state.provenance);
   }
   function tick() {
@@ -663,12 +666,23 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
   root.querySelector('#replay-demo').addEventListener('change',e=>{
     root.classList.toggle('replay-demo',e.target.checked);
     ['replay-chapters','replay-hypotheses','replay-review-panel'].forEach(id=>root.querySelector(`#${id}`).open=e.target.checked);
+    // Demo mode auto-expands the orchestration panel; disabling demo never collapses it
+    // (it is the hero panel and stays open by default).
+    if (e.target.checked) root.querySelector('#replay-workflow-panel').open = true;
+    // Re-render so the orchestration panel re-binds with demo active: the narrative
+    // auto-highlights and scrolls to the current stage on enable (and clears on disable).
+    draw();
   });
   play.addEventListener('click', () => { if (timer) pause(); else { play.textContent='暂停'; play.setAttribute('aria-pressed','true'); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   root.querySelector('#replay-speed').addEventListener('change', () => { if (timer) { clearTimeout(timer); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   window.addEventListener('hashchange', pause, {once:true});
   draw();
-  if(demoMode) { const toggle=root.querySelector('#replay-demo'); toggle.checked=true; toggle.dispatchEvent(new Event('change')); }
+  // Deep link `&demo=1`: enable the toggle and re-render so the orchestration panel
+  // binds with demo active (stage highlight/scroll) on the very first paint.
+  if(demoMode) {
+    const toggle=root.querySelector('#replay-demo');
+    if(!toggle.checked) { toggle.checked=true; toggle.dispatchEvent(new Event('change')); }
+  }
 }
 
 function drawRun(root, data) {
