@@ -44,7 +44,14 @@ export function metadataHtml(data, opts = {}) {
  * valid — bookmarks/opts are optional. Rendering lives in orchestration.js.
  */
 export function workflowHtml(state, selectedRole = '', bookmarks = [], opts = {}) {
-  return orchestrationHtml(state, selectedRole, bookmarks, opts);
+  try {
+    return orchestrationHtml(state, selectedRole, bookmarks, opts);
+  } catch {
+    // Final safety net: an unforeseen trace shape must degrade to an inline note,
+    // never throw out of draw() (which would blank the panel AND leave every
+    // [data-seek] jump unbound — the F2 failure mode). Keep navigation available.
+    return `<div class="orch-panel"><p class="orch-empty">编排视图暂不可用：当前事件结构无法解析。请使用「Communication Timeline」浏览事件。</p></div>`;
+  }
 }
 
 /**
@@ -105,16 +112,21 @@ const shortId = (value, keep = 12) => {
 // null/undefined/'' → []. A schema-valid but scalar-typed field must never throw
 // and blank the whole panel (it previously aborted draw() at the `.map` below).
 const asList = (v) => (Array.isArray(v) ? v : v == null || v === '' ? [] : [v]);
+// Renderable text for a NON-chip list entry (predicted_observations, open_questions,
+// blocking checks). Returns null when the entry carries no renderable text (null,
+// undefined, '', blank string, `{}` / keyless object) so listHtml can DROP it — a
+// list item must never degrade to a literal `[object Object]` or an empty bullet.
 const itemText = (x) => {
-  if (typeof x === 'string') return x;
+  if (typeof x === 'string') return x.trim() ? x : null;
+  if (typeof x === 'number' || typeof x === 'boolean') return String(x);
   if (x && typeof x === 'object') {
     const keys = ['claim', 'message', 'question', 'reason', 'summary', 'code', 'label'];
-    const hit = keys.find(k => typeof x[k] === 'string');
+    const hit = keys.find(k => typeof x[k] === 'string' && x[k].trim());
     if (hit) return x[hit];
     const pairs = Object.entries(x).filter(([, v]) => typeof v === 'string' || typeof v === 'number');
     if (pairs.length) return pairs.map(([k, v]) => `${k}: ${v}`).join(' · ');
   }
-  return String(x ?? '');
+  return null;
 };
 // Evidence chips need renderable scalar ids. A details field typed `Any` may carry
 // an object id (`{ evidence_id: … }`) or an unusable entry (`{}`, `null`, `''`).
@@ -134,9 +146,9 @@ const asIdList = (v) => asList(v)
   })
   .filter(Boolean);
 const listHtml = (items, emptyText = '无记录') => {
-  const list = asList(items);
+  const list = asList(items).map(itemText).filter((t) => t != null && t !== '');
   return list.length
-    ? `<ul class="replay-review__list">${list.map(x => `<li>${esc(itemText(x))}</li>`).join('')}</ul>`
+    ? `<ul class="replay-review__list">${list.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`
     : `<p class="text-muted">${esc(emptyText)}</p>`;
 };
 const rawDetails = (e) => {
@@ -163,7 +175,7 @@ function diagnosisCard(e, i, state) {
   const predicted = asList(rc.predicted_observations);
   const openQuestions = asList(rc.open_questions);
   const supporting = asIdList(d.supporting_evidence_ids);
-  const degraded = asList(d.degraded_call_ids);
+  const degraded = asIdList(d.degraded_call_ids);
   const statusTone = rc.status === 'SUPPORTED' ? 'success' : rc.status === 'REJECTED' ? 'danger' : 'neutral';
   return `<div class="replay-review" data-outcome="accepted">${reviewHead(e, i, badge('诊断已通过', 'success'))}
     <p class="replay-review__title">${esc(rc.failure_mode || 'not recorded')}</p>
@@ -241,13 +253,14 @@ export function reviewTimelineHtml(state) {
     }
     const target=(state.hypotheses || []).find(h=>h.hypothesis_id === r.target_hypothesis_id);
     const check = (t,kind) => {
-      const completed=state.task_records.some(x=>x.task_id === t.task_id && x.status === 'COMPLETED');
-      const assigned=state.events.some(x=>x.event_type === 'DECISION' && x.details?.decision?.assignments?.some(a=>a.task_id === t.task_id));
-      return `<li><strong>${esc(kind)} · ${esc(t.role)} · ${esc(t.task_id)}</strong><p>${esc(t.question)}</p><p>${esc(t.reason || '')}</p><span class="text-muted">${completed ? '当前前缀：相同 task_id 已完成' : assigned ? '当前前缀：已调度，未见完成' : '当前前缀：未按此 task_id 调度；不推断检查已完成'}</span></li>`;
+      const o = (t && typeof t === 'object') ? t : { task_id: t == null ? '' : String(t) };
+      const completed=state.task_records.some(x=>x.task_id === o.task_id && x.status === 'COMPLETED');
+      const assigned=state.events.some(x=>x.event_type === 'DECISION' && asList(x.details?.decision?.assignments).some(a=>a.task_id === o.task_id));
+      return `<li><strong>${esc(kind)} · ${esc(o.role)} · ${esc(o.task_id)}</strong><p>${esc(o.question)}</p><p>${esc(o.reason || '')}</p><span class="text-muted">${completed ? '当前前缀：相同 task_id 已完成' : assigned ? '当前前缀：已调度，未见完成' : '当前前缀：未按此 task_id 调度；不推断检查已完成'}</span></li>`;
     };
     return `<article class="replay-review"><div class="chip-row">${jumpButton(i+1,`${e.event_id} · REVIEW`)}${badge(r.verdict,r.verdict === 'sufficient'?'success':'warning')}</div><p class="mono">${esc(target?.failure_mode || r.target_hypothesis_id)}</p>
       <details><summary>审查理由、证据版本与检查</summary><p>${esc(r.rationale)}</p><dl><dt>Hypothesis SHA256</dt><dd class="mono">${esc(e.details.hypothesis_sha256 || 'not recorded')}</dd><dt>Evidence SHA256</dt><dd class="mono">${esc(e.details.evidence_sha256 || 'not recorded')}</dd></dl>
-      ${evidenceChips(r.cited_evidence_ids,state.evidence_index)}<ul>${(r.requested_checks || []).map(t=>check(t,'Blocking')).join('')}${(r.optional_checks || []).map(t=>check(t,'Optional')).join('')}</ul>${r.contradictions?.length ? json(r.contradictions) : ''}</details></article>`;
+      ${evidenceChips(asIdList(r.cited_evidence_ids),state.evidence_index)}<ul>${asList(r.requested_checks).map(t=>check(t,'Blocking')).join('')}${asList(r.optional_checks).map(t=>check(t,'Optional')).join('')}</ul>${asList(r.contradictions).length ? json(asList(r.contradictions)) : ''}</details></article>`;
     } catch {
       return `<div class="replay-review" data-outcome="unknown">${reviewHead(e, i, badge('未识别事件结构', 'neutral'))}<p class="text-muted">该事件结构无法结构化呈现；展开查看原始结构。</p>${rawDetails(e)}</div>`;
     }

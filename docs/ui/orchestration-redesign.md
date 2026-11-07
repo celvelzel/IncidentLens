@@ -1391,95 +1391,101 @@ Do **not** use emoji or text glyphs as icons (BRIEF ban).
 ### Desktop (≥1024)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [MOCK] [RECORDED REPLAY]         Investigation Replay         [x] 演示模式      │  ← heading
-│ 按保存顺序重建共享状态…                                                         │
-├──────────────────────────────────────────────────────────────────────────────┤
-│ [首步][上一步][播放][下一步][末步]  速度 1×   12 / 71 已保存事件                 │  ← controls
-│ Seek ──────●────────────────────────────────  Jump [ 12 ] [跳转]               │  ← seek
-├──────────────────────────────────────────────────────────────────────────────┤
-│ ▸ 编排视图 · 共享状态与工作流                                          (open)    │
-│  ┌─ [MOCK][Dynamic (with verifier)] 轮次 3/4 工具 9/12 ──────────────┐        │
-│  │ 协调者(4) → 专家(4) → 合并证据(15) → 假设(2) → [验证审查(3)] → 定案门(1) → 报告(1) │  ← stepper
-│  │  ▲当前 = aria-current=step（回放位置；#replay-workflow 内唯一）  │        │
-│  │  演示模式另加 .is-highlighted 轮廓，不加第二个 aria-current      │        │
+┌───────────────────────────────────────────────────────────────────────────────────────────┐
+│ [MOCK] [RECORDED REPLAY]         Investigation Replay         [x] 演示模式                │  ← heading
+│ 按保存顺序重建共享状态…                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────┤
+│ [首步][上一步][播放][下一步][末步]  速度 1×   12 / 71 已保存事件                          │  ← controls
+│ Seek ──────●────────────────────────────────  Jump [ 12 ] [跳转]                          │  ← seek
+├───────────────────────────────────────────────────────────────────────────────────────────┤
+│ ▸ 编排视图 · 共享状态与工作流                                          (open)             │
+│  ┌─ [MOCK][Dynamic (with verifier)] 轮次 3/4 工具 9/12 ──────────────┐                    │
+│  │ 协调者(4) → 专家(4) → 合并证据(15) → 假设(2) → [验证审查(3)] → 定案门(1) → 报告(1)     │  ← stepper
+│  │  ▲当前 = aria-current=step（回放位置；#replay-workflow 内唯一）  │                     │
+│  │  演示模式另加 .is-highlighted 轮廓，不加第二个 aria-current      │                     │
 │  │ 第 4 章 · 首次证据不足审查：验证者判定证据不足，要求补充变更检查。   [上一][3/6][下一] │  ← narrative
-│  ├──────────────────────────────────────────────────────────────────┤        │
-│  │ 第 1 轮  Compare symptoms with service health            [跳决策] │        │
-│  │ 协调者→ ┌ 日志调查员 Logs Agent ─┐ ┌ 指标调查员 Metrics Agent ─┐   │        │  ← swimlane
-│  │        │ check-logs-0  ✓已完成  │ │ check-metrics-0 ✓已完成   │   │        │
-│  │        │ Identify error prop…   │ │ Compare dependency health │   │        │
-│  │        └ [时间][跳到事件] ──────┘ └ [时间][跳到事件] ─────────┘   │        │
-│  │        合并证据 → Public Evidence                                  │        │
-│  ├──────────────────────────────────────────────────────────────────┤        │
-│  │ 角色统计 Role stats                                               │        │
-│  │ ┌日志调查员 1/0/1/6/1/13ms┐ ┌指标调查员┐ ┌变更调查员┐ ┌验证审查┐       │  ← role cards
-│  │ │(选中展开)  task rows …  │                                          │        │
-│  ├──────────────────────────────────────────────────────────────────┤        │
-│  │ 验证审查门 3审查·2不足·1充分                                        │        │  ← gate
-│  │ ⚠证据不足 @event-25 目标:backend_pool_config_regression            │        │
-│  │   cited M009 M004 · 阻断检查 check-changes-2(已调度未见完成)          │        │
-│  │   矛盾: Observed normal database metrics…  ↳ 第2轮重新调度          │        │
-│  │ ✓证据充分 @event-62 …            [已定案 / 未触发阻断]               │        │
-│  ├──────────────────────────────────────────────────────────────────┤        │
-│  │ 证据流向  agent → evidence → finding/hypothesis → report            │        │  ← flow
-│  │ Agents │ Evidence chips │ Findings/Hypotheses │ Report refs         │        │
-│  └──────────────────────────────────────────────────────────────────┘        │
-│  ▸ 演示章节 …   ▸ Communication Timeline …   ▸ Hypothesis …  ▸ Review …      │
-│  ▸ 运行来源与限制 · 独立最终产物元数据快照                                   │  ← metadata (sunk)
-└──────────────────────────────────────────────────────────────────────────────┘
+│  ├──────────────────────────────────────────────────────────────────┤                     │
+│  │ 第 1 轮  Compare symptoms with service health            [跳决策] │                    │
+│  │ 协调者→ ┌ 日志调查员 Logs Agent ─┐ ┌ 指标调查员 Metrics Agent ─┐   │                   │  ← swimlane
+│  │        │ check-logs-0  ✓已完成  │ │ check-metrics-0 ✓已完成   │   │                    │
+│  │        │ Identify error prop…   │ │ Compare dependency health │   │                    │
+│  │        └ [时间][跳到事件] ──────┘ └ [时间][跳到事件] ─────────┘   │                    │
+│  │        合并证据 → Public Evidence                                  │                   │
+│  ├──────────────────────────────────────────────────────────────────┤                     │
+│  │ 角色统计 Role stats                                               │                    │
+│  │ ┌日志调查员 1/0/1/6/1/13ms┐ ┌指标调查员┐ ┌变更调查员┐ ┌验证审查┐                       │  ← role cards
+│  │ │(选中展开)  task rows …  │                                          │                 │
+│  ├──────────────────────────────────────────────────────────────────┤                     │
+│  │ 验证审查门 3审查·2不足·1充分                                        │                  │  ← gate
+│  │ ⚠证据不足 @event-25 目标:backend_pool_config_regression            │                   │
+│  │   cited M009 M004 · 阻断检查 check-changes-2(已调度未见完成)          │                │
+│  │   矛盾: Observed normal database metrics…  ↳ 第2轮重新调度          │                  │
+│  │ ✓证据充分 @event-62 …            [已定案 / 未触发阻断]               │                 │
+│  ├──────────────────────────────────────────────────────────────────┤                     │
+│  │ 证据流向  agent → evidence → finding/hypothesis → report            │                  │  ← flow
+│  │ Agents │ Evidence chips │ Findings/Hypotheses │ Report refs         │                  │
+│  └──────────────────────────────────────────────────────────────────┘                     │
+│  ▸ 演示章节 …   ▸ Communication Timeline …   ▸ Hypothesis …  ▸ Review …                   │
+│  ▸ 运行来源与限制 · 独立最终产物元数据快照                                                │  ← metadata (sunk)
+└───────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Mobile (≤680, verified 390)
 
 ```
-┌─────────────────────────────┐
-│ [MOCK][RECORDED]  Investigation Replay  [x]演示│
-│ [首步][上一步][播放][下一步][末步]             │
-│ Seek ──●──────────── Jump[12][跳转]           │
-├─────────────────────────────┤
-│ ▾ 编排视图 · 共享状态与工作流    (open)        │
-│ ① 协调者 Coordinator  4 决策    │  ← vertical
-│ │                            │     stepper
-│ ② 专家(并行) Experts  4 任务  ▲当前│
-│ │                            │
-│ ③ 合并证据 Public Evidence 15  │
-│ ④ 假设 Hypotheses 2           │
-│ ⑤ 验证审查 Verifier 3          │
-│ ⑥ 定案门 FinalizeGate 1        │
-│ ⑦ 报告 Report 1               │
-│ ─────────────────────────────│
-│ 第4章 · 验证者判定证据不足…     │  ← narrative
-│ [上一关键节点]  3/6  [下一…]    │
-│ ─────────────────────────────│
-│ 第 1 轮 (并行)  Compare symptoms│  ← swimlane
-│ ┌ 日志调查员 Logs Agent ────┐ │     stacked
-│ │ check-logs-0    ✓已完成   │ │
-│ │ Identify error propagation│ │
-│ │ 13:52:44   [跳到事件]     │ │
-│ └───────────────────────────┘ │
-│ ┌ 指标调查员 Metrics Agent ─┐ │
-│ │ check-metrics-0 ✓已完成   │ │
-│ └───────────────────────────┘ │
-│ 合并证据 → Public Evidence     │
-│ ─────────────────────────────│
-│ 角色统计 (1-up cards)          │
-│ ┌ 日志调查员 Logs Agent ────┐ │
-│ │ 调度1 完成1 工具1 证据6 … │ │
-│ │ (展开) task rows …        │ │
-│ └───────────────────────────┘ │
-│ ─────────────────────────────│
+┌───────────────────────────────────────────────────┐
+│ [MOCK][RECORDED]  Investigation Replay  [x]演示   │
+│ [首步][上一步][播放][下一步][末步]                │
+│ Seek ──●──────────── Jump[12][跳转]               │
+├───────────────────────────────────────────────────┤
+│ ▾ 编排视图 · 共享状态与工作流    (open)           │
+│ ① 协调者 Coordinator  4 决策                      │  ← vertical
+│ │                                                 │     stepper
+│ ② 专家(并行) Experts  4 任务  ▲当前               │
+│ │                                                 │
+│ ③ 合并证据 Public Evidence 15                     │
+│ ④ 假设 Hypotheses 2                               │
+│ ⑤ 验证审查 Verifier 3                             │
+│ ⑥ 定案门 FinalizeGate 1                           │
+│ ⑦ 报告 Report 1                                   │
+│───────────────────────────────────────────────────│
+│ 第4章 · 验证者判定证据不足…                       │  ← narrative
+│ [上一关键节点]  3/6  [下一…]                      │
+│───────────────────────────────────────────────────│
+│ 第 1 轮 (并行)  Compare symptoms                  │  ← swimlane
+│ ┌ 日志调查员 Logs Agent ────┐                     │     stacked
+│ │ check-logs-0    ✓已完成   │                     │
+│ │ Identify error propagation│                     │
+│ │ 13:52:44   [跳到事件]     │                     │
+│ └───────────────────────────┘                     │
+│ ┌ 指标调查员 Metrics Agent ─┐                     │
+│ │ check-metrics-0 ✓已完成   │                     │
+│ └───────────────────────────┘                     │
+│ 合并证据 → Public Evidence                        │
+│───────────────────────────────────────────────────│
+│ 角色统计 (1-up cards)                             │
+│ ┌ 日志调查员 Logs Agent ────┐                     │
+│ │ 调度1 完成1 工具1 证据6 … │                     │
+│ │ (展开) task rows …        │                     │
+│ └───────────────────────────┘                     │
+│───────────────────────────────────────────────────│
 │ 验证审查门 (RICH) / 该变体无验证者·未审查 (SIMPLE)│
-│ ⚠ 证据不足 @25 …              │
-│ ↳ 第2轮重新调度               │
-│ [已定案 / 未触发阻断]          │
-│ ─────────────────────────────│
-│ 证据流向 (stacked, ↓ arrows)   │
-│ 来源 Agent ↓ 证据 ↓ 发现/假设 ↓ 报告│
-└─────────────────────────────┘
+│ ⚠ 证据不足 @25 …                                  │
+│ ↳ 第2轮重新调度                                   │
+│ [已定案 / 未触发阻断]                             │
+│───────────────────────────────────────────────────│
+│ 证据流向 (stacked, ↓ arrows)                      │
+│ 来源 Agent ↓ 证据 ↓ 发现/假设 ↓ 报告              │
+└───────────────────────────────────────────────────┘
 ```
 
 Wireframe conventions (both layouts):
+
+> **Alignment (round 6):** every box line is padded to one uniform display width
+> (desktop **93**, mobile **53**, East-Asian-width aware — CJK counts as 2 columns),
+> chosen as the *widest* content line so no text is truncated. The `← …` labels sit
+> outside the right border and do not affect box width. Earlier draft boxes had
+> mixed widths (78 lines off-grid at HEAD); this pass closed them.
 
 - `▲当前` = the stage whose `aria-current="step"` / `data-state="current"` follows the **replay
   position** — exactly one inside `#replay-workflow` (the separate 调查时间线 list keeps its own
@@ -1665,6 +1671,7 @@ is committed by this change set).
 
 | Gate | Result |
 |---|---|
+| Review round 6 (three known non-blocking items) | (1) `itemText()` now drops entries with no renderable text: `predicted_observations:[{}]` / `degraded_call_ids:[{}]` no longer emit `[object Object]`; `asIdList` reused for the degraded-call list. (2) Scalar-typed `details` list fields are normalised end-to-end: `replay.js` (`replayWorkflow`, `replayReliability`, `replayReducer`, `evidenceContext`) and `orchestration.js` (`chips`, `buildStages`, `buildRounds`, `buildRoleStats`, `buildReviewGates` incl. the former `:533` `requested_checks`/`optional_checks`, `buildEvidenceFlow`) all use `asArray()` before `.map`/`.includes`/`.some`; `workflowHtml()` adds a try/catch inline-note fallback so no shape can blank `#replay-workflow` or unbind `[data-seek]`. (3) Both §10 ASCII wireframes are uniformly aligned (desktop 93 / mobile 53 display columns, 0 off-width lines). This supersedes round 5's "box width preserved at exactly 80" note — the box was widened to fit the CJK-heavy stepper line without truncation. |
 | Browser sweep, RICH + SIMPLE × 1440/834/390 × light/dark (`after-r2/r2-report.json`) | 0 page errors, 0 console errors, 0 horizontal overflow; stepper `4/4/15/2/3/1/1` + `aria-current`, 3-round swimlane with gate + 2 loop-backs, 5 role stats, **0 `<pre>` inside `#replay-workflow`**, 15-chip evidence flow with report `C001/D001/M009`, narrative prev/next |
 | Review round 5 (F7–F10 doc residuals) | F7: the dangling *The `diagnosisCard`/* clause is completed — it now reads "The `diagnosisCard`/`finalizeCard` dispatch — in fact the whole per-event render — is wrapped in `try/catch`". F8: `asIdList` strengthened to drop non-renderable entries — verified `[{}]`, `[{a:{b:1}}]`, `[null]`, `['']` all yield **0 chips** (no `[object Object]`, no blank chip) while `[{evidence_id:'incident_001-C001'}]` yields a normal chip, so the strong claim is now literally true. F9: the absolute claim is replaced by the true narrower rule — the contradiction is prevented only when a blocking-source field is **present** (any present source, including `[]`, renders a count); when none is present (`details: {}`) the card legitimately shows `未记录阻断检查` alongside `定案被阻断`, which is a true statement rather than a contradiction. No real event hits that case (all 12 `FINALIZE_REJECTED` carry `errors`). F10: the in-box `（回放位置，每页恰好一个）` claim replaced with `（回放位置；#replay-workflow 内唯一）`, ASCII box width preserved at exactly 80 display columns and the inner `│` border columns still align. |
 | Review round 4 (t5 re-review fixes) | F2 probe matrix: array/scalar/null/undefined/''/object `support_ids` all render a card (no throw) and the object id is flattened for chips; `predicted_observations`/`open_questions` × string/null/''/object/array all render; hostile getter-throwing `root_cause` **and** `review` shapes degrade to the collapsed raw card instead of aborting `draw()`. Live dashboard with a scalar trace: all four panels populated and 116 `[data-seek]` bound with a working jump. F1 copy names the two locations that actually hold the JSON (`#replay-selection` → 原始结构化事件详情, and the 调查时间线 tab's expanded `.tl-body`), both verified in-browser. F3 `errors` string/object/array all render with a correct count, `errors: []` + populated `blocking_checks` prefers the non-empty source, and a blocked card renders a check count whenever any blocking source is present, so the `定案被阻断` + `未记录阻断检查` pair is unreachable in that case (it is shown only when no blocking-source field exists at all, which is a true statement rather than a contradiction). F4 page-wide `aria-current="step"` = 2 (1 in `#replay-workflow`, 1 in the 调查时间线), stated as such. F5 measured 44 px on `#replay-reviews .evidence-chip` at 390/coarse with 0 overflow; the rule is named selector-by-selector. F6 base HEAD `fea028a` with the correct fea028a blob hashes as "was". `node --test` 23/23, ruff PASS, integration trio 20 passed, mock browser PASS, full `pytest -ra` 1180 passed / 2 skipped. |

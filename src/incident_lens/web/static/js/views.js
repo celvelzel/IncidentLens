@@ -35,6 +35,11 @@ import {
   closeDrawer,
 } from "./components.js";
 
+// `TraceEvent.details` is `dict[str, Any]` on the wire (schemas/contracts.py): a
+// "list" field may legally arrive as a scalar. Normalise before `.map`/`.length`
+// so a schema-valid-but-odd trace can never throw out of a timeline renderer.
+const asArray = (v) => (Array.isArray(v) ? v : v == null || v === "" ? [] : [v]);
+
 // Layout-shaped skeletons land with the core layer; fall back to generic rows
 // if this file is loaded before those helpers exist (same branch, parallel work).
 const skeletonTable = (rows = 6, cols = 8) =>
@@ -908,13 +913,15 @@ function timelineBody(event) {
     const tone = rev.verdict === "sufficient" ? "success" : rev.verdict === "conflicted" ? "danger" : "warning";
     parts.push(`<div class="chip-row">${badge(`裁定 · ${rev.verdict}`, tone)} <span class="tag-id">${escapeHtml(rev.target_hypothesis_id)}</span></div>`);
     parts.push(`<p>${escapeHtml(rev.rationale)}</p>`);
-    if (rev.contradictions?.length) {
-      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${rev.contradictions
+    const contradictions = asArray(rev.contradictions);
+    if (contradictions.length) {
+      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${contradictions
         .map(escapeHtml)
         .join("<br>")}</div></div>`);
     }
-    if (rev.requested_checks?.length) {
-      parts.push(`<div class="assign-list">${rev.requested_checks
+    const requestedChecks = asArray(rev.requested_checks);
+    if (requestedChecks.length) {
+      parts.push(`<div class="assign-list">${requestedChecks
         .map((t) => `<div class="assign-item"><div class="chip-row mb-2">${badge(t.role, "neutral")}</div><div class="q">${escapeHtml(t.question)}</div></div>`)
         .join("")}</div>`);
     }
