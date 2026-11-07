@@ -606,8 +606,8 @@ export function buildEvidenceFlow(state) {
         })),
       report: {
         supporting: !!(report && asArray(report.supporting_evidence_ids).includes(id)),
-        provisional: !!(report && asArray(report.provisional_hypotheses).some((h) => asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id))),
-        causalChain: report ? asArray(report.causal_chain).filter((line) => line.includes(`[${id}]`)) : [],
+        provisional: !!(report && asArray(report.provisional_hypotheses).some((h) => h && (asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id)))),
+        causalChain: report ? asArray(report.causal_chain).filter((line) => typeof line === 'string' && line.includes(`[${id}]`)) : [],
       },
     };
   });
@@ -628,8 +628,8 @@ export function buildEvidenceFlow(state) {
           status: report.status || '',
           rootCauseFailureMode: report.root_cause?.failure_mode || null,
           supportingEvidenceIds: asArray(report.supporting_evidence_ids),
-          causalChain: asArray(report.causal_chain),
-          rejectedHypothesisIds: asArray(report.rejected_hypotheses).map((h) => h.hypothesis_id),
+          causalChain: asArray(report.causal_chain).filter((line) => typeof line === 'string'),
+          rejectedHypothesisIds: asArray(report.rejected_hypotheses).filter((h) => h && typeof h === 'object').map((h) => h.hypothesis_id),
         }
       : { present: false, status: '', rootCauseFailureMode: null, supportingEvidenceIds: [], causalChain: [], rejectedHypothesisIds: [] },
   };

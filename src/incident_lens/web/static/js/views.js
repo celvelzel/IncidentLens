@@ -1105,7 +1105,9 @@ export function renderReport(panel, state, reportMd) {
   const status = STATUS_META[report.status] || { tone: "neutral", label: report.status };
   const evidenceIndex = state.evidence_index || {};
   const rootCause = report.root_cause;
-  const provisional = report.provisional_hypotheses || [];
+  const provisional = asArray(report.provisional_hypotheses).filter((h) => h && typeof h === "object");
+  const observations = asArray(report.provisional_observations).filter((s) => typeof s === "string");
+  const causalChain = asArray(report.causal_chain).filter((s) => typeof s === "string");
   const assessmentLabel = report.acceptance_standard === "BEST_SUPPORTED_AVAILABLE" ? "已确定：现有证据最支持" : { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
   panel.innerHTML = `
     <div class="report-hero" data-status="${escapeHtml(report.status)}">
@@ -1130,13 +1132,13 @@ export function renderReport(panel, state, reportMd) {
         ${h.against_ids?.length ? `<p class="text-secondary">尚待解释的反对证据</p><div class="cite-wrap">${evidenceChips(h.against_ids, evidenceIndex)}</div>` : ""}
       </div>`).join("")}</div></div>` : ""}
 
-    ${report.provisional_observations?.length ? `<div class="report-section"><h3 class="type-title-3">已有观察（归因尚未确认）</h3>
-      <ul class="symptom-list">${report.provisional_observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${observations.length ? `<div class="report-section"><h3 class="type-title-3">已有观察（归因尚未确认）</h3>
+      <ul class="symptom-list">${observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     ${report.causal_limitations?.length ? `<div class="report-section"><h3 class="type-title-3">结论的证据边界</h3>
       <ul class="symptom-list">${report.causal_limitations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
-    ${report.causal_chain?.length ? `<div class="report-section"><h3 class="type-title-3">因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
+    ${causalChain.length ? `<div class="report-section"><h3 class="type-title-3">因果链</h3><ol class="causal-chain">${causalChain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 
     ${report.supporting_evidence_ids?.length ? `<div class="report-section">
       <h3 class="type-title-3">支持证据</h3>
