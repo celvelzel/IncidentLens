@@ -144,22 +144,31 @@ function buildLifecycle(state) {
 
 function buildFinalize(state) {
   const events = state.events || [];
-  const finIdx = events.findIndex((e) => e.event_type === 'DECISION' && e.details?.decision?.action === 'FINALIZE');
-  const diagIdx = events.findIndex((e) => e.event_type === 'DIAGNOSIS_ACCEPTED');
-  const blocked = events.some((e) => e.event_type === 'FINALIZE_REJECTED');
-  const fin = finIdx >= 0 ? events[finIdx] : null;
-  const diag = diagIdx >= 0 ? events[diagIdx] : null;
-  const present = !!diag || !!fin;
-  const selectedHypothesisId =
-    fin?.details?.decision?.selected_hypothesis_id || diag?.details?.root_cause?.hypothesis_id || null;
-  const statusText = blocked ? '已阻断 · FINALIZE_REJECTED' : present ? '已定案 / 未触发阻断' : '待定案';
-  const statusTone = blocked ? 'danger' : present ? 'success' : 'neutral';
+  let outcome = 'waiting', selectedHypothesisId = null, event = null, position = null;
+  events.forEach((e, i) => {
+    if (e.event_type === 'DECISION' && e.details?.decision?.action === 'FINALIZE') {
+      outcome = 'pending';
+      selectedHypothesisId = e.details.decision.selected_hypothesis_id || null;
+    } else if (e.event_type === 'FINALIZE_REJECTED') {
+      outcome = 'blocked';
+      selectedHypothesisId = e.details?.selected_hypothesis_id || selectedHypothesisId;
+    } else if (e.event_type === 'DIAGNOSIS_ACCEPTED') {
+      outcome = 'accepted';
+      selectedHypothesisId = e.details?.root_cause?.hypothesis_id || selectedHypothesisId;
+    } else return;
+    event = e;
+    position = i + 1;
+  });
+  const blocked = outcome === 'blocked';
+  const present = outcome !== 'waiting';
+  const statusText = { waiting: '待定案', pending: '定案提议 · 等待门禁', blocked: '已阻断 · FINALIZE_REJECTED', accepted: '诊断已通过 · DIAGNOSIS_ACCEPTED' }[outcome];
+  const statusTone = blocked ? 'danger' : outcome === 'accepted' ? 'success' : 'neutral';
   return {
     present,
-    decisionEventId: fin?.event_id || diag?.event_id || null,
-    position: finIdx >= 0 ? finIdx + 1 : diagIdx >= 0 ? diagIdx + 1 : null,
+    decisionEventId: event?.event_id || null,
+    position,
     selectedHypothesisId,
-    diagnosisAccepted: !!diag,
+    diagnosisAccepted: outcome === 'accepted',
     blocked,
     statusText,
     statusTone,
@@ -616,14 +625,14 @@ export function buildEvidenceFlow(state) {
 }
 
 const NARRATION = {
-  dispatch: { text: '协调者把首轮并行任务同时派给日志与指标调查员。', stage: 'experts' },
-  config: { text: '变更调查员读取配置差异，把 DB_POOL_MAX 从 64 降到 2 的关键证据合并进来。', stage: 'evidence' },
-  insufficient: { text: '验证者判定证据不足，要求补充变更检查。', stage: 'review' },
-  postgres_connection_exhaustion: { text: '数据库连接耗尽假设被正常指标证据否决。', stage: 'hypotheses' },
-  backend_resource_saturation: { text: '（该 trace 未记录此竞争假设）', stage: 'hypotheses' },
-  gate: { text: '定案门未触发阻断：本 trace 无 FINALIZE_REJECTED，门禁以 REVIEW 判定表示。', stage: 'finalize' },
-  'last-review': { text: '验证者确认证据充分（sufficient）。', stage: 'review' },
-  report: { text: '最终报告确认根因 backend_pool_config_regression。', stage: 'report' },
+  dispatch: { text: '查看首次调度的任务。', stage: 'experts' },
+  config: { text: '查看配置差异查询返回的证据。', stage: 'evidence' },
+  insufficient: { text: '查看首次证据不足的审查。', stage: 'review' },
+  postgres_connection_exhaustion: { text: '查看该竞争假设被排除的记录。', stage: 'hypotheses' },
+  backend_resource_saturation: { text: '查看该竞争假设被排除的记录。', stage: 'hypotheses' },
+  gate: { text: '查看定案门阻断的记录。', stage: 'finalize' },
+  'last-review': { text: '查看最后一次验证审查的结果。', stage: 'review' },
+  report: { text: '查看最终报告及其记录的结论。', stage: 'report' },
 };
 
 /** Synthetic chapter 0 — the demo can start before the first recorded event. */
@@ -862,7 +871,7 @@ export function reviewGateHtml(state, opts = {}) {
     // Verifier-capable variant whose replay prefix has not reached the first REVIEW yet:
     // this is PENDING, never "该变体无验证者".
     const f0 = model.finalize;
-    const finNote0 = !f0.present ? '尚未定案' : `${f0.diagnosisAccepted ? 'DIAGNOSIS_ACCEPTED' : 'FINALIZE'} · ${f0.statusText}`;
+    const finNote0 = !f0.present ? '尚未定案' : f0.statusText;
     return `<section class="orch-gates" aria-label="验证审查门"><header class="orch-section-title">验证审查门 Verifier Review Gate <span class="orch-badge">0 审查</span></header><p class="orch-empty">当前前缀尚无验证审查</p><article class="orch-finalize" data-blocked="${f0.blocked}">${statusBadge(f0.statusText, f0.statusTone, f0.blocked ? 'alert' : 'shield')}<p class="text-muted">${esc(finNote0)}</p></article></section>`;
   }
   const s = model.summary;
@@ -896,7 +905,7 @@ export function reviewGateHtml(state, opts = {}) {
     : '—';
   const finNote = !f.present
     ? '尚未定案'
-    : `${f.diagnosisAccepted ? 'DIAGNOSIS_ACCEPTED' : 'FINALIZE'}${f.decisionEventId ? ` · ${esc(f.decisionEventId)}` : ''} · 根因 ${esc(rootCause)}`;
+    : `${f.decisionEventId ? `${esc(f.decisionEventId)} · ` : ''}${f.diagnosisAccepted ? '已接受假设' : '所选假设'} ${esc(rootCause)}`;
   const finHtml = `<article class="orch-finalize" data-blocked="${f.blocked}">${statusBadge(f.statusText, f.statusTone, f.blocked ? 'alert' : 'shield')}<p class="text-muted">${finNote}</p></article>`;
   return `<section class="orch-gates" aria-label="验证审查门"><header class="orch-section-title">验证审查门 Verifier Review Gate <span class="orch-badge">${s.reviewCount} 审查 · ${s.insufficient} 不足 · ${s.sufficient} 充分</span></header>${gatesHtml}${finHtml}</section>`;
 }
