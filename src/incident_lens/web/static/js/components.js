@@ -1,42 +1,91 @@
 /**
- * Shared UI components: badges, empty states, toasts, drawer.
+ * Shared UI components: badges, empty states, skeletons, toasts, drawer.
+ *
+ * Presentation-only module. Every exported name, signature, escaping rule
+ * and asserted copy string is part of the test contract
+ * (tests/integration/test_v12_ui.py, tests/web/*.test.mjs) and must not change.
  */
 
 import { escapeHtml, SOURCE_TYPE_META, formatDateTime } from "./api.js";
+
+/* ---------------- Badges ---------------- */
 
 export function badge(text, tone = "neutral", withDot = false) {
   const cls = tone === "neutral" ? "badge" : `badge badge-${tone}`;
   return `<span class="${cls}">${withDot ? '<span class="dot" aria-hidden="true"></span>' : ""}${escapeHtml(text)}</span>`;
 }
 
-export function emptyState({ title, desc = "", actionHtml = "" }) {
+/* ---------------- Empty state ---------------- */
+
+const EMPTY_ICON_SEARCH =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>';
+
+export function emptyState({ title, desc = "", actionHtml = "", icon = null }) {
+  const iconHtml = icon == null ? EMPTY_ICON_SEARCH : icon;
   return `
     <div class="empty">
-      <div class="empty-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
-      </div>
+      <div class="empty-icon" aria-hidden="true">${iconHtml}</div>
       <div class="empty-title">${escapeHtml(title)}</div>
       ${desc ? `<div class="empty-desc">${escapeHtml(desc)}</div>` : ""}
-      ${actionHtml}
+      ${actionHtml ? `<div class="empty-actions">${actionHtml}</div>` : ""}
     </div>`;
 }
 
+/* ---------------- Skeletons ---------------- */
+
+/* Generic bars. Retained for compatibility, but layout-shaped skeletons
+   below must be used for table / list / KPI / run-detail content. */
 export function skeletonRows(count = 4, height = 44) {
   return Array.from({ length: count })
-    .map(() => `<div class="skeleton" style="height:${height}px;margin-bottom:10px"></div>`)
+    .map(() => `<div class="skeleton skeleton-row" style="height:${height}px"></div>`)
     .join("");
 }
 
+/* Table-shaped: a header row plus `rows` body rows aligned to table.data. */
+export function skeletonTable(rows = 6, cols = 8) {
+  const cell = '<span></span>';
+  const head = `<div class="skeleton-head" aria-hidden="true">${Array.from({ length: cols }).map(() => "<span></span>").join("")}</div>`;
+  const body = Array.from({ length: rows })
+    .map(() => `<div class="skeleton-line" aria-hidden="true">${Array.from({ length: cols }).map(() => cell).join("")}</div>`)
+    .join("");
+  return `<div class="skeleton-table" aria-busy="true" style="--skeleton-cols:repeat(${cols}, minmax(0, 1fr))"><span class="visually-hidden" role="status">加载中…</span>${head}${body}</div>`;
+}
+
+/* Case-item-shaped rows for a master list. */
+export function skeletonList(count = 6) {
+  const item = '<div class="skeleton-item" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>';
+  return `<div class="skeleton-list" aria-busy="true"><span class="visually-hidden" role="status">加载中…</span>${Array.from({ length: count }).map(() => item).join("")}</div>`;
+}
+
+/* KPI-sized blocks for a stat strip. */
+export function skeletonKpi(count = 4) {
+  const block = '<div class="skeleton-block" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span></div>';
+  return `<div class="skeleton-kpi" aria-busy="true" style="--skeleton-kpi-cols:${count}"><span class="visually-hidden" role="status">加载中…</span>${Array.from({ length: count }).map(() => block).join("")}</div>`;
+}
+
+/* Run-detail-shaped loading panel (header + KPI strip + tab bar + rows). */
 export function loadingBlock(text = "加载中…") {
-  return `<div class="loading-block"><span class="spinner spinner-lg" role="status" aria-label="加载中"></span><span>${escapeHtml(text)}</span></div>`;
+  const kpis = Array.from({ length: 4 })
+    .map(() => '<div class="skeleton-block" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span></div>')
+    .join("");
+  const rows = Array.from({ length: 4 })
+    .map(() => '<div class="skeleton" aria-hidden="true"></div>')
+    .join("");
+  return `<div class="skeleton-panel" aria-busy="true" role="status">
+    <span class="visually-hidden">${escapeHtml(text)}</span>
+    <div class="skeleton-header" aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div></div>
+    <div class="skeleton-kpi" aria-hidden="true">${kpis}</div>
+    <div class="skeleton-tabs" aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+    <div class="skeleton-rows" aria-hidden="true">${rows}</div>
+  </div>`;
 }
 
 /* ---------------- Toast ---------------- */
 
 const TOAST_ICONS = {
-  success: '<svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>',
-  error: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg>',
-  info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></svg>',
+  success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg>',
+  error: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg>',
+  info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></svg>',
 };
 
 export function toast(message, type = "info", timeout = 4200) {
@@ -46,8 +95,7 @@ export function toast(message, type = "info", timeout = 4200) {
   el.innerHTML = `${TOAST_ICONS[type] || TOAST_ICONS.info}<div class="toast-msg">${escapeHtml(message)}</div>`;
   region.appendChild(el);
   setTimeout(() => {
-    el.style.opacity = "0";
-    el.style.transition = "opacity 240ms ease";
+    el.classList.add("is-leaving");
     setTimeout(() => el.remove(), 260);
   }, timeout);
 }
@@ -141,7 +189,7 @@ export function evidenceDrawerHtml(record, observation = null) {
       <h3>报告引用</h3>${observation.report_references ? `<p>${observation.report_references.supporting ? '最终报告支持证据' : observation.report_references.provisional ? '用于待确认解释，尚未支持最终诊断' : '未列为最终报告支持证据'}</p>${(observation.report_references.causal_chain || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}${(observation.report_references.provisional_observations || []).map(line=>`<p>${escapeHtml(line)}</p>`).join('')}` : '<p class="text-muted">当前前缀尚未生成报告。</p>'}` : ""}
       <div class="field">
         <span class="field-label">原始摘录</span>
-        <pre class="json-block" style="white-space:pre-wrap">${escapeHtml(record.excerpt)}</pre>
+        <pre class="json-block is-wrapped">${escapeHtml(record.excerpt)}</pre>
       </div>
     </div>`;
 }

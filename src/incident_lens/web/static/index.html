@@ -2,11 +2,12 @@
 <html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#9a0907">
+  <meta name="theme-color" content="#a02337">
+  <meta name="description" content="IncidentLens 证据驱动的事件调查控制台">
   <title>IncidentLens · 证据驱动的事件调查控制台</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%239a0907'/%3E%3Ccircle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M19 19 L25 25' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a02337'/%3E%3Ccircle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cpath d='M19 19 L25 25' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/core.css">
   <link rel="stylesheet" href="css/app.css">
@@ -17,9 +18,9 @@
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="主导航">
       <div class="sidebar-brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="26" height="26"><rect width="32" height="32" rx="7" fill="currentColor" opacity="0.16"/><circle cx="14" cy="14" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19 19 L25 25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </span>
+        <a class="brand-mark" href="#/" aria-label="IncidentLens 总览">
+          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor" opacity="0.16"/><circle cx="14" cy="14" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M19 19 L25 25" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </a>
         <span class="brand-text">
           <strong>IncidentLens</strong>
           <small>Evidence-driven RCA</small>
@@ -68,7 +69,7 @@
     </aside>
     <div class="main-area">
       <header class="topbar">
-        <button class="menu-btn" id="menu-btn" type="button" aria-label="打开导航菜单" aria-expanded="false">
+        <button class="menu-btn" id="menu-btn" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="sidebar">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
         <div class="topbar-title" id="topbar-title">总览</div>
@@ -79,7 +80,7 @@
           </a>
         </div>
       </header>
-      <main id="main" class="content" tabindex="-1"></main>
+      <main id="main" class="content" tabindex="-1" aria-label="主要内容"></main>
     </div>
   </div>
   <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>

@@ -1,5 +1,5 @@
 import { replayPrefix, replayBookmarks, eventCategory, evidenceContext } from "./replay.js";
-import { metadataHtml, workflowHtml, historyHtml, reviewTimelineHtml, reliabilityHtml, jumpButton } from "./replay-panels.js";
+import { metadataHtml, workflowHtml, historyHtml, reviewTimelineHtml, reliabilityHtml, jumpButton, bindWorkflowInteractions } from "./replay-panels.js";
 /**
  * IncidentLens views: overview, investigate, run detail, library.
  */
@@ -22,6 +22,7 @@ import {
   SOURCE_TYPE_META,
   variantLabel,
 } from "./api.js";
+import * as componentsModule from "./components.js";
 import {
   badge,
   bindEvidenceChips,
@@ -33,6 +34,15 @@ import {
   workflowReportHtml,
   closeDrawer,
 } from "./components.js";
+
+// Layout-shaped skeletons land with the core layer; fall back to generic rows
+// if this file is loaded before those helpers exist (same branch, parallel work).
+const skeletonTable = (rows = 6, cols = 8) =>
+  typeof componentsModule.skeletonTable === "function" ? componentsModule.skeletonTable(rows, cols) : skeletonRows(rows, 40);
+const skeletonList = (count = 6) =>
+  typeof componentsModule.skeletonList === "function" ? componentsModule.skeletonList(count) : skeletonRows(count, 56);
+const skeletonKpi = (count = 4) =>
+  typeof componentsModule.skeletonKpi === "function" ? componentsModule.skeletonKpi(count) : skeletonRows(count, 92);
 
 Object.assign(ROLE_LABEL, { database: "数据库代理", monitoring: "监控代理", remediation: "修复方案代理" });
 Object.assign(SOURCE_TYPE_META, { database: { label: "数据库", tone: "info" } });
@@ -58,86 +68,73 @@ Object.assign(EVENT_KIND, {
 
 export async function renderOverview(root) {
   root.innerHTML = `
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-split">
+    <header class="page-head overview-head">
+      <div class="page-head-row">
         <div>
-          <div class="hero-kicker">Evidence-Driven RCA Console</div>
-          <h1 class="hero-title" id="hero-title">让每一次根因结论，都有据可查</h1>
-          <p class="hero-desc">
-            IncidentLens 以多智能体协作调查软件故障：协调者分派任务、专家代理在权限边界内取证、
-            验证者交叉核对，最终输出带引用的根因报告 —— 或在证据不足时明确存疑。
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary btn-lg" href="#/investigate">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/><path d="M11 8v6M8 11h6"/></svg>
-              开始调查
-            </a>
-            <a class="btn btn-lg" href="#/library">
-              <svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10l2 2.5h6.5A1.5 1.5 0 0 1 20 8v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg>
-              浏览痕迹档案
-            </a>
-          </div>
+          <h1 class="page-title type-heading-2">总览</h1>
+          <p class="page-desc">IncidentLens 是多智能体协作的故障根因调查控制台：协调者分派任务、专家代理在权限边界内取证、验证者交叉核对，最终输出带引用的根因报告 —— 或在证据不足时明确存疑。</p>
         </div>
-        <aside class="contract-card" aria-labelledby="contract-title">
-          <h2 id="contract-title">接受一份结论，需要三件事</h2>
-          <div class="contract-row"><strong>引用</strong><span>每个根因都指向本次运行实际观察到的记录，而不是模型的记忆。</span></div>
-          <div class="contract-row"><strong>权限</strong><span>日志、指标、变更代理各自只持有只读工具；越权调用被代码拒绝。</span></div>
-          <div class="contract-row"><strong>停止</strong><span>轮次、工具、请求与时间都有硬上限；证据不足时输出存疑，而不是猜测。</span></div>
-          <a class="btn btn-sm" href="#/system" style="margin-top:var(--sp-4)">查看系统设计 →</a>
-        </aside>
+        <a class="btn btn-primary" href="#/investigate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          新建调查
+        </a>
       </div>
-    </section>
+    </header>
 
-    <div class="stack" style="margin-top:var(--sp-6)">
-      <section aria-labelledby="stats-title">
-        <h2 class="section-title" id="stats-title">档案库概况</h2>
-        <div class="kpi-grid stat-strip" id="overview-stats">${skeletonRows(1, 92)}</div>
+    <div class="stack">
+      <section class="card contract-panel" aria-labelledby="contract-title">
+        <h2 class="contract-panel-title type-title-2" id="contract-title">接受一份结论，需要三件事</h2>
+        <div class="contract-row"><strong>引用</strong><span>每个根因都指向本次运行实际观察到的记录，而不是模型的记忆。</span></div>
+        <div class="contract-row"><strong>权限</strong><span>日志、指标、变更代理各自只持有只读工具；越权调用被代码拒绝。</span></div>
+        <div class="contract-row"><strong>停止</strong><span>轮次、工具、请求与时间都有硬上限；证据不足时输出存疑，而不是猜测。</span></div>
+        <div class="contract-actions"><a class="btn btn-sm" href="#/system">查看系统设计 →</a></div>
       </section>
 
-      <section class="result-teaser" aria-labelledby="teaser-title">
-        <div>
-          <p class="eyebrow">Recorded batch · 2026-11-01</p>
-          <h2 id="teaser-title">协调是否值得它的成本？</h2>
-          <p>
-            同一模型、同一批 36 个加固案例、同一预算下，四种架构各跑一次。
-            动态架构用约四成的时间与 token 换到与单代理相同或更好的质量。
-          </p>
+      <section aria-labelledby="stats-title">
+        <h2 class="section-title type-title-2" id="stats-title">档案库概况</h2>
+        <div class="stat-strip" id="overview-stats">${skeletonKpi(4)}</div>
+      </section>
+
+      <section aria-labelledby="recent-title">
+        <h2 class="section-title type-title-2" id="recent-title">最近运行</h2>
+        <div class="card card-flush" id="recent-runs">${skeletonTable(4, 8)}</div>
+      </section>
+
+      <section class="card result-teaser" aria-labelledby="teaser-title">
+        <div class="result-teaser-main">
+          <h2 class="result-teaser-title type-title-1" id="teaser-title">协调是否值得它的成本？</h2>
+          <p>同一模型、同一批 36 个加固案例、同一预算下，四种架构各跑一次。动态架构用约四成的时间与 token 换到与单代理相同或更好的质量。</p>
           <div class="result-actions">
             <a class="btn btn-primary" href="#/evaluation">查看完整评测</a>
             <a class="btn" href="#/library">观看一次回放</a>
           </div>
         </div>
         <div class="mini-rows" aria-label="质量成功数（满分 36）">
-          <div class="mini-row"><span>Single</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:88.9%"></span></span><b>32</b></div>
-          <div class="mini-row"><span>Fixed-4</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:61.1%"></span></span><b>22</b></div>
-          <div class="mini-row"><span>Dynamic</span><span class="bar"><span class="bar-fill" data-tone="brand" style="width:91.7%"></span></span><b>33</b></div>
-          <div class="mini-row"><span>+ Verifier</span><span class="bar"><span class="bar-fill" data-tone="muted" style="width:83.3%"></span></span><b>30</b></div>
+          <div class="mini-row"><span>Single</span><span class="bar"><span class="bar-fill" data-tone="muted" style="--pct:88.9"></span></span><b>32</b></div>
+          <div class="mini-row"><span>Fixed-4</span><span class="bar"><span class="bar-fill" data-tone="muted" style="--pct:61.1"></span></span><b>22</b></div>
+          <div class="mini-row"><span>Dynamic</span><span class="bar"><span class="bar-fill" data-tone="brand" style="--pct:91.7"></span></span><b>33</b></div>
+          <div class="mini-row"><span>+ Verifier</span><span class="bar"><span class="bar-fill" data-tone="muted" style="--pct:83.3"></span></span><b>30</b></div>
         </div>
       </section>
 
-      <section aria-labelledby="recent-title">
-        <h2 class="section-title" id="recent-title">最近运行</h2>
-        <div class="card card-flush" id="recent-runs">${skeletonRows(4, 40)}</div>
-      </section>
-
       <section aria-labelledby="feature-title">
-        <h2 class="section-title" id="feature-title">设计原则</h2>
-        <div class="feature-grid">
-          <div class="feature">
-            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M8 6.5h12M8 12h12M8 17.5h12"/><circle cx="4" cy="6.5" r="1.4"/><circle cx="4" cy="12" r="1.4"/><circle cx="4" cy="17.5" r="1.4"/></svg></div>
-            <div><h3>引用或存疑</h3><p>结论必须引用确切记录；存在未决问题或竞争性假设时拒绝定论。</p></div>
+        <h2 class="section-title type-title-2" id="feature-title">设计原则</h2>
+        <div class="principle-list">
+          <div class="principle">
+            <div class="principle-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6.5h12M8 12h12M8 17.5h12"/><circle cx="4" cy="6.5" r="1.4"/><circle cx="4" cy="12" r="1.4"/><circle cx="4" cy="17.5" r="1.4"/></svg></div>
+            <div><h3 class="type-title-3">引用或存疑</h3><p>结论必须引用确切记录；存在未决问题或竞争性假设时拒绝定论。</p></div>
           </div>
-          <div class="feature">
-            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6z"/><path d="M9.2 12l2 2 3.6-4"/></svg></div>
-            <div><h3>权限边界取证</h3><p>只读工具、角色 ACL、不可变签发上下文与实际查询台账。</p></div>
+          <div class="principle">
+            <div class="principle-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6z"/><path d="M9.2 12l2 2 3.6-4"/></svg></div>
+            <div><h3 class="type-title-3">权限边界取证</h3><p>只读工具、角色 ACL、不可变签发上下文与实际查询台账。</p></div>
           </div>
-          <div class="feature">
-            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 8.5A8 8 0 0 1 18.6 6.2M20 15.5A8 8 0 0 1 5.4 17.8"/><path d="M18.5 2.5v3.8h-3.8M5.5 21.5v-3.8h3.8"/></svg></div>
-            <div><h3>离线可重放</h3><p>已保存痕迹可完整回放，不再调用编排图、工具或模型提供方。</p></div>
+          <div class="principle">
+            <div class="principle-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A8 8 0 0 1 18.6 6.2M20 15.5A8 8 0 0 1 5.4 17.8"/><path d="M18.5 2.5v3.8h-3.8M5.5 21.5v-3.8h3.8"/></svg></div>
+            <div><h3 class="type-title-3">离线可重放</h3><p>已保存痕迹可完整回放，不再调用编排图、工具或模型提供方。</p></div>
           </div>
-          <div class="feature">
-            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M13 3L5 13.5h5L11 21l8-10.5h-5z"/></svg></div>
-            <div><h3>解释缓存复用</h3><p>精确或保守语义复用，严格命名空间与引用校验。</p></div>
+          <div class="principle">
+            <div class="principle-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 13.5h5L11 21l8-10.5h-5z"/></svg></div>
+            <div><h3 class="type-title-3">解释缓存复用</h3><p>精确或保守语义复用，严格命名空间与引用校验。</p></div>
           </div>
         </div>
       </section>
@@ -166,7 +163,7 @@ function kpi(label, value, foot, tone) {
   return `
     <div class="kpi">
       <div class="kpi-label">${escapeHtml(label)}</div>
-      <div class="kpi-value" ${tone ? `style="color:var(--${tone})"` : ""}>${escapeHtml(String(value))}</div>
+      <div class="kpi-value${tone ? ` is-${tone}` : ""}">${escapeHtml(String(value))}</div>
       <div class="kpi-foot">${escapeHtml(foot || "")}</div>
     </div>`;
 }
@@ -186,9 +183,10 @@ function renderRecentRuns(traces) {
   bindTraceRows(box);
 }
 
-function failedBanner(err) {
+function failedBanner(err, { retry = false } = {}) {
   const msg = err instanceof ApiError ? err.message : "加载失败，请稍后重试";
-  return `<div class="alert alert-danger" style="margin:var(--sp-4)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg><div class="alert-msg">${escapeHtml(msg)}</div></div>`;
+  const action = retry ? ' <button type="button" class="btn btn-sm investigate-retry">重试</button>' : "";
+  return `<div class="alert alert-danger inline-alert"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg><div class="alert-msg">${escapeHtml(msg)}${action}</div></div>`;
 }
 
 /* ============================================================
@@ -201,29 +199,37 @@ function traceTable(traces) {
       <table class="data">
         <thead>
           <tr>
-            <th scope="col">事件</th>
-            <th scope="col">状态</th>
-            <th scope="col">提供方</th>
-            <th scope="col">变体</th>
-            <th scope="col">轮次</th>
-            <th scope="col">耗时</th>
-            <th scope="col">更新时间</th><th scope="col">演示</th>
+            <th scope="col" class="col-priority-1">事件</th>
+            <th scope="col" class="col-priority-1">状态</th>
+            <th scope="col" class="col-priority-2">提供方</th>
+            <th scope="col" class="col-priority-3">变体</th>
+            <th scope="col" class="col-priority-3 num">轮次</th>
+            <th scope="col" class="col-priority-2 num">耗时</th>
+            <th scope="col" class="col-priority-3">更新时间</th>
+            <th scope="col" class="col-priority-1">演示</th>
           </tr>
         </thead>
         <tbody>
           ${traces
             .map((t) => {
               const status = STATUS_META[t.status] || { tone: "neutral", label: t.status || "未知" };
+              const provLabel = t.provider === "mock" ? "MOCK" : t.provider === "real" ? "REAL" : "UNKNOWN";
+              const provTone = t.provider === "mock" ? "accent" : "info";
               return `
-              <tr class="is-clickable" data-trace-path="${escapeHtml(t.path)}" tabindex="0" role="link"
+              <tr class="is-clickable" data-trace-path="${escapeHtml(t.path)}" tabindex="0"
                   aria-label="查看 ${escapeHtml(t.incident_id)} 的运行详情">
-                <td><div class="cell-main mono">${escapeHtml(t.incident_id)}</div><div class="cell-sub mono">${escapeHtml(t.run_id || "")}</div></td>
-                <td>${badge(status.label, status.tone, true)}</td>
-                <td>${badge(t.provider === "mock" ? "MOCK" : t.provider === "real" ? "REAL" : "UNKNOWN", t.provider === "mock" ? "accent" : "info")}</td>
-                <td class="mono">${escapeHtml(variantLabel(t.variant))}</td>
-                <td class="mono">${t.rounds ?? "—"}</td>
-                <td class="mono">${formatDuration(t.elapsed_ms)}</td>
-                <td>${formatDateTime(t.modified_at)}</td><td><a class="btn btn-sm" data-demo-link href="#/run?path=${encodeURIComponent(t.path)}&demo=1">演示回放</a></td>
+                <td class="col-priority-1">
+                  <div class="cell-main mono">${escapeHtml(t.incident_id)}</div>
+                  <div class="cell-sub mono">${escapeHtml(t.run_id || "")}</div>
+                  <div class="cell-fold">${escapeHtml(provLabel)} · ${escapeHtml(variantLabel(t.variant))} · ${t.rounds ?? "—"} 轮 · ${formatDuration(t.elapsed_ms)} · ${formatDateTime(t.modified_at)}</div>
+                </td>
+                <td class="col-priority-1">${badge(status.label, status.tone, true)}</td>
+                <td class="col-priority-2">${badge(provLabel, provTone)}</td>
+                <td class="col-priority-3 mono">${escapeHtml(variantLabel(t.variant))}</td>
+                <td class="col-priority-3 mono num">${t.rounds ?? "—"}</td>
+                <td class="col-priority-2 mono num">${formatDuration(t.elapsed_ms)}</td>
+                <td class="col-priority-3">${formatDateTime(t.modified_at)}</td>
+                <td class="col-priority-1"><a class="btn btn-sm" data-demo-link href="#/run?path=${encodeURIComponent(t.path)}&demo=1">演示回放</a></td>
               </tr>`;
             })
             .join("")}
@@ -254,28 +260,28 @@ function bindTraceRows(container) {
 export async function renderInvestigate(root) {
   root.innerHTML = `
     <div class="page-head">
-      <h1 class="page-title">新建调查</h1>
+      <h1 class="page-title type-heading-2">新建调查</h1>
       <p class="page-desc">选择一个公开事件案例，配置提供方与缓存策略后发起多智能体调查。</p>
     </div>
     <div class="investigate-grid">
       <section class="card card-flush" aria-label="案例选择">
-        <div class="card-header" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div class="card-header case-list-head">
           <div>
             <div class="card-title">事件案例</div>
             <div class="card-subtitle" id="case-count">加载中…</div>
           </div>
-          <div class="input-with-icon">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+          <div class="input-with-icon search-field">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
             <input class="input" id="case-search" type="search" placeholder="搜索事件 ID、标题或症状…" aria-label="搜索案例">
           </div>
         </div>
-        <div class="case-list" id="case-list" role="group" aria-label="案例列表">${skeletonRows(6, 56)}</div>
+        <div class="case-list" id="case-list" role="group" aria-label="案例列表">${skeletonList(6)}</div>
       </section>
-      <section class="stack" aria-label="运行配置">
+      <section class="stack investigate-side" aria-label="运行配置">
         <div class="card case-detail-panel" id="case-detail">
           ${emptyState({ title: "未选择案例", desc: "从左侧列表中选择一个事件案例以查看详情。" })}
         </div>
-        <div class="card stack" id="run-config" style="gap:var(--sp-4)"></div>
+        <div class="card stack run-config" id="run-config"></div>
       </section>
     </div>`;
 
@@ -286,7 +292,13 @@ export async function renderInvestigate(root) {
     if (!root.isConnected) return;
   } catch (err) {
     if (!root.isConnected) return;
-    document.getElementById("case-list").innerHTML = failedBanner(err);
+    // A failed meta/cases load must not leave the right-hand config panel as a hole.
+    const banner = failedBanner(err, { retry: true });
+    document.getElementById("case-list").innerHTML = banner;
+    document.getElementById("run-config").innerHTML = banner;
+    root.querySelectorAll(".investigate-retry").forEach((btn) =>
+      btn.addEventListener("click", () => renderInvestigate(root))
+    );
     return;
   }
 
@@ -305,6 +317,13 @@ export async function renderInvestigate(root) {
   function renderCaseList() {
     const list = visibleCases();
     document.getElementById("case-count").textContent = `共 ${cases.length} 个案例 · 显示 ${list.length} 个`;
+    if (!cases.length) {
+      listEl.innerHTML = emptyState({
+        title: "暂无可用案例",
+        desc: "当前数据集没有可调查的事件。请确认 data/ 中的公开事件包已加载。",
+      });
+      return;
+    }
     if (!list.length) {
       listEl.innerHTML = emptyState({ title: "没有匹配的案例", desc: "换个关键词试试。" });
       return;
@@ -400,9 +419,9 @@ export async function renderInvestigate(root) {
           ${badge(`${b.max_wall_seconds} 秒`, "neutral")}
         </div>
       </div>
-      ${settingsError ? `<div class="alert alert-warning"><svg viewBox="0 0 24 24"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${escapeHtml(settingsError)}</div></div>` : ""}
-      <button class="btn btn-primary btn-lg" id="run-btn" type="button" style="width:100%">
-        <svg viewBox="0 0 24 24"><path d="M7 4.8v14.4L19 12z"/></svg>
+      ${settingsError ? `<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${escapeHtml(settingsError)}</div></div>` : ""}
+      <button class="btn btn-primary btn-lg w-full" id="run-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4L19 12z"/></svg>
         发起调查
       </button>`;
 
@@ -434,10 +453,10 @@ export async function renderInvestigate(root) {
     if (state.provider === "real") {
       const real = box.querySelector("#real-options");
       if (!defaults) {
-        real.innerHTML = `<div class="alert alert-danger"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg><div class="alert-msg">项目本地的提供方请求设置无效，无法使用 Real 提供方。</div></div>`;
+        real.innerHTML = `<div class="alert alert-danger"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V13M12 16.4v.1"/></svg><div class="alert-msg">项目本地的提供方请求设置无效，无法使用 Real 提供方。</div></div>`;
       } else {
         real.innerHTML = `
-          <div class="stack" style="gap:var(--sp-3)">
+          <div class="stack stack--tight">
             <div class="field">
               <label class="field-label" for="resp-format">结构化响应格式</label>
               <select class="select" id="resp-format">
@@ -515,7 +534,7 @@ export async function renderInvestigate(root) {
       if (root.isConnected) location.hash = `#/run?path=${encodeURIComponent(result.path)}&live=1`;
     } catch (err) {
       btn.disabled = false;
-      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 4.8v14.4L19 12z"/></svg> 发起调查';
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4L19 12z"/></svg> 发起调查';
       toast(err instanceof ApiError ? `${err.code}: ${err.message}` : "调查失败", "error", 6000);
     } finally {
       st.running = false;
@@ -540,11 +559,11 @@ export async function renderRun(root, params) {
   const path = params.get("path");
   if (!path) {
     root.innerHTML = `
-      <div class="page-head"><h1 class="page-title">运行详情</h1></div>
+      <div class="page-head"><h1 class="page-title type-heading-2">运行详情</h1></div>
       <div class="card">${emptyState({
         title: "当前没有可查看的运行",
         desc: "发起一次新调查，或从痕迹档案库中选择一条已保存的痕迹进行回放。",
-        actionHtml: `<div class="chip-row" style="justify-content:center">
+        actionHtml: `<div class="chip-row center">
           <a class="btn btn-primary" href="#/investigate">新建调查</a>
           <a class="btn" href="#/library">浏览档案库</a>
         </div>`,
@@ -573,7 +592,7 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
   const events = data.trace.state?.events || [];
   const bookmarks = replayBookmarks(data.trace);
   root.innerHTML = `<section class="card replay-console" aria-label="Investigation Replay">
-    ${metadataHtml(data)}
+    ${metadataHtml(data, { snapshot: false })}
     <div class="replay-controls">
       <button class="btn" data-step="first">首步</button><button class="btn" data-step="prev">上一步</button>
       <button class="btn btn-primary" id="replay-play">播放</button>
@@ -582,13 +601,14 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
       <output id="replay-position" aria-live="polite"></output>
     </div>
     <div class="replay-seek"><label for="replay-seek">Seek · 保存事件位置</label><input id="replay-seek" type="range" min="0" max="${events.length}" value="0"><label for="replay-jump">Jump</label><input class="input" id="replay-jump" type="number" min="0" max="${events.length}" value="0"><button class="btn" id="replay-jump-go">跳转</button></div>
+    <details open id="replay-workflow-panel"><summary>编排视图 · 共享状态与工作流</summary><div id="replay-workflow" aria-label="Workflow Overview"></div></details>
     <details id="replay-chapters"><summary>演示章节 · 基于事件语义查找</summary><p class="text-muted">章节名称用于导航；只有跳转后才展示对应历史状态。</p><div class="replay-bookmarks">${bookmarks.map(b=>b.position == null ? `<button class="btn btn-sm" disabled title="Trace 未记录对应事件">${escapeHtml(b.label)} · 未记录</button>` : jumpButton(b.position,b.label,`data-bookmark="${b.id}"`)).join('')}</div></details>
-    <details open><summary>Workflow · 共享状态编排与数据流</summary><div id="replay-workflow" aria-label="Workflow Overview"></div></details>
     <details><summary>Communication Timeline · 有序事件导航</summary><label for="replay-category">事件类别</label><select class="select" id="replay-category"><option value="all">全部</option>${['dispatch','task','evidence','findings','hypothesis','review','reliability','finalization','termination','other'].map(c=>`<option value="${c}">${c}</option>`).join('')}</select><div id="replay-events" class="replay-event-list"></div></details>
     <div id="replay-selection" aria-label="当前事件详情"></div>
     <div class="replay-analysis-grid"><details id="replay-hypotheses"><summary>Hypothesis Evolution · 已提交状态变化</summary><div id="replay-history"></div></details>
     <details id="replay-review-panel"><summary>Verifier Review / FinalizeGate</summary><div id="replay-reviews"></div></details></div>
     <details><summary>Provider Timeout / Recovery · 可靠性事件</summary><div id="replay-reliability"></div></details>
+    ${metadataHtml(data, { heading: false })}
   </section><div id="replay-detail"></div>`;
   let position = 0, timer = null, activeTab = 'timeline', selectedRole = '', category = 'all';
   // Deep link to a saved position: ?step=last or ?step=<n>. Useful for demos and review links.
@@ -616,16 +636,18 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
     root.querySelector('#replay-jump').value = position;
     root.querySelectorAll('[data-step]').forEach(b => { b.disabled = ['first','prev'].includes(b.dataset.step) ? position === 0 : position === events.length; });
     play.disabled = !events.length || position === events.length;
-    root.querySelector('#replay-workflow').innerHTML = workflowHtml(state,selectedRole);
+    const workflowEl = root.querySelector('#replay-workflow');
+    workflowEl.innerHTML = workflowHtml(state, selectedRole, bookmarks, { provider: data.trace.provider, variant: data.trace.variant });
     root.querySelector('#replay-events').innerHTML = events.map((e,i)=>({e,i})).filter(({e})=>category === 'all' || eventCategory(e) === category).map(({e,i})=>jumpButton(i+1,`${i+1} · ${i < position ? `${e.role || 'runtime'} · ${e.event_type}` : '未播放事件'}`,`aria-current="${i+1 === position ? 'step' : 'false'}"`)).join('');
     root.querySelector('#replay-history').innerHTML = historyHtml(state);
     root.querySelector('#replay-reviews').innerHTML = reviewTimelineHtml(state);
     root.querySelector('#replay-reliability').innerHTML = reliabilityHtml(state);
     const e=state.events.at(-1), box=root.querySelector('#replay-selection');
     const ids=e ? [...new Set([...(e.evidence_ids || []),...(e.details?.result?.records || []).map(r=>r.evidence_id),...(e.details?.review?.cited_evidence_ids || [])])] : [];
-    box.innerHTML = e ? `<h3>${escapeHtml(e.event_id)} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)}</h3><p class="text-muted">执行事件时间：${escapeHtml(e.timestamp)} · ${escapeHtml(e.task_id || 'task not recorded')}</p>${e.details?.decision?.reason ? `<p>${escapeHtml(e.details.decision.reason)}</p>` : ''}${e.details?.decision?.hypothesis_updates?.length ? '<p class="text-muted">DECISION 包含提议；假设面板仅在 MERGE / HYPOTHESIS_RECONCILED 提交后更新。</p>' : ''}<details><summary>原始结构化事件详情</summary>${timelineBody(e)}</details><div class="cite-wrap">${evidenceChips(ids,state.evidence_index,{emptyText:'此事件没有公开证据引用'})}</div>` : `<h3>调查开始前</h3><p>${escapeHtml(state.public_summary.title || '')}</p><p>${escapeHtml((state.public_summary.observed_symptoms || []).join(' · '))}</p><p class="text-muted">仅已知公开事故摘要；尚未观察工具证据或形成假设。</p>`;
+    box.innerHTML = e ? `<h3 class="type-title-3">${escapeHtml(e.event_id)} · ${escapeHtml(e.role || 'runtime')} · ${escapeHtml(e.event_type)}</h3><p class="text-muted">执行事件时间：${escapeHtml(e.timestamp)} · ${escapeHtml(e.task_id || 'task not recorded')}</p>${e.details?.decision?.reason ? `<p>${escapeHtml(e.details.decision.reason)}</p>` : ''}${e.details?.decision?.hypothesis_updates?.length ? '<p class="text-muted">DECISION 包含提议；假设面板仅在 MERGE / HYPOTHESIS_RECONCILED 提交后更新。</p>' : ''}<details><summary>原始结构化事件详情</summary>${timelineBody(e)}</details><div class="cite-wrap">${evidenceChips(ids,state.evidence_index,{emptyText:'此事件没有公开证据引用'})}</div>` : `<h3 class="type-title-3">调查开始前</h3><p>${escapeHtml(state.public_summary.title || '')}</p><p>${escapeHtml((state.public_summary.observed_symptoms || []).join(' · '))}</p><p class="text-muted">仅已知公开事故摘要；尚未观察工具证据或形成假设。</p>`;
     root.querySelectorAll('[data-seek]').forEach(button=>button.onclick=()=>seek(button.dataset.seek));
     root.querySelectorAll('#replay-workflow [data-role]').forEach(button=>button.onclick=()=>{ selectedRole=selectedRole === button.dataset.role ? '' : button.dataset.role; draw(); });
+    bindWorkflowInteractions(workflowEl, { getState: () => state, seek, bookmarks, demo: () => !!root.querySelector('#replay-demo')?.checked });
     bindEvidenceChips(root.querySelector('.replay-console'),state.evidence_index,state.provenance);
   }
   function tick() {
@@ -644,12 +666,23 @@ function mountReplay(root, data, demoMode = false, live = false, startAt = null)
   root.querySelector('#replay-demo').addEventListener('change',e=>{
     root.classList.toggle('replay-demo',e.target.checked);
     ['replay-chapters','replay-hypotheses','replay-review-panel'].forEach(id=>root.querySelector(`#${id}`).open=e.target.checked);
+    // Demo mode auto-expands the orchestration panel; disabling demo never collapses it
+    // (it is the hero panel and stays open by default).
+    if (e.target.checked) root.querySelector('#replay-workflow-panel').open = true;
+    // Re-render so the orchestration panel re-binds with demo active: the narrative
+    // auto-highlights and scrolls to the current stage on enable (and clears on disable).
+    draw();
   });
   play.addEventListener('click', () => { if (timer) pause(); else { play.textContent='暂停'; play.setAttribute('aria-pressed','true'); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   root.querySelector('#replay-speed').addEventListener('change', () => { if (timer) { clearTimeout(timer); timer=setTimeout(tick,1000 / Number(root.querySelector('#replay-speed').value)); } });
   window.addEventListener('hashchange', pause, {once:true});
   draw();
-  if(demoMode) { const toggle=root.querySelector('#replay-demo'); toggle.checked=true; toggle.dispatchEvent(new Event('change')); }
+  // Deep link `&demo=1`: enable the toggle and re-render so the orchestration panel
+  // binds with demo active (stage highlight/scroll) on the very first paint.
+  if(demoMode) {
+    const toggle=root.querySelector('#replay-demo');
+    if(!toggle.checked) { toggle.checked=true; toggle.dispatchEvent(new Event('change')); }
+  }
 }
 
 function drawRun(root, data) {
@@ -665,7 +698,7 @@ function drawRun(root, data) {
     <div class="run-head">
       <div>
         <div class="run-head-id">
-          <h1 class="mono">${escapeHtml(state.incident_id)}</h1>
+          <h1 class="mono type-heading-3">${escapeHtml(state.incident_id)}</h1>
           ${badge(status.label, status.tone, true)}
           ${badge(state.workflow_status || "not recorded")}
           ${trace.provider === "mock" ? badge("MOCK", "accent") : trace.provider === "real" ? badge("REAL", "info") : badge("PROVIDER UNKNOWN", "warning")}
@@ -683,21 +716,21 @@ function drawRun(root, data) {
       <div class="run-head-actions">
         ${state.report ? `
         <a class="btn btn-sm" href="/api/download?path=${encodeURIComponent(data.path)}&kind=trace" download>
-          <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
           trace.json
         </a>
         <a class="btn btn-sm" href="/api/download?path=${encodeURIComponent(data.path)}&kind=report" download>
-          <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11.5L12 16l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
           report.md
         </a>` : '<span class="text-muted">完整 Trace / Report 下载在 REPORT 事件后解锁</span>'}
       </div>
     </div>
 
-    ${live ? `<div class="alert alert-success" style="margin-bottom:var(--sp-5)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.4l2.6 2.6L16 9.6"/></svg><div class="alert-msg"><strong>本次调查刚刚完成</strong> —— 以下时间线回放的是刚写入磁盘的痕迹；重新加载页面会得到相同结果。</div></div>` : ""}
+    ${live ? `<div class="alert alert-success inline-alert-block"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.4l2.6 2.6L16 9.6"/></svg><div class="alert-msg"><strong>本次调查刚刚完成</strong> —— 以下时间线回放的是刚写入磁盘的痕迹；重新加载页面会得到相同结果。</div></div>` : ""}
 
-    ${trace.provider === "mock" ? `<div class="alert alert-info" style="margin-bottom:var(--sp-5)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></svg><div class="alert-msg"><strong>MOCK 离线确定性策略</strong> —— 以下结果用于演示流水线正确性，不代表真实模型的准确性。</div></div>` : ""}
+    ${trace.provider === "mock" ? `<div class="alert alert-info inline-alert-block"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/></svg><div class="alert-msg"><strong>MOCK 离线确定性策略</strong> —— 以下结果用于演示流水线正确性，不代表真实模型的准确性。</div></div>` : ""}
 
-    <div class="kpi-grid" style="margin-bottom:var(--sp-6)">
+    <div class="kpi-grid mb-block">
       ${kpiBar("调查轮次", state.round_index, b.max_rounds)}
       ${kpiBar("工具调用", state.tool_calls_used, b.max_tool_calls)}
       ${kpiBar("模型请求", state.llm_calls_used, b.max_llm_calls)}
@@ -705,7 +738,7 @@ function drawRun(root, data) {
       ${kpi("证据记录", Object.keys(evidenceIndex).length, "本次运行观察")}
     </div>
 
-    <div class="card card-flush" style="margin-bottom:var(--sp-5)">
+    <div class="card card-flush block-sp">
       <div class="tabs" role="tablist" aria-label="运行详情视图" id="run-tabs">
         <button class="tab" role="tab" data-tab="timeline" aria-selected="true">调查时间线 <span class="count">${state.events.filter((e) => e.event_type !== "LLM_CALL").length}</span></button>
         <button class="tab" role="tab" data-tab="hypotheses" aria-selected="false">假设看板 <span class="count">${state.hypotheses.length}</span></button>
@@ -765,7 +798,7 @@ function kpiBar(label, used = 0, max = "not recorded") {
     <div class="kpi">
       <div class="kpi-label">${escapeHtml(label)}</div>
       <div class="kpi-value">${used}<small> / ${max}</small></div>
-      <div class="kpi-bar"><span style="width:${pct}%"></span></div>
+      <div class="kpi-bar"><span style="--pct:${pct}"></span></div>
     </div>`;
 }
 
@@ -793,8 +826,8 @@ function renderTimeline(panel, state) {
             )
             .join("")}
         </div>
-        <label class="chip" style="cursor:pointer">
-          <input type="checkbox" id="show-llm" ${tlState.showLlm ? "checked" : ""} style="accent-color:var(--accent)">
+        <label class="chip chip-toggle">
+          <input type="checkbox" id="show-llm" ${tlState.showLlm ? "checked" : ""}>
           显示模型请求
         </label>
       </div>
@@ -862,7 +895,7 @@ function timelineBody(event) {
       parts.push(`<div class="assign-list">${dec.assignments
         .map(
           (t) => `<div class="assign-item">
-            <div class="chip-row" style="margin-bottom:6px">${badge(t.role, "neutral")} <span class="tag-id">${escapeHtml(t.task_id || "")}</span></div>
+            <div class="chip-row mb-2">${badge(t.role, "neutral")} <span class="tag-id">${escapeHtml(t.task_id || "")}</span></div>
             <div class="q">${escapeHtml(t.question)}</div>
             <div class="disc">判别标准：${escapeHtml(t.expected_discriminator)}</div>
           </div>`
@@ -876,13 +909,13 @@ function timelineBody(event) {
     parts.push(`<div class="chip-row">${badge(`裁定 · ${rev.verdict}`, tone)} <span class="tag-id">${escapeHtml(rev.target_hypothesis_id)}</span></div>`);
     parts.push(`<p>${escapeHtml(rev.rationale)}</p>`);
     if (rev.contradictions?.length) {
-      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${rev.contradictions
+      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${rev.contradictions
         .map(escapeHtml)
         .join("<br>")}</div></div>`);
     }
     if (rev.requested_checks?.length) {
       parts.push(`<div class="assign-list">${rev.requested_checks
-        .map((t) => `<div class="assign-item"><div class="chip-row" style="margin-bottom:6px">${badge(t.role, "neutral")}</div><div class="q">${escapeHtml(t.question)}</div></div>`)
+        .map((t) => `<div class="assign-item"><div class="chip-row mb-2">${badge(t.role, "neutral")}</div><div class="q">${escapeHtml(t.question)}</div></div>`)
         .join("")}</div>`);
     }
   } else if (event.event_type === "TOOL_CALL") {
@@ -929,7 +962,7 @@ function renderHypotheses(panel, state, evidenceIndex) {
               <div class="chip-group"><span class="cite-label">反对</span>${evidenceChips(h.against_ids, evidenceIndex)}</div>
             </div>
             ${h.open_questions?.length ? `<div class="field"><span class="field-label">未决问题</span><ul class="symptom-list">${h.open_questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ul></div>` : ""}
-            <div class="text-muted mono" style="font-size:var(--text-xs)">${escapeHtml(h.hypothesis_id)}</div>
+            <div class="text-muted mono type-caption-2">${escapeHtml(h.hypothesis_id)}</div>
           </article>`;
         })
         .join("")}
@@ -952,9 +985,9 @@ function renderEvidence(panel, state) {
       return [r.evidence_id, r.service, r.excerpt, r.source_path].join(" ").toLowerCase().includes(kw);
     });
     panel.innerHTML = `
-      <div class="evidence-toolbar" style="margin:calc(-1 * var(--sp-5));margin-bottom:0;padding:var(--sp-4) var(--sp-5)">
-        <div class="input-with-icon" style="flex:1;max-width:340px">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+      <div class="evidence-toolbar">
+        <div class="input-with-icon search-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
           <input class="input" id="ev-search" type="search" placeholder="搜索证据 ID、服务或摘录…" value="${escapeHtml(evState.keyword)}" aria-label="搜索证据">
         </div>
         <div class="chip-row" role="group" aria-label="按来源筛选">
@@ -977,7 +1010,7 @@ function renderEvidence(panel, state) {
             .map((r) => {
               const src = SOURCE_TYPE_META[r.source_type] || { label: r.source_type, tone: "neutral" };
               return `
-            <tr class="is-clickable" data-ev="${escapeHtml(r.evidence_id)}" tabindex="0" role="button" aria-label="查看证据 ${escapeHtml(r.evidence_id)}">
+            <tr class="is-clickable" data-ev="${escapeHtml(r.evidence_id)}" tabindex="0" aria-label="查看证据 ${escapeHtml(r.evidence_id)}">
               <td class="mono cell-main">${escapeHtml(r.evidence_id)}</td>
               <td>${badge(src.label, src.tone)}</td>
               <td class="mono">${escapeHtml(r.service)}</td>
@@ -1046,7 +1079,7 @@ function renderFindings(panel, state, evidenceIndex) {
             return `
           <tr>
             <td>${badge(ROLE_LABEL[f.role] || f.role, "neutral")}<div class="cell-sub mono">${escapeHtml(f.task_id)}</div></td>
-            <td style="max-width:380px"><div class="cell-main" style="font-weight:450">${escapeHtml(f.claim)}</div></td>
+            <td><div class="cell-main cell-claim">${escapeHtml(f.claim)}</div></td>
             <td>${badge(rel.label, rel.tone)}</td>
             <td>${badge(f.confidence_qualifier, f.confidence_qualifier === "supported" ? "success" : "neutral")}</td>
             <td><div class="cite-wrap">${evidenceChips(f.evidence_ids, evidenceIndex)}</div></td>
@@ -1069,9 +1102,9 @@ export function renderReport(panel, state, reportMd) {
   const assessmentLabel = report.acceptance_standard === "BEST_SUPPORTED_AVAILABLE" ? "已确定：现有证据最支持" : { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
   panel.innerHTML = `
     <div class="report-hero" data-status="${escapeHtml(report.status)}">
-      <div style="flex:1;min-width:220px">
-        <div class="chip-row" style="margin-bottom:8px">${badge(status.label, status.tone, true)}${assessmentLabel ? badge(assessmentLabel, rootCause ? "success" : "neutral") : ""}</div>
-        <div class="report-hero-title">${escapeHtml(rootCause ? rootCause.failure_mode : "尚未确认根因")}</div>
+      <div class="report-hero-main">
+        <div class="chip-row mb-2">${badge(status.label, status.tone, true)}${assessmentLabel ? badge(assessmentLabel, rootCause ? "success" : "neutral") : ""}</div>
+        <div class="report-hero-title type-title-1">${escapeHtml(rootCause ? rootCause.failure_mode : "尚未确认根因")}</div>
         <div class="report-hero-sub">${
           rootCause
             ? `责任服务 <span class="mono">${escapeHtml(rootCause.culprit_service)}</span> · 假设 <span class="mono">${escapeHtml(rootCause.hypothesis_id)}</span>`
@@ -1082,7 +1115,7 @@ export function renderReport(panel, state, reportMd) {
       </div>
     </div>
 
-    ${provisional.length ? `<div class="report-section"><h3>待确认的解释</h3>
+    ${provisional.length ? `<div class="report-section"><h3 class="type-title-3">待确认的解释</h3>
       <p class="text-secondary">按已观察到的机制与来源支持排列，顺序不是正确概率。</p>
       <div class="stack">${provisional.map((h, index) => `<div class="assign-item">
         <div class="q">${index + 1}. ${escapeHtml(h.culprit_service)} · ${escapeHtml(h.failure_mode)}</div>
@@ -1090,25 +1123,25 @@ export function renderReport(panel, state, reportMd) {
         ${h.against_ids?.length ? `<p class="text-secondary">尚待解释的反对证据</p><div class="cite-wrap">${evidenceChips(h.against_ids, evidenceIndex)}</div>` : ""}
       </div>`).join("")}</div></div>` : ""}
 
-    ${report.provisional_observations?.length ? `<div class="report-section"><h3>已有观察（归因尚未确认）</h3>
+    ${report.provisional_observations?.length ? `<div class="report-section"><h3 class="type-title-3">已有观察（归因尚未确认）</h3>
       <ul class="symptom-list">${report.provisional_observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
-    ${report.causal_limitations?.length ? `<div class="report-section"><h3>结论的证据边界</h3>
+    ${report.causal_limitations?.length ? `<div class="report-section"><h3 class="type-title-3">结论的证据边界</h3>
       <ul class="symptom-list">${report.causal_limitations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
-    ${report.causal_chain?.length ? `<div class="report-section"><h3>因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
+    ${report.causal_chain?.length ? `<div class="report-section"><h3 class="type-title-3">因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 
     ${report.supporting_evidence_ids?.length ? `<div class="report-section">
-      <h3>支持证据</h3>
+      <h3 class="type-title-3">支持证据</h3>
       <div class="cite-wrap">${evidenceChips(report.supporting_evidence_ids, evidenceIndex)}</div>
     </div>` : ""}
 
-    ${report.rejected_hypotheses?.length ? `<div class="report-section"><h3>已排除假设</h3>
-      <div class="stack" style="gap:var(--sp-3)">
+    ${report.rejected_hypotheses?.length ? `<div class="report-section"><h3 class="type-title-3">已排除假设</h3>
+      <div class="stack stack--tight">
         ${report.rejected_hypotheses
           .map(
             (h) => `<div class="assign-item">
-              <div class="chip-row" style="margin-bottom:6px">${badge(h.culprit_service, "neutral")}${badge("REJECTED", "danger")}</div>
+              <div class="chip-row mb-2">${badge(h.culprit_service, "neutral")}${badge("REJECTED", "danger")}</div>
               <div class="q">${escapeHtml(h.failure_mode)}</div>
               <div class="disc">反对证据：${h.against_ids.map(escapeHtml).join("、") || "—"}</div>
             </div>`
@@ -1116,24 +1149,24 @@ export function renderReport(panel, state, reportMd) {
           .join("")}
       </div></div>` : ""}
 
-    ${report.unresolved?.length ? `<div class="report-section"><h3>关键缺口</h3><ul class="symptom-list">${report.unresolved.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
-    ${report.next_steps?.length ? `<div class="report-section"><h3>建议下一步</h3><p class="text-secondary">以下检查尚未执行，可能需要补采新数据。</p>
+    ${report.unresolved?.length ? `<div class="report-section"><h3 class="type-title-3">关键缺口</h3><ul class="symptom-list">${report.unresolved.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${report.next_steps?.length ? `<div class="report-section"><h3 class="type-title-3">建议下一步</h3><p class="text-secondary">以下检查尚未执行，可能需要补采新数据。</p>
       <ul class="symptom-list">${report.next_steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
-    ${report.optional_questions?.length ? `<div class="report-section"><h3>可选补充（不阻止作答）</h3>
+    ${report.optional_questions?.length ? `<div class="report-section"><h3 class="type-title-3">可选补充（不阻止作答）</h3>
       <ul class="symptom-list">${report.optional_questions.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
-    ${report.assessment_basis?.length ? `<div class="report-section"><h3>判断依据</h3>
+    ${report.assessment_basis?.length ? `<div class="report-section"><h3 class="type-title-3">判断依据</h3>
       <ul class="symptom-list">${report.assessment_basis.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     <div class="report-section">
-      <h3>停止原因</h3>
+      <h3 class="type-title-3">停止原因</h3>
       <p class="text-secondary">${escapeHtml(report.stop_reason)}</p>
     </div>
 
     ${workflowReportHtml(state, evidenceIndex)}
 
-    <details style="margin-top:var(--sp-4)">
-      <summary style="cursor:pointer;color:var(--text-3);font-size:var(--text-sm)">查看 Markdown 原文</summary>
-      <pre class="json-block" style="margin-top:var(--sp-3);white-space:pre-wrap">${escapeHtml(reportMd || "")}</pre>
+    <details class="report-raw">
+      <summary class="report-raw-summary">查看 Markdown 原文</summary>
+      <pre class="json-block report-raw-pre">${escapeHtml(reportMd || "")}</pre>
     </details>`;
   bindEvidenceChips(panel, evidenceIndex, state.provenance);
 }
@@ -1145,12 +1178,12 @@ export function renderReport(panel, state, reportMd) {
 export async function renderLibrary(root) {
   root.innerHTML = `
     <div class="page-head">
-      <h1 class="page-title">痕迹档案库</h1>
+      <h1 class="page-title type-heading-2">痕迹档案库</h1>
       <p class="page-desc">results/ 目录下所有已保存的调查痕迹。点击任意一条进行离线回放 —— 不再调用编排图、工具或模型。</p>
     </div>
     <div class="library-toolbar">
-      <div class="input-with-icon" style="flex:1;max-width:360px">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+      <div class="input-with-icon search-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
         <input class="input" id="lib-search" type="search" placeholder="搜索事件 ID 或运行 ID…" aria-label="搜索痕迹">
       </div>
       <div class="filters">
@@ -1159,7 +1192,7 @@ export async function renderLibrary(root) {
           <button class="chip" data-provider="mock" aria-pressed="false">Mock</button>
           <button class="chip" data-provider="real" aria-pressed="false">Real</button>
         </div>
-        <select class="select" id="lib-status" style="width:auto" aria-label="按状态筛选">
+        <select class="select" id="lib-status" aria-label="按状态筛选">
           <option value="all">全部状态</option>
           <option value="RESOLVED">已定位根因</option>
           <option value="INCONCLUSIVE">明确存疑</option>
@@ -1167,7 +1200,7 @@ export async function renderLibrary(root) {
         </select>
       </div>
     </div>
-    <div class="card card-flush" id="lib-table">${skeletonRows(6, 40)}</div>`;
+    <div class="card card-flush" id="lib-table">${skeletonTable(6, 8)}</div>`;
 
   let traces;
   try {

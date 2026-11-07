@@ -96,9 +96,8 @@ const ACL_COLUMNS = [
 
 export function renderSystem(root) {
   root.innerHTML = `
-    <div class="page-head page-head--rule">
-      <p class="eyebrow">System design</p>
-      <h1 class="page-title">四个角色，一套可审计的契约</h1>
+    <div class="page-head">
+      <h1 class="page-title type-heading-1">四个角色，一套可审计的契约</h1>
       <p class="page-desc">
         IncidentLens 不是“让多个模型各说一遍”。它把调查拆成可检查的职责：谁可以读什么、
         什么算证据、什么时候必须停止。模型只提出候选；是否成立由确定性代码判定。
@@ -107,14 +106,14 @@ export function renderSystem(root) {
 
     <section class="band" aria-labelledby="pipeline-title">
       <div class="band-head">
-        <h2 class="section-title" id="pipeline-title">一次调查的完整路径</h2>
+        <h2 class="section-title type-title-2" id="pipeline-title">一次调查的完整路径</h2>
         <span class="band-note">LangGraph StateGraph · 每个活跃阶段都有条件路由</span>
       </div>
       <ol class="stage-track">
         ${STAGES.map(
           (s) => `<li class="stage ${s.optional ? "is-optional" : ""}">
             <span class="stage-n">${s.n}</span>
-            <span class="stage-name">${esc(s.name)}</span>
+            <span class="stage-name">${esc(s.name)}${s.optional ? badge("可选", "neutral") : ""}</span>
             <span class="stage-note">${esc(s.note)}</span>
           </li>`
         ).join("")}
@@ -126,14 +125,14 @@ export function renderSystem(root) {
     </section>
 
     <section aria-labelledby="decision-title" class="section-gap">
-      <h2 class="section-title" id="decision-title">协调者只有三种动作</h2>
-      <div class="decision-grid">
+      <h2 class="section-title type-title-2" id="decision-title">协调者只有三种动作</h2>
+      <div class="decision-panel">
         ${DECISIONS.map(
-          (d) => `<article class="decision-card" data-tone="${d.tone}">
+          (d) => `<div class="decision-row" data-tone="${d.tone}">
             <div class="decision-head">${badge(d.name, d.tone, true)}</div>
             <p class="decision-rule">${esc(d.rule)}</p>
             <p class="decision-detail">${esc(d.detail)}</p>
-          </article>`
+          </div>`
         ).join("")}
       </div>
       <div class="bound-strip" role="list" aria-label="硬性预算">
@@ -149,7 +148,7 @@ export function renderSystem(root) {
 
     <section aria-labelledby="acl-title" class="section-gap">
       <div class="band-head">
-        <h2 class="section-title" id="acl-title">权限是代码，不是提示词</h2>
+        <h2 class="section-title type-title-2" id="acl-title">权限是代码，不是提示词</h2>
         <span class="band-note">角色 → 只读工具上限</span>
       </div>
       <div class="table-wrap card card-flush">
@@ -182,7 +181,7 @@ export function renderSystem(root) {
 
     <section aria-labelledby="gates-title" class="section-gap">
       <div class="band-head">
-        <h2 class="section-title" id="gates-title">Grounding 由确定性门禁判定</h2>
+        <h2 class="section-title type-title-2" id="gates-title">Grounding 由确定性门禁判定</h2>
         <span class="band-note">模型置信度不是接受信号</span>
       </div>
       <ol class="gate-list">
@@ -196,7 +195,7 @@ export function renderSystem(root) {
     </section>
 
     <section aria-labelledby="invariant-title" class="section-gap">
-      <h2 class="section-title" id="invariant-title">四条不可绕过的运行时约束</h2>
+      <h2 class="section-title type-title-2" id="invariant-title">四条不可绕过的运行时约束</h2>
       <div class="invariant-grid">
         ${INVARIANTS.map(
           ([name, desc]) => `<article class="invariant">
@@ -246,7 +245,7 @@ const BATCH = {
 
 function bar(value, max, tone = "accent", label = "") {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
-  return `<span class="bar" aria-hidden="true"><span class="bar-fill" data-tone="${tone}" style="width:${pct.toFixed(1)}%"></span></span>${
+  return `<span class="bar" aria-hidden="true"><span class="bar-fill" data-tone="${tone}" style="--pct:${pct.toFixed(1)}"></span></span>${
     label ? `<span class="bar-label">${esc(label)}</span>` : ""
   }`;
 }
@@ -254,11 +253,11 @@ function bar(value, max, tone = "accent", label = "") {
 function heat(value) {
   // 0..1 -> brand-red tint. Two bands with a gap in between: the light band
   // always takes dark ink, the dark band always takes white, so no cell lands
-  // in the mid-tone zone where neither ink reaches 4.5:1.
+  // in the mid-tone zone where neither ink reaches 4.5:1. The tint is driven by
+  // CSS custom properties so no presentational magic numbers leak inline.
   const strong = value >= 0.8;
   const pct = strong ? 80 + Math.round((value - 0.8) * 30) : Math.round(8 + value * 40);
-  const ink = strong ? "#fff" : "var(--text-1)";
-  return `style="background:color-mix(in srgb, var(--brand-red) ${pct}%, var(--bg-surface));color:${ink}"`;
+  return `data-ink="${strong ? "light" : "dark"}" style="--heat:${pct}"`;
 }
 
 export function renderEvaluation(root) {
@@ -266,9 +265,8 @@ export function renderEvaluation(root) {
   const maxTokens = Math.max(...BATCH.rows.map((r) => r.tokens));
 
   root.innerHTML = `
-    <div class="page-head page-head--rule">
-      <p class="eyebrow">Evaluation · recorded batch</p>
-      <h1 class="page-title">协调是否值得它的成本？</h1>
+    <div class="page-head">
+      <h1 class="page-title type-heading-1">协调是否值得它的成本？</h1>
       <p class="page-desc">
         同一模型、同一批 36 个加固案例、同一预算与工具，四种架构各跑一次，共 144 个匹配槽位。
         下表是一次已归档运行的真实数字，不是实时结果，也不是盲测。
@@ -300,7 +298,7 @@ export function renderEvaluation(root) {
 
     <section aria-labelledby="table-title" class="section-gap">
       <div class="band-head">
-        <h2 class="section-title" id="table-title">质量与成本</h2>
+        <h2 class="section-title type-title-2" id="table-title">质量与成本</h2>
         <span class="band-note">质量成功率以全部 36 个案例为分母，技术失败不剔除</span>
       </div>
       <div class="table-wrap card card-flush">
@@ -322,7 +320,7 @@ export function renderEvaluation(root) {
                 (r) => `<tr class="${r.primary ? "is-primary" : ""}">
                   <th scope="row">
                     <span class="row-name">${esc(r.name)}</span>
-                    ${r.primary ? '<span class="row-tag">PRIMARY</span>' : ""}
+                    ${r.primary ? badge("PRIMARY", "accent") : ""}
                   </th>
                   <td class="num mono">${esc(r.completed)}</td>
                   <td class="num mono">${esc(r.root)}</td>
@@ -345,7 +343,7 @@ export function renderEvaluation(root) {
     </section>
 
     <section aria-labelledby="tradeoff-title" class="section-gap">
-      <h2 class="section-title" id="tradeoff-title">同一个质量，不同的代价</h2>
+      <h2 class="section-title type-title-2" id="tradeoff-title">同一个质量，不同的代价</h2>
       <div class="tradeoff-grid">
         <article class="chart-card">
           <h3>平均耗时</h3>
@@ -370,7 +368,7 @@ export function renderEvaluation(root) {
             .join("")}
         </article>
       </div>
-      <div class="finding-grid">
+      <div class="finding-list">
         <article class="finding">
           <h3>Dynamic vs Single</h3>
           <p>质量 +1（33 对 32），平均耗时 <strong>−39.4%</strong>，tokens <strong>−39.3%</strong>。配对结果为 3 胜 2 负 31 平。</p>
@@ -388,7 +386,7 @@ export function renderEvaluation(root) {
 
     <section aria-labelledby="lever-title" class="section-gap">
       <div class="band-head">
-        <h2 class="section-title" id="lever-title">难度杠杆下的表现</h2>
+        <h2 class="section-title type-title-2" id="lever-title">难度杠杆下的表现</h2>
         <span class="band-note">单元格为“正确 / 该杠杆的合格运行”</span>
       </div>
       <div class="table-wrap card card-flush">
@@ -420,7 +418,7 @@ export function renderEvaluation(root) {
     </section>
 
     <section aria-labelledby="boundary-title" class="section-gap">
-      <h2 class="section-title" id="boundary-title">这些数字不能证明什么</h2>
+      <h2 class="section-title type-title-2" id="boundary-title">这些数字不能证明什么</h2>
       <div class="boundary-card">
         <ul>
           <li><strong>不是盲测。</strong>36 个案例来自公开开发集，标签是评估者侧的候选标签，人工确认数为 0。</li>
