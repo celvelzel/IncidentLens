@@ -35,6 +35,11 @@ import {
   closeDrawer,
 } from "./components.js";
 
+// `TraceEvent.details` is `dict[str, Any]` on the wire (schemas/contracts.py): a
+// "list" field may legally arrive as a scalar. Normalise before `.map`/`.length`
+// so a schema-valid-but-odd trace can never throw out of a timeline renderer.
+const asArray = (v) => (Array.isArray(v) ? v : v == null || v === "" ? [] : [v]);
+
 // Layout-shaped skeletons land with the core layer; fall back to generic rows
 // if this file is loaded before those helpers exist (same branch, parallel work).
 const skeletonTable = (rows = 6, cols = 8) =>
@@ -908,13 +913,15 @@ function timelineBody(event) {
     const tone = rev.verdict === "sufficient" ? "success" : rev.verdict === "conflicted" ? "danger" : "warning";
     parts.push(`<div class="chip-row">${badge(`裁定 · ${rev.verdict}`, tone)} <span class="tag-id">${escapeHtml(rev.target_hypothesis_id)}</span></div>`);
     parts.push(`<p>${escapeHtml(rev.rationale)}</p>`);
-    if (rev.contradictions?.length) {
-      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${rev.contradictions
+    const contradictions = asArray(rev.contradictions);
+    if (contradictions.length) {
+      parts.push(`<div class="alert alert-warning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.3v.1"/></svg><div class="alert-msg">${contradictions
         .map(escapeHtml)
         .join("<br>")}</div></div>`);
     }
-    if (rev.requested_checks?.length) {
-      parts.push(`<div class="assign-list">${rev.requested_checks
+    const requestedChecks = asArray(rev.requested_checks);
+    if (requestedChecks.length) {
+      parts.push(`<div class="assign-list">${requestedChecks
         .map((t) => `<div class="assign-item"><div class="chip-row mb-2">${badge(t.role, "neutral")}</div><div class="q">${escapeHtml(t.question)}</div></div>`)
         .join("")}</div>`);
     }
@@ -1098,7 +1105,9 @@ export function renderReport(panel, state, reportMd) {
   const status = STATUS_META[report.status] || { tone: "neutral", label: report.status };
   const evidenceIndex = state.evidence_index || {};
   const rootCause = report.root_cause;
-  const provisional = report.provisional_hypotheses || [];
+  const provisional = asArray(report.provisional_hypotheses).filter((h) => h && typeof h === "object");
+  const observations = asArray(report.provisional_observations).filter((s) => typeof s === "string");
+  const causalChain = asArray(report.causal_chain).filter((s) => typeof s === "string");
   const assessmentLabel = report.acceptance_standard === "BEST_SUPPORTED_AVAILABLE" ? "已确定：现有证据最支持" : { CONFIRMED: "已确认", LIKELY: "较可能（未确认）", INSUFFICIENT: "证据不足" }[report.assessment_level];
   panel.innerHTML = `
     <div class="report-hero" data-status="${escapeHtml(report.status)}">
@@ -1123,13 +1132,13 @@ export function renderReport(panel, state, reportMd) {
         ${h.against_ids?.length ? `<p class="text-secondary">尚待解释的反对证据</p><div class="cite-wrap">${evidenceChips(h.against_ids, evidenceIndex)}</div>` : ""}
       </div>`).join("")}</div></div>` : ""}
 
-    ${report.provisional_observations?.length ? `<div class="report-section"><h3 class="type-title-3">已有观察（归因尚未确认）</h3>
-      <ul class="symptom-list">${report.provisional_observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
+    ${observations.length ? `<div class="report-section"><h3 class="type-title-3">已有观察（归因尚未确认）</h3>
+      <ul class="symptom-list">${observations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
     ${report.causal_limitations?.length ? `<div class="report-section"><h3 class="type-title-3">结论的证据边界</h3>
       <ul class="symptom-list">${report.causal_limitations.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></div>` : ""}
 
-    ${report.causal_chain?.length ? `<div class="report-section"><h3 class="type-title-3">因果链</h3><ol class="causal-chain">${report.causal_chain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
+    ${causalChain.length ? `<div class="report-section"><h3 class="type-title-3">因果链</h3><ol class="causal-chain">${causalChain.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol></div>` : ""}
 
     ${report.supporting_evidence_ids?.length ? `<div class="report-section">
       <h3 class="type-title-3">支持证据</h3>

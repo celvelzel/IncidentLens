@@ -1,10 +1,49 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { replayPrefix, replayReducer, initialReplay } from '../../src/incident_lens/web/static/js/replay.js';
+import { replayPrefix, replayReducer, initialReplay, replayBookmarks, evidenceContext } from '../../src/incident_lens/web/static/js/replay.js';
 import { evidenceDrawerHtml, evidenceChips, bindEvidenceChips } from '../../src/incident_lens/web/static/js/components.js';
+import { buildEvidenceFlow } from '../../src/incident_lens/web/static/js/orchestration.js';
+import { renderReport } from '../../src/incident_lens/web/static/js/views.js';
 const trace = JSON.parse(readFileSync(new URL('./fixtures/mock-success.json',import.meta.url)));
 const events = trace.state.events;
+
+test('scalar hypothesis updates remain navigable and replayable',()=>{
+  const hypothesis={hypothesis_id:'h1',failure_mode:'postgres_connection_exhaustion',status:'REJECTED'};
+  const event={event_type:'MERGE',event_id:'merge',run_id:trace.state.run_id,incident_id:trace.state.incident_id,details:{hypotheses:hypothesis}};
+  const scalar=structuredClone(trace);
+  scalar.state.events=[event];
+  assert.equal(replayBookmarks(scalar).find(b=>b.id==='postgres_connection_exhaustion').position,1);
+  assert.deepEqual(replayPrefix(scalar,1).hypotheses,[hypothesis]);
+  const decision={...event,event_type:'DECISION',details:{decision:{hypothesis_updates:hypothesis,reason:'recorded'}}};
+  scalar.state.events=[decision,event];
+  assert.equal(replayPrefix(scalar,2).hypothesis_history[0].reason,'recorded');
+  event.details.hypotheses=[null,42,hypothesis];
+  assert.equal(replayPrefix(scalar,2).hypotheses.length,1);
+  assert.equal(replayBookmarks(scalar).find(b=>b.id==='postgres_connection_exhaustion').position,2);
+});
+
+test('evidence context ignores non-text report entries and keeps recorded references',()=>{
+  const state={evidence_index:{E1:{}},provenance:{},findings:[],hypotheses:[],report:{
+    provisional_hypotheses:[null,{support_ids:'E1'}], causal_chain:[42,null,'cause [E1]'],
+    provisional_observations:{unexpected:'shape'},
+  }};
+  const refs=evidenceContext(state).E1.report_references;
+  assert.equal(refs.provisional,true);
+  assert.deepEqual(refs.causal_chain,['cause [E1]']);
+  assert.deepEqual(refs.provisional_observations,[]);
+  state.report.causal_chain=42;
+  assert.deepEqual(evidenceContext(state).E1.report_references.causal_chain,[]);
+  state.events=[];
+  assert.deepEqual(buildEvidenceFlow(state).evidence[0].report.causalChain,[]);
+  const panel={innerHTML:'',querySelectorAll:()=>[]};
+  state.report={status:'INSUFFICIENT',causal_chain:'cause [E1]',provisional_observations:'observation [E1]'};
+  renderReport(panel,state,'');
+  assert.match(panel.innerHTML,/cause \[E1\]/);
+  assert.match(panel.innerHTML,/observation \[E1\]/);
+  state.report.causal_chain=42;
+  assert.doesNotThrow(()=>renderReport(panel,state,''));
+});
 
 test('inherited object properties never authorize evidence chips or drawer access',()=>{
   const html=evidenceChips(['constructor','toString','__proto__'],{});

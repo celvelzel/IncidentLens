@@ -11,6 +11,14 @@
 import { escapeHtml as esc, formatDuration, SOURCE_TYPE_META, ROLE_LABEL, variantLabel } from './api.js';
 import { replayWorkflow } from './replay.js';
 
+// `TraceEvent.details` is `dict[str, Any]` on the wire (schemas/contracts.py): a
+// "list" field (DECISION.assignments, REVIEW.requested_checks/optional_checks/
+// cited_evidence_ids/contradictions, findings.evidence_ids, hypotheses.support_ids,
+// report.causal_chain, …) may legally arrive as a scalar. Normalise BEFORE every
+// `.map` / `.includes` / `.some` so a schema-valid-but-odd trace can never throw
+// out of a builder and blank `#replay-workflow` plus every `[data-seek]` binding.
+const asArray = (v) => (Array.isArray(v) ? v : v == null || v === '' ? [] : [v]);
+
 /* ------------------------------------------------------------------ *
  * Labels & tones
  * ------------------------------------------------------------------ */
@@ -81,8 +89,9 @@ function relationBadge(relation) {
 }
 
 function chips(ids, evidenceIndex) {
-  if (!ids || !ids.length) return '<span class="text-muted">无</span>';
-  return ids
+  const list = asArray(ids).filter((id) => id != null && String(id).trim() !== '');
+  if (!list.length) return '<span class="text-muted">无</span>';
+  return list
     .map((id) => {
       const known = evidenceIndex && Object.hasOwn(evidenceIndex, id);
       return `<button type="button" class="evidence-chip" data-evidence-id="${esc(id)}"${
@@ -247,7 +256,7 @@ export function resolveHasVerifier(state, opts = {}) {
 export function buildStages(state, opts = {}) {
   const events = state.events || [];
   const decisions = events.filter((e) => e.event_type === 'DECISION');
-  const assignments = decisions.flatMap((e) => e.details?.decision?.assignments || []);
+  const assignments = decisions.flatMap((e) => asArray(e.details?.decision?.assignments));
   const reviewEvents = events.filter((e) => e.event_type === 'REVIEW');
   const hasVerifier = resolveHasVerifier(state, opts);
   const diagAccepted = events.some((e) => e.event_type === 'DIAGNOSIS_ACCEPTED');
@@ -329,7 +338,7 @@ export function buildRounds(state) {
     const d = e.details || {};
     if (!(e.event_type === 'DECISION' && d.decision?.action === 'INVESTIGATE')) return;
     round += 1;
-    const assignments = (d.decision.assignments || []).map((a) => {
+    const assignments = asArray(d.decision.assignments).map((a) => {
       const recs = (byTask[a.task_id] || []).slice().sort((x, y) => (x.assignedPos || 0) - (y.assignedPos || 0));
       const r = recs[recs.length - 1] || null;
       const status = r?.status || 'NOT_STARTED';
@@ -372,7 +381,7 @@ function prefixCheckStatus(state, taskId) {
     (state.task_records || []).some((x) => x.task_id === taskId && x.status === 'COMPLETED') ||
     (state.events || []).some((e) => e.event_type === 'TASK_COMPLETED' && taskIdOf(e) === taskId);
   const assigned = (state.events || []).some(
-    (e) => e.event_type === 'DECISION' && (e.details?.decision?.assignments || []).some((a) => a.task_id === taskId),
+    (e) => e.event_type === 'DECISION' && asArray(e.details?.decision?.assignments).some((a) => a.task_id === taskId),
   );
   if (completed) return { status: 'completed', statusLabel: '当前前缀：相同 task_id 已完成' };
   if (assigned) return { status: 'assigned', statusLabel: '当前前缀：已调度，未见完成' };
@@ -399,7 +408,7 @@ function buildTaskRows(state, role, roleRecords) {
   const dispatchPos = {};
   events.forEach((e, i) => {
     if (e.event_type !== 'DECISION') return;
-    (e.details?.decision?.assignments || []).forEach((a) => {
+    asArray(e.details?.decision?.assignments).forEach((a) => {
       if (dispatchQ[a.task_id] === undefined) dispatchQ[a.task_id] = a.question;
       if (dispatchPos[a.task_id] === undefined) dispatchPos[a.task_id] = i + 1;
     });
@@ -415,7 +424,7 @@ function buildTaskRows(state, role, roleRecords) {
       const meta = TASK_STATUS[status] || TASK_STATUS.NOT_STARTED;
       const f = findingByTask[r.task_id];
       let resultSummary = '尚无结果';
-      if (status === 'COMPLETED') resultSummary = f ? `${f.relation} · ${(f.evidence_ids || []).length} 条证据` : '已完成 · 无 finding 提交';
+      if (status === 'COMPLETED') resultSummary = f ? `${f.relation} · ${asArray(f.evidence_ids).length} 条证据` : '已完成 · 无 finding 提交';
       else if (status === 'FAILED') resultSummary = '失败';
       return {
         taskId: r.task_id,
@@ -427,7 +436,7 @@ function buildTaskRows(state, role, roleRecords) {
         question: dispatchQ[r.task_id] || '内部协调任务',
         resultSummary,
         relation: f ? f.relation : null,
-        evidenceIds: f ? f.evidence_ids || [] : [],
+        evidenceIds: f ? asArray(f.evidence_ids) : [],
         errorCode: r.errorCode || null,
         jumpPosition: r.assignedPos || r.runningPos || r.completedPos || r.failedPos || dispatchPos[r.task_id] || 1,
       };
@@ -445,7 +454,7 @@ export function buildRoleStats(state) {
     let role = state.provenance?.[id]?.role;
     if (!role) {
       for (const e of events) {
-        if (e.event_type === 'TOOL_CALL' && (e.details?.result?.records || []).some((r) => r.evidence_id === id)) { role = e.role; break; }
+        if (e.event_type === 'TOOL_CALL' && asArray(e.details?.result?.records).some((r) => r.evidence_id === id)) { role = e.role; break; }
       }
     }
     if (role) (evidenceByRole[role] = evidenceByRole[role] || []).push(id);
@@ -494,7 +503,7 @@ export function buildRoleStats(state) {
         durationMs: roleRecords.reduce((n, r) => n + (r.durationMs || 0), 0),
       },
       tasks: buildTaskRows(state, role, roleRecords),
-      findings: findings.map((f) => ({ findingId: f.finding_id, taskId: f.task_id, role: f.role, relation: f.relation, evidenceIds: f.evidence_ids || [] })),
+      findings: findings.map((f) => ({ findingId: f.finding_id, taskId: f.task_id, role: f.role, relation: f.relation, evidenceIds: asArray(f.evidence_ids) })),
       requestedChecks: requests.filter((t) => t.role === role).map((t) => checkRow(state, t, t.kind)),
     };
   });
@@ -509,7 +518,7 @@ export function buildReviewGates(state, opts = {}) {
   events.forEach((e, i) => {
     if (e.event_type === 'DECISION' && e.details?.decision?.action === 'INVESTIGATE') {
       r += 1;
-      rounds.push({ round: r, position: i + 1, taskIds: (e.details.decision.assignments || []).map((a) => a.task_id) });
+      rounds.push({ round: r, position: i + 1, taskIds: asArray(e.details.decision.assignments).map((a) => a.task_id) });
     }
   });
 
@@ -517,9 +526,11 @@ export function buildReviewGates(state, opts = {}) {
     const rv = e.details?.review || {};
     const verdict = rv.verdict === 'sufficient' ? 'sufficient' : 'insufficient';
     const target = (state.hypotheses || []).find((h) => h.hypothesis_id === rv.target_hypothesis_id);
+    const requestedChecks = asArray(rv.requested_checks);
+    const optionalChecks = asArray(rv.optional_checks);
     let loopBack = null;
-    if (verdict === 'insufficient' && (rv.requested_checks || []).length) {
-      const reqIds = (rv.requested_checks || []).map((t) => t.task_id);
+    if (verdict === 'insufficient' && requestedChecks.length) {
+      const reqIds = requestedChecks.map((t) => t.task_id);
       const next = rounds
         .filter((rr) => rr.position > i + 1 && rr.taskIds.some((id) => reqIds.includes(id)))
         .sort((a, b) => a.position - b.position)[0];
@@ -538,10 +549,10 @@ export function buildReviewGates(state, opts = {}) {
       rationale: rv.rationale || '',
       hypothesisSha256: e.details?.hypothesis_sha256 || null,
       evidenceSha256: e.details?.evidence_sha256 || null,
-      citedEvidenceIds: rv.cited_evidence_ids || [],
-      requestedChecks: (rv.requested_checks || []).map((t) => checkRow(state, t, 'blocking')),
-      optionalChecks: (rv.optional_checks || []).map((t) => checkRow(state, t, 'optional')),
-      contradictions: rv.contradictions || [],
+      citedEvidenceIds: asArray(rv.cited_evidence_ids),
+      requestedChecks: requestedChecks.map((t) => checkRow(state, t, 'blocking')),
+      optionalChecks: optionalChecks.map((t) => checkRow(state, t, 'optional')),
+      contradictions: asArray(rv.contradictions),
       loopBack,
     };
   });
@@ -571,7 +582,7 @@ export function buildEvidenceFlow(state) {
     let firstRole = prov.role;
     if (!firstRole) {
       for (const e of events) {
-        if (e.event_type === 'TOOL_CALL' && (e.details?.result?.records || []).some((x) => x.evidence_id === id)) { firstRole = e.role; break; }
+        if (e.event_type === 'TOOL_CALL' && asArray(e.details?.result?.records).some((x) => x.evidence_id === id)) { firstRole = e.role; break; }
       }
     }
     if (firstRole) (agentsMap[firstRole] = agentsMap[firstRole] || []).push(id);
@@ -584,19 +595,19 @@ export function buildEvidenceFlow(state) {
       firstRole: firstRole || '',
       firstEventId: prov.event_id || null,
       firstTimestamp: prov.timestamp || null,
-      findingIds: findings.filter((f) => (f.evidence_ids || []).includes(id)).map((f) => f.finding_id),
+      findingIds: findings.filter((f) => asArray(f.evidence_ids).includes(id)).map((f) => f.finding_id),
       hypothesisRefs: hypotheses
-        .filter((h) => (h.support_ids || []).includes(id) || (h.against_ids || []).includes(id))
+        .filter((h) => asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id))
         .map((h) => ({
           hypothesisId: h.hypothesis_id,
           failureMode: h.failure_mode,
-          relation: (h.against_ids || []).includes(id) ? 'against' : 'supports',
+          relation: asArray(h.against_ids).includes(id) ? 'against' : 'supports',
           status: h.status,
         })),
       report: {
-        supporting: !!(report && (report.supporting_evidence_ids || []).includes(id)),
-        provisional: !!(report && (report.provisional_hypotheses || []).some((h) => (h.support_ids || []).includes(id) || (h.against_ids || []).includes(id))),
-        causalChain: report ? (report.causal_chain || []).filter((line) => line.includes(`[${id}]`)) : [],
+        supporting: !!(report && asArray(report.supporting_evidence_ids).includes(id)),
+        provisional: !!(report && asArray(report.provisional_hypotheses).some((h) => h && (asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id)))),
+        causalChain: report ? asArray(report.causal_chain).filter((line) => typeof line === 'string' && line.includes(`[${id}]`)) : [],
       },
     };
   });
@@ -606,19 +617,19 @@ export function buildEvidenceFlow(state) {
     present: ids.length > 0,
     agents,
     evidence,
-    findings: findings.map((f) => ({ findingId: f.finding_id, taskId: f.task_id, role: f.role, relation: f.relation, evidenceIds: f.evidence_ids || [] })),
+    findings: findings.map((f) => ({ findingId: f.finding_id, taskId: f.task_id, role: f.role, relation: f.relation, evidenceIds: asArray(f.evidence_ids) })),
     hypotheses: hypotheses.map((h) => ({
       hypothesisId: h.hypothesis_id, failureMode: h.failure_mode, culpritService: h.culprit_service,
-      status: h.status, supportIds: h.support_ids || [], againstIds: h.against_ids || [],
+      status: h.status, supportIds: asArray(h.support_ids), againstIds: asArray(h.against_ids),
     })),
     report: report
       ? {
           present: true,
           status: report.status || '',
           rootCauseFailureMode: report.root_cause?.failure_mode || null,
-          supportingEvidenceIds: report.supporting_evidence_ids || [],
-          causalChain: report.causal_chain || [],
-          rejectedHypothesisIds: (report.rejected_hypotheses || []).map((h) => h.hypothesis_id),
+          supportingEvidenceIds: asArray(report.supporting_evidence_ids),
+          causalChain: asArray(report.causal_chain).filter((line) => typeof line === 'string'),
+          rejectedHypothesisIds: asArray(report.rejected_hypotheses).filter((h) => h && typeof h === 'object').map((h) => h.hypothesis_id),
         }
       : { present: false, status: '', rootCauseFailureMode: null, supportingEvidenceIds: [], causalChain: [], rejectedHypothesisIds: [] },
   };
@@ -776,7 +787,7 @@ export function swimlaneHtml(state, opts = {}) {
         .join('');
       const mergeChips = r.assignments.map((a) => findingByTask[a.taskId]).filter(Boolean);
       const mergeSummary = mergeChips
-        .map((f) => `${relationBadge(f.relation)} <span class="orch-badge">${(f.evidence_ids || []).length} 证据</span>`)
+        .map((f) => `${relationBadge(f.relation)} <span class="orch-badge">${asArray(f.evidence_ids).length} 证据</span>`)
         .join('');
       return `<article class="orch-round" data-round="${r.round}">
         <header class="orch-round__head"><span class="orch-round__index">第 ${r.round} 轮</span>${parallel ? '<span class="orch-round__parallel">并行</span>' : ''}<span class="orch-round__reason">${esc(r.reason)}</span><button class="btn btn-sm orch-jump" data-seek="${r.decisionPosition}">跳到决策 · ${esc(r.decisionEventId)}</button></header>

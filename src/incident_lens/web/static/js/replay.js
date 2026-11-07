@@ -1,4 +1,8 @@
 /** Pure recorded-prefix projection. Final state supplies identity and authorization only. */
+// `TraceEvent.details` is `dict[str, Any]` on the wire (schemas/contracts.py): a
+// "list" field may legally arrive as a scalar. Normalise before array ops so a
+// schema-valid-but-odd trace can never throw out of a projection or builder.
+const asArray = (v) => (Array.isArray(v) ? v : v == null || v === '' ? [] : [v]);
 const dbTools = ['get_db_connections','get_db_active_sessions','get_db_lock_waits','get_db_slow_queries','get_db_health_metrics'];
 const roleTools = { logs:['query_logs'], metrics:['query_metrics','get_dependencies',...dbTools], database:dbTools, changes:['query_changes','get_config_diff'], verifier:['fetch_evidence_by_ids'], reporter:['fetch_evidence_by_ids'], single:['query_logs','query_metrics','get_dependencies','query_changes','get_config_diff','fetch_evidence_by_ids',...dbTools] };
 const toolSources = { query_logs:['logs'], query_metrics:['metrics'], get_dependencies:['topology'], query_changes:['changes'], get_config_diff:['configs'], ...Object.fromEntries(dbTools.map(t => [t,['database']])) };
@@ -46,12 +50,13 @@ export function replayReducer(previous, raw) {
     s.roles[e.role || 'runtime'] = d.status || e.event_type.slice(5);
   }
   if (e.event_type === 'DECISION' && d.decision?.action === 'INVESTIGATE') s.round_index++;
-  const updates = ['MERGE','HYPOTHESIS_RECONCILED'].includes(e.event_type) ? d.hypotheses || d.hypothesis_updates || [] : [];
+  const updates = ['MERGE','HYPOTHESIS_RECONCILED'].includes(e.event_type)
+    ? asArray(d.hypotheses || d.hypothesis_updates).filter(h => h && typeof h === 'object' && h.hypothesis_id) : [];
   for (const h of updates) {
     const prior = s.hypotheses.find(old => old.hypothesis_id === h.hypothesis_id);
     s.hypotheses = s.hypotheses.filter(old => old.hypothesis_id !== h.hypothesis_id);
     s.hypotheses.push(clone(h));
-    const decision = s.events.findLast(old => old.event_type === 'DECISION' && old.details?.decision?.hypothesis_updates?.some(update => equal(update,h)));
+    const decision = s.events.findLast(old => old.event_type === 'DECISION' && asArray(old.details?.decision?.hypothesis_updates).some(update => equal(update,h)));
     if (!equal(prior, h)) s.hypothesis_history.push({ event_id: e.event_id, timestamp: e.timestamp,
       previous_status: prior?.status || null, reason: decision?.details?.decision?.reason || null,
       decision_event_id: decision?.event_id || null, ...clone(h) });
@@ -68,7 +73,7 @@ export function replayReducer(previous, raw) {
   if (['RUNTIME_FAILURE','RUNTIME_ERROR','STOP_TIMEOUT'].includes(e.event_type)) s.workflow_status = 'FAILED';
   if (e.event_type === 'MODEL_FAILURE' && !['FAILED','FINISHED'].includes(s.workflow_status)) s.workflow_status = 'DEGRADED';
   if (e.event_type === 'MODEL_RECOVERED' && !['FAILED','FINISHED'].includes(s.workflow_status)) {
-    const recovered = new Set([...s.events,e].filter(x => x.event_type === 'MODEL_RECOVERED').flatMap(x => x.details?.call_ids || []));
+    const recovered = new Set([...s.events,e].filter(x => x.event_type === 'MODEL_RECOVERED').flatMap(x => asArray(x.details?.call_ids)));
     s.workflow_status = s.events.some(x => x.event_type === 'MODEL_FAILURE' && !recovered.has(x.details?.call_id)) ? 'DEGRADED' : 'RUNNING';
   }
   if (e.event_type === 'NORMAL_TERMINATION') { s.workflow_status = d.outcome === 'FAILED' ? 'FAILED' : 'FINISHED'; s.termination = clone(d); }
@@ -101,7 +106,7 @@ export function replayBookmarks(trace) {
   const events = trace.state?.events || [];
   const find = fn => { const index = events.findIndex(fn); return index < 0 ? null : index + 1; };
   const lastReview = events.findLastIndex(e => e.event_type === 'REVIEW');
-  const updates = e => ['MERGE','HYPOTHESIS_RECONCILED'].includes(e.event_type) ? e.details?.hypotheses || e.details?.hypothesis_updates || [] : [];
+  const updates = e => ['MERGE','HYPOTHESIS_RECONCILED'].includes(e.event_type) ? asArray(e.details?.hypotheses || e.details?.hypothesis_updates).filter(h => h && typeof h === 'object') : [];
   return [
     { id:'dispatch', label:'首次调度', position:find(e => e.event_type === 'DECISION' && e.details?.decision?.assignments?.length) },
     { id:'config', label:'配置变更证据', position:find(e => e.event_type === 'TOOL_CALL' && e.details?.tool_name === 'get_config_diff' && e.details?.result?.ok === true && e.details.result.records?.length) },
@@ -114,29 +119,33 @@ export function replayBookmarks(trace) {
 }
 
 /** Shared-state paths recorded in the prefix; requests are not dispatches. */
+// `TraceEvent.details` is `dict[str, Any]` on the wire (schemas/contracts.py), so a
+// "list" field may legally arrive as a scalar. Normalise before `.map`/`.includes`
+// so a schema-valid-but-odd trace can never throw out of the workflow extraction.
 export function replayWorkflow(state) {
   const dispatches = state.events.filter(e => e.event_type === 'DECISION').flatMap(e =>
-    (e.details.decision?.assignments || []).map(task => ({ ...task, event_id:e.event_id })));
+    asArray(e.details.decision?.assignments).map(task => ({ ...task, event_id:e.event_id })));
   const requests = state.events.filter(e => e.event_type === 'REVIEW').flatMap(e =>
-    ['requested_checks','optional_checks'].flatMap(kind => (e.details.review?.[kind] || []).map(t => ({...t, kind, event_id:e.event_id}))));
+    ['requested_checks','optional_checks'].flatMap(kind => asArray(e.details.review?.[kind])
+      .map(t => ({ ...(t && typeof t === 'object' ? t : { task_id: t == null ? '' : String(t) }), kind, event_id:e.event_id }))));
   const roles = [...new Set([...state.events.map(e => e.role).filter(Boolean), ...dispatches.map(t=>t.role), ...requests.map(t => t.role)])];
   return { dispatches, requests, roles };
 }
 
 export function replayReliability(state) {
   return state.events.filter(e => e.event_type === 'MODEL_FAILURE').map(failure => ({ failure,
-    recovery:state.events.find(e => e.event_type === 'MODEL_RECOVERED' && e.details?.call_ids?.includes(failure.details?.call_id)) || null }));
+    recovery:state.events.find(e => e.event_type === 'MODEL_RECOVERED' && asArray(e.details?.call_ids).includes(failure.details?.call_id)) || null }));
 }
 
 /** Context always comes from the current prefix, including report references. */
 export function evidenceContext(state) {
   return Object.fromEntries(Object.keys(state.evidence_index).map(id => [id, {
     ...state.provenance[id],
-    findings:state.findings.filter(f => f.evidence_ids?.includes(id)).map(f => ({finding_id:f.finding_id,role:f.role,relation:f.relation,claim:f.claim})),
-    hypotheses:state.hypotheses.filter(h => h.support_ids?.includes(id) || h.against_ids?.includes(id)).map(h => ({failure_mode:h.failure_mode,status:h.status,relation:h.against_ids?.includes(id)?'against':'supports'})),
-    report_references:state.report ? { supporting:state.report.supporting_evidence_ids?.includes(id) || false,
-      provisional:(state.report.provisional_hypotheses || []).some(h => h.support_ids?.includes(id) || h.against_ids?.includes(id)),
-      causal_chain:(state.report.causal_chain || []).filter(line => line.includes(`[${id}]`)),
-      provisional_observations:(state.report.provisional_observations || []).filter(line => line.includes(`[${id}]`)) } : null,
+    findings:state.findings.filter(f => asArray(f.evidence_ids).includes(id)).map(f => ({finding_id:f.finding_id,role:f.role,relation:f.relation,claim:f.claim})),
+    hypotheses:state.hypotheses.filter(h => asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id)).map(h => ({failure_mode:h.failure_mode,status:h.status,relation:asArray(h.against_ids).includes(id)?'against':'supports'})),
+    report_references:state.report ? { supporting:asArray(state.report.supporting_evidence_ids).includes(id) || false,
+      provisional:asArray(state.report.provisional_hypotheses).some(h => h && (asArray(h.support_ids).includes(id) || asArray(h.against_ids).includes(id))),
+      causal_chain:asArray(state.report.causal_chain).filter(line => typeof line === 'string' && line.includes(`[${id}]`)),
+      provisional_observations:asArray(state.report.provisional_observations).filter(line => typeof line === 'string' && line.includes(`[${id}]`)) } : null,
   }]));
 }
