@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.17.0"]
+dev = ["pytest==9.1.1", "pytest-asyncio==1.4.0", "ruff==0.17.0", "python-pptx==1.0.2", "matplotlib==3.11.2"]
 
 [project.scripts]
 incident-lens = "incident_lens.cli:main"
