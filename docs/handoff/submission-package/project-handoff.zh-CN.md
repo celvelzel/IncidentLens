@@ -149,7 +149,7 @@ flowchart LR
 | 采样 | temperature 0，cache off |
 | 上限 | 8 轮、40 次工具、64 次逻辑请求、7200 秒/调查、请求超时 1200 秒 |
 | 顺序 | seed 14100，固定随机化；所有架构保留在配对计划中 |
-| 结果目录 | `results/v16/wp-d/full144-hardened-c4-20261101/` |
+| 结果目录 | `results/v16/wp-d/full144-hardened-c4-20261101/`（本地产物，gitignore，未随包提交） |
 | 最终状态 | `batch_finished_with_errors`；136 completed、8 failed（保留在分母）、0 interrupted |
 | 实际耗时 | 4 小时 39 分（16,737.6 秒），输入哈希全程无漂移（144/144 `source_unchanged`） |
 
@@ -525,8 +525,8 @@ trace 的离线 replay，不调用模型、工具或私有 oracle，5–8 分钟
 | 硬化集中文报告（含 144 行明细与失败表） | [report.zh-CN.md](../../../analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md) |
 | 硬化集英文摘要 | [analysis/wp_d/reports/hardened144-20261101](../../../analysis/wp_d/reports/hardened144-20261101/README.md) |
 | 硬化集离线评分脚本 | [score_batch.py](../../../analysis/wp_d/reports/hardened144-20261101/score_batch.py) |
-| 硬化集机器可读对比（144 条记录） | [final-success-comparison.json](../../../results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json)（本地生成，gitignore） |
-| 硬化集最终批次状态 | [supervisor-status.json](../../../results/v16/wp-d/full144-hardened-c4-20261101/supervisor-status.json) |
+| 硬化集机器可读对比（144 条记录） | [final-success-comparison.scored.json](../../../analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json)（跟踪版投影，随包提交） |
+| 硬化集最终批次状态 | `supervisor-status.json`（本地产物，gitignore，未随包提交） |
 | 硬化集实验计划 | [plan.json](../../../results/acceptance/full144-hardened-c4-20261101/plan.json) |
 | 硬化集协议与预算 | [protocol.json](../../../results/acceptance/full144-hardened-c4-20261101/protocol.json) |
 | 硬化集 Provider readiness | [readiness.json](../../../results/acceptance/full144-hardened-c4-20261101/readiness.json) |

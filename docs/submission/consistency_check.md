@@ -60,20 +60,23 @@ same column count as its header, including the nine-column result tables.
 
 ### C3 — Numbers
 
-**PASS.** Every quoted figure resolves to `results/v16/wp-d/full144-hardened-c4-20261101/`
-`final-success-comparison.json` and the tracked test log `analysis/submission/pytest-20261102.log`.
+**PASS.** Every quoted figure resolves to the tracked
+`analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json`
+(archive-shipped projection of the local batch) and the tracked test log
+`analysis/submission/pytest-20261102.log`. The raw batch JSON under `results/v16/…` is
+gitignored run output and is not in the submission archive.
 
 | Claim | Authoritative source | Value |
 | --- | --- | --- |
-| Slots attempted / completed | `final-success-comparison.json` | 144 / 136 |
+| Slots attempted / completed | `final-success-comparison.scored.json` | 144 / 136 |
 | Technical failures | same | 8 (Single 1, Fixed-4 2, Dynamic 3, verifier 2) |
 | Quality success | same | 32 / 22 / 33 / 30 |
 | Root correct | same | 25/28 · 15/27 · 27/27 · 23/27 |
 | Correct abstention | same | 7/7 · 7/7 · 6/6 · 7/7 |
 | Wrong root causes | same | 0 |
 | Identifiable misses | same, `root_cause_correct is False` among identifiable cases | 19 (Fixed-4 12, verifier 4, Single 3, Dynamic 0) |
-| Guard terminations | per-slot traces under `results/v16/…/runs/slot-NNN/attempt-NNN/trace.json` | 27 of 144 `INVESTIGATION_EVIDENCE_EXHAUSTED` (verifier 11, Single 10, Dynamic 6); all `INCONCLUSIVE`; 7 identifiable and all 7 lost quality — 7 of the 19 misses |
-| Batch runtime | `final-success-comparison.json` | 16,737.6 s |
+| Guard terminations | per-slot traces under `results/v16/…/runs/slot-NNN/attempt-NNN/trace.json` (local run artifacts, not in the archive; not recomputable from the package) | 27 of 144 `INVESTIGATION_EVIDENCE_EXHAUSTED` (verifier 11, Single 10, Dynamic 6); all `INCONCLUSIVE`; 7 identifiable and all 7 lost quality — 7 of the 19 misses |
+| Batch runtime | `final-success-comparison.scored.json` | 16,737.6 s |
 | Batch tokens | same | 24,376,395 |
 | Batch budgets | `results/acceptance/full144-hardened-c4-20261101/protocol.json` | `max_rounds: 8`, `max_tool_calls: 40`, `max_llm_calls: 64`, `max_wall_seconds: 7200` |
 | Tests | `analysis/submission/pytest-20261102.log` (tracked copy of the live run log) | 1,179 passed, 3 skipped, 0 failed (463.23 s, exit 0) |

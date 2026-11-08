@@ -116,7 +116,7 @@ python -m venv .venv
 
 | Claim | Authoritative value | Where |
 | --- | --- | --- |
-| Slots attempted / completed | 144 / 136 | `results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json` |
+| Slots attempted / completed | 144 / 136 | `analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json` |
 | Technical failures | 8 (1 / 2 / 3 / 2 by architecture) | same |
 | Dynamic quality / root / abstain | 33/36 · 27/27 · 6/6 | same |
 | Wrong root causes | 0 of 144 | same |
@@ -127,8 +127,16 @@ python -m venv .venv
 Recompute the batch table with:
 
 ```bash
-.venv/Scripts/python.exe analysis/wp_d/reports/hardened144-20261101/score_batch.py
+.venv/bin/python analysis/submission/consistency_check.py
 ```
+
+> Boundary: the tracked, archive-shipped authority for these numbers is the scored
+> projection above (144 records). The raw batch JSON
+> `results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json` is local
+> run output (gitignored, `.gitignore:12`) and is not part of the submission archive;
+> `analysis/wp_d/reports/hardened144-20261101/score_batch.py` can regenerate it only
+> against the retained batch directory plus evaluator-only oracles, which are deliberately
+> not shipped.
 
 ---
 

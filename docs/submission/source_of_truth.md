@@ -209,7 +209,10 @@ formal sealing is blocked. No production, OOD or monitoring cohort was evaluated
 Batch `full144-hardened-c4-20261101`, `auto/deepseek-v4.1-flash`, temperature 0,
 cache off, 4 jobs, 1 repeat, 36 cases × 4 architectures = 144 slots.
 Runtime 16,737.6 s (4 h 38 m 58 s). **136 completed, 8 technical failures, 0 interrupted.**
-Source: `results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json`;
+Source: `analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json`
+(tracked projection of the local batch; the raw batch JSON
+`results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json` is gitignored
+run output and is not in the submission archive);
 interpretation: `analysis/wp_d/reports/hardened144-20261101/README.md`.
 
 | Architecture | Technical | Root correct | Correct abstention | Quality success | Avg latency | Avg requests | Avg tools | Avg tokens |

@@ -391,11 +391,16 @@ This evaluation does **not** establish:
 
 ## 11. Evidence and reproduction
 
-The primary recorded source for the hardened batch is
-`results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json`; the tracked
-interpretation and recomputation script are in
+The primary tracked source for the hardened batch is
+`analysis/wp_d/reports/hardened144-20261101/final-success-comparison.scored.json` (144
+records; every headline figure in this document is reproducible from it). The raw
+`results/v16/wp-d/full144-hardened-c4-20261101/final-success-comparison.json` is a local
+run artifact (gitignored) and is not part of the submission archive; `score_batch.py` can
+regenerate it only against the retained batch directory plus evaluator-only oracles, which
+are deliberately not shipped. The tracked interpretation and recomputation script are in
 `analysis/wp_d/reports/hardened144-20261101/`. The earlier batch source is
-`results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json`. The
+`results/v16/wp-d/full40-local-gateway-c4-20261031/final-success-comparison.json` (tracked;
+included in the archive). The
 `results/v16/` tree is a local run artifact and may not be present in a fresh clone; the
 tracked report is the durable record.
 
