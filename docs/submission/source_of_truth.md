@@ -14,8 +14,8 @@ Last fact-base review: **2026-11-02**. Project version `1.6.1`.
 Course: **COMP5584 Large Language Models for Agents**, The Hong Kong Polytechnic University,
 2026/27 Semester 1. Submission deadline from the official guidelines:
 **23 November 2026, 11:59 PM**. Recommended archive name in the guidelines:
-`COMP5584+GroupProject+Group5.zip`. The deck uses **Group 5**; member names are deliberately
-not invented and must be added by the group.
+`COMP5584+GroupProject+Group5.zip`. The deck uses **Group 5**; the title slide lists all six
+member names with their student IDs (verified in the 2026-11-02 deck build).
 
 > The reference PowerPoint supplied by the user is a **design reference only**. It is a
 > different course's deck (COMP5434, Group 9). None of its project facts, member names,
@@ -368,8 +368,11 @@ Do not present any of these as delivered.
 
 **UNVERIFIED / unavailable.**
 
-- Member names, student IDs, individual contributions and percentages. The Individual
-  Contribution Statement must remain blank; no roles or shares may be inferred.
+- Member names and student IDs are no longer unavailable: all six appear on the deck title
+  slide and in the Individual Contribution Statement, and members 1–2 have their module
+  descriptions filled in. What remains unavailable are the module descriptions for members
+  3–6, any agreed contribution percentages and signatures; those must be supplied by the
+  members themselves, and no roles or shares may be inferred or invented for them.
 - Demo video: not recorded or edited by this work.
 - Presentation date, room and assessor preferences.
 - Production performance, real incident accuracy, cost in USD, latency under real load.

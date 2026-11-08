@@ -61,9 +61,7 @@ py -3.13 -m venv .venv
 ```
 
 `check-environment` prints installed versions for the package, LangGraph, Pydantic and
-Streamlit. It currently prints a stale display string `"incident-lens": "0.1.0"` even though
-the package version is 1.6.1; treat the field as a known display defect, not the project
-version.
+Streamlit — for example `"incident-lens": "1.6.1"`.
 
 `validate-data` checks the public incident packs against the expected filenames and contracts.
 `list-cases` lists the public case identifiers. Neither command reads private benchmark
@@ -379,7 +377,7 @@ what was run.
 | Real provider schema error | Endpoint lacks `json_schema` support | Try `--response-format json_object` |
 | Port already in use | Another dashboard is running | `web --port 8767` |
 | Web replay finds no traces | No `results/**/trace.json` retained | Run a case or point the trace library at an existing results tree |
-| `check-environment` shows 0.1.0 | Stale display string | Ignore; package metadata and `pyproject.toml` say 1.6.1 |
+| `check-environment` shows `0.1.0` | Pre-1.6.1 checkout or stale editable install | Re-run the editable install; the current build prints `1.6.1` |
 
 ## 13. Submission packaging
 

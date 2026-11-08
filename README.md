@@ -161,10 +161,12 @@ The role catalog, ACL table, coordinator policy and hypothesis lifecycle are in
 
 ## Results
 
-**Dynamic, the primary architecture, resolved 33/36 slots with 27/27 correct root causes and
-0 wrong root causes in the hardened 144-slot batch.** Eight slots failed technically and stay
-in the denominator; all 19 identifiable misses ended `INCONCLUSIVE`, so the observed failure
-mode is over-abstention, not fabrication.
+The hardened batch ran four matched architectures over the same 36 cases — 144 slots in
+total. **Within its own 36 slots, Dynamic, the primary architecture, resolved 33/36 with
+27/27 correct root causes and 0 wrong root causes.** At the batch level, eight slots failed
+technically and stay in the denominator, and all 19 identifiable misses across the four
+architectures ended `INCONCLUSIVE`, so the observed failure mode is over-abstention, not
+fabrication.
 
 | Architecture | Quality success | Avg latency | Avg tokens |
 | --- | ---: | ---: | ---: |

@@ -25,7 +25,11 @@
 - `__main__.py` — Starlette 服务入口（默认端口 8022）
 - `static/` — 前端资源（原生 JavaScript ES modules + hash 路由 SPA，中文界面）
   - `static/js/app.js` — 路由与页面壳（6 条路由：总览 / 新建调查 / 痕迹档案库 / 运行详情 / 系统设计 / 评估结果）
-  - `static/js/replay-panels.js` — 运行详情/replay 面板：时间线、假设看板、证据登记、FinalizeGate 时间线
+  - `static/js/api.js` — 后端 API 客户端与共享工具函数
+  - `static/js/components.js` — 共享 UI 组件：徽章、空状态、骨架屏、toast、抽屉
+  - `static/js/orchestration.js` — 编排视图（共享状态与工作流的分阶段展示，纯视图模型渲染）
+  - `static/js/views.js` — 总览 / 新建调查 / 运行详情 / 痕迹档案库等页面视图
+  - `static/js/replay.js`、`static/js/replay-panels.js` — 运行详情 / replay 面板：时间线、假设看板、证据登记、FinalizeGate 时间线
   - `static/js/knowledge.js` — 评估视图的静态快照数据（标注 RECORDED BATCH）
 
 **启动**（仓库根目录，已装好 `.venv` 时）：
