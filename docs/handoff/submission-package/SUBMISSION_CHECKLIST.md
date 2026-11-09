@@ -28,7 +28,7 @@
 - [x] 21 slides, 16:9 (13.333 × 7.5 in), editable `.pptx` — not images.
 - [x] Main track 15 slides; 6 backup slides for Q&A.
 - [x] Every slide rendered to PNG and visually inspected (PNG copies since removed from the repo).
-- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 917,076 bytes).
+- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 1,047,346 bytes).
 - [x] Speaker notes present on every main-track slide with timings totalling 9:57.
 - [x] Title slide carries Group 5 and the six member names with student IDs.
 - [x] No slide claims PolyU endorsement, production readiness or state-of-the-art.

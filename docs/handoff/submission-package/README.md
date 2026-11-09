@@ -10,7 +10,7 @@
 | 文件 | 用途 |
 | --- | --- |
 | `IncidentLens_Deck.pptx` | 21 页 16:9 **可编辑**幻灯片（主线 15 页 + 备份 6 页），每页含演讲者备注 |
-| `IncidentLens_Deck.pdf` | 幻灯片的 PDF 导出（917,076 字节），现场机器缺字体时的后备 |
+| `IncidentLens_Deck.pdf` | 幻灯片的 PDF 导出（1,047,508 字节），现场机器缺字体时的后备 |
 | `Presentation_Script.md` | 英文逐页讲稿 + 中文演讲者备注、计时、转场、演示提示；六人分配，总时长 9:57 |
 | `QA_Preparation.md` | 10 个预答问题、快速应答表、记忆数字表、Mock 演练 |
 | `RUN_GUIDE.md` | `docs/RUN_GUIDE.md` 的副本：安装、全部命令、变体、预算、replay、测试、故障排查 |
