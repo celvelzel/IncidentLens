@@ -14,6 +14,22 @@
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/institutional.css">
   <link rel="stylesheet" href="css/astryx-bridge.css">
+  <style>
+    /* The SPA authors some labels as explicit bilingual pairs: a Chinese label
+       plus an already-English gloss (`orch-role-en`, `orch-stage__gloss`). In
+       English mode the i18n engine translates the Chinese half, so the
+       pre-existing English gloss becomes a duplicate ("Coordinator
+       Coordinator"). Hide the redundant gloss only while <html lang="en">.
+       Keep the gloss on SKIPPED stages: it carries the "该变体无验证者 · 未审查"
+       note (itself translated). setLang() toggles the html lang, so Chinese
+       (default) is unchanged. */
+    html[lang="en"] .orch-role-en {
+      display: none;
+    }
+    html[lang="en"] .orch-stage:not([data-state="skipped"]) .orch-stage__gloss {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -66,6 +82,10 @@
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4L19 19M19 5l-1.6 1.6M6.6 17.4L5 19"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.5A8.3 8.3 0 0 1 9.5 3.8a8.3 8.3 0 1 0 10.7 10.7z"/></svg>
           <span>切换主题</span>
+        </button>
+        <button class="theme-toggle" id="lang-toggle" type="button" aria-label="Switch language to English" data-i18n-skip>
+          <svg class="icon-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.9 2.6 15.1 0 18M12 3c-2.6 2.9-2.6 15.1 0 18"/></svg>
+          <span id="lang-toggle-label">English</span>
         </button>
       </div>
     </aside>

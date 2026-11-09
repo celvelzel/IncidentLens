@@ -2,6 +2,7 @@
  * IncidentLens SPA bootstrap: hash router, shell behavior, theme.
  */
 
+import "./i18n.js";
 import { getMeta } from "./api.js";
 import { closeDrawer, initDrawer } from "./components.js";
 import { renderInvestigate, renderLibrary, renderOverview, renderRun } from "./views.js";
