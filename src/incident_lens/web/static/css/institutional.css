@@ -540,18 +540,21 @@ table.data.lever-table th[scope="row"] {
   font-weight: 600;
 }
 
-.lever-table td.heat-cell {
-  text-align: center;
-  font-size: var(--text-sm, 14px);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  background: color-mix(in srgb, var(--brand-red) calc(var(--heat, 0) * 1%), var(--bg-surface));
-  color: var(--text-1);
-}
+.lever-table { table-layout: fixed; width: 100%; }
+.lever-table th:first-child,
+.lever-table td:first-child { width: 22%; }
+.lever-table th.num,
+.lever-table td.num { width: 19.5%; }
+.lever-table td.heat-cell.col-dynamic,
+.lever-table th.col-dynamic { font-weight: 700; }
+.lever-table th.col-dynamic { color: var(--accent); }
 
-.lever-table td.heat-cell[data-ink="light"] {
-  color: #ffffff;
-}
+.lever-table td.heat-cell { text-align: center; font-size: var(--text-sm, 14px); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-1); }
+.lever-table td.heat-cell[data-band="1"]{ background: var(--color-data-teal-1); color:#04302b; }
+.lever-table td.heat-cell[data-band="2"]{ background: var(--color-data-teal-2); color:#04302b; }
+.lever-table td.heat-cell[data-band="3"]{ background: var(--color-data-teal-3); color:#03302b; }
+.lever-table td.heat-cell[data-band="4"]{ background: var(--color-data-teal-4); color:#0A1317; }
+.lever-table td.heat-cell[data-band="5"]{ background: var(--color-data-teal-5); color:#ffffff; }
 
 .boundary-card {
   padding: var(--sp-5);
