@@ -1,17 +1,20 @@
 /* ============================================================
-   IncidentLens Design Tokens — two-layer token system (v2)
+   IncidentLens Design Tokens — two-layer token system (v3)
 
-   Layer 1 (--core-*): raw, theme-independent palette. Never
-     consumed by components directly — only aliased below.
-   Layer 2 (semantic): role-based aliases (surface / border /
-     text / icon / action / state) redefined per theme.
+   Astryx bridge: Layer 1 (--core-*) stays the raw, theme-independent
+   PolyU palette. Layer 2 (semantic) no longer hard-codes colours —
+   it aliases the Astryx design tokens (vendored `astryx.css`) so every
+   existing component inherits Astryx colours, radii, shadows and motion.
+   Astryx tokens use light-dark(); `color-scheme` is declared per theme
+   below, which is exactly what light-dark() resolves against, so BOTH
+   theme blocks reference the same Astryx tokens and adapt automatically.
 
-   Light is the default theme (projector-friendly console);
-   dark is first-class via [data-theme="dark"]. Every semantic
-   token is declared for BOTH themes — no token may fall
-   through to a browser default.
+   Load order (index.html): astryx.css → tokens.css → core.css → app.css
+   → institutional.css → astryx-bridge.css. The vendored astryx.css has
+   no global element selectors (only hashed atomic classes) so importing
+   it is conflict-free; its token layer is layered, our tokens are not.
 
-   Contract: docs/ui/redesign-v2.md §3 + Appendix B.
+   Contract: docs/ui/astryx-integration-spec.md
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -24,10 +27,10 @@
   --core-red-300: #e08a93; /* dark-theme chrome; 7.3:1 on #121212 */
   --core-red-50: #f8e9ec;
 
-  /* Brand navy/blue — PolyU deep-blue family; interactive accent */
+  /* Brand navy/blue — PolyU deep-blue family (legacy brand chrome only) */
   --core-navy-800: #123663; /* PolyU deep blue; 12.1:1 on white */
   --core-navy-900: #0d274a;
-  --core-navy-300: #7fb4e6; /* dark-theme accent; 8.5:1 on #121212 */
+  --core-navy-300: #7fb4e6;
   --core-navy-350: #a7cdf0;
 
   /* Neutral ramp — true PolyU grays (#454545 / #58595b / #717171 family) */
@@ -50,15 +53,15 @@
   --core-neutral-1000: #121212;
   --core-neutral-1050: #0d0d0d;
 
-  /* Semantic state palettes (light / dark pairs) */
-  --core-green-600: #2b8054; /* PolyU green; 4.9:1 on white */
-  --core-green-300: #4cc38a; /* 8.5:1 on #121212 */
-  --core-amber-700: #8a6d10; /* 4.9:1 on white */
-  --core-amber-300: #e7c15a; /* PolyU gold; 10.9:1 on #121212 */
-  --core-danger-600: #c62828; /* 5.6:1 on white */
-  --core-danger-300: #f08a86; /* 7.8:1 on #121212 */
-  --core-blue-700: #1c6bb0; /* PolyU blue; 5.6:1 on white */
-  --core-blue-300: #6fb2e8; /* 8.2:1 on #121212 */
+  /* Semantic state palettes (light / dark pairs) — kept for legacy brand chrome */
+  --core-green-600: #2b8054;
+  --core-green-300: #4cc38a;
+  --core-amber-700: #8a6d10;
+  --core-amber-300: #e7c15a;
+  --core-danger-600: #c62828;
+  --core-danger-300: #f08a86;
+  --core-blue-700: #1c6bb0;
+  --core-blue-300: #6fb2e8;
 }
 
 /* ------------------------------------------------------------
@@ -70,14 +73,15 @@
   /* Root scale: rem is exact (1rem = 16px). No clamp() anywhere. */
   font-size: 16px;
 
-  /* One refined system CJK sans stack — no webfont, no serif display face. */
+  /* One refined system CJK sans stack — no webfont, no serif display face.
+     Kept CJK-safe on purpose (Astryx families are Latin-only). */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", system-ui,
     sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono",
     Consolas, "Liberation Mono", monospace;
 
-  /* ---- Type scale: fixed rem, closed step list ---- */
+  /* ---- Type scale: fixed rem, closed step list (CJK-tuned, kept) ---- */
   --text-2xs: 0.75rem; /* 12px */
   --text-xs: 0.8125rem; /* 13px */
   --text-sm: 0.875rem; /* 14px */
@@ -114,15 +118,15 @@
   --sp-14: 56px;
   --sp-16: 64px;
 
-  /* ---- Radius scale (nested formula: inner = outer − gap, >2px) ---- */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
-  --radius-full: 999px;
+  /* ---- Radius scale (aliased to Astryx radii) ---- */
+  --radius-xs: var(--radius-inner); /* 4px */
+  --radius-sm: var(--radius-inner); /* 4px */
+  --radius: var(--radius-element); /* 8px */
+  --radius-md: var(--radius-element); /* 8px */
+  --radius-lg: var(--radius-container); /* 12px */
+  --radius-xl: var(--radius-page); /* 28px */
+  --radius-2xl: var(--radius-page); /* 28px */
+  --radius-full: 9999px; /* mirrors Astryx --radius-full (literal avoids self-ref cycle) */
 
   /* ---- Layout ---- */
   --sidebar-width: 232px;
@@ -133,13 +137,13 @@
   --measure: 70ch;
   --prose-max: 720px;
 
-  /* ---- Motion: state-driven, 150–260ms, transform/opacity ---- */
-  --dur-fast: 150ms;
-  --dur: 200ms;
-  --dur-slow: 250ms;
-  --dur-overlay: 260ms;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  /* ---- Motion (aliased to Astryx durations/easing) ---- */
+  --dur-fast: var(--duration-fast);
+  --dur: var(--duration-fast);
+  --dur-slow: var(--duration-medium-min);
+  --dur-overlay: var(--duration-medium-min);
+  --ease: var(--ease-standard);
+  --ease-exit: var(--ease-exit);
 
   /* ---- Z-index layers ---- */
   --z-base: 0;
@@ -154,11 +158,13 @@
   /* ---- Focus ring geometry (outline, never a box-shadow radius reset) ---- */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-  --focus-ring-color: var(--accent);
+  --focus-ring-color: var(--color-accent);
 }
 
 /* ------------------------------------------------------------
    Layer 2 — semantic tokens, LIGHT theme (default)
+   Every value aliases an Astryx token; light-dark() resolves the
+   actual colour against the color-scheme declared below.
    ------------------------------------------------------------ */
 
 :root,
@@ -166,78 +172,78 @@
   color-scheme: light;
 
   /* Surface */
-  --bg-app: var(--core-neutral-50);
-  --bg-surface: var(--core-neutral-0);
-  --bg-raised: var(--core-neutral-0);
-  --bg-overlay: var(--core-neutral-0);
-  --bg-inset: var(--core-neutral-75);
-  --bg-hover: rgba(0, 0, 0, 0.045);
-  --bg-active: rgba(0, 0, 0, 0.08);
-  --surface-2: var(--core-neutral-25);
-  --bg-scrim: rgba(0, 0, 0, 0.45);
+  --bg-app: var(--color-background-body);
+  --bg-surface: var(--color-background-surface);
+  --bg-raised: var(--color-background-card);
+  --bg-overlay: var(--color-background-popover);
+  --bg-inset: var(--color-background-muted);
+  --bg-hover: var(--color-overlay-hover);
+  --bg-active: var(--color-overlay-pressed);
+  --surface-2: var(--color-background-card);
+  --bg-scrim: var(--color-overlay);
 
   /* Border */
-  --border-subtle: rgba(0, 0, 0, 0.07);
-  --border: rgba(0, 0, 0, 0.12);
-  --border-strong: rgba(0, 0, 0, 0.22);
-  --border-control: #8a8a8a; /* 3.4:1 on white — form boundaries */
+  --border-subtle: var(--color-border);
+  --border: var(--color-border);
+  --border-strong: var(--color-border-emphasized);
+  --border-control: var(--color-border-emphasized);
 
   /* Text */
-  --text-1: var(--core-neutral-800);
-  --text-2: var(--core-neutral-600);
-  --text-3: var(--core-neutral-500);
-  --text-inverse: #ffffff;
-  --text-link: var(--accent);
+  --text-1: var(--color-text-primary);
+  --text-2: var(--color-text-secondary);
+  --text-3: color-mix(in srgb, var(--color-text-primary) 68%, var(--color-background-body));
+  --text-inverse: var(--color-on-accent);
+  --text-link: var(--color-text-accent);
 
   /* Icon */
-  --icon-1: var(--core-neutral-800);
-  --icon-2: var(--core-neutral-600);
-  --icon-3: var(--core-neutral-500);
+  --icon-1: var(--color-icon-primary);
+  --icon-2: var(--color-icon-secondary);
+  --icon-3: var(--color-icon-disabled);
 
-  /* Action — one interactive accent (PolyU deep blue) */
-  --accent: var(--core-navy-800);
-  --accent-strong: var(--core-navy-900);
-  --accent-active: #0a1f3d;
-  --accent-contrast: #ffffff;
-  --accent-soft: rgba(18, 54, 99, 0.08);
-  --accent-border: rgba(18, 54, 99, 0.28);
+  /* Action — one interactive accent (Astryx blue #0064E0 / #0171E3) */
+  --accent: var(--color-accent);
+  --accent-strong: var(--color-accent-strong, var(--color-accent));
+  --accent-active: color-mix(in srgb, var(--color-accent) 86%, #000);
+  --accent-contrast: var(--color-on-accent);
+  --accent-soft: var(--color-accent-muted);
+  --accent-border: var(--color-border-emphasized);
   --action-primary: var(--accent);
   --action-hover: var(--accent-strong);
   --action-pressed: var(--accent-active);
-  --action-disabled-bg: rgba(0, 0, 0, 0.05);
-  --action-disabled-text: #8a8a8a;
+  --action-disabled-bg: var(--color-background-muted);
+  --action-disabled-text: var(--color-text-disabled);
 
-  /* Brand chrome (identity, never status) — PolyU red */
-  --brand-red: var(--core-red-700);
-  --brand-red-soft: rgba(160, 35, 55, 0.08);
+  /* Brand chrome (identity, never status) — PolyU red kept for the brand mark */
+  --brand-red: var(--color-accent);
+  --brand-red-soft: var(--color-accent-muted);
   --brand-navy: var(--core-navy-800);
   --brand-light: var(--core-neutral-100);
 
-  /* State */
-  --success: var(--core-green-600);
-  --success-soft: rgba(43, 128, 84, 0.1);
-  --success-border: rgba(43, 128, 84, 0.3);
-  --warning: var(--core-amber-700);
-  --warning-soft: rgba(138, 109, 16, 0.1);
-  --warning-border: rgba(138, 109, 16, 0.3);
-  --danger: var(--core-danger-600);
-  --danger-soft: rgba(198, 40, 40, 0.09);
-  --danger-border: rgba(198, 40, 40, 0.3);
-  --info: var(--core-blue-700);
-  --info-soft: rgba(28, 107, 176, 0.09);
-  --info-border: rgba(28, 107, 176, 0.3);
-  --neutral-soft: rgba(69, 69, 69, 0.09);
-  --neutral-border: rgba(69, 69, 69, 0.26);
+  /* State — Astryx semantic colours */
+  --success: var(--color-success);
+  --success-soft: var(--color-success-muted);
+  --success-border: var(--color-border-success);
+  --warning: var(--color-text-warning);
+  --warning-soft: var(--color-warning-muted);
+  --warning-border: var(--color-border-warning);
+  --danger: var(--color-error);
+  --danger-soft: var(--color-error-muted);
+  --danger-border: var(--color-border-error);
+  --info: var(--color-info);
+  --info-soft: var(--color-info-muted);
+  --info-border: var(--color-border-info);
+  --neutral-soft: var(--color-background-gray);
+  --neutral-border: var(--color-border-gray);
 
-  /* Elevation — tinted, soft, offset; one light direction */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.09);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
-  --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.2);
+  /* Elevation — Astryx shadows */
+  --shadow-xs: var(--shadow-low);
+  --shadow-sm: var(--shadow-low);
+  --shadow-md: var(--shadow-med);
+  --shadow-lg: var(--shadow-high);
+  --shadow-overlay: var(--shadow-high);
 
   /* Browser surfaces */
-  --code-bg: rgba(0, 0, 0, 0.05);
+  --code-bg: var(--color-background-muted);
   --scroll-thumb: rgba(0, 0, 0, 0.18);
   --selection-bg: var(--accent-soft);
   --caret-color: var(--accent);
@@ -245,84 +251,86 @@
 
 /* ------------------------------------------------------------
    Layer 2 — semantic tokens, DARK theme (first-class)
+   Same Astryx aliases; light-dark() re-resolves to the dark values
+   because this block declares `color-scheme: dark`.
    ------------------------------------------------------------ */
 
 [data-theme="dark"] {
   color-scheme: dark;
 
   /* Surface */
-  --bg-app: var(--core-neutral-1050);
-  --bg-surface: var(--core-neutral-1000);
-  --bg-raised: var(--core-neutral-900);
-  --bg-overlay: #1f1f1f;
-  --bg-inset: #0a0a0a;
-  --bg-hover: rgba(255, 255, 255, 0.045);
-  --bg-active: rgba(255, 255, 255, 0.08);
-  --surface-2: #161616;
-  --bg-scrim: rgba(0, 0, 0, 0.62);
+  --bg-app: var(--color-background-body);
+  --bg-surface: var(--color-background-surface);
+  --bg-raised: var(--color-background-card);
+  --bg-overlay: var(--color-background-popover);
+  --bg-inset: var(--color-background-muted);
+  --bg-hover: var(--color-overlay-hover);
+  --bg-active: var(--color-overlay-pressed);
+  --surface-2: var(--color-background-card);
+  --bg-scrim: var(--color-overlay);
 
   /* Border */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --border-control: #7a7a7a; /* 4.4:1 on #121212 */
+  --border-subtle: var(--color-border);
+  --border: var(--color-border);
+  --border-strong: var(--color-border-emphasized);
+  --border-control: var(--color-border-emphasized);
 
   /* Text */
-  --text-1: #f5f5f5;
-  --text-2: #b3b3b3;
-  --text-3: var(--core-neutral-450);
-  --text-inverse: #0d0d0d;
-  --text-link: var(--accent);
+  --text-1: var(--color-text-primary);
+  --text-2: var(--color-text-secondary);
+  --text-3: color-mix(in srgb, var(--color-text-primary) 68%, var(--color-background-body));
+  --text-inverse: var(--color-on-accent);
+  --text-link: var(--color-text-accent);
 
   /* Icon */
-  --icon-1: #f5f5f5;
-  --icon-2: #b3b3b3;
-  --icon-3: var(--core-neutral-450);
+  --icon-1: var(--color-icon-primary);
+  --icon-2: var(--color-icon-secondary);
+  --icon-3: var(--color-icon-disabled);
 
   /* Action */
-  --accent: var(--core-navy-300);
-  --accent-strong: var(--core-navy-350);
-  --accent-active: #cfe4f8;
-  --accent-contrast: #0a1420;
-  --accent-soft: rgba(127, 180, 230, 0.14);
-  --accent-border: rgba(127, 180, 230, 0.36);
+  --accent: var(--color-accent);
+  --accent-strong: var(--color-accent-strong, var(--color-accent));
+  --accent-active: color-mix(in srgb, var(--color-accent) 86%, #000);
+  --accent-contrast: var(--color-on-accent);
+  --accent-soft: var(--color-accent-muted);
+  --accent-border: var(--color-border-emphasized);
   --action-primary: var(--accent);
   --action-hover: var(--accent-strong);
   --action-pressed: var(--accent-active);
-  --action-disabled-bg: rgba(255, 255, 255, 0.06);
-  --action-disabled-text: #7a7a7a;
+  --action-disabled-bg: var(--color-background-muted);
+  --action-disabled-text: var(--color-text-disabled);
 
-  /* Brand chrome */
-  --brand-red: var(--core-red-300);
-  --brand-red-soft: rgba(224, 138, 147, 0.15);
+  /* Brand chrome — PolyU red continues in dark for the brand mark */
+  --brand-red: var(--color-accent);
+  --brand-red-soft: var(--color-accent-muted);
   --brand-navy: var(--core-navy-300);
   --brand-light: #242424;
 
   /* State */
-  --success: var(--core-green-300);
-  --success-soft: rgba(76, 195, 138, 0.12);
-  --success-border: rgba(76, 195, 138, 0.32);
-  --warning: var(--core-amber-300);
-  --warning-soft: rgba(231, 193, 90, 0.12);
-  --warning-border: rgba(231, 193, 90, 0.32);
-  --danger: var(--core-danger-300);
-  --danger-soft: rgba(240, 138, 134, 0.12);
-  --danger-border: rgba(240, 138, 134, 0.34);
-  --info: var(--core-blue-300);
-  --info-soft: rgba(111, 178, 232, 0.12);
-  --info-border: rgba(111, 178, 232, 0.32);
-  --neutral-soft: rgba(179, 179, 179, 0.12);
-  --neutral-border: rgba(179, 179, 179, 0.3);
+  --success: var(--color-success);
+  --success-soft: var(--color-success-muted);
+  --success-border: var(--color-border-success);
+  --warning: var(--color-text-warning);
+  --warning-soft: var(--color-warning-muted);
+  --warning-border: var(--color-border-warning);
+  --danger: var(--color-error);
+  --danger-soft: var(--color-error-muted);
+  --danger-border: var(--color-border-error);
+  --info: var(--color-info);
+  --info-soft: var(--color-info-muted);
+  --info-border: var(--color-border-info);
+  --neutral-soft: var(--color-background-gray);
+  --neutral-border: var(--color-border-gray);
 
   /* Elevation */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
-  --shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.7);
+  --shadow-xs: var(--shadow-low);
+  --shadow-sm: var(--shadow-low);
+  --shadow-md: var(--shadow-med);
+  --shadow-lg: var(--shadow-high);
+  --shadow-overlay: var(--shadow-high);
 
   /* Browser surfaces */
-  --code-bg: rgba(255, 255, 255, 0.05);
+  --code-bg: var(--color-background-muted);
   --scroll-thumb: rgba(255, 255, 255, 0.14);
   --selection-bg: var(--accent-soft);
   --caret-color: var(--accent);

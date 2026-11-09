@@ -1,5 +1,10 @@
 # Palette revision v3 — PolyU-informed colour system
 
+> **Superseded (2026-11-09):** the colour hex values below are historical. The web UI now uses
+> the **Meta Astryx** palette — see [`astryx-integration-spec.md`](astryx-integration-spec.md).
+> Token names, layout and accessibility rules from this document still apply; only the colour
+> values changed (PolyU red removed, Astryx blue accent + teal data scale).
+
 > Scope: colour tokens only. This revision remaps the two-layer colour system in
 > `src/incident_lens/web/static/css/tokens.css` to a palette derived from **The Hong Kong
 > Polytechnic University** website. It **supersedes the colour hex values in

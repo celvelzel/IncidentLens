@@ -251,13 +251,12 @@ function bar(value, max, tone = "accent", label = "") {
 }
 
 function heat(value) {
-  // 0..1 -> brand-red tint. Two bands with a gap in between: the light band
-  // always takes dark ink, the dark band always takes white, so no cell lands
-  // in the mid-tone zone where neither ink reaches 4.5:1. The tint is driven by
-  // CSS custom properties so no presentational magic numbers leak inline.
-  const strong = value >= 0.8;
-  const pct = strong ? 80 + Math.round((value - 0.8) * 30) : Math.round(8 + value * 40);
-  return `data-ink="${strong ? "light" : "dark"}" style="--heat:${pct}"`;
+  // 0..1 -> 5-band teal heatmap. The band is emitted as a data attribute so CSS
+  // owns every colour and ink choice; each band fixes an accessible text colour,
+  // so no cell lands in a mid-tone zone where neither ink reaches 4.5:1.
+  const v = Math.max(0, Math.min(1, value));
+  const band = v >= 0.99 ? 5 : v >= 0.82 ? 4 : v >= 0.68 ? 3 : v >= 0.52 ? 2 : 1;
+  return `data-band="${band}"`;
 }
 
 export function renderEvaluation(root) {
@@ -394,7 +393,7 @@ export function renderEvaluation(root) {
           <thead>
             <tr>
               <th scope="col">难度杠杆</th>
-              ${BATCH.rows.map((r) => `<th scope="col" class="num">${esc(r.name)}</th>`).join("")}
+              ${BATCH.rows.map((r) => `<th scope="col" class="num${r.primary ? ' col-dynamic' : ''}">${esc(r.name)}</th>`).join("")}
             </tr>
           </thead>
           <tbody>
@@ -403,7 +402,7 @@ export function renderEvaluation(root) {
                 (l) => `<tr>
                   <th scope="row">${esc(l.name)}</th>
                   ${l.values
-                    .map((v, i) => `<td class="num mono heat-cell" ${heat(l.ratio[i])}>${esc(v)}</td>`)
+                    .map((v, i) => `<td class="num mono heat-cell${BATCH.rows[i].primary ? ' col-dynamic' : ''}" ${heat(l.ratio[i])}>${esc(v)}</td>`)
                     .join("")}
                 </tr>`
               )
