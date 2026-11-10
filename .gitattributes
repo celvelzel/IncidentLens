@@ -1,6 +1,7 @@
-# IncidentBench manifests bind exact evidence bytes on every operating system.
-/data/incidentbench_v1/** -text
-/data/incidentbench_v16_dev/** -text
+# Preserve presentation binaries exactly, including ASCII-encoded PDFs.
+*.pdf binary
+*.pptx binary
+*.png binary
 
-# Preserve byte-bound WP-D requests, responses and experiment logs.
-/results/v16/wp-d/** -text
+# The published validation manifest hashes this editable script byte-for-byte.
+presentation/IncidentLens_Deck_version_b/speech.md text eol=lf
