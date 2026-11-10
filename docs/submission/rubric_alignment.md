@@ -4,7 +4,7 @@
 Total: **100%**. This matrix maps each criterion to evidence and to the final artifacts.
 **Deck map (21 slides):** 1 title · 2–3 Problem · 4–7 Design · 8–9 System · 10–13
 Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
-`presentation/IncidentLens_Deck.pptx`; update them if the deck is reordered.
+`presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx`; update them if the deck is reordered.
 
 | Rubric category | Weight | What the assessor is looking for | Evidence in IncidentLens | Documents | Slides | Demo cue |
 | --- | ---: | --- | --- | --- | ---: | --- |
@@ -12,7 +12,7 @@ Evaluation · 14–15 Discussion · 16–21 Backup. Slide numbers below refer to
 | **2. Multi-Agent System Design** | 30% | Role decomposition; coordination; communication; state; failure handling; justified design choices | 1 coordinator + 4 specialists + verifier ablation + deterministic merge/finalize + remediation + monitoring; LangGraph state machine; max 2 tasks/round; role ACL; stable hypothesis IDs; partial-failure handling; unified stop. | `docs/ARCHITECTURE.md`; `docs/AGENT_DESIGN.md`; `docs/reference/protocol.md` | 4–7 | Open **System** and **Run → Workflow**; click a specialist |
 | **3. Technical Implementation & Functionality** | 25% | Working system; code quality; reproducibility; tests; actual demo | 40 public packs; mock and real providers; CLI + web; replay without re-execution; 1,179 tests passed, 3 skipped, 0 failed (2026-11-02, 463.23 s); strict Pydantic contracts; retry and stop protocol; no secrets in repo. | `README.md`; `docs/RUN_GUIDE.md`; `docs/ARCHITECTURE.md` §5–8 | 8–9 | Run `incident_001` live (Mock), then replay it; show trace and evidence drawer |
 | **4. Analysis & Innovation** | 15% | Measurement; insight; comparison; honest limitations; novelty | Matched 4-architecture benchmark; 144 slots; quality/cost metrics; difficulty levers; zero wrong root causes; verifier ablation; deterministic grounding gates; replay-estimated guard analysis with explicit boundary. | `docs/EVALUATION.md`; `analysis/wp_d/reports/hardened144-20261101/README.md`; `docs/incidentbench/README.md` | 10–14 (backup 17–19) | **Evaluation** page: 33/36 vs 32/36, 27/27 root correct, token/latency comparison |
-| **5. Presentation & Submission Quality** | 15% | Clear narrative; visual quality; timing; Q&A; complete, consistent package | PolyU-aligned deck and site; 9–10 min script; six-speaker allocation; Q&A with limitations; blank contribution template; checklist; consistency audit; reproducible package. | `presentation/Presentation_Script.md`; `presentation/QA_Preparation.md`; `docs/submission/`; `submission/` | all | Coherent red/navy design across deck and site; rehearsed hand-offs |
+| **5. Presentation & Submission Quality** | 15% | Clear narrative; visual quality; timing; Q&A; complete, consistent package | PolyU-aligned deck and site; English script with rehearsal target around 9–10 min; six-speaker allocation; Q&A with limitations; contribution statement with remaining group-owned fields; checklist; consistency audit; reproducible package. | `presentation/IncidentLens_Deck_version_b/speech.md`; `presentation/QA_Preparation.md`; `docs/submission/`; `submission/` | all | Coherent red/navy design across deck and site; rehearsed hand-offs |
 
 ## Criterion-level evidence checklist
 
@@ -71,10 +71,10 @@ configuration or web assets.
 
 ### 5. Presentation & Submission Quality (15%)
 
-- [x] 16:9 editable deck, PolyU-aligned visual system, speaker notes.
+- [x] 16:9 image-based version_b deck, PolyU-red/Arial visual system, complete English speaker notes.
 - [x] Every slide rendered and visually inspected (record inspection log).
 - [x] PDF export (if WPS export succeeds).
-- [x] English script with Chinese notes, timings, transitions, demo cues.
+- [x] English verbatim script with transitions and demo cues; illustrated script PDF.
 - [x] Six-speaker allocation without inventing contributions.
 - [x] Q&A preparation with correct, bounded answers.
 - [x] Blank Individual Contribution Statement template.
@@ -112,7 +112,7 @@ configuration or web assets.
 | --- | --- | --- |
 | Source code + instructions | repository root, `README.md`, `docs/RUN_GUIDE.md` | verify fresh clone install |
 | Demo video (≤10 min) | **not produced here** | group records using `docs/DEMO_GUIDE.md` |
-| Slides | `presentation/IncidentLens_Deck.pptx` + `.pdf` | review, add names if desired |
+| Slides | `presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx` + `.pdf` | review on the venue machine; rehearse timing |
 | Individual Contribution Statement | `submission/Individual_Contribution_Statement.md` | members 1–2 filled; group completes percentages and members 3–6 |
 | Submission checklist | `submission/SUBMISSION_CHECKLIST.md` | tick before zipping |
 | Consistency audit | `docs/submission/consistency_check.md` | re-run after any edit |

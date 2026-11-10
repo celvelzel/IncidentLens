@@ -1,5 +1,12 @@
 # 提交材料交接包（Submission Package Handoff）
 
+## 当前推荐汇报：version_b（2026-11-10）
+
+请使用仓库中的 [新版 PPT](../../../presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx)、[幻灯片 PDF](../../../presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pdf)、[配图英文逐页逐字稿 PDF](../../../presentation/IncidentLens_Deck_version_b/Presentation_Script_version_b.pdf) 和[可编辑讲稿](../../../presentation/IncidentLens_Deck_version_b/speech.md)。共 21 页，15 页主线＋6 页答辩备份，每页有完整英文备注。新版采用 Arial、理大红色和小号备注，为图像式页面，不能逐个编辑文字或图表。
+
+下方原有文件清单与构建说明描述旧版发布副本，保留用于追溯；旧版另归档为 [version_a](../../../presentation/version_a/README.md)。`presentation/build_deck.py` 只重建旧版，不会生成 version_b。新版的产物、原图、生成记录和验证说明见[交付目录](../../../presentation/IncidentLens_Deck_version_b/README.md)。提交压缩包须由小组按当前材料重新打包；本次未上传 Canvas 或重录 Demo。
+
+
 **日期**：2026-11-02　**用途**：把 COMP5584 小组提交所需的全部演示与讲稿材料集中放在交接文件夹，方便未参与制作的成员直接取用。
 
 > 这里是**发布副本**。编辑请改 `presentation/`、`docs/`、`submission/` 下的源文件后重新复制；

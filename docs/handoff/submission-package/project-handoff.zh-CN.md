@@ -1,5 +1,8 @@
 # IncidentLens 课程项目交接指南
 
+**汇报材料更新（2026-11-10）**：当前使用 [version_b](../../../presentation/IncidentLens_Deck_version_b/README.md)，21 页全英文，附逐页英文备注和配图讲稿 PDF。新版为图像式 PPT，采用 Arial 与理大红色；[version_a](../../../presentation/version_a/README.md) 保留旧版可编辑材料。下文旧 PPT 路径、Georgia/Calibri 字体和 9:57 计时属于历史版本，现场以新版讲稿排练为准。
+
+
 本文供后续负责测试验收、报告撰写、PPT 制作、现场汇报和提交打包的成员使用。非技术成员可以先读“项目一句话”和“如何解释结果”，再按自己的角色进入对应章节；技术成员可从运行命令、证据路径和限制直接接手。
 
 > **配套网页版：** [project-handoff.zh-CN.html](project-handoff.zh-CN.html) —— 用浏览器直接打开，含图表、按角色的上手标签页和可勾选的自检清单，适合快速浏览与小组内分享。本 Markdown 是权威版本，网页版数字与之同步。

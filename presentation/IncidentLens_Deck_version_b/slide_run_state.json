@@ -1,0 +1,30 @@
+{
+  "status": "assembled",
+  "history": [
+    {
+      "from": "created",
+      "to": "jobs_prepared",
+      "at": "2026-11-10T03:33:55Z",
+      "note": "prepared slide prompt jobs"
+    },
+    {
+      "from": "jobs_prepared",
+      "to": "slides_dispatched",
+      "at": "2026-11-10T03:58:24Z",
+      "note": "all slide jobs dispatched"
+    },
+    {
+      "from": "slides_dispatched",
+      "to": "slides_recorded",
+      "at": "2026-11-10T04:00:33Z",
+      "note": "all slide images recorded"
+    },
+    {
+      "from": "slides_recorded",
+      "to": "assembled",
+      "at": "2026-11-10T04:11:12Z",
+      "note": "21 slides with 21 exact speaker-note scripts; PPTX and PDFs validated; single-agent user override observed."
+    }
+  ],
+  "updated_at": "2026-11-10T04:11:12Z"
+}

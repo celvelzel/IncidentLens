@@ -1,5 +1,10 @@
 # IncidentLens
 
+## 汇报材料
+
+当前版本为 **version_b**：21 页全英文（15 页主线＋6 页备份），Arial 字形、理大红色，全部页面含英文逐字稿备注。[PPTX](presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx) · [幻灯片 PDF](presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pdf) · [配图逐页讲稿 PDF](presentation/IncidentLens_Deck_version_b/Presentation_Script_version_b.pdf) · [可编辑英文逐字稿](presentation/IncidentLens_Deck_version_b/speech.md)。新版为整页图像式 PPT，页内文字与图表不能单独编辑；旧版可编辑材料保留为 [version_a](presentation/version_a/README.md)。详见[版本记录](presentation/VERSIONS.md)。
+
+
 [English](README.md) | **简体中文**
 
 一个以证据为驱动的软件事故排查多智能体系统。

@@ -1,5 +1,10 @@
 # Cross-Artifact Consistency Audit
 
+## version_b artifact audit (2026-11-10)
+
+The current presentation is version_b. Its [validation record](../../presentation/IncidentLens_Deck_version_b/qa_report.json) checks 21 slides, exact notes/script correspondence, embedded-image identity and both 21-page PDFs. All generated pages were visually reviewed. This is separate from the historical application and version_a audit below; it does not renew the old test result or claim a measured 9:57 rehearsal.
+
+
 **Run:** 2026-11-02, against the tree that produced `presentation/IncidentLens_Deck.pptx`
 (21 slides) and `presentation/IncidentLens_Deck.pdf` (916,912 bytes).
 **Scope:** every artifact this submission ships — `README.md`, `docs/`, `presentation/`,

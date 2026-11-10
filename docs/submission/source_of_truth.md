@@ -1,5 +1,10 @@
 # IncidentLens — Verified Source of Truth
 
+## Presentation version update (2026-11-10)
+
+The current deck is `presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx`: 21 English image-based slides with all 21 English talk tracks embedded in notes. Arial and smaller gray annotations replace the earlier serif-title treatment. The prior editable deck is archived under `presentation/version_a/`. Historical references below to the editable deck or its Georgia/Calibri typography describe version_a. Saved benchmark results are unchanged; no new model experiment or full application test run is claimed.
+
+
 **Purpose.** This is the single fact base for the README, submission documents, slides,
 speaker script, Q&A and website copy. Every public claim about the project should trace to
 this file. Evidence labels:

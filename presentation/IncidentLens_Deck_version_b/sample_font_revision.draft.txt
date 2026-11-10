@@ -1,0 +1,23 @@
+Edit this complete academic PowerPoint slide. Change the typography to Arial throughout, while preserving the existing approved white, PolyU-red, pale-red and navy color palette, the slide's content, components, layout and all arrow relationships.
+
+The user specifically dislikes the large serif title. Replace it with genuine-looking standard Arial Bold, a clean modern sans-serif with no serifs and no high-contrast thick/thin strokes. Use Arial Bold for the main title, group heading, role/component headings and emphasized diagram labels. Use Arial Regular for the subtitle, descriptions, captions, notes and legend. Do not substitute Arial Narrow, Calibri, Helvetica-like geometric display lettering, Times New Roman, Georgia or any decorative font. The reference is MIT Sloan's PowerPoint typography guidance: Arial for presentations. Do not reproduce MIT branding or change the PolyU palette.
+
+Keep this exact title on two lines, now in Arial Bold:
+Dynamic coordinates specialists
+through shared evidence
+
+Keep the subtitle in Arial Regular:
+A bounded investigation loop with deterministic acceptance.
+
+Use a disciplined hierarchy, natural Arial letter spacing and medium line spacing. Keep the title visually prominent without increasing its occupied area. Retain readable diagram labels. Slightly adjust text wrapping inside the same blocks if Arial needs different metrics. Preserve all visible wording and avoid cropping, overlapping text or connectors crossing letters.
+
+Preserve this corrected logic exactly:
+- The FINALIZE request originates at Coordinator and ends at FinalizeGate.
+- The rejected-finalization return arrow ends at Coordinator, labeled Rejected: replan if budget remains.
+- FinalizeGate's Accept arrow ends at RESOLVED.
+- There is no direct FinalizeGate rejection arrow to INCONCLUSIVE.
+- Coordinator sends 1-2 tasks per round to Logs, Metrics, Database and Changes.
+- Specialists send findings to Merge, which publishes Shared evidence and hypotheses. The board feeds back to Coordinator through Replan from gaps.
+- The investigation cycle can end INCONCLUSIVE through ABSTAIN or evidence exhaustion.
+
+Preserve the bottom notes about Dynamic being the primary architecture, the independent verifier ablation, and optional Monitoring / PLAN_ONLY response. All visible text remains English, including labels and legend. Full-slide landscape 16:9, no watermark, no slide number, no new logo. Return the revised slide image itself, not a mockup of it on a screen. This is one typography revision of the same sample, not a new slide.

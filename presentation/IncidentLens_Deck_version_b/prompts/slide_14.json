@@ -1,0 +1,43 @@
+{
+  "slide": 14,
+  "title": "The evidence supports a bounded development study",
+  "prompt": "# Codex PPT Slide Image Prompt\n\n## Canvas\n{\n  \"type\": \"16:9 full-slide PowerPoint image\",\n  \"language\": \"English\",\n  \"slide_number\": 14,\n  \"render_slide_number\": false\n}\n\n## Deck Goal\nA 15-slide English COMP5584 group presentation plus six Q&A backup slides, explaining implemented multi-agent collaboration and bounded measured evidence.\n\n## Required Background\n{\n  \"deck_context\": {\n    \"source_summary\": \"IncidentLens is a research/teaching prototype for read-only software incident investigation. Dynamic is the primary architecture, with a tool-free coordinator and four scoped specialists, deterministic Merge and FinalizeGate, shared evidence and stable hypotheses. Verifier is an ablation, not the default.\",\n    \"evidence_boundary\": \"36 synthetic development-visible cases, provisional labels, one real-model repeat, 144 slots across four variants. Quality retains technical failures. Differences descriptive, no blind test, significance claim, human semantic audit or production generalization.\",\n    \"measured_model\": \"auto/deepseek-v4.1-flash through local gateway; distinct from the image backend used to make this deck.\",\n    \"canonical_terms\": [\n      \"Dynamic\",\n      \"Single\",\n      \"Fixed-4\",\n      \"Dynamic with verifier\",\n      \"Merge\",\n      \"FinalizeGate\",\n      \"RESOLVED\",\n      \"INCONCLUSIVE\",\n      \"PLAN_ONLY\"\n    ]\n  },\n  \"slide_local_context\": {\n    \"page_specific_instructions\": \"Do not imply independent validation has already happened, that production performance was measured, or that a verifier can never help.\"\n  }\n}\n\n## Global Style\n{\n  \"name\": \"PolyU red academic defense, Arial with restrained notes\",\n  \"visual_direction\": \"Use the approved sample as style identity. White canvas, red left title accent and fine red rule; vary body layout by role. Academic evidence-first communication. No giant type or marketing layouts.\",\n  \"color_palette\": \"#9A0907 primary, #F7E9E8 pale red, #003070 secondary, #1D1D1F ink, #E8E9EF neutral, #666666 notes.\",\n  \"typography\": \"Arial Bold title about 28-30pt, subtitle 16-18pt, main labels/body 14-16pt, supporting 12-14pt. Footer notes and legend 10-11pt, medium gray, regular weight. These are visual targets on 13.333 x 7.5 inch canvas. Never enlarge notes to fill empty space. No serif type in authored text.\",\n  \"finish\": \"Clean, disciplined and flat. No 3D, clip art, robots, watermark or decorative photos. Diagram boxes/arrows only where informative.\"\n}\n\n## Input Images\n\n- Image 1: C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\presentation\\IncidentLens_Deck_version_b\\origin_image\\slide_04.png \u2014 approved style-only reference; Match Arial typography sizes, palette, restrained notes and academic visual identity. Do not copy content/layout.\n\n\n## Slide\n{\n  \"number\": 14,\n  \"title\": \"The evidence supports a bounded development study\",\n  \"role\": \"validity and limitations\",\n  \"intent\": \"A plain academic validity table linking each study boundary with its next validation step. Four aligned rows, restrained red emphasis on the boundary labels, and no wall of disclaimer text.\"\n}\n\n## Text\n{\n  \"title\": \"The evidence supports a bounded development study\",\n  \"key_points\": [\n    \"Synthetic, development-visible cases.\",\n    \"Candidate labels pending independent review.\",\n    \"One model and one repeat.\",\n    \"No blind test, human semantic audit or significance test.\",\n    \"Next validation: independent labels, repeated/multi-model runs and realistic telemetry.\"\n  ],\n  \"speaker_focus\": null\n}\n\n## Layout\n{\n  \"composition\": \"A plain academic validity table linking each study boundary with its next validation step. Four aligned rows, restrained red emphasis on the boundary labels, and no wall of disclaimer text.\",\n  \"variation_rule\": \"Use the approved visual identity, with a layout specific to this page. Do not repeat the architecture sample or create identical card grids.\"\n}\n\n## Constraints\n[\n  \"English only. Every title, label, caption and note must be English.\",\n  \"Arial throughout slide-authored text. Use the approved restrained size hierarchy, especially small gray footer notes.\",\n  \"No slide number, watermark, invented logo or invented data.\",\n  \"The title and all supplied key points must appear, with orderly wrapping and no overlaps.\",\n  \"Create a NEW complete slide from the style reference. Do not retain the sample architecture text or layout on unrelated pages.\"\n]\n\n## Style Reference Rule\nUse Image 1 as the approved sample-slide style reference. Match its palette, typography mood, density, texture, and overall visual identity. Do not copy its exact layout unless this slide's layout explicitly asks for it.\n\n## Input Image Handling Rules\nFor any input image marked as a strict input asset, include it visibly and preserve its content. Do not redraw, replace, relabel, or invent a similar figure. Scale and crop only as needed for composition while keeping the important labels, arrows, data, and relationships recognizable.\n\n## Universal Constraints\n- The final image itself must contain the title and key points.\n- Render English text exactly and legibly. No Chinese characters.\n- Keep the confirmed deck style consistent while varying layout by slide role.\n- No watermark, unrelated logo, or extra slide number.\n\n## FINAL TYPOGRAPHY AND DENSITY PRIORITY\nMatch the SMALLER text hierarchy of Image 1 strictly. At 1672x941 output, title about 44-48 pixels letter height, body and diagram text 24-28 pixels, and footer notes 17-19 pixels in regular medium gray. These are visual size targets, not editable metadata. Do not enlarge text to fill space. Title may wrap into two lines instead of growing. Footer should be no more than two small lines. Key points are content requirements: integrate each ONCE into the figure/table or prose; do not duplicate them in a second bullet list or footer. A footer is optional and must add a unique caveat, never repeat the diagram. Use the page-specific layout and avoid decorative repeated card grids.\n",
+  "out": "slide_14.png",
+  "input_images": [
+    {
+      "path": "C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\presentation\\IncidentLens_Deck_version_b\\origin_image\\slide_04.png",
+      "role": "approved style-only reference",
+      "fidelity": "Match Arial typography sizes, palette, restrained notes and academic visual identity. Do not copy content/layout."
+    }
+  ],
+  "requires_context_images": true,
+  "expected_backend": "built-in image tool",
+  "sample_generation_method": {
+    "backend_used": "built-in image tool",
+    "tool_name": "image_gen__imagegen",
+    "mode": "edit",
+    "prompt_source": "sample_size_revision.draft.txt",
+    "approved_sample_path": "C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\presentation\\IncidentLens_Deck_version_b\\origin_image\\slide_04.png",
+    "size": "16:9 landscape; approved raster 1672x941",
+    "model_version": "not exposed; user accepted this limitation",
+    "quality": "not exposed by backend",
+    "input_context_preparation": "view_image local reference/required assets; image_gen with referenced_image_paths",
+    "handoff_rule": "Use built-in image_gen with referenced images, edit/recompose into a complete new slide. No local slide drawing or overlays."
+  },
+  "generation_contract": {
+    "must_use_selected_image_backend": true,
+    "must_match_sample_generation_method": true,
+    "forbidden_final_image_methods": [
+      "local drawing/rendering scripts",
+      "Pillow-generated slides",
+      "SVG/HTML/CSS/canvas screenshots",
+      "python-pptx/PptxGenJS/native PPT layout screenshots",
+      "manually composited text/image overlays"
+    ],
+    "must_return": [
+      "backend_used",
+      "selected_source",
+      "qa_note"
+    ]
+  }
+}

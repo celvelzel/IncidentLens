@@ -29,7 +29,7 @@ as history and the disagreement reported rather than silently copied.
 | review what was accepted and rejected | [acceptance/](acceptance/) |
 | plan the next iteration | [guides/optimization-roadmap.zh-CN.md](guides/optimization-roadmap.zh-CN.md) (中文) |
 | check the rubric mapping or the authoritative fact sheet | [submission/](submission/) |
-| rehearse the talk or prepare for Q&A | [../presentation/Presentation_Script.md](../presentation/Presentation_Script.md) · [QA_Preparation.md](../presentation/QA_Preparation.md) |
+| rehearse the talk or prepare for Q&A | [version_b English script](../presentation/IncidentLens_Deck_version_b/speech.md) · [illustrated script PDF](../presentation/IncidentLens_Deck_version_b/Presentation_Script_version_b.pdf) · [QA_Preparation.md](../presentation/QA_Preparation.md) |
 | assemble the submission archive | [../submission/SUBMISSION_CHECKLIST.md](../submission/SUBMISSION_CHECKLIST.md) |
 
 ## Current submission documents
@@ -50,7 +50,7 @@ as history and the disagreement reported rather than silently copied.
 | --- | --- | --- |
 | `RUN_GUIDE.md`, `ARCHITECTURE.md`, `AGENT_DESIGN.md`, `EVALUATION.md`, `DEMO_GUIDE.md`, `LIMITATIONS.md` | Current submission documents | First-class entry points; older deep guides below remain discoverable |
 | `submission/` | Authoritative submission facts and rubric mapping | [source_of_truth.md](submission/source_of_truth.md) wins conflicts with older docs; [rubric_alignment.md](submission/rubric_alignment.md) maps criteria to artifacts |
-| `../presentation/` | Final deck, PDF, renders, script, Q&A and the build script | `IncidentLens_Deck.pptx` is the editable source; `build_deck.py` regenerates it |
+| `../presentation/` | Final deck, PDF, renders, script, Q&A and the build script | Current: `IncidentLens_Deck_version_b/` (image-based slides + English notes). `version_a/` archives the editable predecessor; `build_deck.py` only regenerates the legacy deck |
 | `../submission/` | Contribution statement and submission checklist | Members 1–2 are filled in; members 3–6, percentages and signatures are completed by the group |
 | `project_guidelines/` | Course brief | `COMP5584_project_guidelines.pdf`; assessment weights are summarized in the rubric alignment |
 | `handoff/` | Ownership-transfer documents | Index: [handoff/README.md](handoff/README.md). The current submission-stage handoff package; older workstream and per-version handoffs were removed on 2026-11-02 at the group's request and remain in git history. |
@@ -64,7 +64,7 @@ as history and the disagreement reported rather than silently copied.
 | `plans/` | Implementation plans | Historical plans, including `plans/v16/`. |
 | `monitoring/` | Dated read-only monitoring specs | One subfolder per monitored batch. |
 | `source/` | Original Notion design/plan snapshots | Imported 2026-10-11. |
-| `ui/` | UI design notes and screenshots. Current visual language: [ui/astryx-integration-spec.md](ui/astryx-integration-spec.md) (Meta Astryx: blue accent + teal data scale; supersedes `palette-v3-polyu.md` colours). Evidence images under `ui/v16-evidence/`. |
+| `ui/` | UI design notes and screenshots | Current visual language: [ui/astryx-integration-spec.md](ui/astryx-integration-spec.md) (Meta Astryx: blue accent + teal data scale; supersedes `palette-v3-polyu.md` colours). Evidence images under `ui/v16-evidence/`. |
 | `v1.3/`, `v1.5/`, `v16/` | Per-version design, contracts, QA and results | Historical archives; their companion handoffs were removed from `handoff/` on 2026-11-02 and remain in git history. |
 
 ## Conventions

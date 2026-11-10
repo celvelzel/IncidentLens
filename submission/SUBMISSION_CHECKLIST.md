@@ -13,7 +13,7 @@
 | ---: | --- | --- | --- |
 | 1 | System source code with instructions for running it | repository root, `README.md`, `docs/RUN_GUIDE.md` | [x] |
 | 2 | Demo video, ≤ 10 minutes, whole workflow + representative examples | **not produced here**; plan in `docs/DEMO_GUIDE.md` | [ ] group records |
-| 3 | Presentation slides | `presentation/IncidentLens_Deck.pptx` (+ `.pdf`) | [x] |
+| 3 | Presentation slides | `presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx` (+ PDFs) | [x] |
 | 4 | Individual Contribution Statement | `submission/Individual_Contribution_Statement.md` | [x] members 1–2 filled; percentages and members 3–6 still [ ] group completes |
 | 5 | Slides cover: problem & motivation, multi-agent design, implementation, demo & results | slides 2–15 | [x] |
 
@@ -23,28 +23,25 @@
 
 ---
 
-## 2. Deck checks
+## 2. Current deck checks (version_b)
 
-- [x] 21 slides, 16:9 (13.333 × 7.5 in), editable `.pptx` — not images.
-- [x] Main track 15 slides; 6 backup slides for Q&A.
-- [x] Every slide rendered to PNG and visually inspected before the PNG copies were removed
-      from the repo (the inspection log is in `docs/submission/consistency_check.md` §C3/C4).
-- [x] PDF exported (`presentation/IncidentLens_Deck.pdf`, 916,912 bytes).
-- [x] Speaker notes present on every main-track slide with timings totalling 9:57.
-- [x] Title slide carries `Group 5` and the six member names with student IDs.
-- [x] No slide claims PolyU endorsement, production readiness or state-of-the-art.
-- [ ] Group re-reads the deck on the presentation machine (fonts: Calibri, Georgia).
+- [x] 21 English slides, 16:9 (10 x 5.625 in), image-based PPTX.
+- [x] 15 main slides + 6 backup slides. All final images visually inspected.
+- [x] Slides PDF and illustrated English script PDF each contain 21 pages.
+- [x] All 21 speaker-note sections exactly match the English verbatim script.
+- [x] Title slide retains Group 5 and all six names/student IDs.
+- [x] Arial styling, PolyU red and smaller gray annotations follow the approved sample.
+- [x] PPTX package and geometry validation passed; image bytes match final PNGs.
+- [ ] Group opens the PPTX on the venue machine and rehearses with the actual demo.
 
-**Check the deck opens without font substitution:** Calibri and Georgia are standard on
-Windows and macOS Office; if the venue machine lacks them, the PDF is the fallback.
+Individual slide objects are not editable in version_b. Notes and `speech.md` remain editable. The former editable deck is archived in `presentation/version_a/`.
 
 ---
 
 ## 3. Script and Q&A checks
 
-- [x] `presentation/Presentation_Script.md` — per-slide English script, Chinese presenter
-      notes, timings, transitions, demo cues, six-speaker allocation.
-- [x] Speaker totals sum to 9:57, inside the 8–10 minute window.
+- [x] `presentation/IncidentLens_Deck_version_b/speech.md` — English verbatim script for all 21 slides, with transitions, demo cues and six suggested speaker blocks.
+- [ ] Group measures the version_b rehearsal time; the old 9:57 version_a allocation is historical.
 - [x] `presentation/QA_Preparation.md` — 10 likely questions, rapid-fire table, declined
       questions, demo-failure answers, memorised numbers, mock Q&A drill.
 - [ ] Group assigns speakers to the six blocks (allocation is by slide, not a claim about who
@@ -158,7 +155,7 @@ Include:
 - `README.md`, `docs/` (current guides; archives may be trimmed)
 - `data/incidentbench_v2_hardened/` and `data/incidents/` if the archive size allows —
   otherwise document how to regenerate them
-- `presentation/IncidentLens_Deck.pptx`, `.pdf`
+- `presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx`, slides PDF, `Presentation_Script_version_b.pdf`, `speech.md`
 - `submission/Individual_Contribution_Statement.pdf` (filled by the group)
 - `analysis/wp_d/reports/hardened144-20261101/` summary and scoring script
 

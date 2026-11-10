@@ -1,0 +1,69 @@
+Use case: productivity-visual
+Asset type: one complete 16:9 landscape PowerPoint slide, rendered as a single high-resolution slide image.
+Primary request: Design the architecture slide for an English university group research presentation about IncidentLens, an evidence-driven multi-agent system for software incident investigation. It must look like a rigorous academic research defense slide. This is slide 4 of a 21-slide deck and will define the visual system for the rest of the deck.
+
+LANGUAGE: English only. All visible text must be English. No Chinese characters, no bilingual labels, no placeholder text.
+
+VISUAL SYSTEM
+Clean white background. Primary color PolyU red #9A0907. Use restrained pale red #F7E9E8, dark charcoal #1D1D1F, light neutral gray #E8E9EF, and occasional navy #003070 for secondary differentiation. Red must dominate over navy. Typography is Arial throughout: Arial Bold for the main title, diagram headings and key labels; Arial Regular for the subtitle, descriptions and notes. Standard Arial proportions, with no serif letters, no Georgia, no Times, no Calibri, no condensed Arial Narrow and no decorative type. The reference is MIT Sloan's guidance to use Arial in PowerPoint presentations, https://mitsloan.mit.edu/brand-guidelines/fonts. Use the user's PolyU palette. Flat academic figure treatment. Clear hierarchy and generous enough spacing for presentation-room readability. Fine rules and squared or mildly rounded diagram blocks, no gradients, 3D, shadows, stock photos, playful icons, robot pictures, app-like cards or decorative textures. Do not copy a thick left sidebar. No invented university logo. No watermark. No page number.
+
+EXACT TITLE
+Dynamic coordinates specialists
+through shared evidence
+
+TYPOGRAPHIC SCALE
+Use a restrained presentation hierarchy on a 13.333 x 7.5 inch slide. Main title approximately 28-30 pt Arial Bold, subtitle 16-18 pt Arial Regular, major diagram/component labels 14-16 pt Arial Bold, supporting diagram text 12-14 pt Arial Regular, and footer notes/legend 10-11 pt Arial Regular in medium gray. These are visual targets for the raster image, not editable font metadata. Keep the main title substantially smaller than the earlier oversized Arial sample. Footer notes must be clearly subordinate and must not compete with the diagram. Do not enlarge notes to fill unused space. Use no bold or red emphasis in the footer notes.
+
+Under the title, small concise subtitle:
+A bounded investigation loop with deterministic acceptance.
+
+MAIN FIGURE
+Use most of the slide for a clear scientific architecture diagram. The primary Dynamic architecture has one coordinator and four specialist roles. Design an orderly investigation cycle occupying approximately the left two-thirds, with an acceptance/output area on the right. Use only horizontal/vertical connections and clean elbow bends. Connectors must not run through labels. Visually distinguish model-driven roles by restrained red fill or pale red fill, and deterministic code components by white fill with crisp charcoal or navy outlines. This distinction must remain readable without relying on color alone.
+
+The investigation cycle must clearly express these relationships:
+1. The Coordinator sends 1-2 tasks per round to the specialist pool.
+2. Four clearly named specialists: Logs, Metrics, Database, Changes. They use read-only public evidence. The coordinator has no tools.
+3. Specialists return local findings to deterministic Merge.
+4. Merge validates and publishes to Shared evidence and hypotheses.
+5. The shared board feeds back to Coordinator for replanning from evidence gaps.
+6. A separate Coordinator decision labeled FINALIZE requests the deterministic FinalizeGate. The gate evaluates the selected candidate against the shared evidence. Do not draw specialist confidence or voting as the acceptance criterion.
+7. Gate acceptance leads to RESOLVED, with a cited root-cause report. A rejected finalization returns to investigation if budget remains. Coordinator ABSTAIN or evidence exhaustion leads to INCONCLUSIVE. Do not imply every rejected gate immediately yields abstention.
+
+Use compact labels. Suggested exact diagram text, without adding paragraphs:
+Coordinator
+No tools
+1-2 tasks / round
+Logs
+Metrics
+Database
+Changes
+Read-only public evidence
+Merge
+Validate and publish
+Shared evidence
+and hypotheses
+Replan from gaps
+FINALIZE
+FinalizeGate
+Observed citations
+Cross-source mechanism
+RESOLVED
+Cited root cause
+INCONCLUSIVE
+Evidence insufficient
+
+If the full detail makes the figure crowded, keep the main investigation loop large and reduce the right-hand acceptance panel to its essential labels. Do not shrink text into tiny captions. Preserve the correct logical relationships above.
+
+BOTTOM NOTES
+One short readable line below the figure:
+Dynamic is the primary architecture. An independent verifier is an ablation.
+
+Optional second short note if space permits:
+Monitoring and PLAN_ONLY response are optional workflow extensions.
+
+Small figure legend:
+Model-driven role
+Deterministic component
+
+QUALITY CONSTRAINTS
+Make this a finished presentation slide, not an illustration of a slide on a screen or in a room. Full-bleed 16:9. Sharp, exact typography. No cropped content, no overlapping labels, no tiny text. The diagram is a conceptual representation of implemented software, not a screenshot. Model-driven roles propose and investigate; deterministic components publish and accept. No invented performance metrics. Use one compelling architecture figure instead of a collection of repeated information cards.

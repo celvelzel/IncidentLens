@@ -1,5 +1,8 @@
 # IncidentLens — Presentation Script
 
+**Archived version_a script.** The current English talk track is [version_b/speech.md](IncidentLens_Deck_version_b/speech.md), also available as an [illustrated PDF](IncidentLens_Deck_version_b/Presentation_Script_version_b.pdf). Timings and layout cues below belong to the older deck and should not be applied to version_b.
+
+
 **Deck:** `presentation/IncidentLens_Deck.pptx` (21 slides: 15 main + 6 backup)
 **PDF:** `presentation/IncidentLens_Deck.pdf`
 **Target length:** 9 min 57 s of speaking (8–10 min window) + Q&A

@@ -1,0 +1,26 @@
+Edit the supplied English academic PowerPoint slide. The only requested change is a more restrained and coherent typography scale. Preserve Arial, the current approved PolyU-red / white / pale-red / navy palette, every word, every component and the existing correct arrow relationships. Do not change the diagram's meaning or add new content.
+
+The current title and the bottom notes look too large. The most important correction is to make the bottom notes clearly smaller and quieter than the main diagram. Do NOT leave them at their current size.
+
+Apply this hierarchy, expressed both as relative changes and as visual point-size targets on a 13.333 x 7.5 inch slide:
+1. Main title: reduce its current font height by about 22-25 percent. Aim for approximately 28-30 pt Arial Bold. Preserve the current title text and two-line break. Keep it left aligned. Do not stretch the letters to fill the previous title width.
+2. Subtitle: reduce its current font height by about 20 percent, approximately 16-18 pt Arial Regular.
+3. Major diagram labels and the investigation-cycle heading: reduce by approximately 10-15 percent, approximately 14-16 pt Arial Bold. Keep them readable and comfortably centered in the existing components.
+4. Secondary diagram explanations, connector annotations and supporting labels: approximately 12-14 pt Arial Regular, with clear separation from arrows. Keep primary component names visually stronger than these descriptions.
+5. BOTTOM FOOTER NOTES: reduce the current letter height by approximately 35-40 percent. Use approximately 10-11 pt Arial Regular and medium gray #666666. Both bottom sentences must be small supporting notes, with no enlarged red bold word at the beginning. Keep their wording intact:
+Dynamic is the primary architecture. An independent verifier is an ablation.
+Monitoring and PLAN_ONLY response are optional workflow extensions.
+6. Bottom-right legend: reduce both label text and the swatch symbols by about 30-35 percent. Use 10-11 pt Arial Regular and align its two rows with the small notes at the left. It must not compete with the workflow diagram.
+
+Preserve enough margin and line spacing that the smaller text appears deliberate and balanced. Maintain the main diagram's prominence. Do not make small text artificially bold to compensate for its reduced size. Preserve all existing component boxes and arrow routes; only adjust text positioning slightly inside their allocated areas if needed. Preserve the diagram's existing spatial arrangement.
+
+Logical invariants that must not change:
+- FINALIZE request originates at Coordinator and ends at FinalizeGate.
+- Rejected: replan if budget remains returns from FinalizeGate to Coordinator.
+- Accept leads from FinalizeGate to RESOLVED.
+- There is no direct rejection arrow from FinalizeGate to INCONCLUSIVE.
+- Coordinator assigns 1-2 tasks per round to the specialist pool.
+- Logs, Metrics, Database and Changes feed Merge. Merge publishes Shared evidence and hypotheses, which feeds back to Coordinator.
+- ABSTAIN or evidence exhaustion can lead from the investigation cycle to INCONCLUSIVE.
+
+All visible text remains English and Arial. No serif type, no Chinese text, no new logos, no slide number, no watermark. Return the complete full-bleed landscape 16:9 slide image. Do not show the slide on a monitor or in a room.

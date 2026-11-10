@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "slide_count": 21,
+  "main_slides": 15,
+  "backup_slides": 6,
+  "language": "English",
+  "backend": "built-in image tool",
+  "model_version": "not exposed; user accepted",
+  "producer": "/root, single agent per user AGENTS.md",
+  "recorded_results": 20,
+  "accepted_sample": "slide_04",
+  "source_image_byte_matches_in_pptx": 21,
+  "exact_script_notes_matches": 21,
+  "pptx_package_validator": "pass, 0 findings",
+  "pptx_geometry_validator": "pass, 0 findings, 0 warnings",
+  "aspect_ratio": "16:9",
+  "notes_font": "Arial",
+  "pdf_pages": {
+    "slides": 21,
+    "illustrated_script": 21
+  },
+  "handout_text_complete": 21,
+  "handout_text_inside_page_bounds": true,
+  "handout_rendered_pages": 21,
+  "visual_review": "Each generated slide inspected; all handout pages reviewed for layout using rendered sheets and representative full pages.",
+  "repaired_slides": [
+    1,
+    2,
+    3,
+    6,
+    7,
+    10,
+    13,
+    20
+  ],
+  "main_script_words": 1281,
+  "limitations": [
+    "Slides are complete raster images; individual text/chart/diagram objects are not editable.",
+    "Exact raster font family and point sizes cannot be verified from metadata.",
+    "No native PowerPoint execution was performed.",
+    "No new model experiments or full application tests were run."
+  ],
+  "deliverables": [
+    {
+      "file": "IncidentLens_Deck_version_b.pptx",
+      "bytes": 28945957,
+      "sha256": "6252645230e2a6ff5924a9f21772f062571d6e97f9e13044da7ed8248bbbdc1c"
+    },
+    {
+      "file": "IncidentLens_Deck_version_b.pdf",
+      "bytes": 37263277,
+      "sha256": "84999ee3b962ed40cfbc81b3b1f3bb96c8e90cffed9a5065d26acb9f5b7b3eda"
+    },
+    {
+      "file": "Presentation_Script_version_b.pdf",
+      "bytes": 37352780,
+      "sha256": "40a2f0746561652584f327dc5c39b85f0d99750d153c0d31d42a22bb7b228714"
+    },
+    {
+      "file": "speech.md",
+      "bytes": 14652,
+      "sha256": "a240e210f74211a38b2aee956fc0ae498d0ceec0d7dfcd07fdfc7623779f753f"
+    }
+  ]
+}

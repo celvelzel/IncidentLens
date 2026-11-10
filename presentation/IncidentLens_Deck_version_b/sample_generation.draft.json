@@ -1,0 +1,50 @@
+{
+  "slide_id": "slide_04",
+  "approval_status": "approved_by_user_for_full_deck_generation",
+  "backend_used": "built-in image tool",
+  "tool_name": "image_gen__imagegen",
+  "model_version": "not exposed by backend",
+  "original_generation_mode": "generate",
+  "selected_candidate_mode": "edit",
+  "original_prompt_source": "sample_prompt.draft.txt",
+  "original_generated_path": "C:\\Users\\RickyMa\\.codex\\generated_images\\01a1c364-18ef-7e21-80f2-029b4b360b4d\\exec-66653cc7-24a5-4131-8a97-db2b48a91139.png",
+  "selected_generated_path": "C:\\Users\\RickyMa\\.codex\\generated_images\\01a1c364-18ef-7e21-80f2-029b4b360b4d\\exec-ba4119cd-434c-4cf2-b830-611ed2458611.png",
+  "final_sample_path": "C:\\Develop\\python_projects\\COMP5584_Agents\\IncidentLens\\presentation\\IncidentLens_Deck_version_b\\origin_image\\slide_04.png",
+  "sha256": "fce4131e2481d247512cbbd27743fe11dd85bae92d24d35e1028aebbb5424b39",
+  "size": [
+    1672,
+    941
+  ],
+  "qa": "All visible text English and readable. Title no longer dominates the page. Footer notes are smaller and secondary with no enlarged red-bold Dynamic word. Existing diagram connectors and logic preserved. No page number or watermark.",
+  "local_image_manipulation": "copy only; no drawing, overlays, cropping or rescaling",
+  "sample_edit_summary": "Reduced title and subtitle scale and made footer notes and legend smaller, regular-weight and medium gray; kept Arial, the approved palette, all text and correct control flow.",
+  "revision_history": [
+    {
+      "selected_generated_path": "C:\\Users\\RickyMa\\.codex\\generated_images\\01a1c364-18ef-7e21-80f2-029b4b360b4d\\exec-d5c02029-d62a-4ab8-a908-4dafc145abd6.png",
+      "sha256": "39271ced4705f6ce40d549e22f988afc3858edcda95a0300e0f6c414a18fba1c",
+      "sample_edit_summary": "Corrected coordinator finalization and gate return routing using the same built-in backend."
+    },
+    {
+      "selected_generated_path": "C:\\Users\\RickyMa\\.codex\\generated_images\\01a1c364-18ef-7e21-80f2-029b4b360b4d\\exec-45d06e8c-f57b-479d-9319-6c751d813c61.png",
+      "sha256": "f9af24807f2cce84ed1da754d81f395cae89b2b548682cdc0ccda80e6f108a72",
+      "sample_edit_summary": "Replaced serif title and all slide typography with Arial styling through the confirmed built-in image backend; retained palette, content and corrected control flow.",
+      "revision_prompt_source": "sample_font_revision.draft.txt"
+    }
+  ],
+  "requested_font_family": "Arial",
+  "requested_font_weights": {
+    "headings": "Arial Bold",
+    "body": "Arial Regular"
+  },
+  "typography_reference": "https://mitsloan.mit.edu/brand-guidelines/fonts",
+  "revision_prompt_source": "sample_size_revision.draft.txt",
+  "palette_approval_status": "approved by user",
+  "font_verification": "Visual review only: smaller sans-serif title; materially smaller regular-weight gray footer notes and legend. Raster output has no embedded font metadata or editable point sizes.",
+  "requested_font_size_targets_pt": {
+    "main_title": "28-30",
+    "subtitle": "16-18",
+    "component_labels": "14-16",
+    "supporting_text": "12-14",
+    "footer_notes_and_legend": "10-11"
+  }
+}

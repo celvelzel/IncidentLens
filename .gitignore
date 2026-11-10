@@ -31,3 +31,8 @@ analysis/wp_d/reports/hardened-dataset-validation-20261101/*/states/
 
 # submission archive is built locally at submission time, never tracked
 COMP5584+GroupProject+Group5.zip
+
+# Regenerable presentation QA previews and rejected sample images
+presentation/IncidentLens_Deck_version_b/qa_rendered/
+presentation/IncidentLens_Deck_version_b/drafts/
+presentation/IncidentLens_Deck_version_b/*.lock

@@ -1,5 +1,10 @@
 # IncidentLens
 
+## Presentation materials
+
+The current group presentation is **version_b**, a 21-slide English deck (15 main + 6 backup) with complete English speaker notes. Download the [PPTX](presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pptx), [slides PDF](presentation/IncidentLens_Deck_version_b/IncidentLens_Deck_version_b.pdf), [illustrated presenter script](presentation/IncidentLens_Deck_version_b/Presentation_Script_version_b.pdf), or [editable script](presentation/IncidentLens_Deck_version_b/speech.md). The deck uses complete slide images; individual text/chart objects are not editable. The prior editable deck is archived as [version_a](presentation/version_a/README.md). See [version history](presentation/VERSIONS.md) and [production/validation details](presentation/IncidentLens_Deck_version_b/README.md).
+
+
 **English** | [简体中文](README.zh-CN.md)
 
 IncidentLens is an evidence-driven multi-agent system for software incident investigation and
