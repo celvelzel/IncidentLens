@@ -91,6 +91,8 @@ class OhMyGPTProvider(LLMProvider):
         self.model_id = model or os.getenv("OHMYGPT_MODEL") or DEFAULT_OHMYGPT_MODEL
         self.temperature = temperature
         self.timeout = timeout
+        if type(structured_repair_retries) is not int or structured_repair_retries not in (0, 1):
+            raise ValueError("structured_repair_retries must be zero or one")
         self.structured_repair_retries = structured_repair_retries
         if response_format_mode not in ("json_schema", "json_object"):
             raise ValueError("Unsupported response format")
@@ -157,15 +159,6 @@ class OhMyGPTProvider(LLMProvider):
         close_client = self._client is None
         try:
             for attempt in range(self.structured_repair_retries + 1):
-                permit = None
-                if self.request_guard is not None:
-                    try:
-                        permit = self.request_guard()
-                    except RuntimeError:
-                        raise ProviderError("REQUEST_BUDGET_EXCEEDED", usage) from None
-                usage["llm_calls"] += 1
-                usage["actual_http_requests"] += 1
-                begin_request(usage)
                 request_kwargs = dict(
                     model=self.model_id,
                     temperature=self.temperature,
@@ -174,44 +167,72 @@ class OhMyGPTProvider(LLMProvider):
                 )
                 if self.thinking is not None:
                     request_kwargs["extra_body"] = {"thinking": {"type": self.thinking}}
-                completion = None
+
+                # Each retry is a separate billable HTTP request. Admit and
+                # reconcile every physical attempt, not only the structured call.
                 for t_try in range(3):
+                    if self.stop_guard is not None:
+                        self.stop_guard()
+                    permit = None
+                    if self.request_guard is not None:
+                        try:
+                            permit = self.request_guard()
+                        except RuntimeError:
+                            raise ProviderError("REQUEST_BUDGET_EXCEEDED", usage) from None
+                    usage["llm_calls"] += 1
+                    usage["actual_http_requests"] += 1
+                    begin_request(usage)
+
+                    reconciled = False
+                    error_code = None
+                    retryable = False
                     try:
                         completion = await client.chat.completions.create(**request_kwargs)
-                        break
+                        raw = completion.model_dump(mode="json")
+                        total = record_usage(usage, raw.get("usage"))
+                        if self.request_reconciler is not None:
+                            # Mark before invoking the callback: never call it twice
+                            # if the callback itself raises.
+                            reconciled = True
+                            self.request_reconciler(
+                                permit, total if type(total) is int and total >= 0 else None
+                            )
+                        if total is not None and self.token_observer is not None:
+                            self.token_observer(total)
                     except APITimeoutError:
-                        if t_try < 2:
-                            usage["transport_retries"] += 1
-                            await asyncio.sleep(2.0 * (t_try + 1))
-                            continue
-                        if self.request_reconciler is not None:
-                            self.request_reconciler(permit, None)
-                        raise ProviderError("PROVIDER_TIMEOUT", usage) from None
+                        error_code = "PROVIDER_TIMEOUT"
+                        retryable = True
                     except APIConnectionError:
-                        if t_try < 2:
-                            usage["transport_retries"] += 1
-                            await asyncio.sleep(2.0 * (t_try + 1))
-                            continue
-                        if self.request_reconciler is not None:
-                            self.request_reconciler(permit, None)
-                        raise ProviderError("PROVIDER_TRANSPORT_ERROR", usage) from None
+                        error_code = "PROVIDER_TRANSPORT_ERROR"
+                        retryable = True
                     except APIStatusError as exc:
-                        if exc.status_code in {429, 500, 502, 503, 504} and t_try < 2:
+                        error_code = "PROVIDER_HTTP_ERROR"
+                        retryable = exc.status_code in {429, 500, 502, 503, 504}
+                    except asyncio.CancelledError as exc:
+                        exc.usage = usage
+                        raise
+                    finally:
+                        # No response means token consumption is unknown, not zero.
+                        if not reconciled and self.request_reconciler is not None:
+                            self.request_reconciler(permit, None)
+
+                    if error_code is not None:
+                        usage["provider_attempts"].append(
+                            dict(
+                                event_type="PROVIDER_FAILURE_CLASSIFIED",
+                                logical_call_id=logical_id,
+                                http_attempt_index=usage["llm_calls"],
+                                category=error_code,
+                                phase="transport",
+                            )
+                        )
+                        if retryable and t_try < 2:
                             usage["transport_retries"] += 1
                             await asyncio.sleep(2.0 * (t_try + 1))
                             continue
-                        if self.request_reconciler is not None:
-                            self.request_reconciler(permit, None)
-                        raise ProviderError("PROVIDER_HTTP_ERROR", usage) from None
+                        raise ProviderError(error_code, usage) from None
+                    break
 
-                raw = completion.model_dump(mode="json")
-                total = record_usage(usage, raw.get("usage"))
-                if total is not None and self.token_observer is not None:
-                    self.token_observer(total)
-                if self.request_reconciler is not None:
-                    self.request_reconciler(
-                        permit, total if type(total) is int and total >= 0 else None
-                    )
                 try:
                     parsed = validate_response(raw, output_model)
                     usage["elapsed_ms"] = (time.monotonic() - started) * 1000
@@ -234,5 +255,6 @@ class OhMyGPTProvider(LLMProvider):
                     usage["repair_requests"] += 1
                     messages.append({"role": "user", "content": repair_message(exc)})
         finally:
+            usage["elapsed_ms"] = (time.monotonic() - started) * 1000
             if close_client:
                 await client.close()
