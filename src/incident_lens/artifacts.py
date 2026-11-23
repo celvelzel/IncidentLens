@@ -66,7 +66,7 @@ def validate_metadata(trace):
     }
     if set(trace) - allowed:
         raise ValueError("Unexpected trace envelope fields")
-    if trace.get("provider") not in ("mock", "real"):
+    if trace.get("provider") not in ("mock", "real", "ohmygpt"):
         raise ValueError("Invalid trace provider")
     # Historical traces recorded the pre-rename alias; keep replaying them.
     if not is_known_variant(trace.get("variant")):

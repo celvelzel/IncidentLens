@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>IncidentLens — Opening Hook · 35s</title>
+<style>
+:root{--ink:#f4f6fc;--muted:#94a0b7;--red:#ff647b;--green:#79e6c1;--cyan:#89d8f3;--amber:#f1d39b;--scale:1}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03050a;color:var(--ink)}
+body,button,input{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+#viewport{position:fixed;inset:0;overflow:hidden}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:5px}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(var(--scale));transform-origin:center;overflow:hidden;isolation:isolate;background:#070b14}
+#atmosphere,.grain,.vignette{position:absolute;inset:0;pointer-events:none}
+#atmosphere{width:1920px;height:1080px;z-index:-3}
+.grain{z-index:12;opacity:.045;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.5' d='M0 0h180v180H0z'/%3E%3C/svg%3E")}
+.vignette{z-index:11;background:radial-gradient(ellipse at 50% 43%,transparent 38%,rgba(0,0,0,.34) 100%)}
+.topbar{position:absolute;left:80px;right:80px;top:54px;height:44px;display:flex;align-items:center;justify-content:space-between;z-index:15}
+.brand{display:flex;align-items:center;gap:15px;font-size:24px;font-weight:650;letter-spacing:-.6px}
+.brand svg{width:36px;height:36px;overflow:visible}.brand small{font-size:13px;letter-spacing:2px;color:#8996ad;font-weight:500;margin-left:17px;padding-left:29px;border-left:1px solid #394256}
+.eyebrow{font-size:13px;letter-spacing:2.6px;font-weight:550;text-transform:uppercase;color:#99a5bc}
+.chapter{display:flex;align-items:center;gap:20px}.chapter-line{width:56px;height:1px;background:linear-gradient(90deg,transparent,#8a9bb6)}
+.split{position:absolute;left:80px;right:80px;top:152px;height:766px;display:grid;grid-template-columns:842px 842px;gap:76px;perspective:1600px}
+.panel{position:relative;padding:30px;border-radius:28px;border:1px solid rgba(175,195,234,.16);background:linear-gradient(145deg,rgba(29,39,58,.85),rgba(11,17,29,.94) 68%);box-shadow:0 32px 90px #0005,inset 0 1px 0 #ffffff09;overflow:hidden;opacity:0;will-change:transform,opacity}
+.panel:before{content:"";position:absolute;left:30px;right:30px;top:0;height:1px;background:linear-gradient(90deg,transparent,#bdcbe455,transparent)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;height:42px;margin-bottom:18px;gap:16px}
+h2{font-size:33px;font-weight:610;letter-spacing:-1.1px;margin:0;white-space:nowrap}
+.badge{font-size:13px;font-weight:600;letter-spacing:.8px;border:1px solid #ff889b40;background:#ff647b0b;color:#f6b0bd;padding:9px 14px;border-radius:8px;white-space:nowrap}
+.badge.safe{color:#a3ead4;border-color:#79e6c140;background:#79e6c10a}
+.terminal{height:216px;border:1px solid #b5c8ed1c;background:#050912b8;border-radius:15px;overflow:hidden;margin-bottom:16px}
+.terminal-bar{display:flex;align-items:center;gap:6px;height:33px;padding:0 17px;border-bottom:1px solid #b5c8ed12;background:#ffffff03}
+.terminal-dot{width:5px;height:5px;border-radius:50%;background:#49566c}
+.terminal-title{margin-left:12px;font-size:10px;letter-spacing:2px;color:#93a0b7}.terminal-note{margin-left:auto;font-size:10px;color:#66738a;letter-spacing:1px}
+.log-list{padding:4px 15px}.log-line{position:relative;display:grid;grid-template-columns:92px 52px 1fr;align-items:center;height:42px;gap:8px;font:15.5px/1.5 "SF Mono",Menlo,Consolas,monospace;white-space:nowrap;opacity:0;--pulse:0;background:linear-gradient(90deg,rgba(255,110,135,var(--pulse)),transparent 90%);border-radius:4px}
+.log-time{color:#67768e}.log-level{font-size:12px;font-weight:650;color:#ff899a}.log-line.warn .log-level{color:#e8c98f}.log-text{color:#c1cbdc}.cursor{display:inline-block;height:15px;width:6px;background:#f2c4ce;margin-left:3px;vertical-align:-2px;opacity:0}
+.diagnosis{position:relative;height:156px;border:1px solid rgba(186,200,226,.22);border-radius:16px;padding:22px 21px;margin-bottom:18px;background:linear-gradient(110deg,#27324755,#141b2c99);overflow:hidden;opacity:0;will-change:transform}
+.diagnosis-label{font-size:10px;letter-spacing:1.65px;text-transform:uppercase;color:#98a5bb;margin-bottom:11px}
+.claim{margin:0 0 11px;font-size:25px;line-height:1.25;font-weight:580;letter-spacing:-.6px}
+.citation{font:14px/1.5 "SF Mono",Menlo,Consolas,monospace;color:#a9b6ca}.bad-cite{padding:2px 5px;border-radius:4px;color:#e4b6bf;background:#ff647b0d;text-decoration-color:transparent}
+.claim-note{margin-top:6px;font-size:12px;color:#8e9bb1}
+.scan-wash{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,80,110,.17));clip-path:inset(0 100% 0 0);pointer-events:none}
+.laser{position:absolute;top:0;bottom:0;width:2px;opacity:0;background:linear-gradient(180deg,transparent,#ff748e 15%,#fff0f4 50%,#ff748e 85%,transparent);box-shadow:0 0 10px 2px #ff526bad,0 0 35px 9px #ff526b55;pointer-events:none}
+.alarm{position:absolute;inset:0;border-radius:16px;box-shadow:inset 0 0 0 1px #ff7289,inset 0 0 45px #ff526b55;opacity:0;pointer-events:none}
+.flags{display:grid;gap:10px}.flag{height:64px;display:flex;align-items:center;gap:14px;border:1px solid #ff819528;background:linear-gradient(90deg,#ff647b0c,#ff647b02);border-radius:12px;padding:8px 13px;opacity:0}
+.flag-icon{display:grid;place-items:center;width:31px;height:31px;flex:none;border-radius:9px;color:#ff8ca0;background:#ff647b12;border:1px solid #ff647b33;font-size:20px;font-weight:400}
+.flag strong{display:block;font-size:18px;line-height:22px;font-weight:590;color:#efbdc6}.flag small{display:block;font-size:14px;line-height:19px;color:#a68e9b}
+#rightPanel{background:linear-gradient(145deg,rgba(24,38,52,.8),rgba(9,17,28,.95) 70%)}
+.contract-intro{font-size:17px;color:#98a8bc;margin:2px 0 22px;letter-spacing:.1px}
+.contracts{display:grid;gap:16px;perspective:1000px}
+.contract{--accent:121,230,193;position:relative;display:flex;gap:20px;height:182px;padding:22px;border-radius:20px;border:1px solid rgba(var(--accent),.23);background:linear-gradient(115deg,rgba(var(--accent),.045),#0a101b88 75%);box-shadow:0 10px 30px #0002;opacity:0;transform-origin:50% 60%;will-change:transform,opacity}
+.contract:before{content:"";position:absolute;inset:-1px;padding:1px;border-radius:20px;background:conic-gradient(from var(--angle,0deg),transparent 0deg 230deg,rgba(var(--accent),.08) 260deg,rgba(var(--accent),.7) 290deg,transparent 320deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none}
+.contract:after{content:"";position:absolute;left:44px;right:44px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent),.45),transparent)}
+.contract.cyan{--accent:137,216,243}.contract.amber{--accent:241,211,155}
+.contract-icon{position:relative;display:grid;place-items:center;width:44px;height:44px;flex:none;border:1px solid rgba(var(--accent),.28);border-radius:13px;background:rgba(var(--accent),.09);color:rgb(var(--accent));box-shadow:inset 0 1px 0 #ffffff0d}
+.contract-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.contract-copy{flex:1;min-width:0}.contract h3{font-size:25px;font-weight:590;letter-spacing:-.55px;margin:1px 0 9px;line-height:1.2}
+.contract p{font-size:18px;line-height:1.45;color:#aab8ca;margin:0;max-width:610px}
+.contract code{display:inline-block;margin-top:10px;padding:5px 9px;font:13px/1.4 "SF Mono",Menlo,Consolas,monospace;color:rgb(var(--accent));background:rgba(var(--accent),.055);border:1px solid rgba(var(--accent),.1);border-radius:6px;white-space:nowrap}
+.footnote{position:absolute;left:84px;right:84px;top:947px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.9px;color:#77859d;text-transform:uppercase}
+.hero{position:absolute;inset:0;z-index:10;opacity:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#121b2c55,#070b14eb 76%)}
+.hero-light{position:absolute;width:1100px;height:640px;left:410px;top:90px;background:radial-gradient(ellipse,#a3c7ff12,transparent 65%);filter:blur(25px)}
+.hero-orbits{position:absolute;width:840px;height:840px;left:540px;top:100px;opacity:0}
+.orbit{position:absolute;inset:0;border:1px solid #b8cdef12;border-radius:50%;box-shadow:inset 0 0 65px #96bcff03,0 0 80px #96bcff04}
+.orbit:nth-child(2){inset:36px;border-color:#b8cdef0b}.orbit:nth-child(3){inset:92px;border-color:#f2c4ce12}
+.orbit:before{content:"";position:absolute;top:14.6%;left:14.6%;width:5px;height:5px;border-radius:50%;background:#dbebff;box-shadow:0 0 16px 4px #d2e8ff44}
+.hero-content{position:absolute;left:160px;right:160px;top:235px;text-align:center}
+.hero-kicker{display:inline-flex;align-items:center;gap:17px;font-size:13px;letter-spacing:4px;font-weight:550;text-transform:uppercase;color:#bdc9dd;opacity:0}
+.hero-kicker:before,.hero-kicker:after{content:"";width:44px;height:1px;background:linear-gradient(90deg,transparent,#adc3e166)}
+.hero-kicker:after{transform:rotate(180deg)}
+.hero h1{font-size:154px;font-weight:650;line-height:1.18;letter-spacing:-8px;margin:25px 0 15px;opacity:0;will-change:transform,opacity;white-space:nowrap}
+.hero h1 span{background:linear-gradient(115deg,#fff 20%,#dce6f7 57%,#eeb6c7 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 100px #dce6f708}
+.hero-rule{width:80px;height:1px;margin:0 auto 28px;background:linear-gradient(90deg,transparent,#eab8ca,transparent);transform:scaleX(0)}
+.hero-sub{font-size:31px;line-height:1.5;font-weight:400;letter-spacing:-.5px;color:#a8b8d1;margin:0;opacity:0}
+.hero-motto{margin:33px 0 0;font-size:27px;font-weight:480;letter-spacing:4px;color:#e9d3dd;opacity:0}
+.hero-pills{display:flex;justify-content:center;gap:16px;margin-top:61px;perspective:1000px}
+.hero-pill{display:flex;align-items:center;gap:12px;padding:17px 22px;border:1px solid #b7c9e822;border-radius:13px;background:linear-gradient(135deg,#c5d9ff09,#c5d9ff02);box-shadow:inset 0 1px 0 #ffffff06,0 20px 40px #0002;font-size:17px;letter-spacing:-.1px;color:#b9c7dc;white-space:nowrap;opacity:0}
+.pill-mark{width:6px;height:6px;border:1px solid #a0c6cf;transform:rotate(45deg);box-shadow:0 0 9px #a0c6cf22}
+.hero-caption{position:absolute;bottom:147px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:3px;color:#697a96;opacity:0}
+.hud{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:30;height:61px;display:flex;align-items:center;gap:13px;padding:10px 17px;border:1px solid #d0dfff24;border-radius:17px;background:#111a29ed;box-shadow:0 10px 50px #0005;transition:opacity .18s,visibility .18s;white-space:nowrap}
+.hud.hidden{opacity:0;visibility:hidden;pointer-events:none}.recording{cursor:none}.recording .hud{cursor:default}
+.hud button{height:32px;border:1px solid #d0dfff24;border-radius:8px;background:#d0dfff0a;color:#d5e0f2;font-size:13px;font-weight:550;padding:0 14px;min-width:65px}
+.hud button:hover{background:#d0dfff18}.hud button:active{background:#d0dfff24}
+#timeline{width:270px;height:22px;appearance:none;-webkit-appearance:none;cursor:pointer;background:transparent;margin:0 4px}
+#timeline::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,#e8a6bc var(--progress,0%),#a9bbd92b var(--progress,0%))}
+#timeline::-moz-range-track{height:3px;border-radius:3px;background:#a9bbd92b}#timeline::-moz-range-progress{height:3px;background:#e8a6bc}
+#timeline::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;margin-top:-3.5px;border-radius:50%;background:#f5d8e3;border:0;box-shadow:0 0 12px #e8a6bc33}
+#timeline::-moz-range-thumb{width:10px;height:10px;border:0;border-radius:50%;background:#f5d8e3}
+.timecode{font:12px "SF Mono",Menlo,Consolas,monospace;color:#bac8df;min-width:106px}.hint{font-size:11px;color:#8c9bb3;margin-left:3px}.hint kbd{font:inherit;color:#c3cfe1}
+</style>
+</head>
+<body>
+<div id="viewport">
+<main id="stage" aria-label="IncidentLens opening animation, 35 seconds">
+  <canvas id="atmosphere" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11" stroke="#d9e4f6" stroke-width="1.4"/><circle cx="16" cy="16" r="6" stroke="#f3a5bc" stroke-width="1.4"/><path d="m24 24 7 7M16 12v8M12 16h8" stroke="#d9e4f6" stroke-width="1.4" stroke-linecap="round"/></svg>
+      IncidentLens
+    </div>
+    <div class="chapter"><span class="chapter-line"></span><span class="eyebrow" id="chapter">Why evidence-driven RCA matters</span></div>
+  </header>
+
+  <div class="split" id="split">
+    <section class="panel" id="leftPanel" aria-label="Illustrative unconstrained agent failure">
+      <div class="panel-head"><h2>Generic LLM Agent</h2><span class="badge">Unconstrained</span></div>
+      <div class="terminal">
+        <div class="terminal-bar"><i class="terminal-dot"></i><i class="terminal-dot"></i><i class="terminal-dot"></i><span class="terminal-title">PUBLIC TELEMETRY</span><span class="terminal-note">READ STREAM</span></div>
+        <div class="log-list" id="logs">
+          <div class="log-line"><span class="log-time">09:00:21Z</span><span class="log-level">ERROR</span><span><span class="log-text" data-text="gateway — HTTP 504 Upstream Timeout (3002ms)"></span><i class="cursor"></i></span></div>
+          <div class="log-line warn"><span class="log-time">09:00:24Z</span><span class="log-level">WARN</span><span><span class="log-text" data-text="backend — Pool waiters spiked to 137 requests"></span><i class="cursor"></i></span></div>
+          <div class="log-line"><span class="log-time">09:00:26Z</span><span class="log-level">ERROR</span><span><span class="log-text" data-text="payment — Downstream call deadline exceeded"></span><i class="cursor"></i></span></div>
+          <div class="log-line warn"><span class="log-time">09:00:29Z</span><span class="log-level">WARN</span><span><span class="log-text" data-text="redis — Cache lookup latency trending upward"></span><i class="cursor"></i></span></div>
+        </div>
+      </div>
+      <div class="diagnosis" id="diagnosis">
+        <div class="scan-wash" id="scanWash"></div><div class="laser" id="laser"></div><div class="alarm" id="alarm"></div>
+        <div class="diagnosis-label">Instant Confident Diagnosis · 99% self-reported confidence</div>
+        <p class="claim">“Root Cause: Primary PostgreSQL Node Crashed.”</p>
+        <div class="citation">Cited: <span class="bad-cite" id="badCite">E-999 (not in tool output)</span></div>
+        <div class="claim-note" id="claimNote">Configs &amp; DB never inspected</div>
+      </div>
+      <div class="flags">
+        <div class="flag"><span class="flag-icon">×</span><div><strong>Fabricated Citation ID</strong><small>Cites unobserved records</small></div></div>
+        <div class="flag"><span class="flag-icon">×</span><div><strong>No Access Boundary</strong><small>Ignores read-only tool scopes</small></div></div>
+        <div class="flag"><span class="flag-icon">×</span><div><strong>Never Abstains</strong><small>Guesses even when telemetry is missing</small></div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="rightPanel" aria-label="IncidentLens evidence contracts">
+      <div class="panel-head"><h2>IncidentLens</h2><span class="badge safe">Cite or Abstain</span></div>
+      <p class="contract-intro">Three contracts. Enforced by the runtime.</p>
+      <div class="contracts">
+        <article class="contract">
+          <span class="contract-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H4v18h16V7l-4-4H7Z M15 3v5h5 M8 13l3 3 5-6"/></svg></span>
+          <div class="contract-copy"><h3>Cite Observed Evidence Only</h3><p>Every root-cause claim binds to real record IDs returned by actual tool queries and verified by deterministic grounding.</p><code>citation_existence_validity = 1.00</code></div>
+        </article>
+        <article class="contract cyan">
+          <span class="contract-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6l-8-3Z M9 12h6 M10 12V9a2 2 0 0 1 4 0v3 M9 12v4h6v-4"/></svg></span>
+          <div class="contract-copy"><h3>Read-Only Role ACL Isolation</h3><p>Each specialist runs inside an immutable AgentContext with strict per-role tool allowlists and zero production writes.</p><code>logs ↛ get_config_diff (blocked at runtime)</code></div>
+        </article>
+        <article class="contract amber">
+          <span class="contract-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 8v8 M15 8v8"/></svg></span>
+          <div class="contract-copy"><h3>Abstain Explicitly When Uncertain</h3><p>When visible telemetry cannot uniquely discriminate the root cause, the workflow cleanly exits with INCONCLUSIVE.</p><code>status: "INCONCLUSIVE" · 0 False Resolutions</code></div>
+        </article>
+      </div>
+    </section>
+  </div>
+  <div class="footnote" id="footnote"><span>Illustrative failure · synthetic telemetry</span><span>Evidence before confidence</span></div>
+
+  <section class="hero" id="hero" aria-label="Course presentation title" aria-hidden="true">
+    <div class="hero-light" id="heroLight"></div>
+    <div class="hero-orbits" id="heroOrbits" aria-hidden="true"><div class="orbit"></div><div class="orbit"></div><div class="orbit"></div></div>
+    <div class="hero-content">
+      <div class="hero-kicker" id="heroKicker">Course Capstone Presentation</div>
+      <h1 id="heroTitle"><span>IncidentLens</span></h1>
+      <div class="hero-rule" id="heroRule"></div>
+      <p class="hero-sub" id="heroSub">Evidence-Driven Multi-Agent<br>Root Cause Analysis &amp; Cross-Model Evaluation</p>
+      <p class="hero-motto" id="heroMotto">Cite or Abstain</p>
+      <div class="hero-pills">
+        <div class="hero-pill"><span class="pill-mark"></span>LangGraph Dynamic Orchestration</div>
+        <div class="hero-pill"><span class="pill-mark"></span>Deterministic FinalizeGate</div>
+        <div class="hero-pill"><span class="pill-mark"></span>DeepSeek-V4.1-Flash × Tencent HY4-Flash</div>
+      </div>
+    </div>
+    <div class="hero-caption" id="heroCaption">COMP5584 · LARGE LANGUAGE MODELS FOR AGENTS</div>
+  </section>
+
+  <nav class="hud" id="hud" aria-label="Animation controls">
+    <button id="playBtn" type="button" aria-label="Pause animation" aria-keyshortcuts="Space">Pause</button>
+    <button id="replayBtn" type="button" aria-keyshortcuts="R">Replay</button>
+    <input id="timeline" type="range" min="0" max="35" step="0.01" value="0" aria-label="Animation timeline in seconds">
+    <output class="timecode" id="timecode" for="timeline">00:00 / 00:35</output>
+    <span class="hint"><kbd>Space</kbd> Play/Pause · <kbd>R</kbd> Replay · <kbd>H</kbd> Hide HUD</span>
+  </nav>
+</main>
+</div>
+<script>
+(() => {
+  'use strict';
+  // Every visual is a pure function of this 35-second clock. No CSS animations,
+  // timers or external assets: pause, seek and replay keep every layer in sync.
+  const DURATION = 35, W = 1920, H = 1080;
+  const $ = id => document.getElementById(id);
+  const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+  const progress = (t, start, duration = 1) => clamp((t - start) / duration);
+  const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+  const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+  const spring = x => x >= 1 ? 1 : 1 - Math.exp(-7 * x) * (Math.cos(10 * x) + .6 * Math.sin(10 * x));
+  const logs = [...document.querySelectorAll('.log-line')].map(el => ({el, text:el.querySelector('.log-text'), cursor:el.querySelector('.cursor')}));
+  const flags = [...document.querySelectorAll('.flag')];
+  const contracts = [...document.querySelectorAll('.contract')];
+  const pills = [...document.querySelectorAll('.hero-pill')];
+  const orbits = [...document.querySelectorAll('.orbit')];
+  const canvas = $('atmosphere'), ctx = canvas.getContext('2d');
+  let elapsed = 0, playing = true, lastTs = null, lastRendered = -1, hidden = false;
+  let seed = 5584;
+  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  const particles = Array.from({length:95}, () => ({x:random()*W,y:random()*H,r:.6+random()*1.1,v:2+random()*6,p:random()*Math.PI*2}));
+
+  function fit() {
+    document.documentElement.style.setProperty('--scale', Math.min(innerWidth/W, innerHeight/H));
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(W*dpr); canvas.height = Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    lastRendered = -1; render(elapsed);
+  }
+  function glow(x,y,r,color) {
+    const g = ctx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,color); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
+  }
+  function atmosphere(t) {
+    ctx.clearRect(0,0,W,H);
+    const hero = smooth(progress(t,27,1.8));
+    glow(340+Math.sin(t*.12)*75,330+Math.cos(t*.16)*50,650,`rgba(118,47,74,${.13*(1-hero)})`);
+    glow(1450+Math.sin(t*.11)*90,650+Math.cos(t*.14)*65,760,`rgba(55,113,140,${.12-hero*.04})`);
+    glow(960+Math.cos(t*.08)*65,380,650,`rgba(120,139,191,${.04+hero*.06})`);
+    ctx.lineWidth=.6;
+    const drift=(t*1.7)%64;
+    for(let x=-64+drift;x<W+64;x+=64){ctx.strokeStyle=`rgba(128,159,208,${.018+.007*Math.sin(x*.005+t*.2)})`;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=-64+drift*.45;y<H+64;y+=64){ctx.strokeStyle='rgba(128,159,208,.022)';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(const p of particles){
+      const x=(p.x+Math.sin(t*.11+p.p)*19+t*p.v*.25)%W,y=(p.y-t*p.v*.38+H*2)%H;
+      const a=.12+.2*(.5+.5*Math.sin(t*.7+p.p));
+      ctx.fillStyle=`rgba(185,209,247,${a})`;ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill();
+      if(p.r>1.45){ctx.strokeStyle=`rgba(185,209,247,${a*.25})`;ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);ctx.stroke();}
+    }
+    const sweep=(t*24)%(W+600)-300;
+    const beam=ctx.createLinearGradient(sweep-160,0,sweep+160,0);beam.addColorStop(0,'transparent');beam.addColorStop(.5,'rgba(170,202,255,.013)');beam.addColorStop(1,'transparent');
+    ctx.fillStyle=beam;ctx.fillRect(sweep-160,0,320,H);
+  }
+  function enter(el,t,start,duration=1,y=26,scale=.98,useSpring=false) {
+    const u=progress(t,start,duration),a=ease(u),s=useSpring?spring(u):a;
+    el.style.opacity=a;
+    el.style.transform=`translate3d(0,${(1-s)*y}px,0) scale(${scale+(1-scale)*s})`;
+    return u;
+  }
+  function render(t) {
+    if(t===lastRendered)return;lastRendered=t;
+    atmosphere(t);
+    const hero=smooth(progress(t,27,1.25));
+    $('split').style.opacity=1-hero;
+    $('split').style.transform=`translateY(${-18*hero}px) scale(${1-.035*hero})`;
+    $('split').style.filter=hero>0?`blur(${hero*12}px)`:'none';
+    $('split').setAttribute('aria-hidden',String(t>=28.25));
+    $('footnote').style.opacity=1-hero;
+    enter($('leftPanel'),t,.4,1.1,32,.985);
+    logs.forEach(({el,text,cursor},i)=>{
+      const start=1.2+i*.8,age=t-start,u=progress(t,start,.68);
+      el.style.opacity=ease(progress(t,start,.24));
+      el.style.transform=`translateX(${(1-ease(progress(t,start,.5)))*-12}px)`;
+      const n=Math.floor(u*text.dataset.text.length),value=text.dataset.text.slice(0,n);
+      if(text.textContent!==value)text.textContent=value;
+      el.style.setProperty('--pulse',age>=0?Math.exp(-age*2.2)*.14:0);
+      cursor.style.opacity=age>=0&&age<.8?(.45+.55*Math.pow(Math.cos(age*14),2)):0;
+    });
+    enter($('diagnosis'),t,4.8,.85,12,.975);
+    const scan=progress(t,6.4,1.5),scanVisible=t>=6.4&&t<7.9;
+    $('laser').style.left=`${-3+106*smooth(scan)}%`;
+    $('laser').style.opacity=scanVisible?Math.min(1,scan*14,(1-scan)*10):0;
+    $('scanWash').style.clipPath=`inset(0 ${100*(1-smooth(scan))}% 0 0)`;
+    $('scanWash').style.opacity=1-progress(t,7.9,.7);
+    const detected=ease(progress(t,7.2,.38)),shock=t-7.2;
+    const shake=shock>=0&&shock<.75?Math.sin(shock*76)*Math.exp(-shock*7)*2.4:0;
+    $('diagnosis').style.transform+=` translate(${shake}px,${shake*.28}px)`;
+    $('diagnosis').style.borderColor=`rgba(255,108,135,${.18+detected*.4})`;
+    $('leftPanel').style.borderColor=`rgba(255,108,135,${.13+detected*.13})`;
+    $('badCite').style.textDecoration=detected>.5?'line-through':'none';
+    $('badCite').style.color=detected>.5?'#ff97aa':'#e4b6bf';
+    $('claimNote').style.color=detected>.5?'#de8fa3':'#8e9bb1';
+    const alarm=shock>=0?Math.exp(-shock*1.65)*(.28+.5*Math.pow(Math.cos(shock*10),2)):0;
+    $('alarm').style.opacity=alarm;
+    flags.forEach((el,i)=>{
+      const start=[7.8,9.2,10.6][i],u=enter(el,t,start,.7,13,.99);
+      el.style.transform=`translateX(${(1-ease(u))*18}px)`;
+      el.querySelector('.flag-icon').style.boxShadow=`0 0 ${18*Math.exp(-Math.max(0,t-start)*3)}px #ff647b22`;
+    });
+    enter($('rightPanel'),t,12.2,1.15,30,.985);
+    contracts.forEach((el,i)=>{
+      const start=[13.8,17.5,21.2][i],u=enter(el,t,start,1.35,32,.965,true);
+      el.style.transform+=` rotateX(${(1-spring(u))*5}deg)`;
+      el.style.setProperty('--angle',`${((t-start)*22+i*95)%360}deg`);
+      el.style.boxShadow=`0 12px 35px #0003,0 0 ${26*(1-progress(t,start,2))}px rgba(${['121,230,193','137,216,243','241,211,155'][i]},.08)`;
+    });
+    $('hero').style.opacity=hero;$('hero').setAttribute('aria-hidden',String(t<27));
+    enter($('heroKicker'),t,27.25,1.05,15,1);
+    enter($('heroTitle'),t,27.55,1.5,38,.94);
+    const breath=smooth(progress(t,29.1,1))*Math.sin((t-29.1)*.82);
+    $('heroTitle').style.letterSpacing=`${-8+breath*.45}px`;
+    $('heroTitle').style.transform+=` scale(${1+breath*.002})`;
+    $('heroRule').style.transform=`scaleX(${ease(progress(t,28.35,1.2))})`;
+    enter($('heroSub'),t,28.45,1.2,20,1);
+    enter($('heroMotto'),t,29.15,1.2,15,1);
+    pills.forEach((el,i)=>enter(el,t,30.05+i*.23,1.2,22,.97,true));
+    $('heroOrbits').style.opacity=ease(progress(t,27.2,2.3))*.7;
+    $('heroOrbits').style.transform=`scale(${.95+.05*ease(progress(t,27,3))})`;
+    orbits.forEach((el,i)=>el.style.transform=`rotate(${t*(i%2?-1:1)*(1.2+i*.4)+i*70}deg)`);
+    $('heroLight').style.transform=`translate(${Math.sin(t*.2)*30}px,${Math.cos(t*.18)*20}px)`;
+    enter($('heroCaption'),t,31.4,1.1,10,1);
+    $('chapter').textContent=t>=27?'Evidence-driven multi-agent RCA':t>=12.2?'The Cite or Abstain contract':'Why evidence-driven RCA matters';
+    $('timeline').value=t;$('timeline').style.setProperty('--progress',`${t/DURATION*100}%`);
+    const fmt=s=>`00:${String(Math.floor(s)).padStart(2,'0')}`;
+    $('timecode').textContent=`${fmt(t)} / 00:35`;
+    $('timeline').setAttribute('aria-valuetext',`${t.toFixed(1)} of 35 seconds`);
+  }
+  function syncButton(){ $('playBtn').textContent=playing?'Pause':'Play';$('playBtn').setAttribute('aria-label',playing?'Pause animation':'Play animation'); }
+  function seek(t){elapsed=clamp(Number(t)||0,0,DURATION);if(elapsed===DURATION)playing=false;lastTs=null;render(elapsed);syncButton();}
+  function togglePlay(){if(elapsed>=DURATION){elapsed=0;playing=true;}else playing=!playing;lastTs=null;render(elapsed);syncButton();}
+  function replay(){elapsed=0;playing=true;lastTs=null;render(0);syncButton();}
+  function toggleHUD(){hidden=!hidden;$('hud').classList.toggle('hidden',hidden);$('hud').inert=hidden;document.body.classList.toggle('recording',hidden);if(hidden&&document.activeElement instanceof HTMLElement)document.activeElement.blur();}
+  function tick(ts){
+    if(lastTs!==null&&playing&&!document.hidden){elapsed=Math.min(DURATION,elapsed+(ts-lastTs)/1000);if(elapsed>=DURATION){playing=false;syncButton();}}
+    lastTs=ts;render(elapsed);requestAnimationFrame(tick);
+  }
+  $('playBtn').addEventListener('click',togglePlay);$('replayBtn').addEventListener('click',replay);
+  $('timeline').addEventListener('input',e=>seek(e.target.value));
+  window.addEventListener('keydown',e=>{
+    if(e.repeat||e.metaKey||e.ctrlKey||e.altKey)return;
+    if(e.code==='Space'){e.preventDefault();togglePlay();}
+    else if(e.key.toLowerCase()==='r'){e.preventDefault();replay();}
+    else if(e.key.toLowerCase()==='h'){e.preventDefault();toggleHUD();}
+  });
+  // Freeze while a browser tab is hidden; a recording never skips a scene.
+  document.addEventListener('visibilitychange',()=>{lastTs=null;});
+  window.addEventListener('resize',fit);
+  // Optional deterministic review links: ?t=14.5&paused=1&clean=1
+  const params=new URLSearchParams(location.search);
+  if(params.has('t'))elapsed=clamp(Number(params.get('t'))||0,0,DURATION);
+  if(params.get('paused')==='1'||elapsed===DURATION)playing=false;
+  if(params.get('clean')==='1')toggleHUD();
+  fit();syncButton();requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

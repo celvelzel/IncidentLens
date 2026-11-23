@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>IncidentLens — Dynamic Architecture & Four Variants · 60s</title>
+<style>
+:root{--scale:1;--ink:#f4f6fc;--muted:#93a3bb;--cyan:#89d8f3;--pink:#f4a2bc;--green:#79e6c1;--amber:#f1cc85;--violet:#bc9df5}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03050a;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+#viewport{position:fixed;inset:0;overflow:hidden}#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(var(--scale));overflow:hidden;isolation:isolate;background:#070b14}
+.grid,.ambient,.vignette{position:absolute;pointer-events:none}.grid{inset:-64px;z-index:-2;background-image:linear-gradient(#96b8ed06 1px,transparent 1px),linear-gradient(90deg,#96b8ed06 1px,transparent 1px);background-size:64px 64px}.ambient{inset:-140px;z-index:-3;background:radial-gradient(ellipse at 47% 27%,#6389b51c,transparent 45%),radial-gradient(ellipse at 20% 80%,#a64e6d10,transparent 40%),radial-gradient(ellipse at 88% 75%,#57bca014,transparent 40%)}.vignette{inset:0;z-index:12;background:radial-gradient(ellipse at 50% 45%,transparent 42%,#0004);pointer-events:none}
+.topbar{position:absolute;top:49px;left:80px;right:80px;height:44px;display:flex;align-items:center;justify-content:space-between;z-index:15}.brand{display:flex;align-items:center;gap:15px;font-size:24px;font-weight:650;letter-spacing:-.6px}.brand svg{width:36px;height:36px}.brand small{font-size:12px;font-weight:500;letter-spacing:2px;color:#8996ad;border-left:1px solid #394256;padding-left:26px;margin-left:12px}.chapter{font-size:12px;letter-spacing:2px;color:#99a8c0;text-transform:uppercase}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none}.phase{position:absolute;top:112px;left:80px;right:80px;display:flex;align-items:center;gap:18px;height:35px}.phase-tag{font-size:12px;font-weight:650;letter-spacing:1.4px;padding:7px 12px;border-radius:7px;border:1px solid #9bb0d12b;color:#b8c7dd;background:#9bb0d108;white-space:nowrap}.phase-text{font-size:20px;font-weight:480;letter-spacing:-.3px;color:#b8c9e0}.phase-count{margin-left:auto;font:13px "SF Mono",Menlo,Consolas,monospace;color:#72849f;white-space:nowrap}
+#architecture{position:absolute;left:80px;top:156px;width:1760px;height:800px;overflow:visible}.node{fill:#111a2a;stroke:#9db5da38;stroke-width:1.4}.node-title{fill:#edf3fc;font-size:24px;font-weight:580;letter-spacing:-.5px}.node-sub{fill:#9aacc4;font-size:15px}.mono{font-family:"SF Mono",Menlo,Consolas,monospace}.small{font-size:13px}.wire{fill:none;stroke:#60759166;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}.label{fill:#a5b8d3;font-size:13px;letter-spacing:1.2px}.check-label{font-size:17px;fill:#7286a2}.check-symbol{font-size:19px;fill:#7286a2}.evidence text{font-size:13px;font-family:"SF Mono",Menlo,Consolas,monospace}.evidence rect{fill:#89d8f30b;stroke:#89d8f344;stroke-width:1}.evidence.green rect{fill:#79e6c10c;stroke:#79e6c14d}.evidence text{fill:#a8dff1}.evidence.green text{fill:#a5e6d0}.ring{fill:none;stroke-width:1.5;pointer-events:none}.packet{pointer-events:none}.footnote{position:absolute;top:965px;left:84px;right:84px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.5px;color:#72829c;text-transform:uppercase}
+.comparison-head{position:absolute;top:121px;left:80px;right:80px;text-align:center}.comparison-head h1{font-size:44px;font-weight:620;letter-spacing:-1.6px;margin:0 0 13px}.comparison-head p{font-size:18px;color:#9eafc7;margin:0;letter-spacing:.1px}.cards{position:absolute;top:240px;left:80px;right:80px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;perspective:1600px}.vcard{position:relative;height:700px;padding:24px;display:grid;grid-template-rows:26px 44px 100px 1fr 68px;gap:12px;border-radius:24px;border:1px solid #a7c0e529;background:linear-gradient(145deg,#1b2639d9,#0d1524ed 70%);box-shadow:0 28px 70px #0003;opacity:0;transform-origin:50% 70%;overflow:hidden}.vcard:before{content:"";position:absolute;left:24px;right:24px;top:0;height:1px;background:linear-gradient(90deg,transparent,#ceddf33b,transparent)}.vcard.primary{border-color:#f4a2bc8c;background:linear-gradient(160deg,#65324838,#111a2bee 45%);box-shadow:0 28px 70px #0004,inset 0 1px 0 #f4a2bc18}.vcard.full{border-color:#bc9df54d}.vtag{justify-self:start;align-self:center;border-radius:6px;padding:6px 9px;background:#a7c0e50a;border:1px solid #a7c0e51a;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#b3c1d7;white-space:nowrap}.primary .vtag{background:#f4a2bc12;color:#f3bfd0;border-color:#f4a2bc3d}.full .vtag{background:#bc9df510;color:#cdb9f0;border-color:#bc9df533}.vcard h2{font-size:37px;line-height:44px;font-weight:620;letter-spacing:-1.1px;margin:0;white-space:nowrap}.vcard.full h2{font-size:31px}.vdesc{font-size:18px;line-height:1.5;color:#aebdd2;margin:0}.mini{position:relative;min-height:0;border:1px solid #a7c0e515;background:#050a13a6;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center}.mini svg{width:100%;height:100%;overflow:visible}.mini-node{fill:#182339;stroke:#8ca3c15e;stroke-width:1.4}.mini-label{fill:#d8e3f3;font-size:14px;font-weight:550}.mini-sub{fill:#8499b7;font-size:11px}.mini-wire{fill:none;stroke:#6c86aa7a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.vfoot{display:grid;place-items:center;padding:9px;border-radius:11px;border:1px solid #a7c0e51f;background:#a7c0e506;font-size:16px;font-weight:500;line-height:1.5;text-align:center;color:#c3d1e6}.primary .vfoot{border-color:#79e6c131;background:#79e6c108;color:#abe8d3}.full .vfoot{border-color:#bc9df531;background:#bc9df508;color:#d3c2f2}
+.hud{position:absolute;bottom:27px;left:50%;transform:translateX(-50%);z-index:30;height:61px;display:flex;align-items:center;gap:11px;padding:10px 16px;border:1px solid #d0dfff24;border-radius:16px;background:#111a29ed;box-shadow:0 10px 50px #0005;white-space:nowrap;transition:opacity .18s,visibility .18s}.hud.hidden{opacity:0;visibility:hidden;pointer-events:none}.recording{cursor:none}.hud button{font:550 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;cursor:pointer;height:32px;padding:0 12px;color:#d5e0f2;border:1px solid #d0dfff24;border-radius:7px;background:#d0dfff0a}.hud button:hover{background:#d0dfff18}button:focus-visible,input:focus-visible{outline:2px solid #89d8f3;outline-offset:4px}#timeline{width:270px;height:22px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer;margin:0 5px}#timeline::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,#e8a6bc var(--progress,0%),#a9bbd92b var(--progress,0%))}#timeline::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;margin-top:-3.5px;border-radius:50%;background:#f5d8e3;border:0}#timeline::-moz-range-track{height:3px;background:#a9bbd92b}#timeline::-moz-range-progress{height:3px;background:#e8a6bc}#timeline::-moz-range-thumb{height:10px;width:10px;border:0;border-radius:50%;background:#f5d8e3}.timecode{font:12px "SF Mono",Menlo,Consolas,monospace;color:#bac8df;min-width:106px}.hint{font-size:11px;color:#8c9bb3}
+</style>
+<style>.recording .hud{transition:none}</style>
+</head>
+<body>
+<div id="viewport"><main id="stage" aria-label="IncidentLens architecture animation, 60 seconds">
+  <div class="ambient" id="ambient" aria-hidden="true"></div><div class="grid" id="grid" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand"><svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11" stroke="#d9e4f6" stroke-width="1.4"/><circle cx="16" cy="16" r="6" stroke="#f3a5bc" stroke-width="1.4"/><path d="m24 24 7 7M16 12v8M12 16h8" stroke="#d9e4f6" stroke-width="1.4" stroke-linecap="round"/></svg>IncidentLens</div>
+    <div class="chapter" id="chapter">Dynamic LangGraph closed-loop investigation</div>
+  </header>
+  <section class="scene" id="scene1" aria-label="Dynamic closed-loop investigation">
+    <div class="phase"><span class="phase-tag" id="phaseTag">WORKFLOW</span><span class="phase-text" id="phaseText">Initializing Investigation Workflow…</span><span class="phase-count">00:00–00:38</span></div>
+    <svg id="architecture" viewBox="0 0 1760 800" role="img" aria-label="Public Summary, Coordinator, four read-only specialists, shared evidence, deterministic gate and report"></svg>
+    <div class="footnote"><span>Illustrative investigation · public, read-only evidence</span><span>Model confidence cannot override the gate</span></div>
+  </section>
+  <section class="scene" id="scene2" aria-label="Controlled four-architecture benchmark" aria-hidden="true">
+    <div class="comparison-head"><h1>Controlled Four-Architecture Benchmark</h1><p>Identical model · Identical temperature (0.0) · Cache off · Equivalent public tools &amp; budgets</p></div>
+    <div class="cards">
+      <article class="vcard" id="singleCard"><span class="vtag">Baseline 01</span><h2>Single</h2><p class="vdesc">One monolithic agent holds all tool pools, plans every query, and runs self-review.</p><div class="mini"><svg id="singleSvg" viewBox="0 0 340 260" role="img" aria-label="Single agent querying all four tool pools with self-review"></svg></div><div class="vfoot">Long context · High token bloat</div></article>
+      <article class="vcard" id="fixedCard"><span class="vtag">Baseline 02</span><h2>Fixed-4</h2><p class="vdesc">All four specialists execute one fixed batch and immediately finalize or abstain.</p><div class="mini"><svg id="fixedSvg" viewBox="0 0 340 260" role="img" aria-label="Four specialists feed a single one-shot stop with no loop"></svg></div><div class="vfoot">Cheapest · High false abstention</div></article>
+      <article class="vcard primary" id="dynamicCard"><span class="vtag">Primary Architecture ⭐</span><h2>Dynamic</h2><p class="vdesc">Adaptive 1–2 specialist dispatch per round with deterministic FinalizeGate—no LLM verifier.</p><div class="mini"><svg id="dynamicSvg" viewBox="0 0 340 260" role="img" aria-label="Adaptive specialist dispatch and a smooth deterministic gate feedback loop"></svg></div><div class="vfoot">Best Quality-to-Cost Frontier</div></article>
+      <article class="vcard full" id="fullCard"><span class="vtag">Ablation Control</span><h2>Full (+Verifier)</h2><p class="vdesc">Dynamic workflow plus an independent LLM Verifier that challenges hypotheses every cycle.</p><div class="mini"><svg id="fullSvg" viewBox="0 0 340 260" role="img" aria-label="Dynamic workflow with an additional purple independent Verifier node"></svg></div><div class="vfoot">+60–110% Tokens · Helps Counterfactuals</div></article>
+    </div>
+  </section>
+  <nav class="hud" id="hud" aria-label="Animation controls">
+    <button id="playBtn" type="button" aria-keyshortcuts="Space">Pause</button><button id="replayBtn" type="button" aria-keyshortcuts="R">Replay</button><button id="flowBtn" type="button" aria-keyshortcuts="1">1: Flow</button><button id="variantsBtn" type="button" aria-keyshortcuts="2">2: 4 Variants</button>
+    <input id="timeline" type="range" min="0" max="60" step="0.01" value="0" aria-label="Animation timeline in seconds"><output class="timecode" id="timecode" for="timeline">00:00 / 01:00</output><span class="hint">Space Play/Pause · R Replay · H Hide · 1/2 Scene</span>
+  </nav>
+</main></div>
+<script>
+(() => {
+  'use strict';
+  // One clock drives all paths, trails, pulses, transitions and UI.
+  // No external assets, libraries, CSS animations or independent timers.
+  const DURATION=60, SCENE_2=38, NS='http://www.w3.org/2000/svg';
+  const $=id=>document.getElementById(id);
+  const C={neutral:'#7286a2',cyan:'#89d8f3',pink:'#f4a2bc',green:'#79e6c1',amber:'#f1cc85',violet:'#bc9df5'};
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const p=(t,s,d=1)=>clamp((t-s)/d);
+  const ease=x=>1-Math.pow(1-clamp(x),3);
+  const smooth=x=>{x=clamp(x);return x*x*(3-2*x);};
+  const spring=x=>x>=1?1:1-Math.exp(-7*x)*(Math.cos(10*x)+.6*Math.sin(10*x));
+  const text=(x,y,value,cls='node-sub',anchor='start')=>`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${value}</text>`;
+  const rect=(id,x,y,w,h,cls='node',rx=18)=>`<rect id="${id}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${cls}"/>`;
+  const node=(id,x,y,w,h,title,sub,detail)=>rect(id,x,y,w,h)+text(x+22,y+37,title,'node-title')+text(x+22,y+66,sub,'node-sub mono')+(detail?text(x+22,y+93,detail,'node-sub small'):'');
+  const paths={
+    input:'M445 80H630',
+    logs:'M710 130V166Q710 180 696 180H281Q265 180 265 196V240',
+    metrics:'M820 130V184Q820 200 804 200H691Q675 200 675 216V240',
+    database:'M940 130V180Q940 196 956 196H1069Q1085 196 1085 212V240',
+    changes:'M1050 130V156Q1050 172 1066 172H1479Q1495 172 1495 188V240',
+    logsBoard:'M265 356V400Q265 416 281 416H600Q616 416 616 432V460',
+    metricsBoard:'M675 356V460',
+    databaseBoard:'M1085 356V460',
+    changesBoard:'M1495 356V400Q1495 416 1479 416H1180Q1164 416 1164 432V460',
+    boardGate:'M880 570V618',
+    loop:'M450 696H64Q40 696 40 672V188Q40 164 64 164H572Q596 164 596 140V120Q596 105 611 105H630',
+    output:'M1310 696H1390'
+  };
+  const defs=`<defs>${Object.entries(C).map(([name,color])=>`<marker id="arrow-${name}" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 2L10 6L1 10Z" fill="${color}"/></marker>`).join('')}</defs>`;
+  const wires=Object.entries(paths).map(([id,d])=>`<path id="w-${id}" d="${d}" class="wire" marker-end="url(#arrow-neutral)"/>`).join('');
+  const ruleLabels=['≥ 2 Independent Evidence Sources','Cause-Specific Discriminator','Temporally Compatible Impact','No Unresolved Rival / Contradiction'];
+  const checks=ruleLabels.map((label,i)=>{
+    const x=i%2?918:478,y=i<2?708:748;
+    return text(x,y,'○','check-symbol') .replace('<text ',`<text id="check-icon-${i}" `)+text(x+28,y,label,'check-label').replace('<text ',`<text id="check-${i}" `);
+  }).join('');
+  $('architecture').innerHTML=defs+
+    `<path id="loopGlow" d="${paths.loop}" fill="none" stroke="${C.amber}" stroke-width="12" opacity="0"/>`+
+    `<path id="outputGlow" d="${paths.output}" fill="none" stroke="${C.green}" stroke-width="14" opacity="0"/>`+wires+
+    node('n-public',145,30,300,100,'Public Summary','public/ only · read-only')+
+    rect('n-coordinator',630,30,500,100)+text(880,61,'Coordinator / Supervisor','node-title','middle')+text(880,88,'Dispatches 1–2 specialists per round','node-sub','middle')+text(880,111,'Based on evidence gaps','node-sub small','middle')+
+    text(880,221,'4 SPECIALISTS · READ-ONLY ACL','label','middle')+
+    node('n-logs',110,240,310,116,'Logs Specialist','ACL: query_logs','Error chronology')+
+    node('n-metrics',520,240,310,116,'Metrics &amp; Deps','ACL: query_metrics','Capacity &amp; latency')+
+    node('n-database',930,240,310,116,'Database Specialist','ACL: db_locks / conns','Sessions &amp; slow queries')+
+    node('n-changes',1340,240,310,116,'Changes Specialist','ACL: query_changes, diff','Deployments &amp; config diff')+
+    rect('n-board',450,460,860,110)+text(880,493,'Validated Shared Evidence Board','node-title','middle')+
+    `<g id="evidence1" class="evidence">${rect('ev1',478,515,220,32,'',8)}${text(588,536,'E-003 · logs/backend','','middle')}</g>`+
+    `<g id="evidence2" class="evidence">${rect('ev2',715,515,250,32,'',8)}${text(840,536,'E-007 · db/connections','','middle')}</g>`+
+    `<g id="evidence3" class="evidence green">${rect('ev3',982,515,300,32,'',8)}${text(1132,536,'E-011 · config/pool_diff','','middle')}</g>`+
+    rect('n-gate',450,618,860,154)+text(478,650,'Deterministic FinalizeGate','node-title')+text(478,674,'Deterministic Code — No LLM Confidence','node-sub small')+text(1282,650,'AWAITING','label','end').replace('<text ','<text id="gateStatus" ')+checks+
+    `<g id="gapLabel">${rect('gapLabelBg',120,630,275,30,'',8)}${text(135,650,'Round 1 → Coordinator','node-sub')}</g>`+
+    rect('n-gap',1390,460,330,110)+text(1412,490,'EVIDENCE GAP','label').replace('<text ','<text id="gapHeading" ')+text(1412,521,'Missing Config Diff!','node-title').replace('<text ','<text id="gapDetail" ')+text(1412,546,'Request: get_config_diff','node-sub small').replace('<text ','<text id="gapHint" ')+
+    rect('n-output',1390,630,330,142)+text(1555,684,'Pending Gate…','node-title','middle').replace('<text ','<text id="outputTitle" ')+text(1555,719,'RESOLVED or INCONCLUSIVE','node-sub','middle').replace('<text ','<text id="outputSub" ')+text(1555,748,'','node-sub small','middle').replace('<text ','<text id="outputNote" ')+
+    rect('outputRing',1390,630,330,142,'ring',18)+
+    rect('coordinatorRing',630,30,500,100,'ring',18)+`<g id="flowPackets"></g>`;
+
+  // All connectors end exactly on node boundaries; markers use an exact tip anchor.
+  const miniRect=(id,x,y,w,h,label,color='neutral')=>rect(id,x,y,w,h,'mini-node',10).replace('/>',` style="stroke:${C[color]}66"/>`)+text(x+w/2,y+h/2+5,label,'mini-label','middle');
+  const miniPath=(id,d,color='neutral')=>`<path id="${id}" d="${d}" class="mini-wire" style="stroke:${C[color]}77" marker-end="url(#arrow-${color})"/>`;
+  const toolNames=['Logs','Metrics','DB','Changes'],toolXs=[42,127,212,297];
+  $('singleSvg').innerHTML=
+    miniPath('s0','M144 98C30 128 270 166 42 208')+miniPath('s1','M160 107C270 132 50 157 127 208')+miniPath('s2','M180 107C70 143 300 168 212 208')+miniPath('s3','M196 98C319 132 128 170 297 208')+
+    miniPath('s4','M127 208C309 178 258 139 196 98')+
+    `<circle id="singleAgent" cx="170" cy="70" r="38" class="mini-node"/>`+text(170,66,'1 Agent','mini-label','middle')+text(170,84,'Self-review','mini-sub','middle')+
+    toolNames.map((name,i)=>miniRect('singleTool'+i,toolXs[i]-35,208,70,34,name)).join('')+`<g id="singlePackets"></g>`;
+  $('fixedSvg').innerHTML=
+    toolXs.map((x,i)=>miniPath('f'+i,`M${x} 76C${x} 115 ${[108,148,192,232][i]} 119 ${[108,148,192,232][i]} 161`,'cyan')).join('')+
+    miniPath('fstop','M170 211V237','amber')+
+    toolNames.map((name,i)=>miniRect('fixedTool'+i,toolXs[i]-35,42,70,34,name,'cyan')).join('')+
+    rect('fixedStop',84,161,172,50,'mini-node',11)+text(170,183,'1-Shot Stop','mini-label','middle')+text(170,201,'(No Loop)','mini-sub','middle')+
+    `<rect id="fixedEnd" x="166" y="237" width="8" height="8" rx="2" fill="${C.amber}"/><g id="fixedPackets"></g>`;
+  $('dynamicSvg').innerHTML=
+    miniPath('d0','M134 58L104 108','cyan')+miniPath('d1','M206 58L254 108','cyan')+
+    miniPath('d2','M104 144L134 198','green')+miniPath('d3','M254 144L206 198','green')+
+    miniPath('dloop','M92 217C14 217 14 39 92 39','pink')+
+    miniRect('dynamicCoordinator',92,20,160,38,'Coordinator','pink')+
+    miniRect('dynamicA',50,108,108,36,'Specialist A','cyan')+miniRect('dynamicB',200,108,108,36,'Specialist B','cyan')+
+    miniRect('dynamicGate',92,198,160,38,'FinalizeGate','green')+`<g id="dynamicPackets"></g>`;
+  $('fullSvg').innerHTML=
+    miniPath('v0','M170 49V78','cyan')+miniPath('v1','M170 112V140','violet')+miniPath('v2','M170 182V214','green')+
+    miniPath('vloop','M60 161C14 161 14 32 92 32','violet')+
+    miniRect('fullCoordinator',92,15,160,34,'Coordinator')+miniRect('fullSpecialists',92,78,160,34,'Dynamic Specialists','cyan')+
+    miniRect('verifier',60,140,224,42,'Independent Verifier','violet')+miniRect('fullGate',92,214,160,34,'FinalizeGate','green')+`<g id="fullPackets"></g>`;
+
+  // Cache path samples once. Trail positions depend on time, never frame history.
+  const samples=new Map();
+  document.querySelectorAll('path[id]').forEach(path=>{
+    if(!path.id.startsWith('w-')&&!/^[sfdv](\d|loop|stop)/.test(path.id))return;
+    const length=path.getTotalLength(),count=Math.max(60,Math.ceil(length/3));
+    samples.set(path.id,Array.from({length:count+1},(_,i)=>path.getPointAtLength(length*i/count)));
+  });
+  function point(id,f){const a=samples.get(id),v=clamp(f)*(a.length-1),i=Math.floor(v),j=Math.min(i+1,a.length-1),r=v-i;return{x:a[i].x+(a[j].x-a[i].x)*r,y:a[i].y+(a[j].y-a[i].y)*r};}
+  const pools=new Map();
+  function packet(key,parent,id,f,color='cyan',size=4,tail=.018){
+    let dots=pools.get(key);
+    if(!dots){dots=Array.from({length:13},()=>{const dot=document.createElementNS(NS,'circle');dot.setAttribute('class','packet');$(parent).appendChild(dot);return dot;});pools.set(key,dots);}
+    dots.forEach((dot,i)=>{const u=f-i*tail,visible=u>=0&&u<=1;dot.setAttribute('opacity',visible?(1-i/13)*.85:0);if(!visible)return;const q=point(id,u);dot.setAttribute('cx',q.x);dot.setAttribute('cy',q.y);dot.setAttribute('r',i===0?size:size*.62*(1-i/18));dot.setAttribute('fill',C[color]);dot.style.filter=i===0?`drop-shadow(0 0 ${size*1.8}px ${C[color]})`:'none';});
+  }
+  function transit(key,id,t,start,duration,color='cyan'){packet(key,'flowPackets','w-'+id,(t-start)/duration,color,4.5,.014);}
+  function hidePackets(){pools.forEach(dots=>dots.forEach(dot=>dot.setAttribute('opacity','0')));}
+  function styleNode(id,color='neutral',power=1){const el=$(id);el.style.stroke=C[color];el.style.strokeOpacity=color==='neutral'?.4:.7;el.style.fill=color==='neutral'?'#111a2a':C[color]+'0c';el.style.opacity=power;el.style.filter=color==='neutral'?'none':`drop-shadow(0 0 12px ${C[color]}1c)`;}
+  function wire(id,color='neutral',alpha=1){const el=$('w-'+id);el.style.stroke=C[color];el.style.strokeOpacity=color==='neutral'?.35:.65;el.style.opacity=alpha;el.setAttribute('marker-end',`url(#arrow-${color})`);}
+  function ring(id,t,start,cx,cy,color){const u=p(t,start,1.4),el=$(id);el.style.stroke=C[color];el.style.opacity=t>=start&&u<1?(1-u)*.7:0;el.setAttribute('transform',`translate(${cx} ${cy}) scale(${1+u*.12}) translate(${-cx} ${-cy})`);}
+  function reveal(el,t,start,duration=.9){const u=p(t,start,duration),s=spring(u);el.style.opacity=ease(u);el.style.transform=`translateY(${(1-s)*28}px) scale(${.975+.025*s}) rotateX(${(1-s)*3}deg)`;}
+  let elapsed=0,playing=true,lastTs=null,lastRendered=-1,hidden=false;
+  function render(t){
+    if(t===lastRendered)return;lastRendered=t;hidePackets();
+    $('grid').style.transform=`translate(${(t*1.2)%64}px,${(t*.6)%64}px)`;$('ambient').style.transform=`translate(${Math.sin(t*.1)*35}px,${Math.cos(t*.12)*25}px)`;
+    const second=t>=SCENE_2;
+    $('scene1').style.opacity=second?0:1;$('scene2').style.opacity=second?ease(p(t,38,.65)):0;
+    $('scene1').setAttribute('aria-hidden',String(second));$('scene2').setAttribute('aria-hidden',String(!second));
+    $('chapter').textContent=second?'Controlled benchmark · four equivalent-tool architectures':'Dynamic LangGraph closed-loop investigation';
+    if(!second){
+      const round2=t>=21,passed=t>=29,resolved=t>=31.8,gap=t>=13&&!passed;
+      const phase=passed?'green':round2?'pink':t>=15.5?'amber':t>=4?'cyan':'neutral';
+      $('phaseTag').textContent=passed?'4/4 PASSED':round2?'ROUND 2':t>=15.5?'EVIDENCE GAP':t>=4?'ROUND 1':'WORKFLOW';
+      $('phaseTag').style.color=C[phase];$('phaseTag').style.borderColor=C[phase]+'66';
+      $('phaseText').textContent=passed?'FinalizeGate Passed (4/4) · Emitting Grounded RESOLVED Report':round2?'Round 2 · Targeted dispatch → Changes Specialist (get_config_diff)':t>=15.5?'Gate Blocked · Missing cause discriminator → Loop back to Coordinator':t>=4?'Round 1 · Coordinator dispatches Logs + Database (Metrics & Changes stay idle)':'Initializing Investigation Workflow…';
+      ['public','coordinator','logs','metrics','database','changes','board','gate','gap','output'].forEach(id=>styleNode('n-'+id));
+      Object.keys(paths).forEach(id=>wire(id));
+      if(t>=.5){styleNode('n-public','cyan');wire('input','cyan');}if(t>=3)styleNode('n-coordinator',round2?'pink':t>=20.5?'amber':'pink');
+      if(t>=4){styleNode('n-logs',round2?'neutral':'cyan',round2?.6:1);styleNode('n-database',round2?'neutral':'cyan',round2?.6:1);styleNode('n-metrics','neutral',.42);styleNode('n-changes',round2?'pink':'neutral',round2?1:.42);wire('logs','cyan',round2?.4:1);wire('database','cyan',round2?.4:1);}
+      if(t>=8.2){wire('logsBoard','cyan',round2?.5:1);wire('databaseBoard','cyan',round2?.5:1);}if(t>=10.5)styleNode('n-board',passed?'green':'cyan');
+      [10.5,11.5,27].forEach((s,i)=>$('evidence'+(i+1)).style.opacity=ease(p(t,s,.6)));
+      if(t>=13){wire('boardGate',passed?'green':'amber');styleNode('n-gate',passed?'green':'amber');}
+      ruleLabels.forEach((_,i)=>{const state=t<13?'neutral':i===1&&!passed?'amber':'green';$('check-'+i).style.fill=C[state];$('check-icon-'+i).style.fill=C[state];$('check-icon-'+i).textContent=t<13?'○':state==='amber'?'△':'✓';});
+      $('gateStatus').textContent=passed?'4/4 PASSED':gap?'GAP DETECTED':'AWAITING';$('gateStatus').style.fill=C[passed?'green':gap?'amber':'neutral'];
+      $('gapLabel').style.opacity=t>=15.5&&!round2?1:0;$('gapLabelBg').style.fill='#111a22';$('gapLabelBg').style.stroke=C.amber+'55';
+      $('n-gap').style.opacity=t>=13?1:0;['gapHeading','gapDetail','gapHint'].forEach(id=>$(id).style.opacity=t>=13?1:0);
+      if(t>=13)styleNode('n-gap',passed?'green':'amber');
+      $('gapHeading').textContent=passed?'CAUSE DISCRIMINATOR':'EVIDENCE GAP';$('gapDetail').textContent=passed?'db_pool_max ↓':'Missing Config Diff!';$('gapHint').textContent=passed?'Config diff observed & cited':'Request: get_config_diff';$('gapDetail').style.fill=C[passed?'green':'amber'];
+      if(t>=15.5&&!round2)wire('loop','amber');
+      $('loopGlow').style.opacity=t>=15.5&&!round2?.12+.08*Math.pow(Math.sin((t-15.5)*2),2):0;
+      if(round2){wire('changes','pink');if(t>=24.5)wire('changesBoard','green');}
+      if(passed){wire('output','green');styleNode('n-gate','green');}
+      $('outputGlow').style.opacity=t>=29.5?.2*Math.exp(-Math.max(0,t-31.8)*1.5):0;
+      if(resolved)styleNode('n-output','green');
+      $('outputTitle').textContent=resolved?'RESOLVED ✓':'Pending Gate…';$('outputTitle').style.fill=resolved?C.green:'#dfe8f6';$('outputSub').textContent=resolved?'3 verified citations · 0 guesses':'RESOLVED or INCONCLUSIVE';$('outputNote').textContent=resolved?'Grounded report emitted':'';
+      transit('in','input',t,1,2.5);transit('logs','logs',t,5,3);transit('db','database',t,5.25,3);transit('logsReturn','logsBoard',t,8.2,3);transit('dbReturn','databaseBoard',t,8.7,3);transit('firstGate','boardGate',t,12,1.1,'amber');transit('replan','loop',t,15.5,5,'amber');transit('changes','changes',t,21,3,'pink');transit('config','changesBoard',t,24.5,3,'green');transit('secondGate','boardGate',t,27.8,1.2,'green');transit('resolved','output',t,29.5,2.3,'green');
+      ring('coordinatorRing',t,20.5,880,80,'amber');ring('outputRing',t,31.8,1555,701,'green');
+    }
+    const starts=[39,41.2,43.4,45.6];
+    ['singleCard','fixedCard','dynamicCard','fullCard'].forEach((id,i)=>reveal($(id),t,starts[i],1.2));
+    if(second){
+      // Single: asynchronous, crossing query and self-review pulses.
+      const a=t-39;for(let i=0;i<5;i++)packet('single'+i,'singlePackets','s'+i,((a+i*.43)%(2.1+i*.23))/(2.1+i*.23),'neutral',2.8,.025);
+      $('singleAgent').style.strokeOpacity=.45+.35*Math.pow(Math.sin(a*2.9),2);
+      // Fixed-4: one-way batch, then a visible stop/hold before the demo repeats.
+      const f=((t-41.2)%4.8+4.8)%4.8;for(let i=0;i<4;i++)packet('fixed'+i,'fixedPackets','f'+i,(f-.12*i)/2,'cyan',2.7,.025);
+      packet('fixedEndPacket','fixedPackets','fstop',(f-2.35)/.45,'amber',2.6,.04);$('fixedStop').style.stroke=C.amber;$('fixedStop').style.fill=f>2.35?'#f1cc8516':'#182339';$('fixedEnd').style.opacity=f>2.7?.55+.45*Math.pow(Math.sin(f*4),2):.25;
+      // Dynamic: parallel specialists and a continuous return to Coordinator.
+      const d=((t-43.4)%4.5+4.5)%4.5;['d0','d1'].forEach((id,i)=>packet('dynamicOut'+i,'dynamicPackets',id,d/1.1,'cyan',2.8,.03));['d2','d3'].forEach((id,i)=>packet('dynamicIn'+i,'dynamicPackets',id,(d-1.05)/1.1,'green',2.8,.03));packet('dynamicLoop','dynamicPackets','dloop',(d-2.1)/2.1,'pink',3,.018);
+      $('dynamicCoordinator').style.strokeOpacity=.65+.25*Math.pow(Math.sin(d*1.3),2);
+      // Full: an additional purple Verifier stage and its review feedback route.
+      const v=((t-45.6)%5.4+5.4)%5.4;packet('full0','fullPackets','v0',v/.8,'cyan',2.8,.04);packet('full1','fullPackets','v1',(v-.8)/.9,'violet',3,.04);packet('full2','fullPackets','v2',(v-2.65)/.9,'green',2.8,.04);packet('fullLoop','fullPackets','vloop',(v-3.25)/1.9,'violet',3,.022);
+      $('verifier').style.stroke=C.violet;$('verifier').style.fill=v>=1.65&&v<2.7?'#bc9df52b':'#bc9df511';$('verifier').style.filter=`drop-shadow(0 0 ${v>=1.65&&v<2.7?9:3}px #bc9df533)`;
+    }
+    $('timeline').value=t;$('timeline').style.setProperty('--progress',`${t/DURATION*100}%`);$('timeline').setAttribute('aria-valuetext',`${t.toFixed(1)} of 60 seconds`);
+    const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;$('timecode').textContent=`${fmt(t)} / 01:00`;
+  }
+  function syncButton(){$('playBtn').textContent=playing?'Pause':'Play';$('playBtn').setAttribute('aria-label',playing?'Pause animation':'Play animation');}
+  function seek(t){elapsed=clamp(Number(t)||0,0,DURATION);if(elapsed===DURATION)playing=false;lastTs=null;render(elapsed);syncButton();}
+  function togglePlay(){if(elapsed>=DURATION){elapsed=0;playing=true;}else playing=!playing;lastTs=null;render(elapsed);syncButton();}
+  function replay(){elapsed=0;playing=true;lastTs=null;render(0);syncButton();}
+  function toggleHUD(){hidden=!hidden;$('hud').classList.toggle('hidden',hidden);$('hud').inert=hidden;document.body.classList.toggle('recording',hidden);if(hidden&&document.activeElement instanceof HTMLElement)document.activeElement.blur();}
+  function fit(){document.documentElement.style.setProperty('--scale',Math.min(innerWidth/1920,innerHeight/1080));lastRendered=-1;render(elapsed);}
+  function tick(ts){if(lastTs!==null&&playing&&!document.hidden){elapsed=Math.min(DURATION,elapsed+(ts-lastTs)/1000);if(elapsed===DURATION){playing=false;syncButton();}}lastTs=ts;render(elapsed);requestAnimationFrame(tick);}
+  $('playBtn').addEventListener('click',togglePlay);$('replayBtn').addEventListener('click',replay);$('flowBtn').addEventListener('click',()=>seek(0));$('variantsBtn').addEventListener('click',()=>seek(38));$('timeline').addEventListener('input',e=>seek(e.target.value));
+  window.addEventListener('keydown',e=>{if(e.repeat||e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key.toLowerCase();if(e.code==='Space'){e.preventDefault();togglePlay();}else if(k==='r'){e.preventDefault();replay();}else if(k==='h'){e.preventDefault();toggleHUD();}else if(k==='1'){e.preventDefault();seek(0);}else if(k==='2'){e.preventDefault();seek(38);}});
+  window.addEventListener('resize',fit);document.addEventListener('visibilitychange',()=>{lastTs=null;});
+  // Optional deterministic review links: ?t=18&paused=1&clean=1
+  const params=new URLSearchParams(location.search);if(params.has('t'))elapsed=clamp(Number(params.get('t'))||0,0,DURATION);if(params.get('paused')==='1'||elapsed===DURATION)playing=false;if(params.get('clean')==='1')toggleHUD();
+  fit();syncButton();requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

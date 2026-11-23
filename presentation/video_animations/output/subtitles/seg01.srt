@@ -1,0 +1,68 @@
+1
+00:00:00,478 --> 00:00:03,579
+Hi everyone! Today I'm presenting IncidentLens,
+
+2
+00:00:04,068 --> 00:00:08,340
+an evidence-driven multi-agent system for
+software incident root cause analysis.
+
+3
+00:00:09,150 --> 00:00:14,080
+In production postmortems, the most dangerous
+failure mode isn't failing to find an answer —
+
+4
+00:00:14,080 --> 00:00:18,060
+it's hallucinating a plausible
+story. Generic LLM agents
+
+5
+00:00:18,060 --> 00:00:22,334
+routinely assert confident root
+causes without valid citations,
+
+6
+00:00:22,829 --> 00:00:27,291
+ignore data access boundaries, and almost
+never admit when evidence is missing.
+
+7
+00:00:27,503 --> 00:00:31,091
+IncidentLens enforces a much
+stricter engineering contract:
+
+8
+00:00:31,514 --> 00:00:35,220
+every claim must cite an
+actually observed evidence ID,
+
+9
+00:00:35,716 --> 00:00:39,120
+every agent operates inside
+explicit read-only tool permissions,
+
+10
+00:00:39,756 --> 00:00:43,451
+and when visible telemetry cannot
+uniquely identify the root cause,
+
+11
+00:00:43,931 --> 00:00:47,678
+the system must abstain with
+INCONCLUSIVE rather than guess.
+
+12
+00:00:48,086 --> 00:00:50,855
+Over the next nine minutes,
+I'll walk through the architecture,
+
+13
+00:00:51,241 --> 00:00:54,963
+show you four live hands-on demos,
+and share our full-scale,
+
+14
+00:00:55,219 --> 00:00:59,393
+cross-model experimental findings
+across DeepSeek and Tencent Hunyuan.

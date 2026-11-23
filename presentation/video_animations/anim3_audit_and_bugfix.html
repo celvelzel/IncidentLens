@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<title>IncidentLens — Anti-Leakage Audit & Official API Debugging · 30s</title>
+<style>
+:root{--scale:1;--ink:#f4f6fc;--muted:#97a8c2;--cyan:#89d8f3;--pink:#f4a2bc;--red:#ff859d;--green:#79e6c1;--amber:#f1cc85}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03050a;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif}
+#viewport{position:fixed;inset:0;overflow:hidden}#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform:translate(-50%,-50%) scale(var(--scale));overflow:hidden;isolation:isolate;background:#070b14}
+.ambient,.grid,.vignette{position:absolute;pointer-events:none}.ambient{inset:-150px;z-index:-3;background:radial-gradient(ellipse at 20% 45%,#497f9b22,transparent 45%),radial-gradient(ellipse at 82% 45%,#92445f18,transparent 42%),radial-gradient(ellipse at 60% 90%,#438d7915,transparent 45%)}.grid{inset:-64px;z-index:-2;background-image:linear-gradient(#96b8ed06 1px,transparent 1px),linear-gradient(90deg,#96b8ed06 1px,transparent 1px);background-size:64px 64px}.vignette{inset:0;z-index:12;background:radial-gradient(ellipse at 50% 45%,transparent 42%,#0004)}
+.topbar{position:absolute;top:49px;left:80px;right:80px;height:44px;display:flex;align-items:center;justify-content:space-between;gap:30px;z-index:15}.brand{display:flex;align-items:center;gap:15px;flex:none;font-size:24px;font-weight:650;letter-spacing:-.6px}.brand svg{width:36px;height:36px}.brand small{font-size:12px;font-weight:500;letter-spacing:2px;color:#8996ad;border-left:1px solid #394256;padding-left:26px;margin-left:12px}.chapter{font-size:11px;letter-spacing:1.35px;color:#a0afc6;text-transform:uppercase;text-align:right;white-space:nowrap}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none}.scene-head{position:absolute;top:121px;left:80px;right:80px;text-align:center}.scene-head h1{font-size:42px;font-weight:620;letter-spacing:-1.5px;margin:0 0 12px}.scene-head p{font-size:19px;line-height:1.5;color:#9eafc7;margin:0}
+.vault-layout{position:absolute;top:240px;left:80px;width:1760px;height:680px}.zone{position:absolute;top:0;width:730px;height:680px;padding:28px;border-radius:25px;border:1px solid #a7c0e52c;background:linear-gradient(145deg,#1b283bd9,#0c1422f2 70%);box-shadow:0 28px 70px #0003;opacity:0}.public-zone{left:0;border-color:#89d8f34d}.private-zone{right:0;border-color:#f4a2bc55}.zone-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.zone h2{font-size:28px;line-height:36px;font-weight:590;letter-spacing:-.6px;margin:0;white-space:nowrap}.zone-tag{font-size:10px;font-weight:600;letter-spacing:1px;padding:7px 9px;border-radius:6px;color:#afdbea;border:1px solid #89d8f333;background:#89d8f30a;white-space:nowrap}.zone-path{font:14px/1.5 "SF Mono",Menlo,Consolas,monospace;color:#9bd6e9;margin:10px 0 0}.private-zone .zone-path{color:#d2a9bc}.file-list{position:absolute;left:28px;right:28px;top:129px;display:grid;gap:12px}.file{padding:17px 18px;border:1px solid #a7c0e51f;border-radius:12px;background:#050b15a6;font:16px/1.4 "SF Mono",Menlo,Consolas,monospace;color:#bbcade}.runtime-state{position:absolute;left:28px;right:28px;top:303px;text-align:center}.runtime-state svg{width:40px;height:40px;color:#87cfe9}.runtime-state strong{display:block;font-size:13px;font-weight:550;letter-spacing:2.2px;color:#9cb5cf;margin-top:14px}.runtime-state span{display:block;font-size:14px;color:#6f86a4;margin-top:9px}
+.step{position:absolute;left:28px;right:28px;border-radius:15px;border:1px solid #79e6c13d;background:linear-gradient(120deg,#79e6c10c,#79e6c103);padding:17px 20px;opacity:0}.persist{top:479px;height:121px}.score{top:468px;height:87px}.denominator{top:568px;height:83px;border-color:#f1cc853d;background:linear-gradient(120deg,#f1cc850c,#f1cc8503)}.step h3{font-size:18px;line-height:1.35;font-weight:580;margin:0 0 8px;color:#c4e6dc}.step p{font:13px/1.5 "SF Mono",Menlo,Consolas,monospace;color:#a7bacb;margin:0}.step .receipt-label{font-size:13px;color:#91dbc4;margin-top:8px;letter-spacing:.2px}.denominator h3{color:#e3d3b3}.public-foot{position:absolute;bottom:31px;left:28px;right:28px;color:#7489a4;font-size:12px;text-align:center;letter-spacing:.6px}
+#vaultSvg{position:absolute;inset:0;width:1760px;height:680px;overflow:visible;pointer-events:none}.svg-label{fill:#93a6c1;font-size:12px;letter-spacing:1.5px}.svg-mono{font-family:"SF Mono",Menlo,Consolas,monospace}.receipt-title{font-size:15px;font-weight:580;fill:#c9f2e6}.receipt-sub{font-size:11px;fill:#8fb7b0}.vault-caption{font-size:14px;fill:#a2c8bd}.vault-field{font:12px "SF Mono",Menlo,Consolas,monospace;fill:#91a5be}
+.vault-footer{position:absolute;top:947px;left:84px;right:84px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.5px;color:#72829c;text-transform:uppercase}
+.bug-grid{position:absolute;left:80px;right:80px;top:238px;display:grid;grid-template-columns:842px 842px;gap:76px;perspective:1500px}.bug-card{position:relative;height:680px;padding:28px;border-radius:25px;border:1px solid #ff859d55;background:linear-gradient(145deg,#3924358c,#101827f2 54%);box-shadow:0 25px 75px #0003;display:grid;grid-template-rows:42px 1fr 174px;gap:18px;opacity:0;overflow:hidden}.bug-card.after{border-color:#79e6c155;background:linear-gradient(145deg,#203c3880,#101827f2 54%)}.bug-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.bug-head h2{font-size:30px;letter-spacing:-.8px;font-weight:600;white-space:nowrap;margin:0}.pill{font-size:11px;font-weight:600;letter-spacing:1px;border:1px solid #ff859d44;background:#ff859d0c;border-radius:7px;padding:8px 12px;color:#edb6c5;white-space:nowrap}.after .pill{color:#b4e7d5;border-color:#79e6c144;background:#79e6c10a}.pipeline{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:12px;min-height:0}.pipe-step{padding:15px 18px;border:1px solid #ff859d26;border-radius:13px;background:#050a139c;opacity:0;overflow:hidden}.after .pipe-step{border-color:#79e6c126}.pipe-label{font-size:11px;line-height:1.5;letter-spacing:1px;text-transform:uppercase;color:#a0adc3;margin:0 0 8px}.pipe-code{font:16px/1.5 "SF Mono",Menlo,Consolas,monospace;color:#c4d1e4;overflow-wrap:normal}.pipe-code .red{color:#ffa4b7}.pipe-code .green{color:#9ce7ce}.pipe-code .amber{color:#f1cc85}.pipe-small{font-size:12px;line-height:1.5;color:#91a6bc;margin-top:5px}.pipeline strong{font-weight:600}
+.stat{position:relative;min-width:0;border-radius:17px;padding:17px 23px;border:1px solid #ff859d66;background:linear-gradient(115deg,#ff859d15,#ff859d05);opacity:0}.stat.green-stat{border-color:#79e6c166;background:linear-gradient(115deg,#79e6c115,#79e6c105)}.stat-top{display:flex;align-items:center;justify-content:space-between;height:85px;gap:20px}.stat-number{font-size:76px;line-height:1;font-weight:640;letter-spacing:-4px;font-variant-numeric:tabular-nums;color:#ffb0c1;white-space:nowrap}.green-stat .stat-number{color:#9cead2}.stat-side{text-align:right;white-space:nowrap}.stat-side span{display:block;font-size:11px;letter-spacing:1.3px;color:#d2a5b4;text-transform:uppercase;margin-bottom:5px}.stat-side strong{font-size:32px;font-weight:550;color:#f5b3c3;letter-spacing:-.7px}.green-stat .stat-side span{color:#a1c7bb}.green-stat .stat-side strong{color:#a9e7d1}.stat-bar{position:relative;height:5px;border-radius:5px;background:#ff859d17;margin:9px 0 12px;overflow:visible}.stat-fill{height:100%;width:0;background:linear-gradient(90deg,#c95676,#ffacbe);border-radius:5px;box-shadow:0 0 16px #ff859d33}.green-stat .stat-bar{background:#79e6c117}.zero-marker{position:absolute;top:-3px;left:0;width:3px;height:11px;border-radius:3px;background:#a6f4d9;box-shadow:0 0 15px #79e6c188}.stat-sub{font-size:14px;line-height:1.5;color:#c6a8b6;white-space:nowrap}.green-stat .stat-sub{color:#a9c7bc}.comparison-arrow{position:absolute;left:930px;top:787px;width:60px;height:30px;opacity:0}.comparison-arrow svg{width:100%;height:100%;overflow:visible}.comparison-footer{position:absolute;top:941px;left:80px;right:80px;text-align:center;opacity:0}.comparison-footer strong{font-size:20px;font-weight:550;letter-spacing:.2px;color:#d4dfed}.comparison-footer .before-rate{color:#efb0c0}.comparison-footer .after-rate{color:#a0e4ce}.comparison-footer p{font-size:11px;line-height:1.5;color:#778da9;margin:7px 0 0;letter-spacing:.4px}
+.hud{position:absolute;bottom:27px;left:50%;transform:translateX(-50%);z-index:30;height:61px;display:flex;align-items:center;gap:11px;padding:10px 16px;border:1px solid #d0dfff24;border-radius:16px;background:#111a29ed;box-shadow:0 10px 50px #0005;white-space:nowrap;transition:opacity .18s,visibility .18s}.hud.hidden{opacity:0;visibility:hidden;pointer-events:none}.recording{cursor:none}.recording .hud{transition:none}.hud button{font:550 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;cursor:pointer;height:32px;padding:0 12px;color:#d5e0f2;border:1px solid #d0dfff24;border-radius:7px;background:#d0dfff0a}.hud button:hover{background:#d0dfff18}button:focus-visible,input:focus-visible{outline:2px solid #89d8f3;outline-offset:4px}#timeline{width:270px;height:22px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer;margin:0 5px}#timeline::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,#e8a6bc var(--progress,0%),#a9bbd92b var(--progress,0%))}#timeline::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;margin-top:-3.5px;border-radius:50%;background:#f5d8e3;border:0}#timeline::-moz-range-track{height:3px;background:#a9bbd92b}#timeline::-moz-range-progress{height:3px;background:#e8a6bc}#timeline::-moz-range-thumb{height:10px;width:10px;border:0;border-radius:50%;background:#f5d8e3}.timecode{font:12px "SF Mono",Menlo,Consolas,monospace;color:#bac8df;min-width:106px}.hint{font-size:11px;color:#8c9bb3}
+</style>
+</head>
+<body>
+<div id="viewport"><main id="stage" aria-label="IncidentLens anti-leakage audit and official API debugging animation, 30 seconds">
+  <div class="ambient" id="ambient" aria-hidden="true"></div><div class="grid" id="grid" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+  <header class="topbar"><div class="brand"><svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11" stroke="#d9e4f6" stroke-width="1.4"/><circle cx="16" cy="16" r="6" stroke="#f3a5bc" stroke-width="1.4"/><path d="m24 24 7 7M16 12v8M12 16h8" stroke="#d9e4f6" stroke-width="1.4" stroke-linecap="round"/></svg>IncidentLens</div><div class="chapter" id="chapter">INCIDENTBENCH: PHYSICAL ORACLE ISOLATION &amp; FAILURE-INCLUSIVE SCORING</div></header>
+
+  <section class="scene" id="scene1" aria-label="Anti-leakage evaluation and offline oracle unlock">
+    <div class="scene-head"><h1>Audit-Grade Anti-Leakage Evaluation (IncidentBench)</h1><p>Runtime stays isolated. The offline evaluator unlocks only after a SHA-256 completion receipt.</p></div>
+    <div class="vault-layout">
+      <article class="zone public-zone" id="publicZone">
+        <div class="zone-head"><h2>Runtime Investigation Sandbox</h2><span class="zone-tag">READ-ONLY</span></div><p class="zone-path">data/incidentbench_v2_hardened/.../public/</p>
+        <div class="file-list"><div class="file">incident.json · logs.jsonl · metrics.csv</div><div class="file">changes.jsonl · configs.jsonl · database.jsonl</div></div>
+        <div class="runtime-state"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M9 7h16l6 6v20H9V7Z M24 7v8h7" stroke="currentColor" stroke-width="1.3"/><path id="persistCheck" d="m14 23 4 4 8-10" stroke="#79e6c1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><strong id="runtimeStatus">INVESTIGATION IN PROGRESS</strong><span>Public evidence only · no private labels</span></div>
+        <div class="step persist" id="persist"><h3>1. Graph Terminates &amp; Persists State</h3><p>states/incident_4014.dynamic.json</p><div class="receipt-label">SHA-256 Completion Receipt</div></div>
+        <div class="public-foot">No oracle access during graph execution</div>
+      </article>
+      <article class="zone private-zone" id="privateZone">
+        <div class="zone-head"><h2>Evaluator-Only Oracle Vault</h2><span class="zone-tag" id="vaultStatus">LOCKED</span></div><p class="zone-path">local_oracles/.../private/benchmark_oracle.json</p>
+        <div class="step score" id="score"><h3>2. Receipt Verified → Offline Recomputable Score</h3><p>exact_scores_equal = true · 0 LLM calls during reanalysis</p></div>
+        <div class="step denominator" id="denominator"><h3>3. Failure-Inclusive Denominators</h3><p>Timeouts &amp; crashes stay in denominator (never dropped)</p></div>
+      </article>
+      <svg id="vaultSvg" viewBox="0 0 1760 680" role="img" aria-label="A completion receipt crosses a dedicated offline channel and unlocks the evaluator-only oracle vault">
+        <defs>
+          <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#33415a"/><stop offset=".5" stop-color="#1c2940"/><stop offset="1" stop-color="#111a2a"/></linearGradient>
+          <linearGradient id="receiptGradient" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173c3b"/><stop offset="1" stop-color="#112a30"/></linearGradient>
+          <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#89d8f3"/><stop offset="1" stop-color="#79e6c1"/></linearGradient>
+        </defs>
+        <path id="wallTop" d="M880 28V344" stroke="#d37894" stroke-width="2" stroke-dasharray="8 10" fill="none"/>
+        <path id="wallBottom" d="M880 356V652" stroke="#d37894" stroke-width="2" stroke-dasharray="8 10" fill="none"/>
+        <rect x="784" y="75" width="192" height="67" rx="12" fill="#0b111d" stroke="#d378943d"/>
+        <text x="880" y="102" text-anchor="middle" class="svg-label" fill="#d5a0b4">PHYSICALLY</text><text x="880" y="124" text-anchor="middle" class="svg-label" fill="#d5a0b4">ISOLATED</text>
+        <g id="channel"><rect x="793" y="296" width="174" height="108" rx="16" fill="#07121a" stroke="#79e6c144"/><path d="M810 350H950" stroke="#79e6c1" stroke-width="1" opacity=".35"/><rect x="784" y="414" width="192" height="52" rx="10" fill="#0b111d" stroke="#79e6c12b"/><text x="880" y="435" text-anchor="middle" class="svg-label">OFFLINE RECEIPT</text><text x="880" y="455" text-anchor="middle" class="svg-label">CHANNEL</text></g>
+        <rect x="782" y="561" width="196" height="62" rx="12" fill="#0b111d" stroke="#d3789433"/><text x="880" y="587" text-anchor="middle" class="svg-label">Zero Runtime</text><text x="880" y="608" text-anchor="middle" class="svg-label">Oracle Access</text>
+        <rect id="vaultGlow" x="1161" y="127" width="478" height="306" rx="27" fill="#79e6c10c" stroke="#79e6c1" opacity="0"/>
+        <rect x="1166" y="132" width="468" height="296" rx="22" fill="#050b13" stroke="#879bb936"/>
+        <g id="vaultInterior"><text x="1534" y="250" text-anchor="middle" class="vault-caption">OFFLINE EVALUATOR</text><text x="1534" y="277" text-anchor="middle" class="vault-caption">Receipt verified</text><path d="m1518 307 10 10 22-28" stroke="#79e6c1" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+        <g id="vaultDoor" transform="translate(1166 132)">
+          <rect x="0" y="0" width="468" height="296" rx="22" fill="url(#steel)" stroke="#a5b9d34d" stroke-width="1.5"/>
+          <rect x="16" y="16" width="436" height="264" rx="14" fill="none" stroke="#b8ccec18"/>
+          <text x="234" y="46" text-anchor="middle" class="svg-label">EVALUATOR-ONLY</text><text x="234" y="73" text-anchor="middle" fill="#d7e1f2" font-size="21" font-weight="550">ORACLE VAULT</text>
+          <g id="lockShackle"><path d="M211 144V120a23 23 0 0 1 46 0v24" fill="none" stroke="#d5a9bd" stroke-width="7" stroke-linecap="round"/></g>
+          <rect id="lockBody" x="195" y="144" width="78" height="60" rx="13" fill="#26334a" stroke="#d5a9bd" stroke-width="1.5"/>
+          <circle cx="234" cy="167" r="4" fill="#d5a9bd"/><path d="M234 171v12" stroke="#d5a9bd" stroke-width="3" stroke-linecap="round"/>
+          <text id="doorState" x="234" y="250" text-anchor="middle" class="svg-label">LOCKED DURING RUNTIME</text>
+        </g>
+        <text x="1394" y="448" text-anchor="middle" class="vault-field">true_primary_root: (service, failure_mode)</text><text x="1394" y="467" text-anchor="middle" class="vault-field">is_identifiable · acceptable_support_sets</text>
+        <path id="receiptPath" d="M530 470C620 370 740 350 880 350S1180 340 1400 291" stroke="url(#routeGradient)" stroke-width="1.3" stroke-dasharray="3 10" fill="none" opacity="0"/>
+        <g id="receiptTrail"></g>
+        <g id="receipt" opacity="0"><rect x="-152" y="-37" width="304" height="74" rx="15" fill="url(#receiptGradient)" stroke="#a4e8d3" stroke-width="1.2" style="filter:drop-shadow(0 0 18px #79e6c129)"/><path d="M-132-17h15l5 5v27h-20v-32Z M-117-17v7h5 M-127 2l4 4 8-11" fill="none" stroke="#a6ead4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><text x="-99" y="-5" class="receipt-title">SHA-256 Completion Receipt</text><text x="-99" y="17" class="receipt-sub">State persisted · graph terminated</text></g>
+      </svg>
+    </div>
+    <div class="vault-footer"><span>Only the receipt crosses · runtime oracle access stays blocked</span><span>Persist first · score offline · retain failures</span></div>
+  </section>
+
+  <section class="scene" id="scene2" aria-label="Official API Debugging & Fix" aria-hidden="true">
+    <div class="scene-head"><h1>Official API Debugging &amp; Fix</h1><p>Our team's official DeepSeek API testing exposed a latent structured-output bug.</p></div>
+    <div class="bug-grid">
+      <article class="bug-card" id="beforeCard"><div class="bug-head"><h2>Before Fix</h2><span class="pill">Blind Repair Trap</span></div>
+        <div class="pipeline">
+          <div class="pipe-step" id="b1"><div class="pipe-label">1. Cross-field validator triggers on ReviewOutput</div><div class="pipe-code">likely_hypothesis_supported=<span class="amber">true</span> + likely_blockers=[...]<br>→ raises <strong class="red">leading_review_consistency</strong></div></div>
+          <div class="pipe-step" id="b2"><div class="pipe-label">2. structured_output._SAFE_TYPES omits custom code</div><div class="pipe-code">Model receives only: <strong class="red">"$: validation_error"</strong><br>Zero clue which invariant broke!</div></div>
+          <div class="pipe-step" id="b3"><div class="pipe-label">3. Bounded 1-shot repair repeats the same error</div><div class="pipe-code">Attempts 1 &amp; 2 both fail<br>→ <strong class="red">STRUCTURED_OUTPUT_INVALID</strong></div></div>
+        </div>
+        <div class="stat" id="beforeStat" aria-label="8 / 12 Crashed (66.7%)"><div class="stat-top"><strong class="stat-number">8 / 12</strong><div class="stat-side"><span>Crashed</span><strong>66.7%</strong></div></div><div class="stat-bar"><div class="stat-fill" id="beforeBar"></div></div><div class="stat-sub">Single 4/6 · Full 4/6 · failed in verify stage</div></div>
+      </article>
+      <article class="bug-card after" id="afterCard"><div class="bug-head"><h2>After Surgical Fix</h2><span class="pill">Safe Diagnostics · Verified</span></div>
+        <div class="pipeline">
+          <div class="pipe-step" id="a1"><div class="pipe-label">1. Whitelist safe schema-owned error codes</div><div class="pipe-code">_SAFE_TYPES += <span class="green">leading_review_consistency</span>,<br><span class="green">task_tool_acl</span>, <span class="green">tool_arguments</span></div></div>
+          <div class="pipe-step" id="a2"><div class="pipe-label">2. Static repair hint + explicit verifier prompt</div><div class="pipe-code">When <span class="green">likely_hypothesis_supported=true</span>,<br>blockers &amp; contradictions <strong class="green">MUST be []</strong></div></div>
+          <div class="pipe-step" id="a3"><div class="pipe-label">3. Immediate retest on all 9 previously failed slots</div><div class="pipe-code"><strong class="green">9 / 9 Passed (100% quality)</strong></div><div class="pipe-small">Verify-crash subset: 7 on 1st try; 1 on 1st repair</div></div>
+        </div>
+        <div class="stat green-stat" id="afterStat" aria-label="0 / 144 Format Crashes (0%)"><div class="stat-top"><strong class="stat-number">0 / 144</strong><div class="stat-side"><span>Format Crashes</span><strong>0%</strong></div></div><div class="stat-bar"><i class="zero-marker"></i></div><div class="stat-sub">Full Hardened Dev36 run: 0 STRUCTURED_OUTPUT_INVALID</div></div>
+      </article>
+    </div>
+    <div class="comparison-arrow" id="comparisonArrow" aria-hidden="true"><svg viewBox="0 0 60 30"><defs><linearGradient id="fixGradient"><stop stop-color="#f4a2bc"/><stop offset="1" stop-color="#79e6c1"/></linearGradient></defs><path d="M4 15H52 M43 6l9 9-9 9" fill="none" stroke="url(#fixGradient)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle id="fixPacket" cx="4" cy="15" r="3" fill="#b7f1dc"/></svg></div>
+    <div class="comparison-footer" id="comparisonFooter"><strong>Format-crash rate: <span class="before-rate">8/12 (66.7%)</span> → <span class="after-rate">0/144 (0%)</span></strong><p>Before: Single + Full verify slots · After: full 144-slot Hardened Dev36 run · Different evaluation scopes</p></div>
+  </section>
+  <nav class="hud" id="hud" aria-label="Animation controls"><button id="playBtn" type="button" aria-keyshortcuts="Space">Pause</button><button id="replayBtn" type="button" aria-keyshortcuts="R">Replay</button><button id="vaultBtn" type="button" aria-keyshortcuts="1">1: Vault</button><button id="fixBtn" type="button" aria-keyshortcuts="2">2: Bug Fix</button><input id="timeline" type="range" min="0" max="30" step="0.01" value="0" aria-label="Animation timeline in seconds"><output class="timecode" id="timecode" for="timeline">00:00 / 00:30</output><span class="hint">Space Play/Pause · R Replay · H Hide · 1/2 Scene</span></nav>
+</main></div>
+<script>
+(() => {
+  'use strict';
+  // All motion is calculated from a single deterministic 30-second clock.
+  // Data labels remain exact: no interpolated or invented numeric counts.
+  const DURATION=30,SCENE_2=14,NS='http://www.w3.org/2000/svg';
+  const $=id=>document.getElementById(id),clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const p=(t,start,duration=1)=>clamp((t-start)/duration);
+  const ease=x=>1-Math.pow(1-clamp(x),3);
+  const smooth=x=>{x=clamp(x);return x*x*(3-2*x);};
+  const spring=x=>x>=1?1:1-Math.exp(-7*x)*(Math.cos(10*x)+.6*Math.sin(10*x));
+  let elapsed=0,playing=true,lastTs=null,lastRendered=-1,hidden=false;
+  const receiptPath=$('receiptPath'),length=receiptPath.getTotalLength();
+  const samples=Array.from({length:501},(_,i)=>receiptPath.getPointAtLength(length*i/500));
+  const trail=Array.from({length:18},()=>{const dot=document.createElementNS(NS,'circle');$('receiptTrail').appendChild(dot);return dot;});
+  function point(f){const n=clamp(f)*500,i=Math.floor(n),j=Math.min(500,i+1),u=n-i;return{x:samples[i].x+(samples[j].x-samples[i].x)*u,y:samples[i].y+(samples[j].y-samples[i].y)*u};}
+  function reveal(id,t,start,duration=.8,y=22,scale=.985,bouncy=false){const u=p(t,start,duration),s=bouncy?spring(u):ease(u),el=$(id);el.style.opacity=ease(u);el.style.transform=`translateY(${(1-s)*y}px) scale(${scale+(1-scale)*s})`;}
+  function render(t){
+    if(t===lastRendered)return;lastRendered=t;
+    $('grid').style.transform=`translate(${(t*1.2)%64}px,${(t*.6)%64}px)`;$('ambient').style.transform=`translate(${Math.sin(t*.12)*35}px,${Math.cos(t*.14)*24}px)`;
+    const second=t>=SCENE_2;
+    $('scene1').style.opacity=second?0:1;$('scene2').style.opacity=second?ease(p(t,14,.55)):0;$('scene1').setAttribute('aria-hidden',String(second));$('scene2').setAttribute('aria-hidden',String(!second));
+    $('chapter').textContent=second?'OFFICIAL API TESTING: CATCHING A LATENT STRUCTURED-OUTPUT BUG':'INCIDENTBENCH: PHYSICAL ORACLE ISOLATION & FAILURE-INCLUSIVE SCORING';
+    // 00–14s: persist state, send only a completion receipt, unlock offline.
+    reveal('publicZone',t,.25,1,24);reveal('privateZone',t,.55,1,24);
+    reveal('persist',t,2.2,.8,16);$('persistCheck').style.opacity=ease(p(t,2.2,.5));$('runtimeStatus').textContent=t>=2.2?'STATE PERSISTED · GRAPH TERMINATED':'INVESTIGATION IN PROGRESS';
+    const flight=p(t,3.4,2.1),q=smooth(flight),pos=point(q),arrival=t>=5.5,unlock=ease(p(t,5.85,.7)),door=smooth(p(t,6.4,.85));
+    const receiptOpacity=ease(p(t,3.4,.25))*(1-ease(p(t,5.5,.6)));
+    $('receipt').setAttribute('opacity',receiptOpacity);$('receipt').setAttribute('transform',`translate(${pos.x} ${pos.y}) rotate(${-4*Math.sin(q*Math.PI)}) scale(${.94+.06*Math.sin(q*Math.PI)})`);
+    $('receiptPath').style.opacity=t>=3.4&&t<6.4?.24*(1-p(t,5.8,.6)):0;
+    trail.forEach((dot,i)=>{const f=q-i*.018,visible=t>=3.4&&t<6.1&&f>=0&&f<=1;dot.setAttribute('opacity',visible?(1-i/18)*.7*(1-ease(p(t,5.5,.6))):0);if(!visible)return;const a=point(f);dot.setAttribute('cx',a.x);dot.setAttribute('cy',a.y);dot.setAttribute('r',3*(1-i/23));dot.setAttribute('fill',i<5?'#b4f1df':'#89d8f3');});
+    // The runtime boundary remains red. Only the offline receipt port opens.
+    const port=ease(p(t,4,.35))*(1-ease(p(t,6.3,.5)));
+    $('wallTop').setAttribute('d',`M880 28V${344-port*58}`);$('wallBottom').setAttribute('d',`M880 ${356+port*58}V652`);
+    $('wallTop').style.strokeDashoffset=-t*5;$('wallBottom').style.strokeDashoffset=-t*5;$('channel').style.opacity=port;
+    $('vaultGlow').style.opacity=arrival?.13+.5*Math.exp(-Math.max(0,t-5.5)*2):0;
+    $('lockShackle').setAttribute('transform',`rotate(${-32*unlock} 211 144)`);$('lockShackle').style.opacity=1;$('lockShackle').querySelector('path').style.stroke=arrival?'#a3ead1':'#d5a9bd';
+    $('lockBody').style.stroke=arrival?'#a3ead1':'#d5a9bd';$('lockBody').style.fill=arrival?'#1a3b37':'#26334a';
+    $('vaultDoor').setAttribute('transform',`translate(1166 132) skewY(${-2.5*door}) scale(${1-.44*door} 1)`);$('vaultInterior').style.opacity=ease(p(t,6.4,.8));
+    $('doorState').textContent=arrival?'UNLOCKED · OFFLINE ONLY':'LOCKED DURING RUNTIME';
+    $('privateZone').style.borderColor=arrival?'#79e6c177':'#f4a2bc55';$('vaultStatus').textContent=t>=6.5?'UNLOCKED · OFFLINE':arrival?'RECEIPT VERIFIED':'LOCKED';$('vaultStatus').style.color=arrival?'#a3e7d2':'#d9a6bd';$('vaultStatus').style.borderColor=arrival?'#79e6c155':'#f4a2bc44';
+    reveal('score',t,7.2,.75,15);reveal('denominator',t,10,.8,15);
+    // 14–30s: official API debugging, then the exact before/after outcomes.
+    reveal('beforeCard',t,14.4,1,26,.985);reveal('afterCard',t,21,1,26,.985);
+    ['b1','b2','b3'].forEach((id,i)=>reveal(id,t,[15.4,16.8,18.2][i],.7,12,.99));
+    ['a1','a2','a3'].forEach((id,i)=>reveal(id,t,[22,23.4,24.8][i],.7,12,.99));
+    reveal('beforeStat',t,19.6,.95,10,.94,true);reveal('afterStat',t,26.2,1.1,10,.92,true);
+    $('beforeBar').style.width=`${66.7*ease(p(t,19.6,1.1))}%`;
+    $('afterStat').style.boxShadow=t>=26.2?`0 0 ${36*Math.exp(-Math.max(0,t-26.7)*1.9)}px #79e6c127,inset 0 1px 0 #79e6c11c`:'none';
+    const flash=t>=26.2?Math.exp(-Math.max(0,t-26.2)*2):0;$('afterCard').style.borderColor=`rgba(121,230,193,${.34+.36*flash})`;
+    $('comparisonArrow').style.opacity=ease(p(t,26.2,.6));const packet=p(t,26.2,.95);$('fixPacket').setAttribute('cx',4+48*packet);$('fixPacket').style.opacity=t>=26.2&&t<27.15?1:0;
+    reveal('comparisonFooter',t,26.4,.9,10,1);
+    $('timeline').value=t;$('timeline').style.setProperty('--progress',`${t/DURATION*100}%`);$('timeline').setAttribute('aria-valuetext',`${t.toFixed(1)} of 30 seconds`);$('timecode').textContent=`00:${String(Math.floor(t)).padStart(2,'0')} / 00:30`;
+  }
+  function syncButton(){$('playBtn').textContent=playing?'Pause':'Play';$('playBtn').setAttribute('aria-label',playing?'Pause animation':'Play animation');}
+  function seek(t){elapsed=clamp(Number(t)||0,0,DURATION);if(elapsed===DURATION)playing=false;lastTs=null;render(elapsed);syncButton();}
+  function togglePlay(){if(elapsed>=DURATION){elapsed=0;playing=true;}else playing=!playing;lastTs=null;render(elapsed);syncButton();}
+  function replay(){elapsed=0;playing=true;lastTs=null;render(0);syncButton();}
+  function toggleHUD(){hidden=!hidden;$('hud').classList.toggle('hidden',hidden);$('hud').inert=hidden;document.body.classList.toggle('recording',hidden);if(hidden&&document.activeElement instanceof HTMLElement)document.activeElement.blur();}
+  function fit(){document.documentElement.style.setProperty('--scale',Math.min(innerWidth/1920,innerHeight/1080));lastRendered=-1;render(elapsed);}
+  function tick(ts){if(lastTs!==null&&playing&&!document.hidden){elapsed=Math.min(DURATION,elapsed+(ts-lastTs)/1000);if(elapsed===DURATION){playing=false;syncButton();}}lastTs=ts;render(elapsed);requestAnimationFrame(tick);}
+  $('playBtn').addEventListener('click',togglePlay);$('replayBtn').addEventListener('click',replay);$('vaultBtn').addEventListener('click',()=>seek(0));$('fixBtn').addEventListener('click',()=>seek(14));$('timeline').addEventListener('input',e=>seek(e.target.value));
+  window.addEventListener('keydown',e=>{if(e.repeat||e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key.toLowerCase();if(e.code==='Space'){e.preventDefault();togglePlay();}else if(k==='r'){e.preventDefault();replay();}else if(k==='h'){e.preventDefault();toggleHUD();}else if(k==='1'){e.preventDefault();seek(0);}else if(k==='2'){e.preventDefault();seek(14);}});
+  window.addEventListener('resize',fit);document.addEventListener('visibilitychange',()=>{lastTs=null;});
+  // Optional deterministic review links: ?t=5.2&paused=1&clean=1
+  const params=new URLSearchParams(location.search);if(params.has('t'))elapsed=clamp(Number(params.get('t'))||0,0,DURATION);if(params.get('paused')==='1'||elapsed===DURATION)playing=false;if(params.get('clean')==='1')toggleHUD();
+  fit();syncButton();requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

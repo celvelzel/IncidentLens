@@ -231,3 +231,27 @@ def test_diagnostics_are_bounded():
 )
 def test_safe_failure_phase(category, phase):
     assert StructuredOutputError(category).phase == phase
+
+
+def test_review_leading_consistency_forwards_safe_hint():
+    from incident_lens.agents.service import ReviewOutput
+
+    payload = {
+        "target_hypothesis_id": "hyp-1",
+        "verdict": "insufficient",
+        "contradictions": [],
+        "requested_checks": [],
+        "optional_checks": [],
+        "cited_evidence_ids": ["E-1"],
+        "rationale": "secret rationale text",
+        "likely_hypothesis_supported": True,
+        "likely_blockers": ["secret blocker text"],
+    }
+    with pytest.raises(StructuredOutputError) as caught:
+        validate_response(envelope(json.dumps(payload)), ReviewOutput)
+    assert "$: leading_review_consistency" in caught.value.summary
+    feedback = repair_message(caught.value)
+    assert "likely_hypothesis_supported" in feedback
+    assert "likely_blockers" in feedback
+    assert "secret" not in caught.value.summary
+    assert "secret" not in feedback

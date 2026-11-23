@@ -1,0 +1,32 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.44,0:00:03.77,Default,,0,0,0,,Evaluating an agent rigorously\Nis just as hard as building it.
+Dialogue: 0,0:00:04.24,0:00:08.85,Default,,0,0,0,,IncidentBench physically separates public\Nevidence from private evaluator oracles;
+Dialogue: 0,0:00:09.36,0:00:12.62,Default,,0,0,0,,labels are only unlocked\Nafter a run persists its state
+Dialogue: 0,0:00:12.91,0:00:16.49,Default,,0,0,0,,and generates a matching\NSHA-256 completion receipt,
+Dialogue: 0,0:00:16.72,0:00:19.38,Default,,0,0,0,,and every technical failure\Nstays in the denominator.
+Dialogue: 0,0:00:19.65,0:00:23.97,Default,,0,0,0,,When we moved our project onto the official\NDeepSeek API for full-scale testing,
+Dialogue: 0,0:00:24.28,0:00:26.16,Default,,0,0,0,,we uncovered a critical latent bug:
+Dialogue: 0,0:00:26.59,0:00:30.99,Default,,0,0,0,,Single and Full crashed on 8 out\Nof 12 slots during verification!
+Dialogue: 0,0:00:31.44,0:00:34.20,Default,,0,0,0,,Tracing the event logs\Nrevealed a subtle hidden bug:
+Dialogue: 0,0:00:34.62,0:00:38.70,Default,,0,0,0,,ReviewOutput enforces a cross-field\Nrule called leading_review_consistency,
+Dialogue: 0,0:00:39.03,0:00:42.38,Default,,0,0,0,,but structured_output.py stripped\Nthat custom error code into
+Dialogue: 0,0:00:42.38,0:00:45.51,Default,,0,0,0,,a generic $: validation_error,
+Dialogue: 0,0:00:46.02,0:00:49.42,Default,,0,0,0,,leaving the model completely blind\Nduring its one repair attempt.
+Dialogue: 0,0:00:49.74,0:00:54.24,Default,,0,0,0,,After whitelisting the safe error code,\Npassing an explicit static repair hint,
+Dialogue: 0,0:00:54.66,0:00:57.68,Default,,0,0,0,,and documenting the invariant\Nin the verifier prompt —
+Dialogue: 0,0:00:57.68,0:01:02.53,Default,,0,0,0,,verified by this new unit test—all 9\Npreviously crashed slots recovered 9 out of 9,
+Dialogue: 0,0:01:02.93,0:01:05.58,Default,,0,0,0,,and across our subsequent 144-slot full run,
+Dialogue: 0,0:01:05.94,0:01:08.64,Default,,0,0,0,,structured output crashes\Ndropped to literally zero.

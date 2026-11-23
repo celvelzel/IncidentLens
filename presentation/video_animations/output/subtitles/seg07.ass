@@ -1,0 +1,41 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.44,0:00:03.16,Default,,0,0,0,,Now let's look at the numbers\Nfrom our full-scale experiments.
+Dialogue: 0,0:00:03.26,0:00:07.48,Default,,0,0,0,,On the 36-case hardened benchmark\Nwith official deepseek-flash —
+Dialogue: 0,0:00:07.50,0:00:12.64,Default,,0,0,0,,144 slots across six difficulty levers —\NDynamic finishes first across the board:
+Dialogue: 0,0:00:13.10,0:00:16.76,Default,,0,0,0,,86.1% quality success (31 out of 36),
+Dialogue: 0,0:00:16.93,0:00:21.81,Default,,0,0,0,,cutting tokens by 42.6% compared to\NSingle and 39.5% compared to Full,
+Dialogue: 0,0:00:22.15,0:00:26.38,Default,,0,0,0,,while beating Fixed-4 18 to 0 in paired\Ncomparisons. Even more remarkably,
+Dialogue: 0,0:00:26.61,0:00:28.88,Default,,0,0,0,,across all 137 completed runs,
+Dialogue: 0,0:00:29.25,0:00:32.72,Default,,0,0,0,,there were zero false resolutions —\Nwhenever the system emitted RESOLVED,
+Dialogue: 0,0:00:32.99,0:00:37.17,Default,,0,0,0,,it was 100% right. To test whether these\Nfindings generalize beyond DeepSeek,
+Dialogue: 0,0:00:37.57,0:00:42.85,Default,,0,0,0,,we ran the same six-lever benchmark\Non Tencent hy4-flash via OhMyGPT,
+Dialogue: 0,0:00:43.42,0:00:45.81,Default,,0,0,0,,both with chain-of-thought\Nthinking enabled and disabled.
+Dialogue: 0,0:00:46.07,0:00:50.24,Default,,0,0,0,,Here we uncovered a counterintuitive result:\Ndisabling thinking nearly doubled end-to-end
+Dialogue: 0,0:00:50.24,0:00:54.48,Default,,0,0,0,,success, cutting runtime from\N48 minutes down to 12.6 minutes
+Dialogue: 0,0:00:54.48,0:00:59.44,Default,,0,0,0,,and lifting completion from 45.8% to 95.8%. Why?
+Dialogue: 0,0:00:59.44,0:01:03.34,Default,,0,0,0,,Because multi-agent RCA is a\Nserial tool-exploration loop,
+Dialogue: 0,0:01:03.34,0:01:08.38,Default,,0,0,0,,not a single-shot math puzzle. With thinking\Nenabled, each call took 40 to 70 seconds,
+Dialogue: 0,0:01:08.38,0:01:12.91,Default,,0,0,0,,causing Single and Full to exhaust the\N900-second wall-clock budget mid-investigation.
+Dialogue: 0,0:01:13.42,0:01:18.02,Default,,0,0,0,,Disabling thinking let the workflow\Ntrade slow internal monologues for fast,
+Dialogue: 0,0:01:18.18,0:01:21.42,Default,,0,0,0,,iterative evidence gathering —\Nguided externally by FinalizeGate.
+Dialogue: 0,0:01:21.96,0:01:27.15,Default,,0,0,0,,And look at the starkest finding of the\Nentire project: on non-thinking hy4-flash,
+Dialogue: 0,0:01:27.47,0:01:31.71,Default,,0,0,0,,the monolithic Single agent collapsed\Nto 0 out of 5 on identifiable cases,
+Dialogue: 0,0:01:31.91,0:01:34.13,Default,,0,0,0,,burning 254,000 tokens per run.
+Dialogue: 0,0:01:34.46,0:01:38.70,Default,,0,0,0,,Yet Dynamic multi-agent specialization\Nrescued accuracy from 16.7%
+Dialogue: 0,0:01:38.70,0:01:42.77,Default,,0,0,0,,all the way to 83.3%, while cutting\Nboth tokens and latency in half!
+Dialogue: 0,0:01:43.28,0:01:46.76,Default,,0,0,0,,Finally, across both DeepSeek and hy4-flash,
+Dialogue: 0,0:01:47.12,0:01:51.60,Default,,0,0,0,,the one case Dynamic missed —\Ncounterfactual pair incident_4035 —
+Dialogue: 0,0:01:51.99,0:01:56.75,Default,,0,0,0,,was successfully rescued by Full thanks to\Nthe Verifier's targeted follow-up checks.

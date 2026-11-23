@@ -1,0 +1,30 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.44,0:00:03.28,Default,,0,0,0,,Now let's run an actual live\Ninvestigation—not a mock.
+Dialogue: 0,0:00:03.75,0:00:08.40,Default,,0,0,0,,Here I invoke the CLI using\Nour newly integrated OhMyGPT
+Dialogue: 0,0:00:08.40,0:00:12.74,Default,,0,0,0,,provider backed by the official\NOpenAI SDK, calling Tencent
+Dialogue: 0,0:00:12.93,0:00:18.14,Default,,0,0,0,,hy4-flash with json_schema mode and thinking\Ndisabled, under the dynamic architecture.
+Dialogue: 0,0:00:18.65,0:00:23.16,Default,,0,0,0,,This live run finishes with\NINCONCLUSIVE and writes result.json,
+Dialogue: 0,0:00:23.50,0:00:28.26,Default,,0,0,0,,report.md, and trace.json. The report\Npreserves the leading explanations,
+Dialogue: 0,0:00:28.74,0:00:32.75,Default,,0,0,0,,observed evidence, and causal gaps.\NA confirmed root cause remains null:
+Dialogue: 0,0:00:33.19,0:00:37.59,Default,,0,0,0,,the system does not turn a plausible\Nexplanation into a claim it cannot verify.
+Dialogue: 0,0:00:38.29,0:00:41.30,Default,,0,0,0,,Next, let's look at two hardened benchmark cases
+Dialogue: 0,0:00:41.63,0:00:45.70,Default,,0,0,0,,we ran on official DeepSeek\Ndeepseek-flash. On incident_4014,
+Dialogue: 0,0:00:45.97,0:00:50.70,Default,,0,0,0,,a misleading case where a non-causal change is\Ndeliberately injected onto the culprit's own
+Dialogue: 0,0:00:50.70,0:00:55.68,Default,,0,0,0,,service, dynamic doesn't take the bait —\Nit cross-checks database lock waits and logs,
+Dialogue: 0,0:00:55.68,0:01:00.37,Default,,0,0,0,,and nails postgres_lock_contention\Nin 47 seconds. By contrast,
+Dialogue: 0,0:01:00.63,0:01:05.39,Default,,0,0,0,,on incident_4018, the critical slow-query\Ndiscriminator is missing by design.
+Dialogue: 0,0:01:05.88,0:01:08.02,Default,,0,0,0,,After checking 15 tools across sources,
+Dialogue: 0,0:01:08.41,0:01:12.16,Default,,0,0,0,,the system refuses to guess and\Nterminates cleanly with INCONCLUSIVE.

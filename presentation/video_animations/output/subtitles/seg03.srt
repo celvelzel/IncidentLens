@@ -1,0 +1,47 @@
+1
+00:00:00,412 --> 00:00:02,880
+Let's jump straight into our live demonstrations.
+
+2
+00:00:03,679 --> 00:00:08,140
+First, in the terminal, I run
+validate-data to verify that
+
+3
+00:00:08,140 --> 00:00:13,098
+public evidence files follow the strict
+schema with zero leaked private answer fields.
+
+4
+00:00:13,201 --> 00:00:17,689
+Next, let's verify our security
+boundary with the isolation test suite.
+
+5
+00:00:18,228 --> 00:00:23,380
+Notice how attempts by a specialist to
+escalate permissions or call an unauthorized
+
+6
+00:00:23,380 --> 00:00:28,880
+tool—like Logs trying to inspect config diffs —
+are deterministically blocked at runtime.
+
+7
+00:00:29,547 --> 00:00:33,640
+Running our broader offline regression
+suite confirms 505 tests passing,
+
+8
+00:00:33,640 --> 00:00:37,560
+alongside our 110-case provider
+fault-injection matrix,
+
+9
+00:00:37,560 --> 00:00:40,090
+which verifies bounded transport retries,
+
+10
+00:00:40,495 --> 00:00:43,471
+atomic request permits, and
+structured output recovery.

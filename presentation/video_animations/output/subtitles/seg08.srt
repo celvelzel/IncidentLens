@@ -1,0 +1,64 @@
+1
+00:00:00,454 --> 00:00:05,840
+To keep our evaluation scientifically honest,
+we also have to highlight three clear limitations.
+
+2
+00:00:06,513 --> 00:00:10,240
+First, achieving zero false
+resolutions across both model
+
+3
+00:00:10,240 --> 00:00:14,349
+families owes a great deal to the
+tight coupling between FinalizeGate's
+
+4
+00:00:14,524 --> 00:00:18,450
+seven hardcoded mechanism rules and
+our synthetic benchmark scenarios.
+
+5
+00:00:18,813 --> 00:00:22,220
+Testing on out-of-distribution,
+unstructured production logs is
+
+6
+00:00:22,220 --> 00:00:26,207
+essential to measure true hallucination
+resistance when hard rules weaken.
+
+7
+00:00:26,511 --> 00:00:30,633
+Second, our automatic scorer currently checks
+culprit service and failure mode match,
+
+8
+00:00:31,071 --> 00:00:34,520
+even though the oracle already defines
+acceptable evidence support sets —
+
+9
+00:00:34,530 --> 00:00:38,520
+incorporating support-set coverage and
+re-centering paired bootstrap statistics
+
+10
+00:00:38,520 --> 00:00:42,340
+onto Dynamic are immediate,
+high-leverage upgrades. Third,
+
+11
+00:00:42,932 --> 00:00:48,153
+our cross-model finding on incident_4035
+points directly to an on-demand Verifier:
+
+12
+00:00:48,602 --> 00:00:52,560
+keep Dynamic as the fast, economical
+default, and trigger an independent
+
+13
+00:00:52,560 --> 00:00:56,817
+Verifier only when competing-mechanism
+or counterfactual signals appear.

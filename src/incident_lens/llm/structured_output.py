@@ -33,8 +33,28 @@ _SAFE_TYPES = frozenset(
     "bool_type bool_parsing list_type dict_type model_type literal_error enum "
     "string_too_long string_too_short too_long too_short greater_than greater_than_equal "
     "less_than less_than_equal datetime_type datetime_parsing datetime_from_date_parsing "
-    "date_type date_parsing finite_number value_error assertion_error".split()
+    "date_type date_parsing finite_number value_error assertion_error "
+    "leading_review_consistency tool_arguments task_tool_acl".split()
 )
+_SAFE_REPAIR_HINTS = {
+    "leading_review_consistency": (
+        " Constraint: when likely_hypothesis_supported is true, both likely_blockers and "
+        "contradictions must be empty lists ([]). If any blocker or contradiction exists, "
+        "set likely_hypothesis_supported to false."
+    ),
+    "tool_arguments": (
+        " Constraint: tool arguments must match tool_argument_schemas, including bounds, "
+        "non-negative integer offset, and valid start_ts <= end_ts ordering."
+    ),
+    "task_tool_acl": (
+        " Constraint: each assignment must use a specialist role and only tools permitted for that "
+        "role in role_tool_acl (logs: query_logs; metrics: query_metrics, get_dependencies; "
+        "database: get_db_connections, get_db_active_sessions, get_db_lock_waits, "
+        "get_db_slow_queries, get_db_health_metrics; changes: query_changes, get_config_diff). "
+        "If no further investigation is permitted or needed, choose FINALIZE or ABSTAIN with "
+        "assignments=[]."
+    ),
+}
 
 
 def strict_schema(output_model: type[Model]) -> dict:
@@ -182,4 +202,7 @@ def repair_message(error: StructuredOutputError) -> str:
             "Express planned or follow-up work only through JSON fields allowed by the schema; "
             "during analysis, use requested_checks for future tasks."
         )
+    for issue_type, hint in _SAFE_REPAIR_HINTS.items():
+        if issue_type in error.summary:
+            message += hint
     return message

@@ -1,0 +1,274 @@
+{
+  "browser": "System Google Chrome via Playwright",
+  "theme": "light",
+  "note_overlay_present": false,
+  "cursor_color": "#A02337",
+  "viewport": [
+    1920,
+    1080
+  ],
+  "zoom": 1.15,
+  "genuine_live_recording": true,
+  "console_errors": [],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/?lang=en"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/astryx.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/tokens.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/core.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/app.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/institutional.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/astryx-bridge.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/css/skin.css"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/app.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/api.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/components.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/views.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/knowledge.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/replay.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/replay-panels.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/orchestration.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.shell.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.api.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.components.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.views.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.knowledge.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.orchestration.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/js/i18n/catalog.replay.js"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/api/traces"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/api/cases"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/api/meta"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/api/traces"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8022/api/replay"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8022/api/traces"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8022/api/replay"
+    }
+  ],
+  "provider_calls_during_replay": 0,
+  "actions": [
+    {
+      "seconds": 4.0994417909532785,
+      "action": "Open Trace Archive"
+    },
+    {
+      "seconds": 8.648824207950383,
+      "action": "Open results/demo_video_resolved/trace.json"
+    },
+    {
+      "seconds": 14.38090329093393,
+      "action": "Expand Communication Timeline"
+    },
+    {
+      "seconds": 15.038834540988319,
+      "action": "Inspect DECISION"
+    },
+    {
+      "seconds": 16.28523291600868,
+      "action": "Inspect TASK_ASSIGNED"
+    },
+    {
+      "seconds": 18.057895625010133,
+      "action": "Inspect TOOL_CALL"
+    },
+    {
+      "seconds": 20.271864540991373,
+      "action": "Inspect MERGE"
+    },
+    {
+      "seconds": 22.661260207998566,
+      "action": "Inspect DIAGNOSIS_ACCEPTED"
+    },
+    {
+      "seconds": 27.51554120797664,
+      "action": "Seek final persisted event"
+    },
+    {
+      "seconds": 28.149190000025555,
+      "action": "Collapse workflow overview"
+    },
+    {
+      "seconds": 28.80022508301772,
+      "action": "Open Hypothesis Board"
+    },
+    {
+      "seconds": 35.765721083036624,
+      "action": "Open final root-cause report"
+    },
+    {
+      "seconds": 39.967653000028804,
+      "action": "Audit report citation incident_4014-E-003"
+    },
+    {
+      "seconds": 47.20012304093689,
+      "action": "Close citation inspector"
+    },
+    {
+      "seconds": 51.79407516599167,
+      "action": "Open recorded run metadata"
+    },
+    {
+      "seconds": 58.28023541602306,
+      "action": "Open Trace Archive"
+    },
+    {
+      "seconds": 59.14637199998833,
+      "action": "Open results/demo_video_abstain/trace.json"
+    },
+    {
+      "seconds": 59.80562466592528,
+      "action": "Seek final persisted event"
+    },
+    {
+      "seconds": 60.42924762493931,
+      "action": "Collapse abstained workflow overview"
+    },
+    {
+      "seconds": 61.08153041603509,
+      "action": "Inspect abstained report"
+    },
+    {
+      "seconds": 73.92723012494389,
+      "action": "Open original abstained report Markdown"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "web_archive",
+      "seconds": 4.346598000032827
+    },
+    {
+      "name": "web_replay_banner",
+      "seconds": 9.279701124993153
+    },
+    {
+      "name": "web_hypotheses",
+      "seconds": 29.41278179094661
+    },
+    {
+      "name": "web_resolved",
+      "seconds": 36.73090162500739
+    },
+    {
+      "name": "web_citation",
+      "seconds": 40.420935957925394
+    },
+    {
+      "name": "web_stop_protocol",
+      "seconds": 48.42909054097254
+    },
+    {
+      "name": "web_resource_ledger",
+      "seconds": 52.41134645801503
+    },
+    {
+      "name": "web_abstained",
+      "seconds": 62.04685458296444
+    },
+    {
+      "name": "web_abstained_gaps",
+      "seconds": 68.89629241602961
+    }
+  ],
+  "resolved_trace": "results/demo_video_resolved/trace.json",
+  "abstained_trace": "results/demo_video_abstain/trace.json",
+  "raw_video": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/raw/web_console/page@ffef9e03ff79f52296e65cd53968c5f4.webm",
+  "raw_duration_seconds": 76.92,
+  "stop_ack_note": "No STOP_ACK event in this recorded trace; required_roles is empty. No synthetic acknowledgment is inserted.",
+  "resource_ledger": {
+    "http_requests": 17,
+    "tools": 10,
+    "tokens": 141847
+  }
+}

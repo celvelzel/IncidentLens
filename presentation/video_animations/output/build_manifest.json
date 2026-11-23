@@ -1,0 +1,1133 @@
+{
+  "project": "IncidentLens",
+  "final_video": {
+    "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/IncidentLens_Presentation_10min.mp4",
+    "duration_seconds": 600.23,
+    "video_timeline_duration_seconds": 600.2333333333333,
+    "size_bytes": 82910850,
+    "sha256": "ba40429661855dc00d64aeefa54184385c04ea6224d9533644ca9b8affd54951",
+    "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 906 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+    "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 189 kb/s (default)",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": 30,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio_codec": "aac",
+    "sample_rate": 44100,
+    "channels": 2,
+    "actual_frames": 18007,
+    "full_decode_pass": true,
+    "subtitle_tracks": 0,
+    "audio_verification": {
+      "integrated_loudness_lufs": -15.97,
+      "true_peak_dbtp": -2.56,
+      "non_silent": true
+    }
+  },
+  "segments": [
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg01.mp4",
+      "duration_seconds": 60.47,
+      "size_bytes": 11738181,
+      "sha256": "8e04f268858a479b5e2ac9bb15980cc56d1a485cf417c9e069f549addc260d07",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 1354 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 189 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.01,
+        "true_peak_dbtp": -3.05,
+        "non_silent": true
+      },
+      "actual_frames": 1814,
+      "segment": 1,
+      "title": "Opening Hook & Core Contract",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg01.mp3",
+      "audio_duration_seconds": 59.24,
+      "target_video_duration_seconds": 60.46666666666667,
+      "frames": 1814,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 948810,
+      "video_timeline_duration_seconds": 60.46666666666667,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg01.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg01.srt",
+      "clean_clip_sha256": "289098fbe9aa38d697244868fec212e3ebddbc036767a984afdbce4af88dd44d",
+      "audio_bitstream_sha256": "SHA256=06de6ab811cfb971f65aba6a94b2f849763a5273a7cb202b80c2a7f4b67e9963",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 33.367
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg02.mp4",
+      "duration_seconds": 72.4,
+      "size_bytes": 10585237,
+      "sha256": "f889aab19b6bb51617e9a2b7aa80125b633f79e77d58654a16bee4823ed4c1c6",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 970 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 189 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.01,
+        "true_peak_dbtp": -3.19,
+        "non_silent": true
+      },
+      "actual_frames": 2172,
+      "segment": 2,
+      "title": "Architecture & Four Variants",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg02.mp3",
+      "audio_duration_seconds": 71.17,
+      "target_video_duration_seconds": 72.4,
+      "frames": 2172,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 1139817,
+      "video_timeline_duration_seconds": 72.4,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg02.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg02.srt",
+      "clean_clip_sha256": "c2f145b8f3500f526b242a77f10b4c83a8167f59b2cbd979603dd6374208ea95",
+      "audio_bitstream_sha256": "SHA256=5eb392d16b96de4459837b4130b686e78fab7fcf568be9d8843ec22fd73e2f8b",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 42.6085
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg03.mp4",
+      "duration_seconds": 44.53,
+      "size_bytes": 4535756,
+      "sha256": "1dff0ce20d4fa3655fa656618037ccd63c7ddb69ce267b01b03e0bdfc2bd6ed4",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 617 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 188 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.01,
+        "true_peak_dbtp": -3.01,
+        "non_silent": true
+      },
+      "actual_frames": 1336,
+      "segment": 3,
+      "title": "CLI Data, ACL & Reliability",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg03.mp3",
+      "audio_duration_seconds": 43.32,
+      "target_video_duration_seconds": 44.53333333333333,
+      "frames": 1336,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 694273,
+      "video_timeline_duration_seconds": 44.53333333333333,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg03.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg03.srt",
+      "clean_clip_sha256": "c1cb17768eaf1511256b4d89212e9dffa80ec0a7a7af1772a1ba4743044561d7",
+      "audio_bitstream_sha256": "SHA256=da24febcec0e86792cb1b6c7183929bd2460c35d7db37c67fd5312241383f14a",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 26.13
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg04.mp4",
+      "duration_seconds": 73.13,
+      "size_bytes": 7147036,
+      "sha256": "d50e176032ece4d3e1b95d5fdc5100eb810161bf58d9b885de2720086fe8c5af",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 582 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 190 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.0,
+        "true_peak_dbtp": -2.56,
+        "non_silent": true
+      },
+      "actual_frames": 2194,
+      "segment": 4,
+      "title": "Real Cross-Model CLI Run",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg04.mp3",
+      "audio_duration_seconds": 71.93,
+      "target_video_duration_seconds": 73.13333333333334,
+      "frames": 2194,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 1151938,
+      "video_timeline_duration_seconds": 73.13333333333334,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg04.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg04.srt",
+      "clean_clip_sha256": "0a6cbde57f06914fddba70396bbff4c20984eba7dc37d3796d8f6239584649d5",
+      "audio_bitstream_sha256": "SHA256=a5c9497fbcf74f7c574924d348795bae49ca81d1df5ac9f1a27118d8769d1e0d",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 39.7915
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg05.mp4",
+      "duration_seconds": 76.33,
+      "size_bytes": 19506782,
+      "sha256": "982d82eda398f58764ed11105d2bb2dccb4d6fab4db14da0e1786bda31731de3",
+      "video_stream": "Stream #0:0[0x1](eng): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080 [SAR 1:1 DAR 16:9], 1845 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 190 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.01,
+        "true_peak_dbtp": -3.62,
+        "non_silent": true
+      },
+      "actual_frames": 2290,
+      "segment": 5,
+      "title": "Web Console Recorded Replay",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg05.mp3",
+      "audio_duration_seconds": 75.12,
+      "target_video_duration_seconds": 76.33333333333333,
+      "frames": 2290,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 1202929,
+      "video_timeline_duration_seconds": 76.33333333333333,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg05.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg05.srt",
+      "clean_clip_sha256": "c11340efd372bc46ea01d1b272faf1a9f391af24896860aab4c429e0746b5b4f",
+      "audio_bitstream_sha256": "SHA256=3dcb7b3a2225af5dd9e181d5a8bec4a85802d728e5c2d07eaf3f671cd0566abc",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 41.7445
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg06.mp4",
+      "duration_seconds": 69.73,
+      "size_bytes": 9927778,
+      "sha256": "ff6f98d8d9f1c577f62104263bd49092fb44c7b9dd737e88480857d44a738796",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 939 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 190 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.0,
+        "true_peak_dbtp": -3.01,
+        "non_silent": true
+      },
+      "actual_frames": 2092,
+      "segment": 6,
+      "title": "Anti-Leakage Audit & Bug Fix",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg06.mp3",
+      "audio_duration_seconds": 68.52,
+      "target_video_duration_seconds": 69.73333333333333,
+      "frames": 2092,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 1097603,
+      "video_timeline_duration_seconds": 69.73333333333333,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg06.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg06.srt",
+      "clean_clip_sha256": "f4f3abc6f15b67b9f8a53a651ee99a39768fffeadc069068b185351d6b6560de",
+      "audio_bitstream_sha256": "SHA256=94fc6cc795b9d5ad2a6b4c85bbbc57b737743abdbbca6ec786e58f0da089ff37",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 40.706500000000005
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg07.mp4",
+      "duration_seconds": 117.8,
+      "size_bytes": 14049693,
+      "sha256": "cb2ee23c87f00d4049504e224f37efd9aef263dd5ee34d31a1ed49cf55c7480b",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 754 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 191 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.01,
+        "true_peak_dbtp": -3.49,
+        "non_silent": true
+      },
+      "actual_frames": 3534,
+      "segment": 7,
+      "title": "Full-Scale & Cross-Model Results",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg07.mp3",
+      "audio_duration_seconds": 116.57,
+      "target_video_duration_seconds": 117.8,
+      "frames": 3534,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 1866230,
+      "video_timeline_duration_seconds": 117.8,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg07.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg07.srt",
+      "clean_clip_sha256": "4a923b8952beae43411dde2dc145e648defb1fc2d2b5d8cc0a28807c8f087054",
+      "audio_bitstream_sha256": "SHA256=22ceb2d020e5f6433c4be765959e7c5bba9f043022e17cbf88e7b07f6776280d",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 65.86
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg08.mp4",
+      "duration_seconds": 57.9,
+      "size_bytes": 3900913,
+      "sha256": "92e0d3006ac1bcffcf08e1a39b5a493f2c222b5049a2dbb43bbfc65e8ab0fb58",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 341 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 188 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -15.99,
+        "true_peak_dbtp": -4.01,
+        "non_silent": true
+      },
+      "actual_frames": 1737,
+      "segment": 8,
+      "title": "Limitations & Future Work",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg08.mp3",
+      "audio_duration_seconds": 56.67,
+      "target_video_duration_seconds": 57.9,
+      "frames": 1737,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 907850,
+      "video_timeline_duration_seconds": 57.9,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg08.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg08.srt",
+      "clean_clip_sha256": "625bac7ae2362eb6bf674b71f11193b07725325e41e0027f5d71fcd920c1cdf0",
+      "audio_bitstream_sha256": "SHA256=3c9b48874667b3b416442bc8652086a963645a3672341b53a49555aebfdb7f30",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 32.795500000000004
+    },
+    {
+      "path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/clips/seg09.mp4",
+      "duration_seconds": 27.93,
+      "size_bytes": 1530796,
+      "sha256": "356082201606a01cdca22e2f2139d526ad3a0a87ffdb0c0e4de3d180dd361428",
+      "video_stream": "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 242 kb/s, 30 fps, 30 tbr, 15360 tbn (default)",
+      "audio_stream": "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 186 kb/s (default)",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 30,
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "sample_rate": 44100,
+      "channels": 2,
+      "audio_verification": {
+        "integrated_loudness_lufs": -16.0,
+        "true_peak_dbtp": -3.3,
+        "non_silent": true
+      },
+      "actual_frames": 838,
+      "segment": 9,
+      "title": "Closing Summary",
+      "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg09.mp3",
+      "audio_duration_seconds": 26.73,
+      "target_video_duration_seconds": 27.933333333333334,
+      "frames": 838,
+      "audio_delay_seconds": 0.4,
+      "visual_settle_seconds": 0.8,
+      "audio_size_bytes": 428869,
+      "video_timeline_duration_seconds": 27.933333333333334,
+      "pixel_format": "yuv420p",
+      "full_decode_pass": true,
+      "subtitle_tracks": 0,
+      "subtitle_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg09.ass",
+      "subtitle_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitles/seg09.srt",
+      "clean_clip_sha256": "c15fc770269d3f1100414fb8c325ecd3ac00e3ed69b92d22c1d9f1267588e4f9",
+      "audio_bitstream_sha256": "SHA256=b6928bc6550afc6a7ae7a5dbf8ca592d0c68ef42f456820f3d33edce88aa581c",
+      "audio_copied_bit_for_bit": true,
+      "preview_timestamp_seconds": 15.975000000000001
+    }
+  ],
+  "total_duration_seconds": 600.23,
+  "total_frames_expected": 18007,
+  "encoding": {
+    "resolution": "1920x1080",
+    "frame_rate": "30/1",
+    "video_codec": "H.264 / libx264",
+    "pixel_format": "yuv420p",
+    "preset": "medium",
+    "crf": 18,
+    "audio_codec": "AAC",
+    "audio_bitrate": "192k",
+    "sample_rate": 44100,
+    "channels": 2,
+    "loudness_target_lufs": -16,
+    "faststart": true
+  },
+  "verification": {
+    "all_nine_clips_pass": true,
+    "full_assembled_video_decode_pass": true,
+    "tracked_git_diff_empty": true,
+    "staged_git_diff_empty": true,
+    "animation_files_unchanged": {
+      "presentation/video_animations/anim4_results_dashboard.html": {
+        "sha256": "48a32469fa1e1057fe2a902d7b3f6e17011ab7f5c4c1557615eebdf9f3eef35e",
+        "mtime_ns": 1795344093673234730,
+        "unchanged": true
+      },
+      "presentation/video_animations/anim2_architecture_variants.html": {
+        "sha256": "cbc5bf1a56faaa96299996db85261894c1125e2363b2115eccbb1339313dd2cc",
+        "mtime_ns": 1795344088444811802,
+        "unchanged": true
+      },
+      "presentation/video_animations/anim1_opening_hook.html": {
+        "sha256": "d167d86da6ab55ba859373e9ec25ce58f01819ad459f0b571b020eb8a46f7569",
+        "mtime_ns": 1795344086508865431,
+        "unchanged": true
+      },
+      "presentation/video_animations/anim3_audit_and_bugfix.html": {
+        "sha256": "935fcdfd3ba612290226736f95769280c63102f3a2660e1e5db15fa3f5414d82",
+        "mtime_ns": 1795344090889381363,
+        "unchanged": true
+      }
+    },
+    "secret_scan_pass": true,
+    "generated_stage_framing_pass": true,
+    "preview_directory": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/preview_frames",
+    "actual_decoded_frame_count": 18007,
+    "all_segment_full_decode_pass": true,
+    "mp3_hashes_unchanged": true,
+    "clean_eight_original_clips_hashes_unchanged": true,
+    "all_nine_aac_bitstreams_preserved": true,
+    "no_soft_subtitle_tracks": true,
+    "subtitle_timing_invariants_pass": true,
+    "preview_checks": {
+      "seg01.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 3085,
+        "bottom_dark_background_pixels": 268969
+      },
+      "seg03.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 4867,
+        "bottom_dark_background_pixels": 258110
+      },
+      "seg02.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 3954,
+        "bottom_dark_background_pixels": 262301
+      },
+      "seg06.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 3468,
+        "bottom_dark_background_pixels": 265360
+      },
+      "seg07.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 4775,
+        "bottom_dark_background_pixels": 260486
+      },
+      "seg05.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 71287,
+        "bottom_dark_background_pixels": 54741
+      },
+      "seg04.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 2936,
+        "bottom_dark_background_pixels": 264831
+      },
+      "seg09.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 3124,
+        "bottom_dark_background_pixels": 266067
+      },
+      "seg08.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 4399,
+        "bottom_dark_background_pixels": 263940
+      },
+      "seg05_light_abstained.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 190483,
+        "bottom_dark_background_pixels": 45779
+      },
+      "seg05_light_resolved.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 210175,
+        "bottom_dark_background_pixels": 24440
+      },
+      "seg05_light_archive.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 27797,
+        "bottom_dark_background_pixels": 32083
+      },
+      "seg05_light_citation.png": {
+        "size": [
+          1920,
+          1080
+        ],
+        "nonblank": true,
+        "bottom_light_text_pixels": 71284,
+        "bottom_dark_background_pixels": 54739
+      }
+    },
+    "visual_review": {
+      "contact_sheet_reviewed": true,
+      "light_theme_archive_resolved_citation_abstained_reviewed": true,
+      "subtitles_readable_on_light_and_dark": true,
+      "no_note_overlay_collision": true
+    }
+  },
+  "production_adjustments": [
+    {
+      "reason": "Voice default pace exceeded duration target",
+      "action": "Uniform pitch-preserving atempo; original ElevenLabs MP3 files retained in voiceover_audio/originals."
+    },
+    {
+      "reason": "CLI accepts ohmygpt, artifact metadata accepts only real/mock",
+      "action": "Build-only adapter classifies live OhMyGPT as real; project source untouched. Original CLI failed after completing provider work; one replacement live investigation was required."
+    },
+    {
+      "reason": "Live Hunyuan investigation emitted INCONCLUSIVE",
+      "action": "Preserved actual outputs. Corrected segment 4 voiceover once to describe abstention. Console resolved walkthrough uses an unchanged completed Hunyuan experimental state exported with repository save_run."
+    },
+    {
+      "reason": "Requested pytest -k leading_review selected zero tests",
+      "action": "Ran matching -k review_leading; one test passed. Both exact outputs retained."
+    },
+    {
+      "reason": "Existing reliability matrix omitted summary.json",
+      "action": "Derived 110/110 summary from existing authentic fault-matrix.csv; no matrix claims invented."
+    },
+    {
+      "reason": "Resolved trace has required_roles=[] and no STOP_ACK",
+      "action": "No synthetic acknowledgment is inserted. The light-theme update removes the note overlay for subtitle clearance; the recorded trace audit preserves this explanation."
+    },
+    {
+      "reason": "Persisted incident_4018.dynamic state and experiment record contain 15 tools, while the supplied brief says 12.",
+      "action": "The final comparison and segment 4 narration use the actual count of 15."
+    },
+    {
+      "reason": "Light-theme re-record and synchronized burned-in English subtitles requested",
+      "action": "Re-recorded only seg05 using original light theme; removed note overlay; reused eight existing clean visuals; aligned 138 English cues to local ASR and waveform silences; retained all existing MP3 files and copied clean AAC bitstreams."
+    }
+  ],
+  "supporting_files": {
+    "captured_demos.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/captured_demos.json",
+    "narration.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/narration.json",
+    "narration_live_correction.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/narration_live_correction.json",
+    "resolved_trace_provenance.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/resolved_trace_provenance.json",
+    "web_recording_audit.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/web_recording_audit.json",
+    "audio_pacing.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/audio_pacing.json",
+    "narration_tool_count_correction.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/narration_tool_count_correction.json",
+    "subtitle_metadata.json": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/subtitle_metadata.json",
+    "update_integrity_baseline": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/raw/update_baseline/integrity.json",
+    "subtitle_contact_sheet": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/IncidentLens_9_segment_contact_sheet.jpg"
+  },
+  "web_console": {
+    "browser": "System Google Chrome via Playwright",
+    "theme": "light",
+    "note_overlay_present": false,
+    "cursor_color": "#A02337",
+    "viewport": [
+      1920,
+      1080
+    ],
+    "zoom": 1.15,
+    "genuine_live_recording": true,
+    "console_errors": [],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/?lang=en"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/astryx.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/tokens.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/core.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/app.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/institutional.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/astryx-bridge.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/css/skin.css"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/app.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/api.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/components.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/views.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/knowledge.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/replay.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/replay-panels.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/orchestration.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.shell.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.api.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.components.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.views.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.knowledge.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.orchestration.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/js/i18n/catalog.replay.js"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/api/traces"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/api/cases"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/api/meta"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/api/traces"
+      },
+      {
+        "method": "POST",
+        "url": "http://127.0.0.1:8022/api/replay"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:8022/api/traces"
+      },
+      {
+        "method": "POST",
+        "url": "http://127.0.0.1:8022/api/replay"
+      }
+    ],
+    "provider_calls_during_replay": 0,
+    "actions": [
+      {
+        "seconds": 4.0994417909532785,
+        "action": "Open Trace Archive"
+      },
+      {
+        "seconds": 8.648824207950383,
+        "action": "Open results/demo_video_resolved/trace.json"
+      },
+      {
+        "seconds": 14.38090329093393,
+        "action": "Expand Communication Timeline"
+      },
+      {
+        "seconds": 15.038834540988319,
+        "action": "Inspect DECISION"
+      },
+      {
+        "seconds": 16.28523291600868,
+        "action": "Inspect TASK_ASSIGNED"
+      },
+      {
+        "seconds": 18.057895625010133,
+        "action": "Inspect TOOL_CALL"
+      },
+      {
+        "seconds": 20.271864540991373,
+        "action": "Inspect MERGE"
+      },
+      {
+        "seconds": 22.661260207998566,
+        "action": "Inspect DIAGNOSIS_ACCEPTED"
+      },
+      {
+        "seconds": 27.51554120797664,
+        "action": "Seek final persisted event"
+      },
+      {
+        "seconds": 28.149190000025555,
+        "action": "Collapse workflow overview"
+      },
+      {
+        "seconds": 28.80022508301772,
+        "action": "Open Hypothesis Board"
+      },
+      {
+        "seconds": 35.765721083036624,
+        "action": "Open final root-cause report"
+      },
+      {
+        "seconds": 39.967653000028804,
+        "action": "Audit report citation incident_4014-E-003"
+      },
+      {
+        "seconds": 47.20012304093689,
+        "action": "Close citation inspector"
+      },
+      {
+        "seconds": 51.79407516599167,
+        "action": "Open recorded run metadata"
+      },
+      {
+        "seconds": 58.28023541602306,
+        "action": "Open Trace Archive"
+      },
+      {
+        "seconds": 59.14637199998833,
+        "action": "Open results/demo_video_abstain/trace.json"
+      },
+      {
+        "seconds": 59.80562466592528,
+        "action": "Seek final persisted event"
+      },
+      {
+        "seconds": 60.42924762493931,
+        "action": "Collapse abstained workflow overview"
+      },
+      {
+        "seconds": 61.08153041603509,
+        "action": "Inspect abstained report"
+      },
+      {
+        "seconds": 73.92723012494389,
+        "action": "Open original abstained report Markdown"
+      }
+    ],
+    "screenshots": [
+      {
+        "name": "web_archive",
+        "seconds": 4.346598000032827
+      },
+      {
+        "name": "web_replay_banner",
+        "seconds": 9.279701124993153
+      },
+      {
+        "name": "web_hypotheses",
+        "seconds": 29.41278179094661
+      },
+      {
+        "name": "web_resolved",
+        "seconds": 36.73090162500739
+      },
+      {
+        "name": "web_citation",
+        "seconds": 40.420935957925394
+      },
+      {
+        "name": "web_stop_protocol",
+        "seconds": 48.42909054097254
+      },
+      {
+        "name": "web_resource_ledger",
+        "seconds": 52.41134645801503
+      },
+      {
+        "name": "web_abstained",
+        "seconds": 62.04685458296444
+      },
+      {
+        "name": "web_abstained_gaps",
+        "seconds": 68.89629241602961
+      }
+    ],
+    "resolved_trace": "results/demo_video_resolved/trace.json",
+    "abstained_trace": "results/demo_video_abstain/trace.json",
+    "raw_video": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/raw/web_console/page@ffef9e03ff79f52296e65cd53968c5f4.webm",
+    "raw_duration_seconds": 76.92,
+    "stop_ack_note": "No STOP_ACK event in this recorded trace; required_roles is empty. No synthetic acknowledgment is inserted.",
+    "resource_ledger": {
+      "http_requests": 17,
+      "tools": 10,
+      "tokens": 141847
+    }
+  },
+  "original_animation_baseline": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/source_baseline.json",
+  "audio_final_level_corrections": [
+    {
+      "input_sha256": "d269d0b262b7e8224165b05de586253a5900bec4b568db60c83660a0c0bf3431",
+      "output_sha256": "289098fbe9aa38d697244868fec212e3ebddbc036767a984afdbce4af88dd44d",
+      "before_integrated_lufs": -17.34,
+      "gain_db": 1.3399999999999999,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "f3d3392d7bef52a77f45d697872b8898f7966da7f08c4ff4917b6b3f93c2bdb9",
+      "output_sha256": "c2f145b8f3500f526b242a77f10b4c83a8167f59b2cbd979603dd6374208ea95",
+      "before_integrated_lufs": -17.08,
+      "gain_db": 1.0799999999999983,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "ce657ba0cf204f56be952d937236fc7cd0e0a5b5b432f7a037009058b4d4cd1b",
+      "output_sha256": "c1cb17768eaf1511256b4d89212e9dffa80ec0a7a7af1772a1ba4743044561d7",
+      "before_integrated_lufs": -17.4,
+      "gain_db": 1.3999999999999986,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "5123923249ca8156a3e84d8f0d03d0f0e3c903f899328f289791408111beed5f",
+      "output_sha256": "0a6cbde57f06914fddba70396bbff4c20984eba7dc37d3796d8f6239584649d5",
+      "before_integrated_lufs": -17.9,
+      "gain_db": 1.8999999999999986,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "light_theme_recording": true,
+      "target_lufs": -16,
+      "output_sha256": "c11340efd372bc46ea01d1b272faf1a9f391af24896860aab4c429e0746b5b4f",
+      "measured_integrated_lufs": -16.01,
+      "receipt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/raw/seg05_light_loudness.json",
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "53e4ac35334ced60d28a9967a8288c7001231ee765e04a04b6ffb39e5fd1aeeb",
+      "output_sha256": "f4f3abc6f15b67b9f8a53a651ee99a39768fffeadc069068b185351d6b6560de",
+      "before_integrated_lufs": -17.33,
+      "gain_db": 1.3299999999999983,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "675d86190742e5f46ffbca8f2e9cde65e3544992fddac76755c9552692ad68a8",
+      "output_sha256": "4a923b8952beae43411dde2dc145e648defb1fc2d2b5d8cc0a28807c8f087054",
+      "before_integrated_lufs": -16.88,
+      "gain_db": 0.879999999999999,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "7b9506b1a63aeece60979949fa0175cb5bff1812d5304b47690974a6531c6a1d",
+      "output_sha256": "625bac7ae2362eb6bf674b71f11193b07725325e41e0027f5d71fcd920c1cdf0",
+      "before_integrated_lufs": -16.45,
+      "gain_db": 0.4499999999999993,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    },
+    {
+      "input_sha256": "ea0e46bcaf28ae0442e59381380719304f30356d2e7d436cf32ba6791bb06bd0",
+      "output_sha256": "c15fc770269d3f1100414fb8c325ecd3ac00e3ed69b92d22c1d9f1267588e4f9",
+      "before_integrated_lufs": -17.2,
+      "gain_db": 1.1999999999999993,
+      "target_lufs": -16,
+      "preserved_video_stream": true
+    }
+  ],
+  "total_video_timeline_seconds": 600.2333333333333,
+  "subtitles": {
+    "language": "en",
+    "burned_in": true,
+    "soft_subtitle_track": false,
+    "font": "Helvetica Neue",
+    "font_file": "/System/Library/Fonts/HelveticaNeue.ttc",
+    "font_size": 36,
+    "cue_count": 138,
+    "total_timeline_seconds": 600.2333333333332,
+    "segments": [
+      {
+        "segment": 1,
+        "cue_count": 14,
+        "speech_onset": 0.477823,
+        "speech_end": 59.392585,
+        "minimum_cue_seconds": 2.7689999999999984,
+        "maximum_cue_seconds": 4.93,
+        "timeline_offset": 0
+      },
+      {
+        "segment": 2,
+        "cue_count": 16,
+        "speech_onset": 0.437687,
+        "speech_end": 71.487642,
+        "minimum_cue_seconds": 2.9170000000000016,
+        "maximum_cue_seconds": 5.5,
+        "timeline_offset": 60.46666666666667
+      },
+      {
+        "segment": 3,
+        "cue_count": 10,
+        "speech_onset": 0.41229,
+        "speech_end": 43.470884,
+        "minimum_cue_seconds": 2.468,
+        "maximum_cue_seconds": 5.5,
+        "timeline_offset": 132.86666666666667
+      },
+      {
+        "segment": 4,
+        "cue_count": 16,
+        "speech_onset": 0.43805,
+        "speech_end": 72.157914,
+        "minimum_cue_seconds": 2.1430000000000007,
+        "maximum_cue_seconds": 5.209,
+        "timeline_offset": 177.4
+      },
+      {
+        "segment": 5,
+        "cue_count": 18,
+        "speech_onset": 0.462154,
+        "speech_end": 75.344694,
+        "minimum_cue_seconds": 2.254,
+        "maximum_cue_seconds": 5.307999999999998,
+        "timeline_offset": 250.53333333333336
+      },
+      {
+        "segment": 6,
+        "cue_count": 18,
+        "speech_onset": 0.438957,
+        "speech_end": 68.637642,
+        "minimum_cue_seconds": 1.8760000000000012,
+        "maximum_cue_seconds": 4.8530000000000015,
+        "timeline_offset": 326.8666666666667
+      },
+      {
+        "segment": 7,
+        "cue_count": 27,
+        "speech_onset": 0.439977,
+        "speech_end": 116.753492,
+        "minimum_cue_seconds": 2.2249999999999943,
+        "maximum_cue_seconds": 5.280000000000001,
+        "timeline_offset": 396.6
+      },
+      {
+        "segment": 8,
+        "cue_count": 13,
+        "speech_onset": 0.454286,
+        "speech_end": 56.816599,
+        "minimum_cue_seconds": 3.407,
+        "maximum_cue_seconds": 5.386,
+        "timeline_offset": 514.4
+      },
+      {
+        "segment": 9,
+        "cue_count": 6,
+        "speech_onset": 0.46322,
+        "speech_end": 26.888005,
+        "minimum_cue_seconds": 3.317,
+        "maximum_cue_seconds": 5.5,
+        "timeline_offset": 572.3
+      }
+    ],
+    "style": {
+      "primary": "&H00F8FAFC",
+      "border_style": 3,
+      "back": "&H380B1220",
+      "outline": 11,
+      "shadow": 0,
+      "alignment": 2,
+      "margin_l": 150,
+      "margin_r": 150,
+      "margin_v": 38
+    },
+    "combined_srt": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/IncidentLens_Presentation_10min.srt",
+    "combined_ass": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/IncidentLens_Presentation_10min.ass",
+    "alignment_directory": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/output/raw",
+    "concat_offsets": "Exact cumulative video frame durations; explicit concat duration directives",
+    "aac_join_handling": "Concat-only remux copies omit negative-PTS unplayed AAC priming packets; published segments retain bit-identical AAC"
+  },
+  "updated_artifact_hashes": {
+    "IncidentLens_Presentation_10min.mp4": "ba40429661855dc00d64aeefa54184385c04ea6224d9533644ca9b8affd54951",
+    "IncidentLens_Presentation_10min.srt": "438ab212679825080081c2adf72495a1ad4034730440f671b10f8be81e4886b3",
+    "IncidentLens_Presentation_10min.ass": "5398f742c1470e1fdaf426e0f80e4e97855e6d0e39b94e8d87eff63030dd03e5",
+    "IncidentLens_9_segment_contact_sheet.jpg": "7d0ab00254ccb257a8ed7c2d2e013a2ea8862aba575baceb89f663c41f5c63ed",
+    "subtitles/seg08.ass": "9f18a85a92f25adcae0e0c3ab07bdc439e98fe356d84be14e6d7bf20009996d4",
+    "subtitles/seg03.srt": "ee41066e050044f8d6ab61bf5bb1a6fb4e64864b3ef6a5fa99c5509dc7c850dc",
+    "subtitles/seg02.srt": "91eed6d1e5f5526e2da723f603d5a524d4505e3f595a793d6da4da881d9fa97d",
+    "subtitles/seg09.ass": "bfbf28ed2dac9f0191e423be0728fe8a5daa5bd97cd70c1efb4f4737f99b61d4",
+    "subtitles/seg01.srt": "4e1c9ec4c01efa011daa1782c0b0b0b90537c329e2ec4361c07bcd34d7cc2f37",
+    "subtitles/seg05.srt": "4808faa54feffefb50123cd607e5a52e412caf020df90352cbe6fc675942a27d",
+    "subtitles/seg04.srt": "99d6fbd5811811f4b724f732ac04d0126905861526a8d4362d54eb85e9c9452a",
+    "subtitles/seg06.srt": "5d810a66299860f2093afc226c20088160015874367840f9eb3fee2dabe56be0",
+    "subtitles/seg07.srt": "13f7a3ada10f396c9c7d194d59a52310f21ea27f71ff09a1386b507997e89ec3",
+    "subtitles/seg01.ass": "4a7e7e6f4820e46187f8806ca3f7b42cbc7e11cabd153bcb3004ca754bb20722",
+    "subtitles/seg02.ass": "40f2c0214b11e5a1dc946a51f8bdab0d0ed741c56e5113b05a297b01cbeb9a93",
+    "subtitles/seg09.srt": "ae84638f701944988d0875dd9edaa4b04027fe683688aedf90ef98d50d1e7551",
+    "subtitles/seg08.srt": "e6895efd5355f63a727352c4eb1718e6c5b120019a1fb5cc338a99a2d5b8d75c",
+    "subtitles/seg03.ass": "fb49c0405122141e87eab3e832cfe4cc2eec7632b7bc95c314c6fe56882be782",
+    "subtitles/seg07.ass": "1fa71e756ee0f8316f25eeaa9d65eaf346a906257a17a16233847d21afe85748",
+    "subtitles/seg06.ass": "d56fc3b2cce4c2a17374245d244c935abd7399eedc722d4882629edd27e60e8d",
+    "subtitles/seg04.ass": "7b54366d8383b67f60d1b2ac95a714d381de6bfc1da819b30b960166a0f48594",
+    "subtitles/seg05.ass": "2944cbd3f702de6c7a370eb69f48327108877ced43744efa838efd4a648029a1",
+    "preview_frames/seg01.png": "5a44bb1ce51ea4bde2dbb0491671fba19851166892d556809bf9cdf24f5442c6",
+    "preview_frames/seg03.png": "55550f1879425537d47bab612cd7687923d181d6b124954809cfa866401b4485",
+    "preview_frames/seg02.png": "ba644af1e5b49d756a1febddc67eb9ef7b5af04b9c5a5adce590f6e2b5c00db2",
+    "preview_frames/seg05_light_abstained.png": "1964be4da33df7577555948d20341ff8b5a20bfbedd729bf45689eff41a56b9c",
+    "preview_frames/seg06.png": "9c40695b46fe25716b4544b5df446d747c97f5195ff168b15dfe054a9bf16478",
+    "preview_frames/seg07.png": "6725ff5ddf719ce611732e07c17b6163bd7ed279a66f67b8ca9e296fe5bb7127",
+    "preview_frames/seg05.png": "6baa5a60e78a036d21fb8b1a025d9d53fea6b2b5b68dcecb8d307d2d17f6b5b2",
+    "preview_frames/seg04.png": "d0535c5e5324daee74c3aa270ac83222fe339094636a7c04e00378240bdaf4b7",
+    "preview_frames/seg05_light_resolved.png": "d3e2ed7f19a4d8007d886da98b5a4bc64a966004503b7219970d550face1629b",
+    "preview_frames/seg05_light_archive.png": "0996a0d95f9e74f6e2eeee30a167c98103b59f32651c7f4198e815a2d6e6f687",
+    "preview_frames/seg05_abstained.png": "5f9dc7bd800789912ce69a332cf5c3138f19506bb2757f083173c6651f2a5ff1",
+    "preview_frames/seg09.png": "a589072dddc76d38a669eb11a7f31bdbcd3995dd387cb065d3f1fad276606b50",
+    "preview_frames/seg05_light_citation.png": "8858dfbf5f5e94f1c05803f22385804598ab265c2450c29422221cf8071ee589",
+    "preview_frames/seg08.png": "a9d359b8afc5a7b571880e01abafb24b6cf13da980ba8fcb5caec94f011d6ba9",
+    "preview_frames/seg05_resolved.png": "17e968ccfe13d3cd91a2e1bedb45b42de7d54b325f741a3423a9c247b7e54c60"
+  }
+}

@@ -1,0 +1,32 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.46,0:00:03.21,Default,,0,0,0,,To make every investigation\Ninspectable by human engineers,
+Dialogue: 0,0:00:03.55,0:00:05.81,Default,,0,0,0,,IncidentLens ships with a local Web Console.
+Dialogue: 0,0:00:06.24,0:00:09.36,Default,,0,0,0,,Here I open the Trace Archive at localhost:8022.
+Dialogue: 0,0:00:09.79,0:00:13.78,Default,,0,0,0,,Notice the banner at the top:\NRecorded Replay—zero provider calls.
+Dialogue: 0,0:00:14.12,0:00:19.43,Default,,0,0,0,,Every view you're about to see is reconstructed\Npurely from the persisted trace.json.
+Dialogue: 0,0:00:19.95,0:00:23.04,Default,,0,0,0,,Let's inspect a RESOLVED run\Nfirst. In the timeline panel,
+Dialogue: 0,0:00:23.40,0:00:27.84,Default,,0,0,0,,we can step through every decision the\NCoordinator made, which specialist it dispatched,
+Dialogue: 0,0:00:28.14,0:00:31.82,Default,,0,0,0,,and what exact records came back.\NSwitching to the hypothesis view,
+Dialogue: 0,0:00:32.09,0:00:35.35,Default,,0,0,0,,you can watch rival explanations\Ncompete as new evidence arrives,
+Dialogue: 0,0:00:35.76,0:00:38.88,Default,,0,0,0,,until only one satisfies FinalizeGate.
+Dialogue: 0,0:00:39.26,0:00:44.23,Default,,0,0,0,,Clicking any citation in the final report traces\Nstraight back to the underlying observed log,
+Dialogue: 0,0:00:44.42,0:00:48.71,Default,,0,0,0,,metric, or config diff—so reviewers\Ncan verify grounding in seconds.
+Dialogue: 0,0:00:49.04,0:00:52.98,Default,,0,0,0,,At the bottom, the audit ledger records\Nthe formal two-phase stop handshake —
+Dialogue: 0,0:00:52.98,0:00:57.46,Default,,0,0,0,,WORKFLOW_STOP_REQUESTED, STOP_ACK,\Nand NORMAL_TERMINATION —
+Dialogue: 0,0:00:57.77,0:01:01.90,Default,,0,0,0,,alongside exact physical HTTP\Nrequests and token counts.
+Dialogue: 0,0:01:02.48,0:01:05.88,Default,,0,0,0,,Now let's switch to an abstained case.\NInstead of crashing or guessing,
+Dialogue: 0,0:01:06.29,0:01:11.16,Default,,0,0,0,,the UI clearly shows INCONCLUSIVE,\Nexplains which evidence gaps remain open,
+Dialogue: 0,0:01:11.16,0:01:15.34,Default,,0,0,0,,and distinguishes normal\Nabstention from a runtime error.

@@ -1,0 +1,86 @@
+1
+00:00:00,462 --> 00:00:03,212
+To make every investigation
+inspectable by human engineers,
+
+2
+00:00:03,552 --> 00:00:05,806
+IncidentLens ships with a local Web Console.
+
+3
+00:00:06,244 --> 00:00:09,365
+Here I open the Trace Archive at localhost:8022.
+
+4
+00:00:09,787 --> 00:00:13,778
+Notice the banner at the top:
+Recorded Replay—zero provider calls.
+
+5
+00:00:14,121 --> 00:00:19,429
+Every view you're about to see is reconstructed
+purely from the persisted trace.json.
+
+6
+00:00:19,951 --> 00:00:23,039
+Let's inspect a RESOLVED run
+first. In the timeline panel,
+
+7
+00:00:23,404 --> 00:00:27,843
+we can step through every decision the
+Coordinator made, which specialist it dispatched,
+
+8
+00:00:28,144 --> 00:00:31,816
+and what exact records came back.
+Switching to the hypothesis view,
+
+9
+00:00:32,092 --> 00:00:35,349
+you can watch rival explanations
+compete as new evidence arrives,
+
+10
+00:00:35,760 --> 00:00:38,880
+until only one satisfies FinalizeGate.
+
+11
+00:00:39,262 --> 00:00:44,227
+Clicking any citation in the final report traces
+straight back to the underlying observed log,
+
+12
+00:00:44,416 --> 00:00:48,708
+metric, or config diff—so reviewers
+can verify grounding in seconds.
+
+13
+00:00:49,039 --> 00:00:52,980
+At the bottom, the audit ledger records
+the formal two-phase stop handshake —
+
+14
+00:00:52,980 --> 00:00:57,465
+WORKFLOW_STOP_REQUESTED, STOP_ACK,
+and NORMAL_TERMINATION —
+
+15
+00:00:57,767 --> 00:01:01,897
+alongside exact physical HTTP
+requests and token counts.
+
+16
+00:01:02,480 --> 00:01:05,881
+Now let's switch to an abstained case.
+Instead of crashing or guessing,
+
+17
+00:01:06,293 --> 00:01:11,160
+the UI clearly shows INCONCLUSIVE,
+explains which evidence gaps remain open,
+
+18
+00:01:11,160 --> 00:01:15,345
+and distinguishes normal
+abstention from a runtime error.

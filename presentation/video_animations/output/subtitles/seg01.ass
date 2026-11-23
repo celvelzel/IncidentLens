@@ -1,0 +1,28 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.48,0:00:03.58,Default,,0,0,0,,Hi everyone! Today I'm presenting IncidentLens,
+Dialogue: 0,0:00:04.07,0:00:08.34,Default,,0,0,0,,an evidence-driven multi-agent system for\Nsoftware incident root cause analysis.
+Dialogue: 0,0:00:09.15,0:00:14.08,Default,,0,0,0,,In production postmortems, the most dangerous\Nfailure mode isn't failing to find an answer —
+Dialogue: 0,0:00:14.08,0:00:18.06,Default,,0,0,0,,it's hallucinating a plausible\Nstory. Generic LLM agents
+Dialogue: 0,0:00:18.06,0:00:22.33,Default,,0,0,0,,routinely assert confident root\Ncauses without valid citations,
+Dialogue: 0,0:00:22.83,0:00:27.29,Default,,0,0,0,,ignore data access boundaries, and almost\Nnever admit when evidence is missing.
+Dialogue: 0,0:00:27.50,0:00:31.09,Default,,0,0,0,,IncidentLens enforces a much\Nstricter engineering contract:
+Dialogue: 0,0:00:31.51,0:00:35.22,Default,,0,0,0,,every claim must cite an\Nactually observed evidence ID,
+Dialogue: 0,0:00:35.72,0:00:39.12,Default,,0,0,0,,every agent operates inside\Nexplicit read-only tool permissions,
+Dialogue: 0,0:00:39.76,0:00:43.45,Default,,0,0,0,,and when visible telemetry cannot\Nuniquely identify the root cause,
+Dialogue: 0,0:00:43.93,0:00:47.68,Default,,0,0,0,,the system must abstain with\NINCONCLUSIVE rather than guess.
+Dialogue: 0,0:00:48.09,0:00:50.86,Default,,0,0,0,,Over the next nine minutes,\NI'll walk through the architecture,
+Dialogue: 0,0:00:51.24,0:00:54.96,Default,,0,0,0,,show you four live hands-on demos,\Nand share our full-scale,
+Dialogue: 0,0:00:55.22,0:00:59.39,Default,,0,0,0,,cross-model experimental findings\Nacross DeepSeek and Tencent Hunyuan.

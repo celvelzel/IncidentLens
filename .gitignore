@@ -36,3 +36,10 @@ COMP5584+GroupProject+Group5.zip
 presentation/IncidentLens_Deck_version_b/qa_rendered/
 presentation/IncidentLens_Deck_version_b/drafts/
 presentation/IncidentLens_Deck_version_b/*.lock
+
+# Regenerable video production intermediates (keep final MP4, subtitles, animations, scripts)
+presentation/video_animations/output/raw/
+presentation/video_animations/output/clips/
+presentation/video_animations/output/clips_nosub/
+presentation/video_animations/output/preview_frames/
+presentation/video_animations/voiceover_audio/

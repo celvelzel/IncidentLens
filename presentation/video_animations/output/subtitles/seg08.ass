@@ -1,0 +1,27 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.45,0:00:05.84,Default,,0,0,0,,To keep our evaluation scientifically honest,\Nwe also have to highlight three clear limitations.
+Dialogue: 0,0:00:06.51,0:00:10.24,Default,,0,0,0,,First, achieving zero false\Nresolutions across both model
+Dialogue: 0,0:00:10.24,0:00:14.35,Default,,0,0,0,,families owes a great deal to the\Ntight coupling between FinalizeGate's
+Dialogue: 0,0:00:14.52,0:00:18.45,Default,,0,0,0,,seven hardcoded mechanism rules and\Nour synthetic benchmark scenarios.
+Dialogue: 0,0:00:18.81,0:00:22.22,Default,,0,0,0,,Testing on out-of-distribution,\Nunstructured production logs is
+Dialogue: 0,0:00:22.22,0:00:26.21,Default,,0,0,0,,essential to measure true hallucination\Nresistance when hard rules weaken.
+Dialogue: 0,0:00:26.51,0:00:30.63,Default,,0,0,0,,Second, our automatic scorer currently checks\Nculprit service and failure mode match,
+Dialogue: 0,0:00:31.07,0:00:34.52,Default,,0,0,0,,even though the oracle already defines\Nacceptable evidence support sets —
+Dialogue: 0,0:00:34.53,0:00:38.52,Default,,0,0,0,,incorporating support-set coverage and\Nre-centering paired bootstrap statistics
+Dialogue: 0,0:00:38.52,0:00:42.34,Default,,0,0,0,,onto Dynamic are immediate,\Nhigh-leverage upgrades. Third,
+Dialogue: 0,0:00:42.93,0:00:48.15,Default,,0,0,0,,our cross-model finding on incident_4035\Npoints directly to an on-demand Verifier:
+Dialogue: 0,0:00:48.60,0:00:52.56,Default,,0,0,0,,keep Dynamic as the fast, economical\Ndefault, and trigger an independent
+Dialogue: 0,0:00:52.56,0:00:56.82,Default,,0,0,0,,Verifier only when competing-mechanism\Nor counterfactual signals appear.

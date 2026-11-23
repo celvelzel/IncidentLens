@@ -190,6 +190,26 @@ These are descriptive differences on one repeat, not significance tests.
 > [Evaluation](docs/EVALUATION.md) for full tables, denominators, levers, ablations and
 > non-claims.
 
+### Official API follow-up & cross-model comparison (2026-11-22)
+
+After fixing silent custom-validator error stripping (`leading_review_consistency`,
+`task_tool_acl`, `tool_arguments` in `structured_output.py` plus verifier prompt invariants,
+commit `39621e5`), we ran the full 144-slot hardened Dev36 batch directly on the official
+DeepSeek API (`deepseek-flash`, `json_object`, `thinking: disabled`): **137/144 technical
+completion with 0 `STRUCTURED_OUTPUT_INVALID` crashes and 0 false resolutions**, where
+**Dynamic** led again at **31/36 (86.1%)**, 56.4 s, and 113,645 avg tokens (−42.6% tokens vs
+Single 28/36; −39.5% vs Full 27/36; +18/−0 paired vs Fixed-4 13/36).
+
+We also integrated OhMyGPT via the official `openai` SDK (`--provider ohmygpt`) and evaluated
+Tencent `tencent/hy4-flash` (`json_schema`) on a 6-case representative hardened subset
+(24 slots) with thinking ON vs OFF: disabling thinking cut wall time from 48.0 min to 12.6 min
+(3.8× faster) and raised technical completion from 45.8% to **95.8% (0 timeouts)**; on
+non-thinking `hy4-flash`, Single dropped to 1/6 (0/5 identifiable, 254k tokens) while
+**Dynamic reached 5/6 (83.3%) at 124k tokens and 85.6 s**. Full tables and per-batch evidence
+boundaries are in
+[Official API & cross-model report](analysis/wp_d/reports/official-api-and-cross-model-20261122/README.md)
+([中文版](analysis/wp_d/reports/official-api-and-cross-model-20261122/report.zh-CN.md)).
+
 ## Limitations
 
 - **Synthetic evidence, closed vocabulary.** All 40 public packs and 36 hardened benchmark

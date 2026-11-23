@@ -71,7 +71,7 @@ def main(argv=None):
     validate.add_argument("--data-root", type=Path, default=Path("data"))
     run = sub.add_parser("run")
     run.add_argument("--case", required=True)
-    run.add_argument("--provider", choices=["mock", "real"], default="mock")
+    run.add_argument("--provider", choices=["mock", "real", "ohmygpt"], default="mock")
     run.add_argument(
         "--variant", choices=["single", "fixed", "dynamic", "full"], default="dynamic"
     )
@@ -196,10 +196,22 @@ def main(argv=None):
                 if args.max_tokens is not None
                 else config.get("max_tokens"),
             )
-            provider = (
-                MockProvider()
-                if args.provider == "mock"
-                else RealChatProvider(
+            if args.provider == "mock":
+                provider = MockProvider()
+            elif args.provider == "ohmygpt":
+                from incident_lens.llm.ohmygpt import OhMyGPTProvider
+
+                provider = OhMyGPTProvider(
+                    structured_repair_retries=config.get("structured_repair_retries", 1),
+                    response_format_mode=args.response_format
+                    or os.getenv("INCIDENT_LENS_RESPONSE_FORMAT", "json_object"),
+                    thinking=args.thinking or os.getenv("INCIDENT_LENS_THINKING") or None,
+                    timeout=args.request_timeout
+                    if args.request_timeout is not None
+                    else float(os.getenv("INCIDENT_LENS_REQUEST_TIMEOUT", "180")),
+                )
+            else:
+                provider = RealChatProvider(
                     os.getenv("INCIDENT_LENS_BASE_URL"),
                     os.getenv("INCIDENT_LENS_API_KEY"),
                     os.getenv("INCIDENT_LENS_MODEL"),
@@ -217,7 +229,6 @@ def main(argv=None):
                         args.request_timeout,
                     ),
                 )
-            )
             cache = None
             if cache_mode != "off":
                 from incident_lens.cache.embeddings import SentenceTransformerBackend

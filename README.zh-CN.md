@@ -196,6 +196,10 @@ Token 低 39.3%；对 Full 多成功 3 个，耗时低 18.0%、Token 低 36.2%�
 中文报告见 [report.zh-CN.md](analysis/wp_d/reports/hardened144-20261101/report.zh-CN.md)，
 英文摘要与复现脚本见 [analysis/wp_d/reports/hardened144-20261101](analysis/wp_d/reports/hardened144-20261101/README.md)。
 
+**官方 API 修复验证与跨模型对照（2026-11-22）。** 修复了 `structured_output.py` 中自定义校验错误码（`leading_review_consistency` / `task_tool_acl` / `tool_arguments`）被折叠为模糊 `$: validation_error` 的问题并补充 `verifier` 互斥契约（commit `39621e5`）后，直连官方 DeepSeek API（`deepseek-flash`、`json_object`、`thinking: disabled`）完成了同一硬化集 36 案例 × 4 架构 = 144 槽位全量运行：**137/144 技术完成（0 次 `STRUCTURED_OUTPUT_INVALID`）、0 根因误判**，`dynamic` 以 **31/36（86.1%）**、均耗时 **56.4s**、均 Token **113,645** 再次居首（比 `single` 28/36 省 42.6% Token，比 `full` 27/36 省 39.5% Token，对 `fixed` 13/36 为 +18/−0）。
+
+同步通过官方 `openai` SDK 接入 OhMyGPT（`--provider ohmygpt`），在 6 类难度杠杆代表案例（6 × 4 = 24 槽位）上对腾讯 `tencent/hy4-flash`（`json_schema`）进行了思维链开/关消融与跨模型对照：关闭思维链（`thinking: disabled`）后总耗时从 48.0 分钟降至 12.6 分钟（快 3.8×）、技术完成率从 45.8% 升至 **95.8%（0 超时）**；在关闭思维链的 `hy4-flash` 上，`single` 在可识别案例上仅 0/5（总质量 1/6，254k Token），而 **`dynamic` 达到 5/6（83.3%，124k Token、85.6s）**，且在两个模型家族上 `full` 均救回了 `dynamic` 失手的反事实案例 `incident_4035`。完整表格与逐项证据边界见 [官方 API 与跨模型报告](analysis/wp_d/reports/official-api-and-cross-model-20261122/report.zh-CN.md)（英文摘要见 [README.md](analysis/wp_d/reports/official-api-and-cross-model-20261122/README.md)）。
+
 **早期 10 案例批次（2026-10-31）。** 一次开发可见的完整 WP-D 测试使用
 `auto/deepseek-v4.1-flash`、4 并发和单次重复，覆盖 10 个候选 oracle 案例。
 40 个最终槽位全部完成；仅 Full/3010 经过重试。

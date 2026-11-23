@@ -379,7 +379,12 @@ async def verify(provider, state_payload):
             "The acceptance standard is BEST_SUPPORTED_AVAILABLE: verdict=sufficient when mechanism "
             "plus compatible cross-source impact selects the most reasonable root, with no supported "
             "rival or actual contradiction. Missing exact request linkage stays an optional limitation, "
-            "not a reason to deny selection. This does not claim direct causal proof.",
+            "not a reason to deny selection. This does not claim direct causal proof. "
+            "Schema invariants: if likely_hypothesis_supported is true, BOTH likely_blockers and "
+            "contradictions MUST be empty lists ([]); if any blocker or contradiction is present, "
+            "set likely_hypothesis_supported to false. If verdict is \"sufficient\", BOTH "
+            "requested_checks and contradictions MUST be empty lists ([]), and any non-blocking "
+            "follow-up belongs in optional_checks.",
             state_payload, schema,
         )
     except ProviderError as exc:

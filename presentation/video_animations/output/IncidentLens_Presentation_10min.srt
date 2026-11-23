@@ -1,0 +1,670 @@
+1
+00:00:00,478 --> 00:00:03,579
+Hi everyone! Today I'm presenting IncidentLens,
+
+2
+00:00:04,068 --> 00:00:08,340
+an evidence-driven multi-agent system for
+software incident root cause analysis.
+
+3
+00:00:09,150 --> 00:00:14,080
+In production postmortems, the most dangerous
+failure mode isn't failing to find an answer —
+
+4
+00:00:14,080 --> 00:00:18,060
+it's hallucinating a plausible
+story. Generic LLM agents
+
+5
+00:00:18,060 --> 00:00:22,334
+routinely assert confident root
+causes without valid citations,
+
+6
+00:00:22,829 --> 00:00:27,291
+ignore data access boundaries, and almost
+never admit when evidence is missing.
+
+7
+00:00:27,503 --> 00:00:31,091
+IncidentLens enforces a much
+stricter engineering contract:
+
+8
+00:00:31,514 --> 00:00:35,220
+every claim must cite an
+actually observed evidence ID,
+
+9
+00:00:35,716 --> 00:00:39,120
+every agent operates inside
+explicit read-only tool permissions,
+
+10
+00:00:39,756 --> 00:00:43,451
+and when visible telemetry cannot
+uniquely identify the root cause,
+
+11
+00:00:43,931 --> 00:00:47,678
+the system must abstain with
+INCONCLUSIVE rather than guess.
+
+12
+00:00:48,086 --> 00:00:50,855
+Over the next nine minutes,
+I'll walk through the architecture,
+
+13
+00:00:51,241 --> 00:00:54,963
+show you four live hands-on demos,
+and share our full-scale,
+
+14
+00:00:55,219 --> 00:00:59,393
+cross-model experimental findings
+across DeepSeek and Tencent Hunyuan.
+
+15
+00:01:00,905 --> 00:01:05,717
+Let's look at how IncidentLens works under the
+hood. It runs as a centralized LangGraph workflow.
+
+16
+00:01:06,038 --> 00:01:09,987
+Starting from a public incident summary, the
+Coordinator inspects the current evidence gaps
+
+17
+00:01:09,987 --> 00:01:14,226
+and remaining budget, then dynamically
+dispatches one or two specialists per round:
+
+18
+00:01:14,679 --> 00:01:18,168
+Logs for error chronology, Metrics
+for capacity and dependencies,
+
+19
+00:01:18,629 --> 00:01:21,546
+Database for locks, connections, and slow queries,
+
+20
+00:01:21,875 --> 00:01:26,684
+and Changes for recent deployments and config
+diffs. Two safeguards keep the workflow honest.
+
+21
+00:01:26,909 --> 00:01:30,587
+First, strict tool ACL isolation—for example,
+
+22
+00:01:30,936 --> 00:01:36,188
+the Logs agent can never query config diffs.
+Second, a deterministic FinalizeGate:
+
+23
+00:01:36,615 --> 00:01:40,528
+final acceptance never relies on
+an LLM's self-reported confidence.
+
+24
+00:01:40,802 --> 00:01:45,349
+Instead, deterministic code verifies
+at least two independent sources,
+
+25
+00:01:45,908 --> 00:01:49,435
+a cause-specific discriminator,
+temporally compatible impact,
+
+26
+00:01:49,721 --> 00:01:52,840
+and zero unresolved contradictions
+or rival mechanisms.
+
+27
+00:01:53,181 --> 00:01:56,867
+To evaluate whether dynamic multi-agent
+orchestration actually pays off,
+
+28
+00:01:56,867 --> 00:02:02,367
+we compare four architectures under
+identical budgets and equivalent tool access:
+
+29
+00:02:02,815 --> 00:02:07,907
+a Single-agent baseline, a one-shot Fixed-4
+batch, our primary Dynamic architecture,
+
+30
+00:02:07,907 --> 00:02:11,955
+and Full, which adds an
+independent LLM Verifier loop.
+
+31
+00:02:13,279 --> 00:02:15,747
+Let's jump straight into our live demonstrations.
+
+32
+00:02:16,546 --> 00:02:21,007
+First, in the terminal, I run
+validate-data to verify that
+
+33
+00:02:21,007 --> 00:02:25,965
+public evidence files follow the strict
+schema with zero leaked private answer fields.
+
+34
+00:02:26,068 --> 00:02:30,556
+Next, let's verify our security
+boundary with the isolation test suite.
+
+35
+00:02:31,095 --> 00:02:36,247
+Notice how attempts by a specialist to
+escalate permissions or call an unauthorized
+
+36
+00:02:36,247 --> 00:02:41,747
+tool—like Logs trying to inspect config diffs —
+are deterministically blocked at runtime.
+
+37
+00:02:42,414 --> 00:02:46,507
+Running our broader offline regression
+suite confirms 505 tests passing,
+
+38
+00:02:46,507 --> 00:02:50,427
+alongside our 110-case provider
+fault-injection matrix,
+
+39
+00:02:50,427 --> 00:02:52,957
+which verifies bounded transport retries,
+
+40
+00:02:53,362 --> 00:02:56,338
+atomic request permits, and
+structured output recovery.
+
+41
+00:02:57,838 --> 00:03:00,681
+Now let's run an actual live
+investigation—not a mock.
+
+42
+00:03:01,153 --> 00:03:05,800
+Here I invoke the CLI using
+our newly integrated OhMyGPT
+
+43
+00:03:05,800 --> 00:03:10,140
+provider backed by the official
+OpenAI SDK, calling Tencent
+
+44
+00:03:10,330 --> 00:03:15,539
+hy4-flash with json_schema mode and thinking
+disabled, under the dynamic architecture.
+
+45
+00:03:16,048 --> 00:03:20,556
+This live run finishes with
+INCONCLUSIVE and writes result.json,
+
+46
+00:03:20,901 --> 00:03:25,660
+report.md, and trace.json. The report
+preserves the leading explanations,
+
+47
+00:03:26,144 --> 00:03:30,152
+observed evidence, and causal gaps.
+A confirmed root cause remains null:
+
+48
+00:03:30,586 --> 00:03:34,986
+the system does not turn a plausible
+explanation into a claim it cannot verify.
+
+49
+00:03:35,686 --> 00:03:38,697
+Next, let's look at two hardened benchmark cases
+
+50
+00:03:39,030 --> 00:03:43,104
+we ran on official DeepSeek
+deepseek-flash. On incident_4014,
+
+51
+00:03:43,373 --> 00:03:48,100
+a misleading case where a non-causal change is
+deliberately injected onto the culprit's own
+
+52
+00:03:48,100 --> 00:03:53,080
+service, dynamic doesn't take the bait —
+it cross-checks database lock waits and logs,
+
+53
+00:03:53,080 --> 00:03:57,773
+and nails postgres_lock_contention
+in 47 seconds. By contrast,
+
+54
+00:03:58,028 --> 00:04:02,794
+on incident_4018, the critical slow-query
+discriminator is missing by design.
+
+55
+00:04:03,277 --> 00:04:05,420
+After checking 15 tools across sources,
+
+56
+00:04:05,811 --> 00:04:09,558
+the system refuses to guess and
+terminates cleanly with INCONCLUSIVE.
+
+57
+00:04:10,995 --> 00:04:13,745
+To make every investigation
+inspectable by human engineers,
+
+58
+00:04:14,085 --> 00:04:16,339
+IncidentLens ships with a local Web Console.
+
+59
+00:04:16,777 --> 00:04:19,898
+Here I open the Trace Archive at localhost:8022.
+
+60
+00:04:20,320 --> 00:04:24,311
+Notice the banner at the top:
+Recorded Replay—zero provider calls.
+
+61
+00:04:24,654 --> 00:04:29,962
+Every view you're about to see is reconstructed
+purely from the persisted trace.json.
+
+62
+00:04:30,484 --> 00:04:33,572
+Let's inspect a RESOLVED run
+first. In the timeline panel,
+
+63
+00:04:33,937 --> 00:04:38,376
+we can step through every decision the
+Coordinator made, which specialist it dispatched,
+
+64
+00:04:38,677 --> 00:04:42,349
+and what exact records came back.
+Switching to the hypothesis view,
+
+65
+00:04:42,625 --> 00:04:45,882
+you can watch rival explanations
+compete as new evidence arrives,
+
+66
+00:04:46,293 --> 00:04:49,413
+until only one satisfies FinalizeGate.
+
+67
+00:04:49,795 --> 00:04:54,760
+Clicking any citation in the final report traces
+straight back to the underlying observed log,
+
+68
+00:04:54,949 --> 00:04:59,241
+metric, or config diff—so reviewers
+can verify grounding in seconds.
+
+69
+00:04:59,572 --> 00:05:03,513
+At the bottom, the audit ledger records
+the formal two-phase stop handshake —
+
+70
+00:05:03,513 --> 00:05:07,998
+WORKFLOW_STOP_REQUESTED, STOP_ACK,
+and NORMAL_TERMINATION —
+
+71
+00:05:08,300 --> 00:05:12,430
+alongside exact physical HTTP
+requests and token counts.
+
+72
+00:05:13,013 --> 00:05:16,414
+Now let's switch to an abstained case.
+Instead of crashing or guessing,
+
+73
+00:05:16,826 --> 00:05:21,693
+the UI clearly shows INCONCLUSIVE,
+explains which evidence gaps remain open,
+
+74
+00:05:21,693 --> 00:05:25,878
+and distinguishes normal
+abstention from a runtime error.
+
+75
+00:05:27,306 --> 00:05:30,637
+Evaluating an agent rigorously
+is just as hard as building it.
+
+76
+00:05:31,107 --> 00:05:35,715
+IncidentBench physically separates public
+evidence from private evaluator oracles;
+
+77
+00:05:36,227 --> 00:05:39,492
+labels are only unlocked
+after a run persists its state
+
+78
+00:05:39,780 --> 00:05:43,361
+and generates a matching
+SHA-256 completion receipt,
+
+79
+00:05:43,587 --> 00:05:46,246
+and every technical failure
+stays in the denominator.
+
+80
+00:05:46,516 --> 00:05:50,837
+When we moved our project onto the official
+DeepSeek API for full-scale testing,
+
+81
+00:05:51,148 --> 00:05:53,024
+we uncovered a critical latent bug:
+
+82
+00:05:53,458 --> 00:05:57,860
+Single and Full crashed on 8 out
+of 12 slots during verification!
+
+83
+00:05:58,309 --> 00:06:01,072
+Tracing the event logs
+revealed a subtle hidden bug:
+
+84
+00:06:01,483 --> 00:06:05,565
+ReviewOutput enforces a cross-field
+rule called leading_review_consistency,
+
+85
+00:06:05,900 --> 00:06:09,247
+but structured_output.py stripped
+that custom error code into
+
+86
+00:06:09,247 --> 00:06:12,378
+a generic $: validation_error,
+
+87
+00:06:12,886 --> 00:06:16,282
+leaving the model completely blind
+during its one repair attempt.
+
+88
+00:06:16,608 --> 00:06:21,108
+After whitelisting the safe error code,
+passing an explicit static repair hint,
+
+89
+00:06:21,526 --> 00:06:24,547
+and documenting the invariant
+in the verifier prompt —
+
+90
+00:06:24,547 --> 00:06:29,400
+verified by this new unit test—all 9
+previously crashed slots recovered 9 out of 9,
+
+91
+00:06:29,795 --> 00:06:32,445
+and across our subsequent 144-slot full run,
+
+92
+00:06:32,812 --> 00:06:35,505
+structured output crashes
+dropped to literally zero.
+
+93
+00:06:37,040 --> 00:06:39,755
+Now let's look at the numbers
+from our full-scale experiments.
+
+94
+00:06:39,860 --> 00:06:44,080
+On the 36-case hardened benchmark
+with official deepseek-flash —
+
+95
+00:06:44,096 --> 00:06:49,244
+144 slots across six difficulty levers —
+Dynamic finishes first across the board:
+
+96
+00:06:49,696 --> 00:06:53,356
+86.1% quality success (31 out of 36),
+
+97
+00:06:53,527 --> 00:06:58,412
+cutting tokens by 42.6% compared to
+Single and 39.5% compared to Full,
+
+98
+00:06:58,747 --> 00:07:02,977
+while beating Fixed-4 18 to 0 in paired
+comparisons. Even more remarkably,
+
+99
+00:07:03,212 --> 00:07:05,480
+across all 137 completed runs,
+
+100
+00:07:05,853 --> 00:07:09,317
+there were zero false resolutions —
+whenever the system emitted RESOLVED,
+
+101
+00:07:09,592 --> 00:07:13,771
+it was 100% right. To test whether these
+findings generalize beyond DeepSeek,
+
+102
+00:07:14,168 --> 00:07:19,448
+we ran the same six-lever benchmark
+on Tencent hy4-flash via OhMyGPT,
+
+103
+00:07:20,023 --> 00:07:22,410
+both with chain-of-thought
+thinking enabled and disabled.
+
+104
+00:07:22,673 --> 00:07:26,840
+Here we uncovered a counterintuitive result:
+disabling thinking nearly doubled end-to-end
+
+105
+00:07:26,840 --> 00:07:31,080
+success, cutting runtime from
+48 minutes down to 12.6 minutes
+
+106
+00:07:31,080 --> 00:07:36,040
+and lifting completion from 45.8% to 95.8%. Why?
+
+107
+00:07:36,040 --> 00:07:39,940
+Because multi-agent RCA is a
+serial tool-exploration loop,
+
+108
+00:07:39,940 --> 00:07:44,980
+not a single-shot math puzzle. With thinking
+enabled, each call took 40 to 70 seconds,
+
+109
+00:07:44,980 --> 00:07:49,510
+causing Single and Full to exhaust the
+900-second wall-clock budget mid-investigation.
+
+110
+00:07:50,020 --> 00:07:54,615
+Disabling thinking let the workflow
+trade slow internal monologues for fast,
+
+111
+00:07:54,778 --> 00:07:58,023
+iterative evidence gathering —
+guided externally by FinalizeGate.
+
+112
+00:07:58,560 --> 00:08:03,749
+And look at the starkest finding of the
+entire project: on non-thinking hy4-flash,
+
+113
+00:08:04,074 --> 00:08:08,310
+the monolithic Single agent collapsed
+to 0 out of 5 on identifiable cases,
+
+114
+00:08:08,508 --> 00:08:10,733
+burning 254,000 tokens per run.
+
+115
+00:08:11,063 --> 00:08:15,300
+Yet Dynamic multi-agent specialization
+rescued accuracy from 16.7%
+
+116
+00:08:15,300 --> 00:08:19,368
+all the way to 83.3%, while cutting
+both tokens and latency in half!
+
+117
+00:08:19,875 --> 00:08:23,358
+Finally, across both DeepSeek and hy4-flash,
+
+118
+00:08:23,717 --> 00:08:28,201
+the one case Dynamic missed —
+counterfactual pair incident_4035 —
+
+119
+00:08:28,588 --> 00:08:33,353
+was successfully rescued by Full thanks to
+the Verifier's targeted follow-up checks.
+
+120
+00:08:34,854 --> 00:08:40,240
+To keep our evaluation scientifically honest,
+we also have to highlight three clear limitations.
+
+121
+00:08:40,913 --> 00:08:44,640
+First, achieving zero false
+resolutions across both model
+
+122
+00:08:44,640 --> 00:08:48,749
+families owes a great deal to the
+tight coupling between FinalizeGate's
+
+123
+00:08:48,924 --> 00:08:52,850
+seven hardcoded mechanism rules and
+our synthetic benchmark scenarios.
+
+124
+00:08:53,213 --> 00:08:56,620
+Testing on out-of-distribution,
+unstructured production logs is
+
+125
+00:08:56,620 --> 00:09:00,607
+essential to measure true hallucination
+resistance when hard rules weaken.
+
+126
+00:09:00,911 --> 00:09:05,033
+Second, our automatic scorer currently checks
+culprit service and failure mode match,
+
+127
+00:09:05,471 --> 00:09:08,920
+even though the oracle already defines
+acceptable evidence support sets —
+
+128
+00:09:08,930 --> 00:09:12,920
+incorporating support-set coverage and
+re-centering paired bootstrap statistics
+
+129
+00:09:12,920 --> 00:09:16,740
+onto Dynamic are immediate,
+high-leverage upgrades. Third,
+
+130
+00:09:17,332 --> 00:09:22,553
+our cross-model finding on incident_4035
+points directly to an on-demand Verifier:
+
+131
+00:09:23,002 --> 00:09:26,960
+keep Dynamic as the fast, economical
+default, and trigger an independent
+
+132
+00:09:26,960 --> 00:09:31,217
+Verifier only when competing-mechanism
+or counterfactual signals appear.
+
+133
+00:09:32,763 --> 00:09:38,263
+To wrap up: IncidentLens demonstrates that
+combining scoped multi-agent specialization,
+
+134
+00:09:38,742 --> 00:09:42,660
+deterministic grounding gates, and
+failure-inclusive cross-model evaluation
+
+135
+00:09:42,660 --> 00:09:46,220
+delivers zero-fabrication root cause analysis —
+
+136
+00:09:46,366 --> 00:09:50,184
+not only saving 40% to 50%
+in tokens on strong models,
+
+137
+00:09:50,648 --> 00:09:55,267
+but dramatically amplifying diagnostic
+capability on lighter, non-thinking models.
+
+138
+00:09:55,871 --> 00:09:59,188
+Thank you so much for watching, and
+I'd be happy to take any questions!

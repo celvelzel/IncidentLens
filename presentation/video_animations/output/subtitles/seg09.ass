@@ -1,0 +1,20 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.46,0:00:05.96,Default,,0,0,0,,To wrap up: IncidentLens demonstrates that\Ncombining scoped multi-agent specialization,
+Dialogue: 0,0:00:06.44,0:00:10.36,Default,,0,0,0,,deterministic grounding gates, and\Nfailure-inclusive cross-model evaluation
+Dialogue: 0,0:00:10.36,0:00:13.92,Default,,0,0,0,,delivers zero-fabrication root cause analysis —
+Dialogue: 0,0:00:14.07,0:00:17.88,Default,,0,0,0,,not only saving 40% to 50%\Nin tokens on strong models,
+Dialogue: 0,0:00:18.35,0:00:22.97,Default,,0,0,0,,but dramatically amplifying diagnostic\Ncapability on lighter, non-thinking models.
+Dialogue: 0,0:00:23.57,0:00:26.89,Default,,0,0,0,,Thank you so much for watching, and\NI'd be happy to take any questions!

@@ -1,0 +1,86 @@
+1
+00:00:00,439 --> 00:00:03,770
+Evaluating an agent rigorously
+is just as hard as building it.
+
+2
+00:00:04,240 --> 00:00:08,848
+IncidentBench physically separates public
+evidence from private evaluator oracles;
+
+3
+00:00:09,360 --> 00:00:12,625
+labels are only unlocked
+after a run persists its state
+
+4
+00:00:12,913 --> 00:00:16,494
+and generates a matching
+SHA-256 completion receipt,
+
+5
+00:00:16,720 --> 00:00:19,379
+and every technical failure
+stays in the denominator.
+
+6
+00:00:19,649 --> 00:00:23,970
+When we moved our project onto the official
+DeepSeek API for full-scale testing,
+
+7
+00:00:24,281 --> 00:00:26,157
+we uncovered a critical latent bug:
+
+8
+00:00:26,591 --> 00:00:30,993
+Single and Full crashed on 8 out
+of 12 slots during verification!
+
+9
+00:00:31,442 --> 00:00:34,205
+Tracing the event logs
+revealed a subtle hidden bug:
+
+10
+00:00:34,616 --> 00:00:38,698
+ReviewOutput enforces a cross-field
+rule called leading_review_consistency,
+
+11
+00:00:39,033 --> 00:00:42,380
+but structured_output.py stripped
+that custom error code into
+
+12
+00:00:42,380 --> 00:00:45,511
+a generic $: validation_error,
+
+13
+00:00:46,019 --> 00:00:49,415
+leaving the model completely blind
+during its one repair attempt.
+
+14
+00:00:49,741 --> 00:00:54,241
+After whitelisting the safe error code,
+passing an explicit static repair hint,
+
+15
+00:00:54,659 --> 00:00:57,680
+and documenting the invariant
+in the verifier prompt —
+
+16
+00:00:57,680 --> 00:01:02,533
+verified by this new unit test—all 9
+previously crashed slots recovered 9 out of 9,
+
+17
+00:01:02,928 --> 00:01:05,578
+and across our subsequent 144-slot full run,
+
+18
+00:01:05,945 --> 00:01:08,638
+structured output crashes
+dropped to literally zero.

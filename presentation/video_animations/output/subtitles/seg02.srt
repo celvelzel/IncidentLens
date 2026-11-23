@@ -1,0 +1,77 @@
+1
+00:00:00,438 --> 00:00:05,250
+Let's look at how IncidentLens works under the
+hood. It runs as a centralized LangGraph workflow.
+
+2
+00:00:05,571 --> 00:00:09,520
+Starting from a public incident summary, the
+Coordinator inspects the current evidence gaps
+
+3
+00:00:09,520 --> 00:00:13,759
+and remaining budget, then dynamically
+dispatches one or two specialists per round:
+
+4
+00:00:14,212 --> 00:00:17,701
+Logs for error chronology, Metrics
+for capacity and dependencies,
+
+5
+00:00:18,162 --> 00:00:21,079
+Database for locks, connections, and slow queries,
+
+6
+00:00:21,408 --> 00:00:26,217
+and Changes for recent deployments and config
+diffs. Two safeguards keep the workflow honest.
+
+7
+00:00:26,442 --> 00:00:30,120
+First, strict tool ACL isolation—for example,
+
+8
+00:00:30,469 --> 00:00:35,721
+the Logs agent can never query config diffs.
+Second, a deterministic FinalizeGate:
+
+9
+00:00:36,148 --> 00:00:40,061
+final acceptance never relies on
+an LLM's self-reported confidence.
+
+10
+00:00:40,335 --> 00:00:44,882
+Instead, deterministic code verifies
+at least two independent sources,
+
+11
+00:00:45,441 --> 00:00:48,968
+a cause-specific discriminator,
+temporally compatible impact,
+
+12
+00:00:49,254 --> 00:00:52,373
+and zero unresolved contradictions
+or rival mechanisms.
+
+13
+00:00:52,714 --> 00:00:56,400
+To evaluate whether dynamic multi-agent
+orchestration actually pays off,
+
+14
+00:00:56,400 --> 00:01:01,900
+we compare four architectures under
+identical budgets and equivalent tool access:
+
+15
+00:01:02,348 --> 00:01:07,440
+a Single-agent baseline, a one-shot Fixed-4
+batch, our primary Dynamic architecture,
+
+16
+00:01:07,440 --> 00:01:11,488
+and Full, which adds an
+independent LLM Verifier loop.

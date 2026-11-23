@@ -1,0 +1,24 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.41,0:00:02.88,Default,,0,0,0,,Let's jump straight into our live demonstrations.
+Dialogue: 0,0:00:03.68,0:00:08.14,Default,,0,0,0,,First, in the terminal, I run\Nvalidate-data to verify that
+Dialogue: 0,0:00:08.14,0:00:13.10,Default,,0,0,0,,public evidence files follow the strict\Nschema with zero leaked private answer fields.
+Dialogue: 0,0:00:13.20,0:00:17.69,Default,,0,0,0,,Next, let's verify our security\Nboundary with the isolation test suite.
+Dialogue: 0,0:00:18.23,0:00:23.38,Default,,0,0,0,,Notice how attempts by a specialist to\Nescalate permissions or call an unauthorized
+Dialogue: 0,0:00:23.38,0:00:28.88,Default,,0,0,0,,tool—like Logs trying to inspect config diffs —\Nare deterministically blocked at runtime.
+Dialogue: 0,0:00:29.55,0:00:33.64,Default,,0,0,0,,Running our broader offline regression\Nsuite confirms 505 tests passing,
+Dialogue: 0,0:00:33.64,0:00:37.56,Default,,0,0,0,,alongside our 110-case provider\Nfault-injection matrix,
+Dialogue: 0,0:00:37.56,0:00:40.09,Default,,0,0,0,,which verifies bounded transport retries,
+Dialogue: 0,0:00:40.49,0:00:43.47,Default,,0,0,0,,atomic request permits, and\Nstructured output recovery.

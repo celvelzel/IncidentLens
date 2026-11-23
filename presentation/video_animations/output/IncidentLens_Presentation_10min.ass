@@ -1,0 +1,152 @@
+[Script Info]
+Title: IncidentLens — synchronized English subtitles
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,36,&H00F8FAFC,&H00F8FAFC,&H380B1220,&H380B1220,0,0,0,0,100,100,0,0,3,11,0,2,150,150,38,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.48,0:00:03.58,Default,,0,0,0,,Hi everyone! Today I'm presenting IncidentLens,
+Dialogue: 0,0:00:04.07,0:00:08.34,Default,,0,0,0,,an evidence-driven multi-agent system for\Nsoftware incident root cause analysis.
+Dialogue: 0,0:00:09.15,0:00:14.08,Default,,0,0,0,,In production postmortems, the most dangerous\Nfailure mode isn't failing to find an answer —
+Dialogue: 0,0:00:14.08,0:00:18.06,Default,,0,0,0,,it's hallucinating a plausible\Nstory. Generic LLM agents
+Dialogue: 0,0:00:18.06,0:00:22.33,Default,,0,0,0,,routinely assert confident root\Ncauses without valid citations,
+Dialogue: 0,0:00:22.83,0:00:27.29,Default,,0,0,0,,ignore data access boundaries, and almost\Nnever admit when evidence is missing.
+Dialogue: 0,0:00:27.50,0:00:31.09,Default,,0,0,0,,IncidentLens enforces a much\Nstricter engineering contract:
+Dialogue: 0,0:00:31.51,0:00:35.22,Default,,0,0,0,,every claim must cite an\Nactually observed evidence ID,
+Dialogue: 0,0:00:35.72,0:00:39.12,Default,,0,0,0,,every agent operates inside\Nexplicit read-only tool permissions,
+Dialogue: 0,0:00:39.76,0:00:43.45,Default,,0,0,0,,and when visible telemetry cannot\Nuniquely identify the root cause,
+Dialogue: 0,0:00:43.93,0:00:47.68,Default,,0,0,0,,the system must abstain with\NINCONCLUSIVE rather than guess.
+Dialogue: 0,0:00:48.09,0:00:50.86,Default,,0,0,0,,Over the next nine minutes,\NI'll walk through the architecture,
+Dialogue: 0,0:00:51.24,0:00:54.96,Default,,0,0,0,,show you four live hands-on demos,\Nand share our full-scale,
+Dialogue: 0,0:00:55.22,0:00:59.39,Default,,0,0,0,,cross-model experimental findings\Nacross DeepSeek and Tencent Hunyuan.
+Dialogue: 0,0:01:00.90,0:01:05.72,Default,,0,0,0,,Let's look at how IncidentLens works under the\Nhood. It runs as a centralized LangGraph workflow.
+Dialogue: 0,0:01:06.04,0:01:09.99,Default,,0,0,0,,Starting from a public incident summary, the\NCoordinator inspects the current evidence gaps
+Dialogue: 0,0:01:09.99,0:01:14.23,Default,,0,0,0,,and remaining budget, then dynamically\Ndispatches one or two specialists per round:
+Dialogue: 0,0:01:14.68,0:01:18.17,Default,,0,0,0,,Logs for error chronology, Metrics\Nfor capacity and dependencies,
+Dialogue: 0,0:01:18.63,0:01:21.55,Default,,0,0,0,,Database for locks, connections, and slow queries,
+Dialogue: 0,0:01:21.87,0:01:26.68,Default,,0,0,0,,and Changes for recent deployments and config\Ndiffs. Two safeguards keep the workflow honest.
+Dialogue: 0,0:01:26.91,0:01:30.59,Default,,0,0,0,,First, strict tool ACL isolation—for example,
+Dialogue: 0,0:01:30.94,0:01:36.19,Default,,0,0,0,,the Logs agent can never query config diffs.\NSecond, a deterministic FinalizeGate:
+Dialogue: 0,0:01:36.61,0:01:40.53,Default,,0,0,0,,final acceptance never relies on\Nan LLM's self-reported confidence.
+Dialogue: 0,0:01:40.80,0:01:45.35,Default,,0,0,0,,Instead, deterministic code verifies\Nat least two independent sources,
+Dialogue: 0,0:01:45.91,0:01:49.43,Default,,0,0,0,,a cause-specific discriminator,\Ntemporally compatible impact,
+Dialogue: 0,0:01:49.72,0:01:52.84,Default,,0,0,0,,and zero unresolved contradictions\Nor rival mechanisms.
+Dialogue: 0,0:01:53.18,0:01:56.87,Default,,0,0,0,,To evaluate whether dynamic multi-agent\Norchestration actually pays off,
+Dialogue: 0,0:01:56.87,0:02:02.37,Default,,0,0,0,,we compare four architectures under\Nidentical budgets and equivalent tool access:
+Dialogue: 0,0:02:02.81,0:02:07.91,Default,,0,0,0,,a Single-agent baseline, a one-shot Fixed-4\Nbatch, our primary Dynamic architecture,
+Dialogue: 0,0:02:07.91,0:02:11.95,Default,,0,0,0,,and Full, which adds an\Nindependent LLM Verifier loop.
+Dialogue: 0,0:02:13.28,0:02:15.75,Default,,0,0,0,,Let's jump straight into our live demonstrations.
+Dialogue: 0,0:02:16.55,0:02:21.01,Default,,0,0,0,,First, in the terminal, I run\Nvalidate-data to verify that
+Dialogue: 0,0:02:21.01,0:02:25.96,Default,,0,0,0,,public evidence files follow the strict\Nschema with zero leaked private answer fields.
+Dialogue: 0,0:02:26.07,0:02:30.56,Default,,0,0,0,,Next, let's verify our security\Nboundary with the isolation test suite.
+Dialogue: 0,0:02:31.09,0:02:36.25,Default,,0,0,0,,Notice how attempts by a specialist to\Nescalate permissions or call an unauthorized
+Dialogue: 0,0:02:36.25,0:02:41.75,Default,,0,0,0,,tool—like Logs trying to inspect config diffs —\Nare deterministically blocked at runtime.
+Dialogue: 0,0:02:42.41,0:02:46.51,Default,,0,0,0,,Running our broader offline regression\Nsuite confirms 505 tests passing,
+Dialogue: 0,0:02:46.51,0:02:50.43,Default,,0,0,0,,alongside our 110-case provider\Nfault-injection matrix,
+Dialogue: 0,0:02:50.43,0:02:52.96,Default,,0,0,0,,which verifies bounded transport retries,
+Dialogue: 0,0:02:53.36,0:02:56.34,Default,,0,0,0,,atomic request permits, and\Nstructured output recovery.
+Dialogue: 0,0:02:57.84,0:03:00.68,Default,,0,0,0,,Now let's run an actual live\Ninvestigation—not a mock.
+Dialogue: 0,0:03:01.15,0:03:05.80,Default,,0,0,0,,Here I invoke the CLI using\Nour newly integrated OhMyGPT
+Dialogue: 0,0:03:05.80,0:03:10.14,Default,,0,0,0,,provider backed by the official\NOpenAI SDK, calling Tencent
+Dialogue: 0,0:03:10.33,0:03:15.54,Default,,0,0,0,,hy4-flash with json_schema mode and thinking\Ndisabled, under the dynamic architecture.
+Dialogue: 0,0:03:16.05,0:03:20.56,Default,,0,0,0,,This live run finishes with\NINCONCLUSIVE and writes result.json,
+Dialogue: 0,0:03:20.90,0:03:25.66,Default,,0,0,0,,report.md, and trace.json. The report\Npreserves the leading explanations,
+Dialogue: 0,0:03:26.14,0:03:30.15,Default,,0,0,0,,observed evidence, and causal gaps.\NA confirmed root cause remains null:
+Dialogue: 0,0:03:30.59,0:03:34.99,Default,,0,0,0,,the system does not turn a plausible\Nexplanation into a claim it cannot verify.
+Dialogue: 0,0:03:35.69,0:03:38.70,Default,,0,0,0,,Next, let's look at two hardened benchmark cases
+Dialogue: 0,0:03:39.03,0:03:43.10,Default,,0,0,0,,we ran on official DeepSeek\Ndeepseek-flash. On incident_4014,
+Dialogue: 0,0:03:43.37,0:03:48.10,Default,,0,0,0,,a misleading case where a non-causal change is\Ndeliberately injected onto the culprit's own
+Dialogue: 0,0:03:48.10,0:03:53.08,Default,,0,0,0,,service, dynamic doesn't take the bait —\Nit cross-checks database lock waits and logs,
+Dialogue: 0,0:03:53.08,0:03:57.77,Default,,0,0,0,,and nails postgres_lock_contention\Nin 47 seconds. By contrast,
+Dialogue: 0,0:03:58.03,0:04:02.79,Default,,0,0,0,,on incident_4018, the critical slow-query\Ndiscriminator is missing by design.
+Dialogue: 0,0:04:03.28,0:04:05.42,Default,,0,0,0,,After checking 15 tools across sources,
+Dialogue: 0,0:04:05.81,0:04:09.56,Default,,0,0,0,,the system refuses to guess and\Nterminates cleanly with INCONCLUSIVE.
+Dialogue: 0,0:04:11.00,0:04:13.75,Default,,0,0,0,,To make every investigation\Ninspectable by human engineers,
+Dialogue: 0,0:04:14.09,0:04:16.34,Default,,0,0,0,,IncidentLens ships with a local Web Console.
+Dialogue: 0,0:04:16.78,0:04:19.90,Default,,0,0,0,,Here I open the Trace Archive at localhost:8022.
+Dialogue: 0,0:04:20.32,0:04:24.31,Default,,0,0,0,,Notice the banner at the top:\NRecorded Replay—zero provider calls.
+Dialogue: 0,0:04:24.65,0:04:29.96,Default,,0,0,0,,Every view you're about to see is reconstructed\Npurely from the persisted trace.json.
+Dialogue: 0,0:04:30.48,0:04:33.57,Default,,0,0,0,,Let's inspect a RESOLVED run\Nfirst. In the timeline panel,
+Dialogue: 0,0:04:33.94,0:04:38.38,Default,,0,0,0,,we can step through every decision the\NCoordinator made, which specialist it dispatched,
+Dialogue: 0,0:04:38.68,0:04:42.35,Default,,0,0,0,,and what exact records came back.\NSwitching to the hypothesis view,
+Dialogue: 0,0:04:42.63,0:04:45.88,Default,,0,0,0,,you can watch rival explanations\Ncompete as new evidence arrives,
+Dialogue: 0,0:04:46.29,0:04:49.41,Default,,0,0,0,,until only one satisfies FinalizeGate.
+Dialogue: 0,0:04:49.80,0:04:54.76,Default,,0,0,0,,Clicking any citation in the final report traces\Nstraight back to the underlying observed log,
+Dialogue: 0,0:04:54.95,0:04:59.24,Default,,0,0,0,,metric, or config diff—so reviewers\Ncan verify grounding in seconds.
+Dialogue: 0,0:04:59.57,0:05:03.51,Default,,0,0,0,,At the bottom, the audit ledger records\Nthe formal two-phase stop handshake —
+Dialogue: 0,0:05:03.51,0:05:08.00,Default,,0,0,0,,WORKFLOW_STOP_REQUESTED, STOP_ACK,\Nand NORMAL_TERMINATION —
+Dialogue: 0,0:05:08.30,0:05:12.43,Default,,0,0,0,,alongside exact physical HTTP\Nrequests and token counts.
+Dialogue: 0,0:05:13.01,0:05:16.41,Default,,0,0,0,,Now let's switch to an abstained case.\NInstead of crashing or guessing,
+Dialogue: 0,0:05:16.83,0:05:21.69,Default,,0,0,0,,the UI clearly shows INCONCLUSIVE,\Nexplains which evidence gaps remain open,
+Dialogue: 0,0:05:21.69,0:05:25.88,Default,,0,0,0,,and distinguishes normal\Nabstention from a runtime error.
+Dialogue: 0,0:05:27.31,0:05:30.64,Default,,0,0,0,,Evaluating an agent rigorously\Nis just as hard as building it.
+Dialogue: 0,0:05:31.11,0:05:35.71,Default,,0,0,0,,IncidentBench physically separates public\Nevidence from private evaluator oracles;
+Dialogue: 0,0:05:36.23,0:05:39.49,Default,,0,0,0,,labels are only unlocked\Nafter a run persists its state
+Dialogue: 0,0:05:39.78,0:05:43.36,Default,,0,0,0,,and generates a matching\NSHA-256 completion receipt,
+Dialogue: 0,0:05:43.59,0:05:46.25,Default,,0,0,0,,and every technical failure\Nstays in the denominator.
+Dialogue: 0,0:05:46.52,0:05:50.84,Default,,0,0,0,,When we moved our project onto the official\NDeepSeek API for full-scale testing,
+Dialogue: 0,0:05:51.15,0:05:53.02,Default,,0,0,0,,we uncovered a critical latent bug:
+Dialogue: 0,0:05:53.46,0:05:57.86,Default,,0,0,0,,Single and Full crashed on 8 out\Nof 12 slots during verification!
+Dialogue: 0,0:05:58.31,0:06:01.07,Default,,0,0,0,,Tracing the event logs\Nrevealed a subtle hidden bug:
+Dialogue: 0,0:06:01.48,0:06:05.56,Default,,0,0,0,,ReviewOutput enforces a cross-field\Nrule called leading_review_consistency,
+Dialogue: 0,0:06:05.90,0:06:09.25,Default,,0,0,0,,but structured_output.py stripped\Nthat custom error code into
+Dialogue: 0,0:06:09.25,0:06:12.38,Default,,0,0,0,,a generic $: validation_error,
+Dialogue: 0,0:06:12.89,0:06:16.28,Default,,0,0,0,,leaving the model completely blind\Nduring its one repair attempt.
+Dialogue: 0,0:06:16.61,0:06:21.11,Default,,0,0,0,,After whitelisting the safe error code,\Npassing an explicit static repair hint,
+Dialogue: 0,0:06:21.53,0:06:24.55,Default,,0,0,0,,and documenting the invariant\Nin the verifier prompt —
+Dialogue: 0,0:06:24.55,0:06:29.40,Default,,0,0,0,,verified by this new unit test—all 9\Npreviously crashed slots recovered 9 out of 9,
+Dialogue: 0,0:06:29.79,0:06:32.44,Default,,0,0,0,,and across our subsequent 144-slot full run,
+Dialogue: 0,0:06:32.81,0:06:35.50,Default,,0,0,0,,structured output crashes\Ndropped to literally zero.
+Dialogue: 0,0:06:37.04,0:06:39.76,Default,,0,0,0,,Now let's look at the numbers\Nfrom our full-scale experiments.
+Dialogue: 0,0:06:39.86,0:06:44.08,Default,,0,0,0,,On the 36-case hardened benchmark\Nwith official deepseek-flash —
+Dialogue: 0,0:06:44.10,0:06:49.24,Default,,0,0,0,,144 slots across six difficulty levers —\NDynamic finishes first across the board:
+Dialogue: 0,0:06:49.70,0:06:53.36,Default,,0,0,0,,86.1% quality success (31 out of 36),
+Dialogue: 0,0:06:53.53,0:06:58.41,Default,,0,0,0,,cutting tokens by 42.6% compared to\NSingle and 39.5% compared to Full,
+Dialogue: 0,0:06:58.75,0:07:02.98,Default,,0,0,0,,while beating Fixed-4 18 to 0 in paired\Ncomparisons. Even more remarkably,
+Dialogue: 0,0:07:03.21,0:07:05.48,Default,,0,0,0,,across all 137 completed runs,
+Dialogue: 0,0:07:05.85,0:07:09.32,Default,,0,0,0,,there were zero false resolutions —\Nwhenever the system emitted RESOLVED,
+Dialogue: 0,0:07:09.59,0:07:13.77,Default,,0,0,0,,it was 100% right. To test whether these\Nfindings generalize beyond DeepSeek,
+Dialogue: 0,0:07:14.17,0:07:19.45,Default,,0,0,0,,we ran the same six-lever benchmark\Non Tencent hy4-flash via OhMyGPT,
+Dialogue: 0,0:07:20.02,0:07:22.41,Default,,0,0,0,,both with chain-of-thought\Nthinking enabled and disabled.
+Dialogue: 0,0:07:22.67,0:07:26.84,Default,,0,0,0,,Here we uncovered a counterintuitive result:\Ndisabling thinking nearly doubled end-to-end
+Dialogue: 0,0:07:26.84,0:07:31.08,Default,,0,0,0,,success, cutting runtime from\N48 minutes down to 12.6 minutes
+Dialogue: 0,0:07:31.08,0:07:36.04,Default,,0,0,0,,and lifting completion from 45.8% to 95.8%. Why?
+Dialogue: 0,0:07:36.04,0:07:39.94,Default,,0,0,0,,Because multi-agent RCA is a\Nserial tool-exploration loop,
+Dialogue: 0,0:07:39.94,0:07:44.98,Default,,0,0,0,,not a single-shot math puzzle. With thinking\Nenabled, each call took 40 to 70 seconds,
+Dialogue: 0,0:07:44.98,0:07:49.51,Default,,0,0,0,,causing Single and Full to exhaust the\N900-second wall-clock budget mid-investigation.
+Dialogue: 0,0:07:50.02,0:07:54.62,Default,,0,0,0,,Disabling thinking let the workflow\Ntrade slow internal monologues for fast,
+Dialogue: 0,0:07:54.78,0:07:58.02,Default,,0,0,0,,iterative evidence gathering —\Nguided externally by FinalizeGate.
+Dialogue: 0,0:07:58.56,0:08:03.75,Default,,0,0,0,,And look at the starkest finding of the\Nentire project: on non-thinking hy4-flash,
+Dialogue: 0,0:08:04.07,0:08:08.31,Default,,0,0,0,,the monolithic Single agent collapsed\Nto 0 out of 5 on identifiable cases,
+Dialogue: 0,0:08:08.51,0:08:10.73,Default,,0,0,0,,burning 254,000 tokens per run.
+Dialogue: 0,0:08:11.06,0:08:15.30,Default,,0,0,0,,Yet Dynamic multi-agent specialization\Nrescued accuracy from 16.7%
+Dialogue: 0,0:08:15.30,0:08:19.37,Default,,0,0,0,,all the way to 83.3%, while cutting\Nboth tokens and latency in half!
+Dialogue: 0,0:08:19.88,0:08:23.36,Default,,0,0,0,,Finally, across both DeepSeek and hy4-flash,
+Dialogue: 0,0:08:23.72,0:08:28.20,Default,,0,0,0,,the one case Dynamic missed —\Ncounterfactual pair incident_4035 —
+Dialogue: 0,0:08:28.59,0:08:33.35,Default,,0,0,0,,was successfully rescued by Full thanks to\Nthe Verifier's targeted follow-up checks.
+Dialogue: 0,0:08:34.85,0:08:40.24,Default,,0,0,0,,To keep our evaluation scientifically honest,\Nwe also have to highlight three clear limitations.
+Dialogue: 0,0:08:40.91,0:08:44.64,Default,,0,0,0,,First, achieving zero false\Nresolutions across both model
+Dialogue: 0,0:08:44.64,0:08:48.75,Default,,0,0,0,,families owes a great deal to the\Ntight coupling between FinalizeGate's
+Dialogue: 0,0:08:48.92,0:08:52.85,Default,,0,0,0,,seven hardcoded mechanism rules and\Nour synthetic benchmark scenarios.
+Dialogue: 0,0:08:53.21,0:08:56.62,Default,,0,0,0,,Testing on out-of-distribution,\Nunstructured production logs is
+Dialogue: 0,0:08:56.62,0:09:00.61,Default,,0,0,0,,essential to measure true hallucination\Nresistance when hard rules weaken.
+Dialogue: 0,0:09:00.91,0:09:05.03,Default,,0,0,0,,Second, our automatic scorer currently checks\Nculprit service and failure mode match,
+Dialogue: 0,0:09:05.47,0:09:08.92,Default,,0,0,0,,even though the oracle already defines\Nacceptable evidence support sets —
+Dialogue: 0,0:09:08.93,0:09:12.92,Default,,0,0,0,,incorporating support-set coverage and\Nre-centering paired bootstrap statistics
+Dialogue: 0,0:09:12.92,0:09:16.74,Default,,0,0,0,,onto Dynamic are immediate,\Nhigh-leverage upgrades. Third,
+Dialogue: 0,0:09:17.33,0:09:22.55,Default,,0,0,0,,our cross-model finding on incident_4035\Npoints directly to an on-demand Verifier:
+Dialogue: 0,0:09:23.00,0:09:26.96,Default,,0,0,0,,keep Dynamic as the fast, economical\Ndefault, and trigger an independent
+Dialogue: 0,0:09:26.96,0:09:31.22,Default,,0,0,0,,Verifier only when competing-mechanism\Nor counterfactual signals appear.
+Dialogue: 0,0:09:32.76,0:09:38.26,Default,,0,0,0,,To wrap up: IncidentLens demonstrates that\Ncombining scoped multi-agent specialization,
+Dialogue: 0,0:09:38.74,0:09:42.66,Default,,0,0,0,,deterministic grounding gates, and\Nfailure-inclusive cross-model evaluation
+Dialogue: 0,0:09:42.66,0:09:46.22,Default,,0,0,0,,delivers zero-fabrication root cause analysis —
+Dialogue: 0,0:09:46.37,0:09:50.18,Default,,0,0,0,,not only saving 40% to 50%\Nin tokens on strong models,
+Dialogue: 0,0:09:50.65,0:09:55.27,Default,,0,0,0,,but dramatically amplifying diagnostic\Ncapability on lighter, non-thinking models.
+Dialogue: 0,0:09:55.87,0:09:59.19,Default,,0,0,0,,Thank you so much for watching, and\NI'd be happy to take any questions!

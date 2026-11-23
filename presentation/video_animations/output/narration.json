@@ -1,0 +1,103 @@
+[
+  {
+    "segment": 1,
+    "text": "Hi everyone! Today I'm presenting IncidentLens, an evidence-driven multi-agent system for software incident root cause analysis.   In production postmortems, the most dangerous failure mode isn't failing to find an answer\u2014it's hallucinating a plausible story. Generic LLM agents routinely assert confident root causes without valid citations, ignore data access boundaries, and almost never admit when evidence is missing.   IncidentLens enforces a much stricter engineering contract: every claim must cite an actually observed evidence ID, every agent operates inside explicit read-only tool permissions, and when visible telemetry cannot uniquely identify the root cause, the system must abstain with inconclusive rather than guess.   Over the next nine minutes, I'll walk through the architecture, show you four live hands-on demos, and share our full-scale, cross-model experimental findings across DeepSeek and Tencent Hunyuan.",
+    "words": 128,
+    "audio_duration": 59.24,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg01.mp3",
+    "original_audio_duration": 71.7,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 1814,
+    "video_duration": 60.46666666666667
+  },
+  {
+    "segment": 2,
+    "text": "Let's look at how IncidentLens works under the hood. It runs as a centralized LangGraph workflow.   Starting from a public incident summary, the Coordinator inspects the current evidence gaps and remaining budget, then dynamically dispatches one or two specialists per round: Logs for error chronology, Metrics for capacity and dependencies, Database for locks, connections, and slow queries, and Changes for recent deployments and config diffs.   Two safeguards keep the workflow honest. First, strict tool ACL isolation\u2014for example, the Logs agent can never query config diffs. Second, a deterministic Finalize Gate: final acceptance never relies on an LLM's self-reported confidence. Instead, deterministic code verifies at least two independent sources, a cause-specific discriminator, temporally compatible impact, and zero unresolved contradictions or rival mechanisms.   To evaluate whether dynamic multi-agent orchestration actually pays off, we compare four architectures under identical budgets and equivalent tool access: a Single-agent baseline, a one-shot Fixed-4 batch, our primary Dynamic architecture, and Full, which adds an independent LLM Verifier loop.",
+    "words": 161,
+    "audio_duration": 71.17,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg02.mp3",
+    "original_audio_duration": 86.15,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 2172,
+    "video_duration": 72.4
+  },
+  {
+    "segment": 3,
+    "text": "Let's jump straight into our live demonstrations.   First, in the terminal, I run validate data to verify that public evidence files follow the strict schema with zero leaked private answer fields.   Next, let's verify our security boundary with the isolation test suite. Notice how attempts by a specialist to escalate permissions or call an unauthorized tool\u2014like Logs trying to inspect config diffs\u2014are deterministically blocked at runtime.   Running our broader offline regression suite confirms 505 tests passing, alongside our 110-case provider fault-injection matrix, which verifies bounded transport retries, atomic request permits, and structured output recovery.",
+    "words": 94,
+    "audio_duration": 43.32,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg03.mp3",
+    "original_audio_duration": 52.43,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 1336,
+    "video_duration": 44.53333333333333
+  },
+  {
+    "segment": 4,
+    "text": "Now let's run an actual live investigation\u2014not a mock. Here I invoke the CLI using our newly integrated Oh My G-P-T provider backed by the official OpenAI SDK, calling Tencent H-Y-4 Flash with JSON schema mode and thinking disabled, under the dynamic architecture.   This live run finishes with inconclusive and writes result dot JSON, report dot M-D, and trace dot JSON. The report preserves the leading explanations, observed evidence, and causal gaps. A confirmed root cause remains null: the system does not turn a plausible explanation into a claim it cannot verify. Next, let's look at two hardened benchmark cases we ran on official DeepSeek DeepSeek Flash.   On incident 4014, a misleading case where a non-causal change is deliberately injected onto the culprit's own service, dynamic doesn't take the bait\u2014it cross-checks database lock waits and logs, and nails Postgres lock contention in 47 seconds.   By contrast, on incident 4018, the critical slow-query discriminator is missing by design. After checking 15 tools across sources, the system refuses to guess and terminates cleanly with inconclusive.",
+    "words": 171,
+    "audio_duration": 71.92,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg04.mp3",
+    "original_audio_duration": 87.07,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 2194,
+    "video_duration": 73.13333333333334,
+    "factual_live_outcome_correction": true,
+    "actual_benchmark_tools": 15
+  },
+  {
+    "segment": 5,
+    "text": "To make every investigation inspectable by human engineers, IncidentLens ships with a local Web Console. Here I open the Trace Archive at localhost 8022. Notice the banner at the top: Recorded Replay\u2014zero provider calls. Every view you're about to see is reconstructed purely from the persisted trace dot JSON.   Let's inspect a resolved run first. In the timeline panel, we can step through every decision the Coordinator made, which specialist it dispatched, and what exact records came back.   Switching to the hypothesis view, you can watch rival explanations compete as new evidence arrives, until only one satisfies Finalize Gate.   Clicking any citation in the final report traces straight back to the underlying observed log, metric, or config diff\u2014so reviewers can verify grounding in seconds.   At the bottom, the audit ledger records the formal two-phase stop handshake\u2014Workflow Stop Requested, Stop Ack, and Normal Termination\u2014alongside exact physical HTTP requests and token counts.   Now let's switch to an abstained case. Instead of crashing or guessing, the UI clearly shows inconclusive, explains which evidence gaps remain open, and distinguishes normal abstention from a runtime error.",
+    "words": 181,
+    "audio_duration": 75.12,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg05.mp3",
+    "original_audio_duration": 90.93,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 2290,
+    "video_duration": 76.33333333333333
+  },
+  {
+    "segment": 6,
+    "text": "Evaluating an agent rigorously is just as hard as building it. IncidentBench physically separates public evidence from private evaluator oracles; labels are only unlocked after a run persists its state and generates a matching SHA-256 completion receipt, and every technical failure stays in the denominator.   When we moved our project onto the official DeepSeek API for full-scale testing, we uncovered a critical latent bug: Single and Full crashed on 8 out of 12 slots during verification!   Tracing the event logs revealed a subtle hidden bug: ReviewOutput enforces a cross-field rule called leading review consistency, but structured output dot pie stripped that custom error code into a generic $: validation_error, leaving the model completely blind during its one repair attempt.   After whitelisting the safe error code, passing an explicit static repair hint, and documenting the invariant in the verifier prompt\u2014verified by this new unit test\u2014all 9 previously crashed slots recovered 9 out of 9, and across our subsequent 144-slot full run, structured output crashes dropped to literally zero.",
+    "words": 167,
+    "audio_duration": 68.52,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg06.mp3",
+    "original_audio_duration": 82.94,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 2092,
+    "video_duration": 69.73333333333333
+  },
+  {
+    "segment": 7,
+    "text": "Now let's look at the numbers from our full-scale experiments.   On the 36-case hardened benchmark with official DeepSeek Flash\u2014144 slots across six difficulty levers\u2014Dynamic finishes first across the board: 86.1% quality success (31 out of 36), cutting tokens by 42.6% compared to Single and 39.5% compared to Full, while beating Fixed-4 18 to 0 in paired comparisons. Even more remarkably, across all 137 completed runs, there were zero false resolutions\u2014whenever the system emitted resolved, it was 100% right.   To test whether these findings generalize beyond DeepSeek, we ran the same six-lever benchmark on Tencent H-Y-4 Flash via Oh My G-P-T, both with chain-of-thought thinking enabled and disabled.   Here we uncovered a counterintuitive result: disabling thinking nearly doubled end-to-end success, cutting runtime from 48 minutes down to 12.6 minutes and lifting completion from 45.8% to 95.8%. Why? Because multi-agent RCA is a serial tool-exploration loop, not a single-shot math puzzle. With thinking enabled, each call took 40 to 70 seconds, causing Single and Full to exhaust the 900-second wall-clock budget mid-investigation. Disabling thinking let the workflow trade slow internal monologues for fast, iterative evidence gathering\u2014guided externally by Finalize Gate.   And look at the starkest finding of the entire project: on non-thinking H-Y-4 Flash, the monolithic Single agent collapsed to 0 out of 5 on identifiable cases, burning 254,000 tokens per run. Yet Dynamic multi-agent specialization rescued accuracy from 16.7% all the way to 83.3%, while cutting both tokens and latency in half!   Finally, across both DeepSeek and H-Y-4 Flash, the one case Dynamic missed\u2014counterfactual pair incident 4035\u2014was successfully rescued by Full thanks to the Verifier's targeted follow-up checks.",
+    "words": 267,
+    "audio_duration": 116.57,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg07.mp3",
+    "original_audio_duration": 141.13,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 3534,
+    "video_duration": 117.8
+  },
+  {
+    "segment": 8,
+    "text": "To keep our evaluation scientifically honest, we also have to highlight three clear limitations.   First, achieving zero false resolutions across both model families owes a great deal to the tight coupling between Finalize Gate's seven hardcoded mechanism rules and our synthetic benchmark scenarios. Testing on out-of-distribution, unstructured production logs is essential to measure true hallucination resistance when hard rules weaken.   Second, our automatic scorer currently checks culprit service and failure mode match, even though the oracle already defines acceptable evidence support sets\u2014incorporating support-set coverage and re-centering paired bootstrap statistics onto Dynamic are immediate, high-leverage upgrades.   Third, our cross-model finding on incident 4035 points directly to an on-demand Verifier: keep Dynamic as the fast, economical default, and trigger an independent Verifier only when competing-mechanism or counterfactual signals appear.",
+    "words": 127,
+    "audio_duration": 56.67,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg08.mp3",
+    "original_audio_duration": 68.59,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 1737,
+    "video_duration": 57.9
+  },
+  {
+    "segment": 9,
+    "text": "To wrap up: IncidentLens demonstrates that combining scoped multi-agent specialization, deterministic grounding gates, and failure-inclusive cross-model evaluation delivers zero-fabrication root cause analysis\u2014not only saving 40% to 50% in tokens on strong models, but dramatically amplifying diagnostic capability on lighter, non-thinking models.   Thank you so much for watching, and I'd be happy to take any questions!",
+    "words": 55,
+    "audio_duration": 26.73,
+    "audio_path": "/Users/songxiaowen/.gemini/antigravity/scratch/IncidentLens/presentation/video_animations/voiceover_audio/seg09.mp3",
+    "original_audio_duration": 32.37,
+    "tempo_factor": 1.210641547861507,
+    "video_frames": 838,
+    "video_duration": 27.933333333333334
+  }
+]
