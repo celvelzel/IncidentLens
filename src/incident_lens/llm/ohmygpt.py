@@ -35,7 +35,9 @@ def ohmygpt_sync_client(
     timeout: float = 60.0,
 ) -> OpenAI:
     """Return a configured official OpenAI SDK client pointing at OhMyGPT."""
-    return OpenAI(api_key=_require_api_key(api_key), base_url=base_url, timeout=timeout)
+    return OpenAI(
+        api_key=_require_api_key(api_key), base_url=base_url, timeout=timeout, max_retries=0
+    )
 
 
 def ohmygpt_async_client(
@@ -44,7 +46,9 @@ def ohmygpt_async_client(
     timeout: float = 180.0,
 ) -> AsyncOpenAI:
     """Return a configured official AsyncOpenAI SDK client pointing at OhMyGPT."""
-    return AsyncOpenAI(api_key=_require_api_key(api_key), base_url=base_url, timeout=timeout)
+    return AsyncOpenAI(
+        api_key=_require_api_key(api_key), base_url=base_url, timeout=timeout, max_retries=0
+    )
 
 
 def quick_chat(
@@ -156,6 +160,10 @@ class OhMyGPTProvider(LLMProvider):
         client = self._client or ohmygpt_async_client(
             api_key=self._api_key, base_url=self.base_url, timeout=self.timeout
         )
+        # Disable hidden SDK retries even when a caller injected a configured client.
+        # Otherwise the actual number of HTTP requests could exceed our guards.
+        if self._client is not None and isinstance(client, AsyncOpenAI):
+            client = client.with_options(max_retries=0)
         close_client = self._client is None
         try:
             for attempt in range(self.structured_repair_retries + 1):
